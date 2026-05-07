@@ -524,7 +524,7 @@ function LiveFeedPane({ events }: { events: MetricEvent[] }) {
       <div className="pane-header">
         <h2>📡 Live Heist Feed — {events.length} events</h2>
         <div className="pane-controls">
-          <input placeholder="Filter..." value={filter} onChange={(e) => setFilter(e.target.value)} style={{ width: 140 }} />
+          <input aria-label="Filter live feed" value={filter} onChange={(e) => setFilter(e.target.value)} style={{ width: 140 }} />
           <select value={phaseFilter} onChange={(e) => setPhaseFilter(e.target.value)}>
             {phases.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
