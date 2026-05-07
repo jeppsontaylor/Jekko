@@ -19,7 +19,7 @@ import type {
   VcsInfo,
 } from "@opencode-ai/sdk/v2"
 import { createStore, produce, reconcile } from "solid-js/store"
-import { onMount } from "solid-js"
+import { batch, onMount } from "solid-js"
 import { useProject } from "@tui/context/project"
 import { useEvent } from "@tui/context/event"
 import { useSDK } from "@tui/context/sdk"
@@ -29,6 +29,8 @@ import type { Snapshot } from "@/snapshot"
 import { emptyConsoleState, type ConsoleState } from "@/config/console-state"
 import path from "path"
 import { useKV } from "./kv"
+import { useExit } from "./exit"
+import * as Log from "@opencode-ai/core/util/log"
 
 export const { use: useSync, provider: SyncProvider } = createSimpleContext({
   name: "Sync",
@@ -111,6 +113,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
     const project = useProject()
     const sdk = useSDK()
     const kv = useKV()
+    const exit = useExit()
 
     const fullSyncedSessions = new Set<string>()
     let syncedWorkspace = project.workspace.current()
@@ -175,11 +178,66 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       return session.data
     }
 
-    async function bootstrap(_options?: { fatal?: boolean }) {
-      await project.sync()
-      await project.workspace.sync()
-      await refresh()
-      setStore("status", "complete")
+    async function bootstrap(options: { fatal?: boolean } = {}) {
+      const fatal = options.fatal ?? true
+
+      try {
+        await project.sync()
+        await project.workspace.sync()
+
+        const workspace = project.workspace.current()
+        if (workspace !== syncedWorkspace) {
+          fullSyncedSessions.clear()
+          syncedWorkspace = workspace
+        }
+
+        const [providers, providerList, agents, config, consoleState] = await Promise.all([
+          sdk.client.config.providers({ workspace }, { throwOnError: true }),
+          sdk.client.provider.list({ workspace }, { throwOnError: true }),
+          sdk.client.app.agents({ workspace }, { throwOnError: true }),
+          sdk.client.config.get({ workspace }, { throwOnError: true }),
+          sdk.client.experimental.console
+            .get({ workspace }, { throwOnError: true })
+            .then((response) => response.data ?? emptyConsoleState)
+            .catch(() => emptyConsoleState),
+        ])
+
+        batch(() => {
+          setStore("provider", reconcile(providers.data.providers))
+          setStore("provider_default", reconcile(providers.data.default))
+          setStore("provider_next", reconcile(providerList.data))
+          setStore("agent", reconcile(agents.data ?? []))
+          setStore("config", reconcile(config.data))
+          setStore("console_state", reconcile(consoleState))
+        })
+
+        if (store.status !== "complete") setStore("status", "partial")
+
+        void Promise.all([
+          refresh(),
+          sdk.client.command.list({ workspace }).then((x) => setStore("command", reconcile(x.data ?? []))),
+          sdk.client.lsp.status({ workspace }).then((x) => setStore("lsp", reconcile(x.data ?? []))),
+          sdk.client.mcp.status({ workspace }).then((x) => setStore("mcp", reconcile(x.data ?? {}))),
+          sdk.client.experimental.resource
+            .list({ workspace })
+            .then((x) => setStore("mcp_resource", reconcile(x.data ?? {}))),
+          sdk.client.formatter.status({ workspace }).then((x) => setStore("formatter", reconcile(x.data ?? []))),
+          sdk.client.session.status({ workspace }).then((x) => setStore("session_status", reconcile(x.data ?? {}))),
+          sdk.client.provider.auth({ workspace }).then((x) => setStore("provider_auth", reconcile(x.data ?? {}))),
+          sdk.client.vcs.get({ workspace }).then((x) => setStore("vcs", reconcile(x.data))),
+          project.workspace.sync(),
+        ]).then(() => {
+          setStore("status", "complete")
+        })
+      } catch (error) {
+        Log.Default.error("tui bootstrap failed", {
+          error: error instanceof Error ? error.message : String(error),
+          name: error instanceof Error ? error.name : undefined,
+          stack: error instanceof Error ? error.stack : undefined,
+        })
+        if (fatal) await exit(error)
+        else throw error
+      }
     }
 
     event.subscribe((event) => {
