@@ -11,11 +11,11 @@ Audit receipt:
 - Paper edition: `2026.05-ed8`
 - Target stack: `rust-ts-vite-react-postgres-bounded-python`
 - Final score: `60`
-- Raw score: `73`
-- Findings: `328` repair packets from `target/jankurai/repair-plan.json`
+- Raw score: `70`
+- Findings: `331` repair packets from `target/jankurai/repair-plan.json`
 - Hard findings: `316`
-- Caps applied: `20`
-- Generated at: `2026-05-07T09:22:59.000Z`
+- Caps applied: `22`
+- Generated at: (need actual timestamp from audit)
 - Source artifacts: `agent/repo-score.json`, `agent/repo-score.md`, `target/jankurai/repair-plan.json`, `target/jankurai/repair-plan.md`
 
 Status protocol:
