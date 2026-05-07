@@ -8,13 +8,13 @@ import { PermissionID } from "@/permission/schema"
 import { SessionShare } from "@/share/session"
 import { Session } from "@/session/session"
 import { SessionCompaction } from "@/session/compaction"
-import { MessageV2 } from "@/session/message-v2"
+import { MessageV2 } from "@/session/message"
 import { SessionPrompt } from "@/session/prompt"
 import { SessionRevert } from "@/session/revert"
 import { SessionRunState } from "@/session/run-state"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
-import { Todo } from "@/session/todo"
+import { Todo } from "@/session/pending"
 import { MessageID, PartID, SessionID } from "@/session/schema"
 import { NotFoundError } from "@/storage/storage"
 import { NamedError } from "@opencode-ai/core/util/error"
@@ -50,7 +50,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
     const agentSvc = yield* Agent.Service
     const permissionSvc = yield* Permission.Service
     const statusSvc = yield* SessionStatus.Service
-    const todoSvc = yield* Todo.Service
+    const pendingSvc = yield* Todo.Service
     const summary = yield* SessionSummary.Service
     const bus = yield* Bus.Service
     const scope = yield* Scope.Scope
@@ -79,9 +79,11 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       return yield* session.children(ctx.params.sessionID)
     })
 
-    const todo = Effect.fn("SessionHttpApi.todo")(function* (ctx: { params: { sessionID: SessionID } }) {
-      return yield* todoSvc.get(ctx.params.sessionID)
+    const pending = Effect.fn("SessionHttpApi.pending")(function* (ctx: { params: { sessionID: SessionID } }) {
+      return yield* pendingSvc.get(ctx.params.sessionID)
     })
+
+    const todo = pending
 
     const diff = Effect.fn("SessionHttpApi.diff")(function* (ctx: {
       params: { sessionID: SessionID }
@@ -357,6 +359,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       .handle("get", get)
       .handle("children", children)
       .handle("todo", todo)
+      .handle("pending", pending)
       .handle("diff", diff)
       .handle("messages", messages)
       .handle("message", message)

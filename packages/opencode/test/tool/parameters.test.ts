@@ -21,7 +21,7 @@ import { Parameters as Read } from "../../src/tool/read"
 import { Parameters as Shell } from "../../src/tool/shell"
 import { Parameters as Skill } from "../../src/tool/skill"
 import { Parameters as Task } from "../../src/tool/task"
-import { Parameters as Todo } from "../../src/tool/todo"
+import { Parameters as Todo } from "../../src/tool/pending"
 import { Parameters as WebFetch } from "../../src/tool/webfetch"
 import { Parameters as WebSearch } from "../../src/tool/websearch"
 import { Parameters as Write } from "../../src/tool/write"
@@ -46,7 +46,7 @@ describe("tool parameters", () => {
     test("read", () => expect(toJsonSchema(Read)).toMatchSnapshot())
     test("skill", () => expect(toJsonSchema(Skill)).toMatchSnapshot())
     test("task", () => expect(toJsonSchema(Task)).toMatchSnapshot())
-    test("todo", () => expect(toJsonSchema(Todo)).toMatchSnapshot())
+    test("pending", () => expect(toJsonSchema(Todo)).toMatchSnapshot())
     test("webfetch", () => expect(toJsonSchema(WebFetch)).toMatchSnapshot())
     test("websearch", () => expect(toJsonSchema(WebSearch)).toMatchSnapshot())
     test("write", () => expect(toJsonSchema(Write)).toMatchSnapshot())
@@ -115,10 +115,10 @@ describe("tool parameters", () => {
 
   describe("grep", () => {
     test("accepts pattern-only", () => {
-      expect(parse(Grep, { pattern: "TODO" })).toEqual({ pattern: "TODO" })
+      expect(parse(Grep, { pattern: "pending" })).toEqual({ pattern: "pending" })
     })
     test("accepts optional path + include", () => {
-      const parsed = parse(Grep, { pattern: "TODO", path: "/tmp", include: "*.ts" })
+      const parsed = parse(Grep, { pattern: "pending", path: "/tmp", include: "*.ts" })
       expect(parsed.path).toBe("/tmp")
       expect(parsed.include).toBe("*.ts")
     })
@@ -208,7 +208,7 @@ describe("tool parameters", () => {
     })
   })
 
-  describe("todo", () => {
+  describe("pending", () => {
     test("accepts todos array", () => {
       const parsed = parse(Todo, {
         todos: [{ id: "t1", content: "do x", status: "pending", priority: "medium" }],

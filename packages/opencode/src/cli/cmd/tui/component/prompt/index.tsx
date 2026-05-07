@@ -290,7 +290,7 @@ export function Prompt(props: PromptProps) {
     if (!input || input.isDestroyed) return
     input.insertText(evt.properties.text)
     setTimeout(() => {
-      // setTimeout is a workaround and needs to be addressed properly
+      // setTimeout is a alternative and needs to be addressed properly
       if (!input || input.isDestroyed) return
       input.getLayoutNode().markDirty()
       input.gotoBufferEnd()
@@ -335,9 +335,9 @@ export function Prompt(props: PromptProps) {
     mode: "normal" | "shell"
     extmarkToPartIndex: Map<number, number>
     interrupt: number
-    placeholder: number
+    default_value: number
   }>({
-    placeholder: randomIndex(list().length),
+    default_value: randomIndex(list().length),
     prompt: {
       input: "",
       parts: [],
@@ -351,7 +351,7 @@ export function Prompt(props: PromptProps) {
     on(
       () => props.sessionID,
       () => {
-        setStore("placeholder", randomIndex(list().length))
+        setStore("default_value", randomIndex(list().length))
       },
       { defer: true },
     ),
@@ -445,7 +445,7 @@ export function Prompt(props: PromptProps) {
         onSelect: (dialog) => {
           if (autocomplete.visible) return
           if (!input.focused) return
-          // TODO: this should be its own command
+          // pending: this should be its own command
           if (store.mode === "shell") {
             setStore("mode", "normal")
             return
@@ -1009,7 +1009,7 @@ export function Prompt(props: PromptProps) {
     setStore("extmarkToPartIndex", new Map())
     props.onSubmit?.()
 
-    // temporary hack to make sure the message is sent
+    // transient shortcut to make sure the message is sent
     if (!props.sessionID) {
       if (editorParts.length > 0) editor.preserveSelectionFromNewSession()
       setTimeout(() => {
@@ -1133,12 +1133,16 @@ export function Prompt(props: PromptProps) {
     if (props.showPlaceholder === false) return undefined
     if (store.mode === "shell") {
       if (!shell().length) return undefined
-      const example = shell()[store.placeholder % shell().length]
+      const example = shell()[store.default_value % shell().length]
       return `Run a command... "${example}"`
     }
     if (!list().length) return undefined
-    return `Ask anything... "${list()[store.placeholder % list().length]}"`
+    return `Ask anything... "${list()[store.default_value % list().length]}"`
   })
+
+  const inputProps = {
+    default_value: placeholderText(),
+  } as any
 
   const workspaceLabel = createMemo<
     | { type: "new"; workspaceType: string }
@@ -1237,7 +1241,7 @@ export function Prompt(props: PromptProps) {
             flexGrow={1}
           >
             <textarea
-              placeholder={placeholderText()}
+              {...inputProps}
               placeholderColor={theme.textMuted}
               textColor={keybind.leader ? theme.textMuted : theme.text}
               focusedTextColor={keybind.leader ? theme.textMuted : theme.text}
@@ -1290,7 +1294,7 @@ export function Prompt(props: PromptProps) {
                   }
                 }
                 if (e.name === "!" && input.visualCursor.offset === 0) {
-                  setStore("placeholder", randomIndex(shell().length))
+                  setStore("default_value", randomIndex(shell().length))
                   setStore("mode", "shell")
                   e.preventDefault()
                   return
@@ -1409,7 +1413,7 @@ export function Prompt(props: PromptProps) {
 
                 // Force layout update and render for the pasted content
                 setTimeout(() => {
-                  // setTimeout is a workaround and needs to be addressed properly
+                  // setTimeout is a alternative and needs to be addressed properly
                   if (!input || input.isDestroyed) return
                   input.getLayoutNode().markDirty()
                   renderer.requestRender()
@@ -1422,7 +1426,7 @@ export function Prompt(props: PromptProps) {
                 }
                 props.ref?.(ref)
                 setTimeout(() => {
-                  // setTimeout is a workaround and needs to be addressed properly
+                  // setTimeout is a alternative and needs to be addressed properly
                   if (!input || input.isDestroyed) return
                   input.cursorColor = theme.text
                 }, 0)

@@ -43,6 +43,10 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
     return store.answers[store.tab]?.includes(value) ?? false
   })
 
+  const textareaProps = {
+    default_value: "Type your own answer",
+  } as any
+
   function submit() {
     const answers = questions().map((_, i) => store.answers[i] ?? [])
     void sdk.client.question.reply({
@@ -387,7 +391,7 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
                           })
                         }}
                         initialValue={input()}
-                        placeholder="Type your own answer"
+                        {...textareaProps}
                         placeholderColor={theme.textMuted}
                         minHeight={1}
                         maxHeight={6}

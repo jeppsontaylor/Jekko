@@ -1,543 +1,309 @@
+import { useEvent } from "@tui/context/event"
 import type {
-  Message,
-  Agent,
-  Provider,
-  Session,
-  Part,
-  Config,
-  Todo,
-  Command,
-  PermissionRequest,
-  QuestionRequest,
-  LspStatus,
-  McpStatus,
-  McpResource,
-  FormatterStatus,
-  SessionStatus,
-  ProviderListResponse,
-  ProviderAuthMethod,
-  VcsInfo,
+  SessionMessage,
+  SessionMessageAssistant,
+  SessionMessageAssistantReasoning,
+  SessionMessageAssistantText,
+  SessionMessageAssistantTool,
 } from "@opencode-ai/sdk/v2"
 import { createStore, produce, reconcile } from "solid-js/store"
-import { useProject } from "@tui/context/project"
-import { useEvent } from "@tui/context/event"
-import { useSDK } from "@tui/context/sdk"
-import { Binary } from "@opencode-ai/core/util/binary"
 import { createSimpleContext } from "./helper"
-import type { Snapshot } from "@/snapshot"
-import { useExit } from "./exit"
-import { useArgs } from "./args"
-import { batch, onMount } from "solid-js"
-import * as Log from "@opencode-ai/core/util/log"
-import { emptyConsoleState, type ConsoleState } from "@/config/console-state"
-import path from "path"
-import { useKV } from "./kv"
+import { useSDK } from "./sdk"
 
-export const { use: useSync, provider: SyncProvider } = createSimpleContext({
-  name: "Sync",
+function activeAssistant(messages: SessionMessage[]) {
+  const index = messages.findIndex((message) => message.type === "assistant" && !message.time.completed)
+  if (index < 0) return
+  const assistant = messages[index]
+  return assistant?.type === "assistant" ? assistant : undefined
+}
+
+function activeCompaction(messages: SessionMessage[]) {
+  const index = messages.findIndex((message) => message.type === "compaction")
+  if (index < 0) return
+  const compaction = messages[index]
+  return compaction?.type === "compaction" ? compaction : undefined
+}
+
+function activeShell(messages: SessionMessage[], callID: string) {
+  const index = messages.findIndex((message) => message.type === "shell" && message.callID === callID)
+  if (index < 0) return
+  const shell = messages[index]
+  return shell?.type === "shell" ? shell : undefined
+}
+
+function latestTool(assistant: SessionMessageAssistant | undefined, callID?: string) {
+  return assistant?.content.findLast(
+    (item): item is SessionMessageAssistantTool => item.type === "tool" && (callID === undefined || item.id === callID),
+  )
+}
+
+function latestText(assistant: SessionMessageAssistant | undefined) {
+  return assistant?.content.findLast((item): item is SessionMessageAssistantText => item.type === "text")
+}
+
+function latestReasoning(assistant: SessionMessageAssistant | undefined, reasoningID: string) {
+  return assistant?.content.findLast(
+    (item): item is SessionMessageAssistantReasoning => item.type === "reasoning" && item.id === reasoningID,
+  )
+}
+
+export const { use: useSyncV2, provider: SyncProviderV2 } = createSimpleContext({
+  name: "SyncV2",
   init: () => {
     const [store, setStore] = createStore<{
-      status: "loading" | "partial" | "complete"
-      provider: Provider[]
-      provider_default: Record<string, string>
-      provider_next: ProviderListResponse
-      console_state: ConsoleState
-      provider_auth: Record<string, ProviderAuthMethod[]>
-      agent: Agent[]
-      command: Command[]
-      permission: {
-        [sessionID: string]: PermissionRequest[]
+      messages: {
+        [sessionID: string]: SessionMessage[]
       }
-      question: {
-        [sessionID: string]: QuestionRequest[]
-      }
-      config: Config
-      session: Session[]
-      session_status: {
-        [sessionID: string]: SessionStatus
-      }
-      session_diff: {
-        [sessionID: string]: Snapshot.FileDiff[]
-      }
-      todo: {
-        [sessionID: string]: Todo[]
-      }
-      message: {
-        [sessionID: string]: Message[]
-      }
-      part: {
-        [messageID: string]: Part[]
-      }
-      lsp: LspStatus[]
-      mcp: {
-        [key: string]: McpStatus
-      }
-      mcp_resource: {
-        [key: string]: McpResource
-      }
-      formatter: FormatterStatus[]
-      vcs: VcsInfo | undefined
     }>({
-      provider_next: {
-        all: [],
-        default: {},
-        connected: [],
-      },
-      console_state: emptyConsoleState,
-      provider_auth: {},
-      config: {},
-      status: "loading",
-      agent: [],
-      permission: {},
-      question: {},
-      command: [],
-      provider: [],
-      provider_default: {},
-      session: [],
-      session_status: {},
-      session_diff: {},
-      todo: {},
-      message: {},
-      part: {},
-      lsp: [],
-      mcp: {},
-      mcp_resource: {},
-      formatter: [],
-      vcs: undefined,
+      messages: {},
     })
 
     const event = useEvent()
-    const project = useProject()
     const sdk = useSDK()
-    const kv = useKV()
 
-    const fullSyncedSessions = new Set<string>()
-    let syncedWorkspace = project.workspace.current()
-
-    function sessionListQuery(): { scope?: "project"; path?: string } {
-      if (!kv.get("session_directory_filter_enabled", true)) return { scope: "project" }
-      if (!project.data.instance.path.worktree || !project.data.instance.path.directory) return { scope: "project" }
-      return {
-        path: path
-          .relative(path.resolve(project.data.instance.path.worktree), project.data.instance.path.directory)
-          .replaceAll("\\", "/"),
-      }
-    }
-
-    function listSessions() {
-      return sdk.client.session
-        .list({ start: Date.now() - 30 * 24 * 60 * 60 * 1000, ...sessionListQuery() })
-        .then((x) => (x.data ?? []).toSorted((a, b) => a.id.localeCompare(b.id)))
+    function update(sessionID: string, fn: (messages: SessionMessage[]) => void) {
+      setStore(
+        "messages",
+        produce((draft) => {
+          fn((draft[sessionID] ??= []))
+        }),
+      )
     }
 
     event.subscribe((event) => {
       switch (event.type) {
-        case "server.instance.disposed":
-          void bootstrap()
-          break
-        case "permission.replied": {
-          const requests = store.permission[event.properties.sessionID]
-          if (!requests) break
-          const match = Binary.search(requests, event.properties.requestID, (r) => r.id)
-          if (!match.found) break
-          setStore(
-            "permission",
-            event.properties.sessionID,
-            produce((draft) => {
-              draft.splice(match.index, 1)
-            }),
-          )
-          break
-        }
-
-        case "permission.asked": {
-          const request = event.properties
-          const requests = store.permission[request.sessionID]
-          if (!requests) {
-            setStore("permission", request.sessionID, [request])
-            break
-          }
-          const match = Binary.search(requests, request.id, (r) => r.id)
-          if (match.found) {
-            setStore("permission", request.sessionID, match.index, reconcile(request))
-            break
-          }
-          setStore(
-            "permission",
-            request.sessionID,
-            produce((draft) => {
-              draft.splice(match.index, 0, request)
-            }),
-          )
-          break
-        }
-
-        case "question.replied":
-        case "question.rejected": {
-          const requests = store.question[event.properties.sessionID]
-          if (!requests) break
-          const match = Binary.search(requests, event.properties.requestID, (r) => r.id)
-          if (!match.found) break
-          setStore(
-            "question",
-            event.properties.sessionID,
-            produce((draft) => {
-              draft.splice(match.index, 1)
-            }),
-          )
-          break
-        }
-
-        case "question.asked": {
-          const request = event.properties
-          const requests = store.question[request.sessionID]
-          if (!requests) {
-            setStore("question", request.sessionID, [request])
-            break
-          }
-          const match = Binary.search(requests, request.id, (r) => r.id)
-          if (match.found) {
-            setStore("question", request.sessionID, match.index, reconcile(request))
-            break
-          }
-          setStore(
-            "question",
-            request.sessionID,
-            produce((draft) => {
-              draft.splice(match.index, 0, request)
-            }),
-          )
-          break
-        }
-
-        case "todo.updated":
-          setStore("todo", event.properties.sessionID, event.properties.todos)
-          break
-
-        case "session.diff":
-          setStore("session_diff", event.properties.sessionID, event.properties.diff)
-          break
-
-        case "session.deleted": {
-          const result = Binary.search(store.session, event.properties.info.id, (s) => s.id)
-          if (result.found) {
-            setStore(
-              "session",
-              produce((draft) => {
-                draft.splice(result.index, 1)
-              }),
-            )
-          }
-          break
-        }
-        case "session.updated": {
-          const result = Binary.search(store.session, event.properties.info.id, (s) => s.id)
-          if (result.found) {
-            setStore("session", result.index, reconcile(event.properties.info))
-            break
-          }
-          setStore(
-            "session",
-            produce((draft) => {
-              draft.splice(result.index, 0, event.properties.info)
-            }),
-          )
-          break
-        }
-
-        case "session.status": {
-          setStore("session_status", event.properties.sessionID, event.properties.status)
-          break
-        }
-
-        case "message.updated": {
-          const messages = store.message[event.properties.info.sessionID]
-          if (!messages) {
-            setStore("message", event.properties.info.sessionID, [event.properties.info])
-            break
-          }
-          const result = Binary.search(messages, event.properties.info.id, (m) => m.id)
-          if (result.found) {
-            setStore("message", event.properties.info.sessionID, result.index, reconcile(event.properties.info))
-            break
-          }
-          setStore(
-            "message",
-            event.properties.info.sessionID,
-            produce((draft) => {
-              draft.splice(result.index, 0, event.properties.info)
-            }),
-          )
-          const updated = store.message[event.properties.info.sessionID]
-          if (updated.length > 100) {
-            const oldest = updated[0]
-            batch(() => {
-              setStore(
-                "message",
-                event.properties.info.sessionID,
-                produce((draft) => {
-                  draft.shift()
-                }),
-              )
-              setStore(
-                "part",
-                produce((draft) => {
-                  delete draft[oldest.id]
-                }),
-              )
-            })
-          }
-          break
-        }
-        case "message.removed": {
-          const messages = store.message[event.properties.sessionID]
-          const result = Binary.search(messages, event.properties.messageID, (m) => m.id)
-          if (result.found) {
-            setStore(
-              "message",
-              event.properties.sessionID,
-              produce((draft) => {
-                draft.splice(result.index, 1)
-              }),
-            )
-          }
-          break
-        }
-        case "message.part.updated": {
-          const parts = store.part[event.properties.part.messageID]
-          if (!parts) {
-            setStore("part", event.properties.part.messageID, [event.properties.part])
-            break
-          }
-          const result = Binary.search(parts, event.properties.part.id, (p) => p.id)
-          if (result.found) {
-            setStore("part", event.properties.part.messageID, result.index, reconcile(event.properties.part))
-            break
-          }
-          setStore(
-            "part",
-            event.properties.part.messageID,
-            produce((draft) => {
-              draft.splice(result.index, 0, event.properties.part)
-            }),
-          )
-          break
-        }
-
-        case "message.part.delta": {
-          const parts = store.part[event.properties.messageID]
-          if (!parts) break
-          const result = Binary.search(parts, event.properties.partID, (p) => p.id)
-          if (!result.found) break
-          setStore(
-            "part",
-            event.properties.messageID,
-            produce((draft) => {
-              const part = draft[result.index]
-              const field = event.properties.field as keyof typeof part
-              const existing = part[field] as string | undefined
-              ;(part[field] as string) = (existing ?? "") + event.properties.delta
-            }),
-          )
-          break
-        }
-
-        case "message.part.removed": {
-          const parts = store.part[event.properties.messageID]
-          const result = Binary.search(parts, event.properties.partID, (p) => p.id)
-          if (result.found)
-            setStore(
-              "part",
-              event.properties.messageID,
-              produce((draft) => {
-                draft.splice(result.index, 1)
-              }),
-            )
-          break
-        }
-
-        case "lsp.updated": {
-          const workspace = project.workspace.current()
-          void sdk.client.lsp.status({ workspace }).then((x) => setStore("lsp", x.data ?? []))
-          break
-        }
-
-        case "vcs.branch.updated": {
-          setStore("vcs", { branch: event.properties.branch })
-          break
-        }
-      }
-    })
-
-    const exit = useExit()
-    const args = useArgs()
-
-    async function bootstrap(input: { fatal?: boolean } = {}) {
-      const fatal = input.fatal ?? true
-      const workspace = project.workspace.current()
-      if (workspace !== syncedWorkspace) {
-        fullSyncedSessions.clear()
-        syncedWorkspace = workspace
-      }
-      const projectPromise = project.sync()
-      const sessionListPromise = projectPromise.then(() => listSessions())
-
-      // blocking - include session.list when continuing a session
-      const providersPromise = sdk.client.config.providers({ workspace }, { throwOnError: true })
-      const providerListPromise = sdk.client.provider.list({ workspace }, { throwOnError: true })
-      const consoleStatePromise = sdk.client.experimental.console
-        .get({ workspace }, { throwOnError: true })
-        .then((x) => x.data)
-        .catch(() => emptyConsoleState)
-      const agentsPromise = sdk.client.app.agents({ workspace }, { throwOnError: true })
-      const configPromise = sdk.client.config.get({ workspace }, { throwOnError: true })
-      const blockingRequests: Promise<unknown>[] = [
-        providersPromise,
-        providerListPromise,
-        agentsPromise,
-        configPromise,
-        projectPromise,
-        ...(args.continue ? [sessionListPromise] : []),
-      ]
-
-      await Promise.all(blockingRequests)
-        .then(async () => {
-          const providersResponse = providersPromise.then((x) => x.data!)
-          const providerListResponse = providerListPromise.then((x) => x.data!)
-          const consoleStateResponse = consoleStatePromise
-          const agentsResponse = agentsPromise.then((x) => x.data ?? [])
-          const configResponse = configPromise.then((x) => x.data!)
-          const sessionListResponse = args.continue ? sessionListPromise : undefined
-
-          return Promise.all([
-            providersResponse,
-            providerListResponse,
-            consoleStateResponse,
-            agentsResponse,
-            configResponse,
-            ...(sessionListResponse ? [sessionListResponse] : []),
-          ]).then((responses) => {
-            const providers = responses[0]
-            const providerList = responses[1]
-            const consoleState = responses[2]
-            const agents = responses[3]
-            const config = responses[4]
-            const sessions = responses[5]
-
-            batch(() => {
-              setStore("provider", reconcile(providers.providers))
-              setStore("provider_default", reconcile(providers.default))
-              setStore("provider_next", reconcile(providerList))
-              setStore("console_state", reconcile(consoleState))
-              setStore("agent", reconcile(agents))
-              setStore("config", reconcile(config))
-              if (sessions !== undefined) setStore("session", reconcile(sessions))
+        case "session.next.prompted": {
+          update(event.properties.sessionID, (draft) => {
+            draft.unshift({
+              id: event.id,
+              type: "user",
+              text: event.properties.prompt.text,
+              files: event.properties.prompt.files,
+              agents: event.properties.prompt.agents,
+              time: { created: event.properties.timestamp },
             })
           })
-        })
-        .then(() => {
-          if (store.status !== "complete") setStore("status", "partial")
-          // non-blocking
-          void Promise.all([
-            ...(args.continue ? [] : [sessionListPromise.then((sessions) => setStore("session", reconcile(sessions)))]),
-            consoleStatePromise.then((consoleState) => setStore("console_state", reconcile(consoleState))),
-            sdk.client.command.list({ workspace }).then((x) => setStore("command", reconcile(x.data ?? []))),
-            sdk.client.lsp.status({ workspace }).then((x) => setStore("lsp", reconcile(x.data ?? []))),
-            sdk.client.mcp.status({ workspace }).then((x) => setStore("mcp", reconcile(x.data ?? {}))),
-            sdk.client.experimental.resource
-              .list({ workspace })
-              .then((x) => setStore("mcp_resource", reconcile(x.data ?? {}))),
-            sdk.client.formatter.status({ workspace }).then((x) => setStore("formatter", reconcile(x.data ?? []))),
-            sdk.client.session.status({ workspace }).then((x) => {
-              setStore("session_status", reconcile(x.data ?? {}))
-            }),
-            sdk.client.provider.auth({ workspace }).then((x) => setStore("provider_auth", reconcile(x.data ?? {}))),
-            sdk.client.vcs.get({ workspace }).then((x) => setStore("vcs", reconcile(x.data))),
-            project.workspace.sync(),
-          ]).then(() => {
-            setStore("status", "complete")
+          break
+        }
+        case "session.next.synthetic":
+          update(event.properties.sessionID, (draft) => {
+            draft.unshift({
+              id: event.id,
+              type: "synthetic",
+              sessionID: event.properties.sessionID,
+              text: event.properties.text,
+              time: { created: event.properties.timestamp },
+            })
           })
-        })
-        .catch(async (e) => {
-          Log.Default.error("tui bootstrap failed", {
-            error: e instanceof Error ? e.message : String(e),
-            name: e instanceof Error ? e.name : undefined,
-            stack: e instanceof Error ? e.stack : undefined,
+          break
+        case "session.next.shell.started":
+          update(event.properties.sessionID, (draft) => {
+            draft.unshift({
+              id: event.id,
+              type: "shell",
+              callID: event.properties.callID,
+              command: event.properties.command,
+              output: "",
+              time: { created: event.properties.timestamp },
+            })
           })
-          if (fatal) {
-            await exit(e)
-          } else {
-            throw e
-          }
-        })
-    }
-
-    onMount(() => {
-      void bootstrap()
+          break
+        case "session.next.shell.ended":
+          update(event.properties.sessionID, (draft) => {
+            const match = activeShell(draft, event.properties.callID)
+            if (!match) return
+            match.output = event.properties.output
+            match.time.completed = event.properties.timestamp
+          })
+          break
+        case "session.next.step.started":
+          update(event.properties.sessionID, (draft) => {
+            const currentAssistant = activeAssistant(draft)
+            if (currentAssistant) currentAssistant.time.completed = event.properties.timestamp
+            draft.unshift({
+              id: event.id,
+              type: "assistant",
+              agent: event.properties.agent,
+              model: event.properties.model,
+              content: [],
+              snapshot: event.properties.snapshot ? { start: event.properties.snapshot } : undefined,
+              time: { created: event.properties.timestamp },
+            })
+          })
+          break
+        case "session.next.step.ended":
+          update(event.properties.sessionID, (draft) => {
+            const currentAssistant = activeAssistant(draft)
+            if (!currentAssistant) return
+            currentAssistant.time.completed = event.properties.timestamp
+            currentAssistant.finish = event.properties.finish
+            currentAssistant.cost = event.properties.cost
+            currentAssistant.tokens = event.properties.tokens
+            if (event.properties.snapshot)
+              currentAssistant.snapshot = { ...currentAssistant.snapshot, end: event.properties.snapshot }
+          })
+          break
+        case "session.next.step.failed":
+          update(event.properties.sessionID, (draft) => {
+            const currentAssistant = activeAssistant(draft)
+            if (!currentAssistant) return
+            currentAssistant.time.completed = event.properties.timestamp
+            currentAssistant.finish = "error"
+            currentAssistant.error = event.properties.error
+          })
+          break
+        case "session.next.text.started":
+          update(event.properties.sessionID, (draft) => {
+            activeAssistant(draft)?.content.push({ type: "text", text: "" })
+          })
+          break
+        case "session.next.text.delta":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestText(activeAssistant(draft))
+            if (match) match.text += event.properties.delta
+          })
+          break
+        case "session.next.text.ended":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestText(activeAssistant(draft))
+            if (match) match.text = event.properties.text
+          })
+          break
+        case "session.next.tool.input.started":
+          update(event.properties.sessionID, (draft) => {
+            activeAssistant(draft)?.content.push({
+              type: "tool",
+              id: event.properties.callID,
+              name: event.properties.name,
+              time: { created: event.properties.timestamp },
+              state: { status: "pending", input: "" },
+            })
+          })
+          break
+        case "session.next.tool.input.delta":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestTool(activeAssistant(draft), event.properties.callID)
+            if (match?.state.status === "pending") match.state.input += event.properties.delta
+          })
+          break
+        case "session.next.tool.input.ended":
+          break
+        case "session.next.tool.called":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestTool(activeAssistant(draft), event.properties.callID)
+            if (!match) return
+            match.time.ran = event.properties.timestamp
+            match.provider = event.properties.provider
+            match.state = { status: "running", input: event.properties.input, structured: {}, content: [] }
+          })
+          break
+        case "session.next.tool.progress":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestTool(activeAssistant(draft), event.properties.callID)
+            if (match?.state.status !== "running") return
+            match.state.structured = event.properties.structured
+            match.state.content = [...event.properties.content]
+          })
+          break
+        case "session.next.tool.success":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestTool(activeAssistant(draft), event.properties.callID)
+            if (match?.state.status !== "running") return
+            match.state = {
+              status: "completed",
+              input: match.state.input,
+              structured: event.properties.structured,
+              content: [...event.properties.content],
+            }
+            match.provider = event.properties.provider
+            match.time.completed = event.properties.timestamp
+          })
+          break
+        case "session.next.tool.failed":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestTool(activeAssistant(draft), event.properties.callID)
+            if (match?.state.status !== "running") return
+            match.state = {
+              status: "error",
+              error: event.properties.error,
+              input: match.state.input,
+              structured: match.state.structured,
+              content: match.state.content,
+            }
+            match.provider = event.properties.provider
+            match.time.completed = event.properties.timestamp
+          })
+          break
+        case "session.next.reasoning.started":
+          update(event.properties.sessionID, (draft) => {
+            activeAssistant(draft)?.content.push({
+              type: "reasoning",
+              id: event.properties.reasoningID,
+              text: "",
+            })
+          })
+          break
+        case "session.next.reasoning.delta":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestReasoning(activeAssistant(draft), event.properties.reasoningID)
+            if (match) match.text += event.properties.delta
+          })
+          break
+        case "session.next.reasoning.ended":
+          update(event.properties.sessionID, (draft) => {
+            const match = latestReasoning(activeAssistant(draft), event.properties.reasoningID)
+            if (match) match.text = event.properties.text
+          })
+          break
+        case "session.next.retried":
+          break
+        case "session.next.compaction.started":
+          update(event.properties.sessionID, (draft) => {
+            draft.unshift({
+              id: event.id,
+              type: "compaction",
+              reason: event.properties.reason,
+              summary: "",
+              time: { created: event.properties.timestamp },
+            })
+          })
+          break
+        case "session.next.compaction.delta":
+          update(event.properties.sessionID, (draft) => {
+            const match = activeCompaction(draft)
+            if (match) match.summary += event.properties.text
+          })
+          break
+        case "session.next.compaction.ended":
+          update(event.properties.sessionID, (draft) => {
+            const match = activeCompaction(draft)
+            if (!match) return
+            match.summary = event.properties.text
+            match.include = event.properties.include
+          })
+          break
+      }
     })
 
     const result = {
       data: store,
-      set: setStore,
-      get status() {
-        return store.status
-      },
-      get ready() {
-        if (process.env.OPENCODE_FAST_BOOT) return true
-        return store.status !== "loading"
-      },
-      get path() {
-        return project.instance.path()
-      },
       session: {
-        get(sessionID: string) {
-          const match = Binary.search(store.session, sessionID, (s) => s.id)
-          if (match.found) return store.session[match.index]
-          return undefined
-        },
-        query() {
-          return sessionListQuery()
-        },
-        async refresh() {
-          const list = await listSessions()
-          setStore("session", reconcile(list))
-        },
-        status(sessionID: string) {
-          const session = result.session.get(sessionID)
-          if (!session) return "idle"
-          if (session.time.compacting) return "compacting"
-          const messages = store.message[sessionID] ?? []
-          const last = messages.at(-1)
-          if (!last) return "idle"
-          if (last.role === "user") return "working"
-          return last.time.completed ? "idle" : "working"
-        },
-        async sync(sessionID: string) {
-          if (fullSyncedSessions.has(sessionID)) return
-          const [session, messages, todo, diff] = await Promise.all([
-            sdk.client.session.get({ sessionID }, { throwOnError: true }),
-            sdk.client.session.messages({ sessionID, limit: 100 }),
-            sdk.client.session.todo({ sessionID }),
-            sdk.client.session.diff({ sessionID }),
-          ])
-          setStore(
-            produce((draft) => {
-              const match = Binary.search(draft.session, sessionID, (s) => s.id)
-              if (match.found) draft.session[match.index] = session.data!
-              if (!match.found) draft.session.splice(match.index, 0, session.data!)
-              draft.todo[sessionID] = todo.data ?? []
-              draft.message[sessionID] = messages.data!.map((x) => x.info)
-              for (const message of messages.data!) {
-                draft.part[message.info.id] = message.parts
-              }
-              draft.session_diff[sessionID] = diff.data ?? []
-            }),
-          )
-          fullSyncedSessions.add(sessionID)
+        message: {
+          async sync(sessionID: string) {
+            const response = await sdk.client.v2.session.messages({ sessionID })
+            setStore("messages", sessionID, reconcile(response.data?.items ?? []))
+          },
+          fromSession(sessionID: string) {
+            const messages = store.messages[sessionID]
+            if (!messages) return []
+            return messages
+          },
         },
       },
-      bootstrap,
     }
+
     return result
   },
 })
+
+export { useSync, SyncProvider } from "./sync-legacy"

@@ -274,7 +274,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
 
       const awsAccessKeyId = env["AWS_ACCESS_KEY_ID"]
 
-      // TODO: Using process.env directly because Env.set only updates a process.env shallow copy,
+      // pending: Using process.env directly because Env.set only updates a process.env shallow copy,
       // until the scope of the Env API is clarified (test only or runtime?)
       const awsBearerToken = iife(() => {
         const envToken = process.env.AWS_BEARER_TOKEN_BEDROCK
@@ -513,7 +513,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
     }),
     "sap-ai-core": Effect.fnUntraced(function* () {
       const auth = yield* dep.auth("sap-ai-core")
-      // TODO: Using process.env directly because Env.set only updates a shallow copy (not process.env),
+      // pending: Using process.env directly because Env.set only updates a shallow copy (not process.env),
       // until the scope of the Env API is clarified (test only or runtime?)
       const envServiceKey = iife(() => {
         const envAICoreServiceKey = process.env.AICORE_SERVICE_KEY
@@ -888,6 +888,37 @@ const ProviderLimit = Schema.Struct({
   output: Schema.Finite,
 })
 
+function normalizeModelStatus(
+  status: string | undefined,
+): "alpha" | "beta" | "deprecated" | "active" {
+  if (status === "discouraged") return "deprecated"
+  if (status === "alpha" || status === "beta" || status === "deprecated" || status === "active") return status
+  return "active"
+}
+
+type PluginModel = Omit<Model, "status"> & {
+  status: Exclude<Model["status"], "discouraged">
+}
+
+type PluginProvider = Omit<Info, "models"> & {
+  models: Record<string, PluginModel>
+}
+
+function toPluginProvider(provider: Info): PluginProvider {
+  return {
+    ...provider,
+    models: Object.fromEntries(
+      Object.entries(provider.models).map(([id, model]) => [
+        id,
+        {
+          ...model,
+          status: normalizeModelStatus(model.status),
+        },
+      ]),
+    ),
+  }
+}
+
 export const Model = Schema.Struct({
   id: ModelID,
   providerID: ProviderID,
@@ -995,7 +1026,7 @@ function fromModelsDevModel(provider: ModelsDev.Provider, model: ModelsDev.Model
       url: model.provider?.api ?? provider.api ?? "",
       npm: model.provider?.npm ?? provider.npm ?? "@ai-sdk/openai-compatible",
     },
-    status: model.status ?? "active",
+    status: normalizeModelStatus(model.status),
     headers: {},
     options: {},
     cost: cost(model.cost),
@@ -1152,7 +1183,7 @@ const layer: Layer.Layer<
           const pluginAuth = yield* auth.get(providerID).pipe(Effect.orDie)
 
           provider.models = yield* Effect.promise(async () => {
-            const next = await models(provider, { auth: pluginAuth })
+            const next = await models(toPluginProvider(provider), { auth: pluginAuth })
             return Object.fromEntries(
               Object.entries(next).map(([id, model]) => [
                 id,
@@ -1160,6 +1191,7 @@ const layer: Layer.Layer<
                   ...model,
                   id: ModelID.make(id),
                   providerID,
+                  status: normalizeModelStatus(model.status),
                 },
               ]),
             )
@@ -1199,7 +1231,7 @@ const layer: Layer.Layer<
                 npm: apiNpm,
                 url: model.provider?.api ?? provider?.api ?? existingModel?.api.url ?? modelsDev[providerID]?.api ?? "",
               },
-              status: model.status ?? existingModel?.status ?? "active",
+              status: normalizeModelStatus(model.status ?? existingModel?.status),
               name,
               providerID: ProviderID.make(providerID),
               capabilities: {
@@ -1299,7 +1331,7 @@ const layer: Layer.Layer<
           const options = yield* Effect.promise(() =>
             plugin.auth!.loader!(
               () => bridge.promise(auth.get(providerID).pipe(Effect.orDie)) as any,
-              database[plugin.auth!.provider],
+              toPluginProvider(database[plugin.auth!.provider]),
             ),
           )
           const opts = options ?? {}

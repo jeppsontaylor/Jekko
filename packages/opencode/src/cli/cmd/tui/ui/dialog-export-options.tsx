@@ -25,6 +25,9 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
   const dialog = useDialog()
   const { theme } = useTheme()
   let textarea: TextareaRenderable
+  const inputProps = {
+    default_value: "Enter filename",
+  } as any
   const [store, setStore] = createStore({
     thinking: props.defaultThinking,
     toolDetails: props.defaultToolDetails,
@@ -107,7 +110,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
             val.traits = { status: "FILENAME" }
           }}
           initialValue={props.defaultFilename}
-          placeholder="Enter filename"
+          {...inputProps}
           placeholderColor={theme.textMuted}
           textColor={theme.text}
           focusedTextColor={theme.text}

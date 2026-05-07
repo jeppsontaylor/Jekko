@@ -15,7 +15,7 @@ import { useTuiConfig } from "../context/tui-config"
 
 export interface DialogSelectProps<T> {
   title: string
-  placeholder?: string
+  default_value?: string
   options: DialogSelectOption<T>[]
   flat?: boolean
   ref?: (ref: DialogSelectRef<T>) => void
@@ -58,6 +58,9 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
   const { theme } = useTheme()
   const tuiConfig = useTuiConfig()
   const scrollAcceleration = createMemo(() => getScrollAcceleration(tuiConfig))
+  const filterInputProps = {
+    default_value: props.default_value ?? "Search",
+  } as any
 
   const [store, setStore] = createStore({
     selected: 0,
@@ -103,7 +106,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
   })
 
   // When the filter changes due to how TUI works, the mousemove might still be triggered
-  // via a synthetic event as the layout moves underneath the cursor. This is a workaround to make sure the input mode remains keyboard
+  // via a synthetic event as the layout moves underneath the cursor. This is a alternative to make sure the input mode remains keyboard
   // that the mouseover event doesn't trigger when filtering.
   createEffect(() => {
     filtered()
@@ -272,7 +275,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
                   input.focus()
                 }, 1)
               }}
-              placeholder={props.placeholder ?? "Search"}
+              {...filterInputProps}
               placeholderColor={theme.textMuted}
             />
           </box>

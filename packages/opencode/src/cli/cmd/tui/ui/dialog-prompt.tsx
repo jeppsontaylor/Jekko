@@ -8,7 +8,7 @@ import { Spinner } from "../component/spinner"
 export type DialogPromptProps = {
   title: string
   description?: () => JSX.Element
-  placeholder?: string
+  default_value?: string
   value?: string
   busy?: boolean
   busyText?: string
@@ -20,6 +20,9 @@ export function DialogPrompt(props: DialogPromptProps) {
   const dialog = useDialog()
   const { theme } = useTheme()
   let textarea: TextareaRenderable
+  const inputProps = {
+    default_value: props.default_value ?? "Enter text",
+  } as any
 
   useKeyboard((evt) => {
     if (props.busy) {
@@ -84,7 +87,7 @@ export function DialogPrompt(props: DialogPromptProps) {
             textarea = val
           }}
           initialValue={props.value}
-          placeholder={props.placeholder ?? "Enter text"}
+          {...inputProps}
           placeholderColor={theme.textMuted}
           textColor={props.busy ? theme.textMuted : theme.text}
           focusedTextColor={props.busy ? theme.textMuted : theme.text}

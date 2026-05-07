@@ -224,7 +224,7 @@ function CodeMethod(props: CodeMethodProps) {
   return (
     <DialogPrompt
       title={props.title}
-      placeholder="Authorization code"
+      default_value="Authorization code"
       onConfirm={async (value) => {
         const { error } = await sdk.client.provider.oauth.callback({
           providerID: props.providerID,
@@ -266,7 +266,7 @@ function ApiMethod(props: ApiMethodProps) {
   return (
     <DialogPrompt
       title={props.title}
-      placeholder="API key"
+      default_value="API key"
       description={
         {
           opencode: (
@@ -350,7 +350,7 @@ async function PromptsMethod(props: PromptsMethodProps) {
     const value = await new Promise<string | null>((resolve) => {
       props.dialog.replace(
         () => (
-          <DialogPrompt title={prompt.message} placeholder={prompt.placeholder} onConfirm={(value) => resolve(value)} />
+          <DialogPrompt title={prompt.message} default_value={prompt.placeholder ?? "Enter text"} onConfirm={(value) => resolve(value)} />
         ),
         () => resolve(null),
       )

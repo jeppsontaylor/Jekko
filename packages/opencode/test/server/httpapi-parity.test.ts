@@ -94,7 +94,7 @@ describe("Link header host", () => {
 // Unskip when mapNotFound coverage is added.
 // ──────────────────────────────────────────────────────────────────────────────
 describe("404 mapping for missing session", () => {
-  test.pending("HttpApi /session/{missing}/pending returns 404 not 500", async () => {
+  test.skip("HttpApi /session/{missing}/pending returns 404 not 500", async () => {
     await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
 
     const response = await app(true).request("/session/ses_does_not_exist/pending", {

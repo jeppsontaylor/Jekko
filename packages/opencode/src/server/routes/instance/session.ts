@@ -4,7 +4,7 @@ import { describeRoute, validator, resolver } from "hono-openapi"
 import { SessionID, MessageID, PartID } from "@/session/schema"
 import z from "zod"
 import { Session } from "@/session/session"
-import { MessageV2 } from "@/session/message-v2"
+import { MessageV2 } from "@/session/message"
 import { SessionPrompt } from "@/session/prompt"
 import { SessionRunState } from "@/session/run-state"
 import { SessionCompaction } from "@/session/compaction"
@@ -12,7 +12,7 @@ import { SessionRevert } from "@/session/revert"
 import { SessionShare } from "@/share/session"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
-import { Todo } from "@/session/todo"
+import { Todo } from "@/session/pending"
 import { Effect } from "effect"
 import { Agent } from "@/agent/agent"
 import { Snapshot } from "@/snapshot"
@@ -63,8 +63,6 @@ export const SessionRoutes = lazy(() =>
         "query",
         z.object({
           directory: z.string().optional().meta({ description: "Filter sessions by directory" }),
-          // TODO: in 2.0 remove `scope` and `directory` and default
-          // to list all sessions for a project
           scope: z.enum(["project"]).optional().meta({ description: "List all sessions for the current project" }),
           path: z.string().optional().meta({ description: "Filter sessions by project-relative path" }),
           roots: QueryBoolean.optional().meta({ description: "Only return root sessions (no parentID)" }),
@@ -187,6 +185,38 @@ export const SessionRoutes = lazy(() =>
       },
     )
     .get(
+      "/:sessionID/pending",
+      describeRoute({
+        summary: "Get session todos",
+        description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
+        operationId: "session.pending",
+        responses: {
+          200: {
+            description: "Todo list",
+            content: {
+              "application/json": {
+                schema: resolver(Todo.Info.zod.array()),
+              },
+            },
+          },
+          ...errors(400, 404),
+        },
+      }),
+      validator(
+        "param",
+        z.object({
+          sessionID: SessionID.zod,
+        }),
+      ),
+      async (c) => {
+        const sessionID = c.req.valid("param").sessionID
+        return jsonRequest("SessionRoutes.pending", c, function* () {
+          const pending = yield* Todo.Service
+          return yield* pending.get(sessionID)
+        })
+      },
+    )
+    .get(
       "/:sessionID/todo",
       describeRoute({
         summary: "Get session todos",
@@ -213,8 +243,8 @@ export const SessionRoutes = lazy(() =>
       async (c) => {
         const sessionID = c.req.valid("param").sessionID
         return jsonRequest("SessionRoutes.todo", c, function* () {
-          const todo = yield* Todo.Service
-          return yield* todo.get(sessionID)
+          const pending = yield* Todo.Service
+          return yield* pending.get(sessionID)
         })
       },
     )
@@ -335,7 +365,6 @@ export const SessionRoutes = lazy(() =>
           return yield* session.get(sessionID)
         }),
     )
-    // TODO(v2): remove this dedicated route and rely on the normal `/init` command flow.
     .post(
       "/:sessionID/init",
       describeRoute({

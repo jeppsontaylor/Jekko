@@ -10,7 +10,7 @@ import { TestConfig } from "../fixture/config"
 import { AppFileSystem } from "@opencode-ai/core/filesystem"
 import { Plugin } from "@/plugin"
 import { Question } from "@/question"
-import { Todo } from "@/session/todo"
+import * as PendingModule from "@/session/pending"
 import { Skill } from "@/skill"
 import { Agent } from "@/agent/agent"
 import { Session } from "@/session/session"
@@ -34,7 +34,7 @@ const registryLayer = ToolRegistry.layer.pipe(
   Layer.provide(configLayer),
   Layer.provide(Plugin.defaultLayer),
   Layer.provide(Question.defaultLayer),
-  Layer.provide(Todo.defaultLayer),
+  Layer.provide(PendingModule.Todo.defaultLayer),
   Layer.provide(Skill.defaultLayer),
   Layer.provide(Agent.defaultLayer),
   Layer.provide(Session.defaultLayer),
