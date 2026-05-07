@@ -1,19 +1,24 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { createRoot } from "react-dom/client"
-import type { ContextDashboard, ContextHistogramBucket, DashboardModel, DashboardSnapshot, DashboardTotals, MetricEvent, SocketMessage, CapacitySummary } from "./types"
+import type { AgentActivity, CapacitySummary, ContextDashboard, ContextHistogramBucket, DashboardModel, DashboardSnapshot, DashboardTotals, MetricEvent, SocketMessage, TokenRateEstimate } from "./types"
 import "./styles.css"
 
 const emptyCapacity: CapacitySummary = { known_limit_per_hour: 0, known_used: 0, known_remaining: 0, percent_used: 0, models: [], unknown_models: [] }
 const emptyContext: ContextDashboard = { estimates: [], histogram: [], recent_events: [] }
+const emptyTokenRate: TokenRateEstimate = { median_m_tokens_per_24h: 0, max_m_tokens_per_24h: 0, sample_minutes: 0, window_minutes: 1440, smoothing_minutes: 10 }
 const emptySnapshot: DashboardSnapshot = {
   totals: { total_models: 0, enabled_models: 0, calls: 0, successes: 0, failures: 0, wins: 0, prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, average_latency_ms: null },
+  token_rate: emptyTokenRate,
   capacity: emptyCapacity,
   context: emptyContext,
   models: [],
   recent_events: [],
+  agent_count: 1,
+  max_agents: 20,
+  active_agents: [],
   instance_count: 1,
-  max_instances: 10,
-  available_instance_slots: 9,
+  max_instances: 20,
+  available_instance_slots: 19,
   instance_role: "main",
   worker_threads: 0,
 }
@@ -36,10 +41,10 @@ function App() {
   const [splashHidden, setSplashHidden] = useState(false)
   const [flashModels, setFlashModels] = useState<Map<string, number>>(new Map())
 
-  const flashModel = (id: string) => {
+  const flashModel = (modelId: string, agentId?: string | null) => {
     setFlashModels((prev) => {
       const next = new Map(prev)
-      next.set(id, Date.now())
+      next.set(flashKey(modelId, agentId), Date.now())
       return next
     })
   }
@@ -88,11 +93,16 @@ function App() {
             <p className="subtitle">{snapshot.totals.enabled_models} of {snapshot.totals.total_models} models routable</p>
           </div>
         </div>
-        <KpiStrip totals={snapshot.totals} />
-        <div className={`instance-badge ${snapshot.instance_count > 1 ? "multi" : ""}`}>
-          <span className="instance-icon">{snapshot.instance_count > 1 ? "⚡" : "●"}</span>
+        <KpiStrip totals={snapshot.totals} tokenRate={snapshot.token_rate} />
+        <div className={`agent-badge ${snapshot.agent_count > 1 ? "multi" : ""}`}>
+          <span className="instance-icon">{snapshot.agent_count > 1 ? "⚡" : "●"}</span>
           <span className="instance-label">Agents</span>
-          <span className="instance-value">{snapshot.instance_count}/{snapshot.max_instances}</span>
+          <span className="instance-value">{snapshot.agent_count}/{snapshot.max_agents}</span>
+        </div>
+        <div className={`instance-badge ${snapshot.instance_count > 1 ? "multi" : ""}`}>
+          <span className="instance-icon">◌</span>
+          <span className="instance-label">Gateways</span>
+          <span className="instance-value">x{snapshot.instance_count}</span>
         </div>
         <div className={`conn-pill ${connection}`}>{connLabel(connection, lastHeartbeat)}</div>
       </header>
@@ -123,20 +133,21 @@ function App() {
 }
 
 /* ── KPI Strip ── */
-function KpiStrip({ totals }: { totals: DashboardTotals }) {
+function KpiStrip({ totals, tokenRate }: { totals: DashboardTotals; tokenRate: TokenRateEstimate }) {
   return (
     <div className="kpi-strip">
       <KpiCard label="Total Calls" value={fmtN(totals.calls)} />
       <KpiCard label="Wins" value={fmtN(totals.wins)} tone="gold" />
       <KpiCard label="Failures" value={fmtN(totals.failures)} tone="red" />
       <KpiCard label="Tokens Stolen" value={fmtN(totals.total_tokens)} tone="purple" />
+      <KpiCard label="Tokens / 24h" value={`${fmtM(tokenRate.median_m_tokens_per_24h)}M`} tone="teal" detail={`median · 10m max ${fmtM(tokenRate.max_m_tokens_per_24h)}M`} />
       <KpiCard label="Avg Latency" value={fmtMs(totals.average_latency_ms)} tone="blue" />
       <KpiCard label="Active Routes" value={`${totals.enabled_models}/${totals.total_models}`} tone="teal" />
     </div>
   )
 }
 
-function KpiCard({ label, value, tone }: { label: string; value: string; tone?: string }) {
+function KpiCard({ label, value, tone, detail }: { label: string; value: string; tone?: string; detail?: string }) {
   const prevRef = useRef(value)
   const [pulse, setPulse] = useState(false)
   useEffect(() => {
@@ -146,6 +157,7 @@ function KpiCard({ label, value, tone }: { label: string; value: string; tone?: 
     <div className={`kpi-card ${tone ?? ""} ${pulse ? "kpi-pulse" : ""}`}>
       <div className="kpi-label">{label}</div>
       <div className="kpi-value">{value}</div>
+      {detail && <div className="kpi-detail">{detail}</div>}
     </div>
   )
 }
@@ -164,13 +176,24 @@ function ActivityHistogram({ models, flashModels }: { models: DashboardModel[]; 
       <svg width="100%" height={h + 24} viewBox={`0 0 ${top.length * (barW + 4)} ${h + 24}`} preserveAspectRatio="xMidYEnd meet">
         {top.map((m, i) => {
           const barH = Math.max(2, (m.call_count / maxCalls) * h)
-          const isActive = (now - (flashModels.get(m.id) ?? 0)) < 3000
+          const flashes = flashesForModel(flashModels, m.id, now)
+          const isActive = flashes.length > 0
           const winH = m.win_count > 0 ? Math.max(1, (m.win_count / maxCalls) * h) : 0
           return (
             <g key={m.id} transform={`translate(${i * (barW + 4)}, 0)`}>
               <rect x={0} y={h - barH} width={barW} height={barH} rx={3} fill="rgba(59,130,246,0.35)" style={{ transition: "height 500ms, y 500ms" }} />
               {winH > 0 && <rect x={0} y={h - winH} width={barW} height={winH} rx={3} fill="rgba(245,166,35,0.7)" style={{ transition: "height 500ms, y 500ms" }} />}
               {isActive && <rect x={0} y={h - barH} width={barW} height={barH} rx={3} fill="rgba(245,166,35,0.25)" className="hist-pulse" />}
+              {flashes.slice(0, 3).map((flash, index) => (
+                <circle
+                  key={`${m.id}-${flash.agentId}`}
+                  cx={barW - 5 - index * 7}
+                  cy={Math.max(10, h - barH - 6 - index * 2)}
+                  r={2.5}
+                  fill={agentColor(flash.agentId)}
+                  className="agent-dot"
+                />
+              ))}
               <title>{m.display_name}: {m.call_count} calls, {m.win_count} wins</title>
               <text x={barW / 2} y={h + 12} textAnchor="middle" fontSize={8} fill="var(--text-muted)" style={{ userSelect: "none" }}>
                 {m.display_name.length > 8 ? m.display_name.slice(0, 7) + "…" : m.display_name}
@@ -204,7 +227,10 @@ function LeaderboardPane({ models, onSelect, flashModels }: { models: DashboardM
   const now = Date.now()
   const active = models.filter((m) => m.call_count > 0)
   const sorted = [...active].sort((a, b) => {
-    if (sort === "latest") return (flashModels.get(b.id) ?? b.updated_at * 1000) - (flashModels.get(a.id) ?? a.updated_at * 1000)
+    if (sort === "latest") {
+      return Math.max(latestFlashForModel(flashModels, b.id, now), b.updated_at * 1000) -
+        Math.max(latestFlashForModel(flashModels, a.id, now), a.updated_at * 1000)
+    }
     if (sort === "wins") return b.win_count - a.win_count
     if (sort === "win_rate") return b.win_rate - a.win_rate
     return successRate(b) - successRate(a)
@@ -234,12 +260,27 @@ function LeaderboardPane({ models, onSelect, flashModels }: { models: DashboardM
           const val = (sort === "latest" || sort === "wins") ? m.win_count : sort === "win_rate" ? m.win_rate : successRate(m)
           const pct = (val / maxVal) * 100
           const display = (sort === "latest" || sort === "wins") ? fmtN(m.win_count) : fmtPct(val)
-          const lastFlash = flashModels.get(m.id) ?? 0
-          const isFlashing = now - lastFlash < 3000
+          const flashes = flashesForModel(flashModels, m.id, now)
+          const isFlashing = flashes.length > 0
           return (
             <div className={`bar-row ${isFlashing ? "flash" : ""}`} key={m.id} onClick={() => onSelect(m.id)}>
               <div className="bar-label">
-                <div className="model-name">{isFlashing && <ActivitySpinner />} <span className={`status-dot ${m.status}`} /> {m.display_name}</div>
+                <div className="model-name">
+                  {isFlashing && <ActivitySpinner />}
+                  <span className={`status-dot ${m.status}`} />
+                  <span>{m.display_name}</span>
+                  <span className="flash-dots">
+                    {flashes.slice(0, 4).map((flash) => (
+                      <span
+                        key={`${m.id}-${flash.agentId}`}
+                        className="agent-dot"
+                        title={flash.agentId}
+                        style={{ background: agentColor(flash.agentId) }}
+                      />
+                    ))}
+                    {flashes.length > 4 && <span className="flash-count">+{flashes.length - 4}</span>}
+                  </span>
+                </div>
                 <div className="model-sub">{m.provider} · {fmtN(m.call_count)} calls · {fmtPct(m.win_rate)} win</div>
               </div>
               <div className="bar-track"><div className="bar-fill gold" style={{ width: `${Math.max(pct, 1)}%` }} /></div>
@@ -490,11 +531,14 @@ function LiveFeedPane({ events }: { events: MetricEvent[] }) {
         </div>
       </div>
       <div className="event-list">
-        {filtered.map((e, i) => (
-          <div className="event-row" key={`${e.request_id}-${e.phase}-${e.model_id}-${e.status}-${e.created_at}-${i}`}>
+        {filtered.map((e) => (
+          <div className="event-row" key={e.id}>
             <span className={`status-dot ${e.status}`} />
             <span className={`event-phase ${e.phase}`}>{e.phase}</span>
-            <span className="event-model" title={e.model_id}>{e.model_id}</span>
+            <span className="event-model" title={e.model_id}>
+              {e.agent_id && <span className="agent-dot" title={e.agent_id} style={{ background: agentColor(e.agent_id) }} />}
+              {e.model_id}
+            </span>
             <span>{e.status}</span>
             <span className="event-latency">{e.error_kind ?? fmtMs(e.latency_ms)}</span>
             <span style={{ fontSize: 10, color: "var(--text-muted)" }}>{fmtTime(e.created_at)}</span>
@@ -557,11 +601,14 @@ function ModelDrawer({ model, events, onClose }: { model: DashboardModel; events
       <div className="section-card">
         <h3>Recent Events</h3>
         <div className="event-list" style={{ maxHeight: 260 }}>
-          {events.map((e, i) => (
-            <div className="event-row" key={`${e.request_id}-${i}`}>
+          {events.map((e) => (
+            <div className="event-row" key={e.id}>
               <span className={`status-dot ${e.status}`} />
               <span className={`event-phase ${e.phase}`}>{e.phase}</span>
-              <span className="event-model">{e.status}</span>
+              <span className="event-model">
+                {e.agent_id && <span className="agent-dot" title={e.agent_id} style={{ background: agentColor(e.agent_id) }} />}
+                {e.status}
+              </span>
               <span>{e.error_kind ?? ""}</span>
               <span className="event-latency">{fmtMs(e.latency_ms)}</span>
               <span style={{ fontSize: 10, color: "var(--text-muted)" }}>{fmtTime(e.created_at)}</span>
@@ -579,11 +626,11 @@ function applyMessage(
   msg: SocketMessage,
   setSnapshot: React.Dispatch<React.SetStateAction<DashboardSnapshot>>,
   setLastHeartbeat: React.Dispatch<React.SetStateAction<number | null>>,
-  flashModel: (id: string) => void,
+  flashModel: (modelId: string, agentId?: string | null) => void,
 ) {
   if (msg.type === "snapshot") { setSnapshot(normalizeSnapshot(msg.snapshot as Partial<DashboardSnapshot> & Record<string, unknown>)); return }
   if (msg.type === "model_updated") {
-    flashModel(msg.model.id)
+    flashModel(msg.model.id, "model")
     setSnapshot((s) => {
       const models = s.models.map((m) => m.id === msg.model.id ? msg.model : m)
       return { ...s, models, totals: totalsFromModels(models) }
@@ -591,13 +638,10 @@ function applyMessage(
     return
   }
   if (msg.type === "request_event") {
-    flashModel(msg.event.model_id)
+    flashModel(msg.event.model_id, msg.event.agent_id ?? msg.event.request_id)
     setSnapshot((s) => ({
       ...s,
-      recent_events: [msg.event, ...s.recent_events.filter((e) =>
-        `${e.request_id}-${e.phase}-${e.model_id}-${e.status}-${e.created_at}` !==
-        `${msg.event.request_id}-${msg.event.phase}-${msg.event.model_id}-${msg.event.status}-${msg.event.created_at}`
-      )].slice(0, 200),
+      recent_events: [msg.event, ...s.recent_events.filter((e) => e.id !== msg.event.id)].slice(0, 200),
     }))
     return
   }
@@ -627,6 +671,7 @@ function totalsFromModels(models: DashboardModel[]): DashboardTotals {
 function normalizeSnapshot(raw: Partial<DashboardSnapshot> & Record<string, unknown>): DashboardSnapshot {
   return {
     totals: raw.totals ?? emptySnapshot.totals,
+    token_rate: raw.token_rate ?? emptyTokenRate,
     capacity: raw.capacity ?? emptyCapacity,
     context: raw.context ?? emptyContext,
     models: (raw.models ?? []).map((m) => ({
@@ -641,19 +686,63 @@ function normalizeSnapshot(raw: Partial<DashboardSnapshot> & Record<string, unkn
       context_overrun_count: m.context_overrun_count ?? 0,
       smallest_overrun_requested_tokens: m.smallest_overrun_requested_tokens ?? null,
     })),
-    recent_events: raw.recent_events ?? [],
+    recent_events: dedupeEvents((raw.recent_events ?? []) as MetricEvent[]),
+    agent_count: (raw.agent_count as number | undefined) ?? 1,
+    max_agents: (raw.max_agents as number | undefined) ?? 20,
+    active_agents: (raw.active_agents as AgentActivity[] | undefined) ?? [],
     instance_count: (raw.instance_count as number | undefined) ?? 1,
-    max_instances: (raw.max_instances as number | undefined) ?? 10,
-    available_instance_slots: (raw.available_instance_slots as number | undefined) ?? Math.max(0, ((raw.max_instances as number | undefined) ?? 10) - ((raw.instance_count as number | undefined) ?? 1)),
+    max_instances: (raw.max_instances as number | undefined) ?? 20,
+    available_instance_slots: (raw.available_instance_slots as number | undefined) ?? Math.max(0, ((raw.max_instances as number | undefined) ?? 20) - ((raw.instance_count as number | undefined) ?? 1)),
     instance_role: (raw.instance_role as string | undefined) ?? "main",
     worker_threads: (raw.worker_threads as number | undefined) ?? 0,
   }
 }
 
 /* ── Helpers ── */
+function flashKey(modelId: string, agentId?: string | null) {
+  return `${modelId}|${agentId ?? "unknown"}`
+}
+function latestFlashForModel(flashModels: Map<string, number>, modelId: string, now: number) {
+  let latest = 0
+  for (const [key, ts] of flashModels.entries()) {
+    if (key.startsWith(`${modelId}|`) && now - ts < 3000) {
+      latest = Math.max(latest, ts)
+    }
+  }
+  return latest
+}
+function flashesForModel(flashModels: Map<string, number>, modelId: string, now: number) {
+  return [...flashModels.entries()]
+    .filter(([key, ts]) => key.startsWith(`${modelId}|`) && now - ts < 3000)
+    .map(([key, ts]) => ({
+      agentId: key.slice(modelId.length + 1),
+      ts,
+    }))
+    .sort((a, b) => b.ts - a.ts)
+}
+function agentColor(agentId: string) {
+  let hash = 0
+  for (let i = 0; i < agentId.length; i += 1) {
+    hash = ((hash << 5) - hash + agentId.charCodeAt(i)) | 0
+  }
+  const hue = Math.abs(hash) % 360
+  return `hsl(${hue} 85% 60%)`
+}
+function dedupeEvents(events: MetricEvent[]) {
+  const seen = new Set<number>()
+  return events.filter((event) => {
+    if (seen.has(event.id)) return false
+    seen.add(event.id)
+    return true
+  })
+}
 function successRate(m: DashboardModel) { return m.call_count === 0 ? 0 : m.success_count / m.call_count }
 function connLabel(c: string, hb: number | null) { return c === "live" && hb ? `Live · ${fmtTime(hb)}` : c }
 function fmtN(v: number) { return new Intl.NumberFormat().format(v) }
+function fmtM(v: number) {
+  if (!Number.isFinite(v) || v <= 0) return "0.0"
+  return new Intl.NumberFormat(undefined, { maximumFractionDigits: v < 10 ? 2 : 1 }).format(v)
+}
 function fmtMs(v: number | null) { return v === null ? "—" : `${Math.round(v)} ms` }
 function fmtPct(v: number) { return `${Math.round(v * 100)}%` }
 function fmtTime(v: number) { return new Date(v * 1000).toLocaleTimeString() }

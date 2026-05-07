@@ -1,14 +1,21 @@
 use crate::capacity::CapacitySummary;
-use crate::state::{ContextHistogramBucket, MetricEvent, ModelLimitEstimate, ModelMetric};
+use crate::state::{
+    AgentActivity, ContextHistogramBucket, MetricEvent, ModelLimitEstimate, ModelMetric,
+    TokenRateEstimate,
+};
 use serde::Serialize;
 
 #[derive(Clone, Debug, serde::Serialize)]
 pub struct DashboardSnapshot {
     pub totals: DashboardTotals,
+    pub token_rate: TokenRateEstimate,
     pub capacity: CapacitySummary,
     pub context: ContextDashboard,
     pub models: Vec<DashboardModel>,
     pub recent_events: Vec<MetricEvent>,
+    pub agent_count: usize,
+    pub max_agents: usize,
+    pub active_agents: Vec<AgentActivity>,
     pub instance_count: usize,
     pub max_instances: usize,
     pub available_instance_slots: usize,

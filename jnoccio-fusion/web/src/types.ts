@@ -1,14 +1,26 @@
 export type DashboardSnapshot = {
   totals: DashboardTotals
+  token_rate: TokenRateEstimate
   capacity: CapacitySummary
   context: ContextDashboard
   models: DashboardModel[]
   recent_events: MetricEvent[]
+  agent_count: number
+  max_agents: number
+  active_agents: AgentActivity[]
   instance_count: number
   max_instances: number
   available_instance_slots: number
   instance_role: string
   worker_threads: number
+}
+
+export type TokenRateEstimate = {
+  median_m_tokens_per_24h: number
+  max_m_tokens_per_24h: number
+  sample_minutes: number
+  window_minutes: number
+  smoothing_minutes: number
 }
 
 export type ContextDashboard = {
@@ -61,6 +73,19 @@ export type ModelContextEvent = {
   created_at: number
 }
 
+export type AgentActivity = {
+  agent_id: string
+  agent_client: string | null
+  agent_session_id: string | null
+  process_role: string | null
+  pid: number | null
+  version: string | null
+  user_agent: string | null
+  first_seen: number
+  last_seen: number
+  request_count: number
+}
+
 export type DashboardTotals = {
   total_models: number
   enabled_models: number
@@ -110,6 +135,7 @@ export type DashboardModel = {
 }
 
 export type MetricEvent = {
+  id: number
   request_id: string
   phase: string
   model_id: string
@@ -126,6 +152,9 @@ export type MetricEvent = {
   sampled: boolean | null
   winner_model_id: string | null
   capacity_known: boolean | null
+  agent_id: string | null
+  agent_client: string | null
+  agent_session_id: string | null
   created_at: number
 }
 

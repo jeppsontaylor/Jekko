@@ -6,6 +6,8 @@ use serde::Serialize;
 use std::path::Path;
 use std::sync::Mutex;
 
+const AGENT_ACTIVITY_TTL_SECONDS: i64 = 90;
+
 #[derive(Clone, Debug, Serialize)]
 pub struct ModelState {
     pub model_id: String,
@@ -42,6 +44,40 @@ pub struct UsageTotals {
     pub total_tokens: u64,
 }
 
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct TokenRateEstimate {
+    pub median_m_tokens_per_24h: f64,
+    pub max_m_tokens_per_24h: f64,
+    pub sample_minutes: u64,
+    pub window_minutes: u64,
+    pub smoothing_minutes: u64,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct AgentSource {
+    pub id: String,
+    pub client: Option<String>,
+    pub session_id: Option<String>,
+    pub process_role: Option<String>,
+    pub pid: Option<i64>,
+    pub user_agent: Option<String>,
+    pub version: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct AgentActivity {
+    pub agent_id: String,
+    pub agent_client: Option<String>,
+    pub agent_session_id: Option<String>,
+    pub process_role: Option<String>,
+    pub pid: Option<i64>,
+    pub version: Option<String>,
+    pub user_agent: Option<String>,
+    pub first_seen: i64,
+    pub last_seen: i64,
+    pub request_count: u64,
+}
+
 impl UsageTotals {
     pub fn from_usage(usage: Option<&ChatUsage>) -> Self {
         Self {
@@ -75,6 +111,7 @@ pub struct ModelMetric {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct MetricEvent {
+    pub id: i64,
     pub request_id: String,
     pub phase: String,
     pub model_id: String,
@@ -91,6 +128,9 @@ pub struct MetricEvent {
     pub sampled: Option<bool>,
     pub winner_model_id: Option<String>,
     pub capacity_known: Option<bool>,
+    pub agent_id: Option<String>,
+    pub agent_client: Option<String>,
+    pub agent_session_id: Option<String>,
     pub created_at: i64,
 }
 
@@ -302,8 +342,25 @@ impl StateDb {
         sampled INTEGER,
         winner_model_id TEXT,
         capacity_known INTEGER,
+        agent_id TEXT,
+        agent_client TEXT,
+        agent_session_id TEXT,
         created_at INTEGER NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS agent_activity (
+        agent_id TEXT PRIMARY KEY,
+        agent_client TEXT,
+        agent_session_id TEXT,
+        process_role TEXT,
+        pid INTEGER,
+        version TEXT,
+        user_agent TEXT,
+        first_seen INTEGER NOT NULL,
+        last_seen INTEGER NOT NULL,
+        request_count INTEGER NOT NULL DEFAULT 1
+      );
+      CREATE INDEX IF NOT EXISTS idx_agent_activity_last_seen
+        ON agent_activity (last_seen DESC);
       CREATE TABLE IF NOT EXISTS model_usage_minute (
         model_id TEXT NOT NULL,
         provider TEXT NOT NULL,
@@ -378,6 +435,14 @@ impl StateDb {
         ensure_column(&conn, "model_metric_event", "sampled", "INTEGER")?;
         ensure_column(&conn, "model_metric_event", "winner_model_id", "TEXT")?;
         ensure_column(&conn, "model_metric_event", "capacity_known", "INTEGER")?;
+        ensure_column(&conn, "model_metric_event", "agent_id", "TEXT")?;
+        ensure_column(&conn, "model_metric_event", "agent_client", "TEXT")?;
+        ensure_column(&conn, "model_metric_event", "agent_session_id", "TEXT")?;
+        ensure_column(&conn, "agent_activity", "agent_session_id", "TEXT")?;
+        ensure_column(&conn, "agent_activity", "process_role", "TEXT")?;
+        ensure_column(&conn, "agent_activity", "pid", "INTEGER")?;
+        ensure_column(&conn, "agent_activity", "version", "TEXT")?;
+        ensure_column(&conn, "agent_activity", "user_agent", "TEXT")?;
         Ok(())
     }
 
@@ -504,6 +569,81 @@ impl StateDb {
         Ok(())
     }
 
+    pub fn record_agent_activity(&self, agent: &AgentSource) -> Result<()> {
+        let now = now_unix();
+        let conn = self.conn.lock().expect("sqlite mutex poisoned");
+        conn.execute(
+            r#"
+      INSERT INTO agent_activity (
+        agent_id, agent_client, agent_session_id, process_role, pid, version, user_agent,
+        first_seen, last_seen, request_count
+      )
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?8, 1)
+      ON CONFLICT(agent_id) DO UPDATE SET
+        agent_client = excluded.agent_client,
+        agent_session_id = excluded.agent_session_id,
+        process_role = excluded.process_role,
+        pid = excluded.pid,
+        version = excluded.version,
+        user_agent = excluded.user_agent,
+        last_seen = excluded.last_seen,
+        request_count = request_count + 1
+      "#,
+            params![
+                &agent.id,
+                agent.client,
+                agent.session_id,
+                agent.process_role,
+                agent.pid,
+                agent.version,
+                agent.user_agent,
+                now
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn active_agents(&self, now: i64, ttl_seconds: i64) -> Result<Vec<AgentActivity>> {
+        let conn = self.conn.lock().expect("sqlite mutex poisoned");
+        let mut stmt = conn.prepare(
+            r#"
+      SELECT agent_id, agent_client, agent_session_id, process_role, pid, version, user_agent,
+             first_seen, last_seen, request_count
+      FROM agent_activity
+      WHERE last_seen >= ?1
+      ORDER BY last_seen DESC
+      "#,
+        )?;
+        let rows = stmt.query_map([now - ttl_seconds], |row| {
+            Ok(AgentActivity {
+                agent_id: row.get(0)?,
+                agent_client: row.get(1)?,
+                agent_session_id: row.get(2)?,
+                process_role: row.get(3)?,
+                pid: row.get(4)?,
+                version: row.get(5)?,
+                user_agent: row.get(6)?,
+                first_seen: row.get(7)?,
+                last_seen: row.get(8)?,
+                request_count: row.get::<_, i64>(9)? as u64,
+            })
+        })?;
+        rows.collect::<rusqlite::Result<Vec<_>>>().map_err(Into::into)
+    }
+
+    pub fn active_agents_live(&self, now: i64) -> Result<Vec<AgentActivity>> {
+        self.active_agents(now, AGENT_ACTIVITY_TTL_SECONDS)
+    }
+
+    pub fn prune_expired_agent_activity(&self, ttl_seconds: i64, now: i64) -> Result<usize> {
+        let conn = self.conn.lock().expect("sqlite mutex poisoned");
+        let rows_deleted = conn.execute(
+            "DELETE FROM agent_activity WHERE last_seen < ?1",
+            [now - ttl_seconds],
+        )?;
+        Ok(rows_deleted)
+    }
+
     pub fn record_attempt(
         &self,
         request_id: &str,
@@ -511,6 +651,7 @@ impl StateDb {
         model_id: &str,
         provider: &str,
         meta: &RouteEventMeta,
+        agent: Option<&AgentSource>,
     ) -> Result<MetricEvent> {
         let now = now_unix();
         self.upsert_metric_model(model_id, provider)?;
@@ -545,6 +686,7 @@ impl StateDb {
             params![now, model_id],
         )?;
         let event = MetricEvent {
+            id: 0,
             request_id: request_id.to_string(),
             phase: phase.to_string(),
             model_id: model_id.to_string(),
@@ -561,9 +703,12 @@ impl StateDb {
             sampled: meta.sampled,
             winner_model_id: None,
             capacity_known: meta.capacity_known,
+            agent_id: agent.map(|value| value.id.clone()),
+            agent_client: agent.and_then(|value| value.client.clone()),
+            agent_session_id: agent.and_then(|value| value.session_id.clone()),
             created_at: now,
         };
-        insert_metric_event(&conn, &event)?;
+        let id = insert_metric_event(&conn, &event)?;
         upsert_usage_minute(
             &conn,
             now,
@@ -577,7 +722,7 @@ impl StateDb {
             None,
         )?;
         prune_metric_events(&conn, self.event_retention_rows)?;
-        Ok(event)
+        Ok(MetricEvent { id, ..event })
     }
 
     pub fn upsert_metric_model(&self, model_id: &str, provider: &str) -> Result<()> {
@@ -602,7 +747,7 @@ impl StateDb {
             )?;
             return Ok(());
         }
-        let legacy = conn
+        let historical = conn
             .query_row(
                 r#"
         SELECT success_count, failure_count, win_count, last_latency_ms, last_error_kind, last_error_message
@@ -629,7 +774,7 @@ impl StateDb {
             last_latency_ms,
             last_error_kind,
             last_error_message,
-        ) = legacy.unwrap_or((0, 0, 0, None, None, None));
+        ) = historical.unwrap_or((0, 0, 0, None, None, None));
         conn.execute(
             r#"
       INSERT INTO model_metrics (
@@ -866,6 +1011,7 @@ impl StateDb {
         winner_model_id: Option<&str>,
         usage: Option<&ChatUsage>,
         meta: &RouteEventMeta,
+        agent: Option<&AgentSource>,
     ) -> Result<MetricEvent> {
         let now = now_unix();
         let usage = UsageTotals::from_usage(usage);
@@ -936,6 +1082,7 @@ impl StateDb {
             ],
         )?;
         let event = MetricEvent {
+            id: 0,
             request_id: request_id.to_string(),
             phase: phase.to_string(),
             model_id: model_id.to_string(),
@@ -952,9 +1099,12 @@ impl StateDb {
             sampled: meta.sampled,
             winner_model_id: winner_model_id.map(str::to_string),
             capacity_known: meta.capacity_known,
+            agent_id: agent.map(|value| value.id.clone()),
+            agent_client: agent.and_then(|value| value.client.clone()),
+            agent_session_id: agent.and_then(|value| value.session_id.clone()),
             created_at: now,
         };
-        insert_metric_event(&conn, &event)?;
+        let id = insert_metric_event(&conn, &event)?;
         upsert_usage_minute(
             &conn,
             now,
@@ -968,7 +1118,7 @@ impl StateDb {
             Some(latency_ms),
         )?;
         prune_metric_events(&conn, self.event_retention_rows)?;
-        Ok(event)
+        Ok(MetricEvent { id, ..event })
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -983,6 +1133,7 @@ impl StateDb {
         cooldown_until: Option<i64>,
         message: Option<&str>,
         meta: &RouteEventMeta,
+        agent: Option<&AgentSource>,
     ) -> Result<MetricEvent> {
         let now = now_unix();
         let kind_text = format!("{kind:?}");
@@ -1051,6 +1202,7 @@ impl StateDb {
             ],
         )?;
         let event = MetricEvent {
+            id: 0,
             request_id: request_id.to_string(),
             phase: phase.to_string(),
             model_id: model_id.to_string(),
@@ -1067,9 +1219,12 @@ impl StateDb {
             sampled: meta.sampled,
             winner_model_id: None,
             capacity_known: meta.capacity_known,
+            agent_id: agent.map(|value| value.id.clone()),
+            agent_client: agent.and_then(|value| value.client.clone()),
+            agent_session_id: agent.and_then(|value| value.session_id.clone()),
             created_at: now,
         };
-        insert_metric_event(&conn, &event)?;
+        let id = insert_metric_event(&conn, &event)?;
         upsert_usage_minute(
             &conn,
             now,
@@ -1083,7 +1238,7 @@ impl StateDb {
             Some(latency_ms),
         )?;
         prune_metric_events(&conn, self.event_retention_rows)?;
-        Ok(event)
+        Ok(MetricEvent { id, ..event })
     }
 
     pub fn record_winner(&self, model_id: &str) -> Result<MetricEvent> {
@@ -1091,6 +1246,7 @@ impl StateDb {
             &uuid::Uuid::new_v4().to_string(),
             model_id,
             &RouteEventMeta::default(),
+            None,
         )
     }
 
@@ -1099,6 +1255,7 @@ impl StateDb {
         request_id: &str,
         model_id: &str,
         meta: &RouteEventMeta,
+        agent: Option<&AgentSource>,
     ) -> Result<MetricEvent> {
         let now = now_unix();
         let conn = self.conn.lock().expect("sqlite mutex poisoned");
@@ -1140,6 +1297,7 @@ impl StateDb {
             params![now, model_id],
         )?;
         let event = MetricEvent {
+            id: 0,
             request_id: request_id.to_string(),
             phase: "winner".to_string(),
             model_id: model_id.to_string(),
@@ -1156,6 +1314,9 @@ impl StateDb {
             sampled: meta.sampled,
             winner_model_id: Some(model_id.to_string()),
             capacity_known: meta.capacity_known,
+            agent_id: agent.map(|value| value.id.clone()),
+            agent_client: agent.and_then(|value| value.client.clone()),
+            agent_session_id: agent.and_then(|value| value.session_id.clone()),
             created_at: now,
         };
         upsert_usage_minute(
@@ -1170,9 +1331,9 @@ impl StateDb {
             &UsageTotals::default(),
             None,
         )?;
-        insert_metric_event(&conn, &event)?;
+        let id = insert_metric_event(&conn, &event)?;
         prune_metric_events(&conn, self.event_retention_rows)?;
-        Ok(event)
+        Ok(MetricEvent { id, ..event })
     }
 
     pub fn metric_snapshot(&self) -> Result<Vec<ModelMetric>> {
@@ -1213,10 +1374,10 @@ impl StateDb {
         let conn = self.conn.lock().expect("sqlite mutex poisoned");
         let mut stmt = conn.prepare(
             r#"
-      SELECT request_id, phase, model_id, provider, status, error_kind, latency_ms,
+      SELECT id, request_id, phase, model_id, provider, status, error_kind, latency_ms,
              prompt_tokens, completion_tokens, total_tokens,
              route_mode, backup_rank, complexity_tier, sampled, winner_model_id,
-             capacity_known, created_at
+             capacity_known, agent_id, agent_client, agent_session_id, created_at
       FROM model_metric_event
       ORDER BY created_at DESC, id DESC
       LIMIT ?1
@@ -1225,6 +1386,24 @@ impl StateDb {
         let rows = stmt.query_map([limit as i64], metric_event_from_row)?;
         rows.collect::<rusqlite::Result<Vec<_>>>()
             .map_err(Into::into)
+    }
+
+    pub fn recent_metric_events_after(&self, after_id: i64, limit: usize) -> Result<Vec<MetricEvent>> {
+        let conn = self.conn.lock().expect("sqlite mutex poisoned");
+        let mut stmt = conn.prepare(
+            r#"
+      SELECT id, request_id, phase, model_id, provider, status, error_kind, latency_ms,
+             prompt_tokens, completion_tokens, total_tokens,
+             route_mode, backup_rank, complexity_tier, sampled, winner_model_id,
+             capacity_known, agent_id, agent_client, agent_session_id, created_at
+      FROM model_metric_event
+      WHERE id > ?1
+      ORDER BY id ASC
+      LIMIT ?2
+      "#,
+        )?;
+        let rows = stmt.query_map([after_id, limit as i64], metric_event_from_row)?;
+        rows.collect::<rusqlite::Result<Vec<_>>>().map_err(Into::into)
     }
 
     pub fn limit_estimates(&self) -> Result<Vec<ModelLimitEstimate>> {
@@ -1375,6 +1554,71 @@ impl StateDb {
         })?;
         rows.collect::<rusqlite::Result<Vec<_>>>()
             .map_err(Into::into)
+    }
+
+    pub fn token_rate_estimate(
+        &self,
+        now_ts: i64,
+        window_minutes: u64,
+        smoothing_minutes: u64,
+    ) -> Result<TokenRateEstimate> {
+        let window_minutes = window_minutes.clamp(1, 10_080);
+        let smoothing_minutes = smoothing_minutes.clamp(1, window_minutes);
+        let current_minute = minute_floor(now_ts);
+        let since_minute = current_minute - ((window_minutes as i64 - 1) * 60);
+        let mut minute_tokens = vec![0u64; window_minutes as usize];
+
+        let conn = self.conn.lock().expect("sqlite mutex poisoned");
+        let mut stmt = conn.prepare(
+            r#"
+      SELECT minute_ts, SUM(total_tokens)
+      FROM model_usage_minute
+      WHERE minute_ts >= ?1 AND minute_ts <= ?2
+      GROUP BY minute_ts
+      ORDER BY minute_ts
+      "#,
+        )?;
+        let rows = stmt.query_map(params![since_minute, current_minute], |row| {
+            Ok((
+                row.get::<_, i64>(0)?,
+                row.get::<_, Option<i64>>(1)?.unwrap_or(0).max(0) as u64,
+            ))
+        })?;
+        for row in rows {
+            let (minute_ts, tokens) = row?;
+            let offset = (minute_ts - since_minute) / 60;
+            if offset >= 0 {
+                if let Some(slot) = minute_tokens.get_mut(offset as usize) {
+                    *slot = tokens;
+                }
+            }
+        }
+
+        let smoothing = smoothing_minutes as usize;
+        let mut rolling_tokens = 0u64;
+        let mut smoothed_rates = Vec::new();
+        for (index, tokens) in minute_tokens.iter().enumerate() {
+            rolling_tokens = rolling_tokens.saturating_add(*tokens);
+            if index >= smoothing {
+                rolling_tokens = rolling_tokens.saturating_sub(minute_tokens[index - smoothing]);
+            }
+            if rolling_tokens > 0 {
+                smoothed_rates.push(rolling_tokens as f64 / smoothing_minutes as f64);
+            }
+        }
+
+        let sample_minutes = smoothed_rates.len() as u64;
+        let max_tokens_per_minute = smoothed_rates.iter().copied().fold(0.0, f64::max);
+        let median_tokens_per_minute = median_f64(&mut smoothed_rates);
+        Ok(TokenRateEstimate {
+            median_m_tokens_per_24h: project_tokens_per_minute_to_day_millions(
+                median_tokens_per_minute,
+            ),
+            max_m_tokens_per_24h: project_tokens_per_minute_to_day_millions(max_tokens_per_minute),
+            sample_minutes,
+            window_minutes,
+            smoothing_minutes,
+        })
     }
 
     pub fn prune_minute_buckets(&self, retention_days: u64) -> Result<()> {
@@ -1555,15 +1799,32 @@ fn minute_floor(value: i64) -> i64 {
     value - value.rem_euclid(60)
 }
 
-fn insert_metric_event(conn: &Connection, event: &MetricEvent) -> Result<()> {
+fn median_f64(values: &mut [f64]) -> f64 {
+    if values.is_empty() {
+        return 0.0;
+    }
+    values.sort_by(|left, right| left.total_cmp(right));
+    let mid = values.len() / 2;
+    if values.len() % 2 == 0 {
+        (values[mid - 1] + values[mid]) / 2.0
+    } else {
+        values[mid]
+    }
+}
+
+fn project_tokens_per_minute_to_day_millions(tokens_per_minute: f64) -> f64 {
+    tokens_per_minute * 1_440.0 / 1_000_000.0
+}
+
+fn insert_metric_event(conn: &Connection, event: &MetricEvent) -> Result<i64> {
     conn.execute(
         r#"
       INSERT INTO model_metric_event (
         request_id, phase, model_id, provider, status, error_kind, latency_ms,
         prompt_tokens, completion_tokens, total_tokens, route_mode, backup_rank,
-        complexity_tier, sampled, winner_model_id, capacity_known, created_at
+        complexity_tier, sampled, winner_model_id, capacity_known, agent_id, agent_client, agent_session_id, created_at
       )
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20)
       "#,
         params![
             &event.request_id,
@@ -1582,10 +1843,13 @@ fn insert_metric_event(conn: &Connection, event: &MetricEvent) -> Result<()> {
             option_bool_to_i64(event.sampled),
             &event.winner_model_id,
             option_bool_to_i64(event.capacity_known),
+            &event.agent_id,
+            &event.agent_client,
+            &event.agent_session_id,
             event.created_at
         ],
     )?;
-    Ok(())
+    Ok(conn.last_insert_rowid())
 }
 
 fn prune_metric_events(conn: &Connection, retention_rows: usize) -> Result<()> {
@@ -1628,23 +1892,27 @@ fn model_metric_from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<ModelMetri
 
 fn metric_event_from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<MetricEvent> {
     Ok(MetricEvent {
-        request_id: row.get(0)?,
-        phase: row.get(1)?,
-        model_id: row.get(2)?,
-        provider: row.get(3)?,
-        status: row.get(4)?,
-        error_kind: row.get(5)?,
-        latency_ms: row.get::<_, Option<i64>>(6)?.map(|value| value as u64),
-        prompt_tokens: row.get::<_, i64>(7)? as u64,
-        completion_tokens: row.get::<_, i64>(8)? as u64,
-        total_tokens: row.get::<_, i64>(9)? as u64,
-        route_mode: row.get(10)?,
-        backup_rank: row.get::<_, Option<i64>>(11)?.map(|value| value as u64),
-        complexity_tier: row.get(12)?,
-        sampled: row.get::<_, Option<i64>>(13)?.map(|value| value != 0),
-        winner_model_id: row.get(14)?,
-        capacity_known: row.get::<_, Option<i64>>(15)?.map(|value| value != 0),
-        created_at: row.get(16)?,
+        id: row.get(0)?,
+        request_id: row.get(1)?,
+        phase: row.get(2)?,
+        model_id: row.get(3)?,
+        provider: row.get(4)?,
+        status: row.get(5)?,
+        error_kind: row.get(6)?,
+        latency_ms: row.get::<_, Option<i64>>(7)?.map(|value| value as u64),
+        prompt_tokens: row.get::<_, i64>(8)? as u64,
+        completion_tokens: row.get::<_, i64>(9)? as u64,
+        total_tokens: row.get::<_, i64>(10)? as u64,
+        route_mode: row.get(11)?,
+        backup_rank: row.get::<_, Option<i64>>(12)?.map(|value| value as u64),
+        complexity_tier: row.get(13)?,
+        sampled: row.get::<_, Option<i64>>(14)?.map(|value| value != 0),
+        winner_model_id: row.get(15)?,
+        capacity_known: row.get::<_, Option<i64>>(16)?.map(|value| value != 0),
+        agent_id: row.get(17)?,
+        agent_client: row.get(18)?,
+        agent_session_id: row.get(19)?,
+        created_at: row.get(20)?,
     })
 }
 
@@ -1772,8 +2040,8 @@ mod tests {
 
     #[test]
     fn startup_seed_preserves_hard_failure_state() {
-        let temp = tempfile::tempdir().unwrap();
-        let db = StateDb::open(temp.path().join("state.sqlite")).unwrap();
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open(interim.path().join("state.sqlite")).unwrap();
         db.upsert_model("github/llama", "github", "ready").unwrap();
         db.record_failure(
             "request-1",
@@ -1785,6 +2053,7 @@ mod tests {
             Some(now_unix() + 86_400),
             Some("unknown_model"),
             &RouteEventMeta::default(),
+            None,
         )
         .unwrap();
 
@@ -1799,8 +2068,8 @@ mod tests {
 
     #[test]
     fn startup_seed_allows_missing_key_to_replace_failure_state() {
-        let temp = tempfile::tempdir().unwrap();
-        let db = StateDb::open(temp.path().join("state.sqlite")).unwrap();
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open(interim.path().join("state.sqlite")).unwrap();
         db.upsert_model("github/llama", "github", "ready").unwrap();
         db.record_failure(
             "request-1",
@@ -1812,6 +2081,7 @@ mod tests {
             Some(now_unix() + 86_400),
             Some("unknown_model"),
             &RouteEventMeta::default(),
+            None,
         )
         .unwrap();
 
@@ -1827,8 +2097,8 @@ mod tests {
 
     #[test]
     fn idempotent_migration_preserves_rows() {
-        let temp = tempfile::tempdir().unwrap();
-        let path = temp.path().join("state.sqlite");
+        let interim = tempfile::tempdir().unwrap();
+        let path = interim.path().join("state.sqlite");
         StateDb::open(&path)
             .unwrap()
             .upsert_model("provider/model", "provider", "ready")
@@ -1840,8 +2110,8 @@ mod tests {
 
     #[test]
     fn two_handles_pool_minute_usage_under_wal() {
-        let temp = tempfile::tempdir().unwrap();
-        let path = temp.path().join("state.sqlite");
+        let interim = tempfile::tempdir().unwrap();
+        let path = interim.path().join("state.sqlite");
         let first = StateDb::open(&path).unwrap();
         let second = StateDb::open(&path).unwrap();
         first
@@ -1851,6 +2121,7 @@ mod tests {
                 "provider/model",
                 "provider",
                 &RouteEventMeta::default(),
+                None,
             )
             .unwrap();
         second
@@ -1860,6 +2131,7 @@ mod tests {
                 "provider/model",
                 "provider",
                 &RouteEventMeta::default(),
+                None,
             )
             .unwrap();
         let usage = first.usage_since(now_unix() - 3600).unwrap();
@@ -1867,9 +2139,46 @@ mod tests {
     }
 
     #[test]
+    fn token_rate_estimate_projects_median_and_ten_minute_max() {
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open(interim.path().join("state.sqlite")).unwrap();
+        let now = minute_floor(1_800_000);
+        {
+            let conn = db.conn.lock().expect("sqlite mutex poisoned");
+            for minutes_ago in 0..60 {
+                let tokens = if minutes_ago < 10 { 5_000 } else { 1_000 };
+                conn.execute(
+                    r#"
+          INSERT INTO model_usage_minute (
+            model_id, provider, minute_ts, attempts, successes, failures, wins,
+            prompt_tokens, completion_tokens, total_tokens, latency_count, latency_total_ms
+          )
+          VALUES (?1, ?2, ?3, 0, 1, 0, 0, 0, ?4, ?4, 0, 0)
+          "#,
+                    rusqlite::params![
+                        "provider/model",
+                        "provider",
+                        now - (minutes_ago * 60),
+                        tokens
+                    ],
+                )
+                .unwrap();
+            }
+        }
+
+        let estimate = db.token_rate_estimate(now, 60, 10).unwrap();
+
+        assert_eq!(estimate.window_minutes, 60);
+        assert_eq!(estimate.smoothing_minutes, 10);
+        assert_eq!(estimate.sample_minutes, 60);
+        assert!((estimate.median_m_tokens_per_24h - 1.44).abs() < 0.001);
+        assert!((estimate.max_m_tokens_per_24h - 7.2).abs() < 0.001);
+    }
+
+    #[test]
     fn event_retention_keeps_configured_recent_rows() {
-        let temp = tempfile::tempdir().unwrap();
-        let db = StateDb::open_with_retention(temp.path().join("state.sqlite"), 2).unwrap();
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open_with_retention(interim.path().join("state.sqlite"), 2).unwrap();
         for index in 0..4 {
             db.record_attempt(
                 &format!("request-{index}"),
@@ -1877,9 +2186,143 @@ mod tests {
                 "provider/model",
                 "provider",
                 &RouteEventMeta::default(),
+                None,
             )
             .unwrap();
         }
         assert_eq!(db.recent_metric_events(10).unwrap().len(), 2);
+    }
+
+    #[test]
+    fn active_agents_count_tracks_multiple_run_ids() {
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open(interim.path().join("state.sqlite")).unwrap();
+        db.record_agent_activity(&AgentSource {
+            id: "agent-1".to_string(),
+            client: Some("opencode-cli".to_string()),
+            session_id: Some("session-1".to_string()),
+            process_role: Some("main".to_string()),
+            pid: Some(111),
+            user_agent: Some("opencode/1.0".to_string()),
+            version: Some("v1".to_string()),
+        })
+        .unwrap();
+        db.record_agent_activity(&AgentSource {
+            id: "agent-2".to_string(),
+            client: Some("opencode-cli".to_string()),
+            session_id: Some("session-2".to_string()),
+            process_role: Some("worker".to_string()),
+            pid: Some(222),
+            user_agent: Some("opencode/1.0".to_string()),
+            version: Some("v1".to_string()),
+        })
+        .unwrap();
+
+        assert_eq!(db.active_agents_live(now_unix()).unwrap().len(), 2);
+    }
+
+    #[test]
+    fn expired_active_agents_are_pruned() {
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open(interim.path().join("state.sqlite")).unwrap();
+        db.record_agent_activity(&AgentSource {
+            id: "agent-expired".to_string(),
+            client: None,
+            session_id: None,
+            process_role: Some("main".to_string()),
+            pid: Some(111),
+            user_agent: None,
+            version: None,
+        })
+        .unwrap();
+
+        assert_eq!(db.active_agents_live(now_unix()).unwrap().len(), 1);
+        let rows = db.prune_expired_agent_activity(1, now_unix() + 120).unwrap();
+        assert_eq!(rows, 1);
+        assert_eq!(db.active_agents_live(now_unix() + 120).unwrap().len(), 0);
+    }
+
+    #[test]
+    fn metric_events_store_agent_fields() {
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open(interim.path().join("state.sqlite")).unwrap();
+        let agent = AgentSource {
+            id: "agent-with-fields".to_string(),
+            client: Some("agent-client".to_string()),
+            session_id: Some("agent-session".to_string()),
+            process_role: Some("main".to_string()),
+            pid: Some(100),
+            user_agent: Some("opencode/agent".to_string()),
+            version: Some("v1".to_string()),
+        };
+        db.record_attempt(
+            "request-1",
+            "fast",
+            "provider/model",
+            "provider",
+            &RouteEventMeta::default(),
+            Some(&agent),
+        )
+        .unwrap();
+        db.record_success(
+            "request-1",
+            "fast",
+            "provider/model",
+            "provider",
+            42,
+            Some("provider/model"),
+            None,
+            &RouteEventMeta::default(),
+            Some(&agent),
+        )
+        .unwrap();
+        db.record_failure(
+            "request-1",
+            "fusion",
+            "provider/model",
+            "provider",
+            &ErrorKind::Unknown,
+            99,
+            None,
+            Some("failed"),
+            &RouteEventMeta::default(),
+            Some(&agent),
+        )
+        .unwrap();
+
+        let events = db.recent_metric_events(3).unwrap();
+        assert_eq!(events.len(), 3);
+        assert!(events.iter().all(|event| event.agent_id.as_deref() == Some("agent-with-fields")));
+        assert!(events.iter().all(|event| event.agent_client.as_deref() == Some("agent-client")));
+        assert!(events.iter().all(|event| event.agent_session_id.as_deref() == Some("agent-session")));
+    }
+
+    #[test]
+    fn recent_metric_events_after_returns_new_rows() {
+        let interim = tempfile::tempdir().unwrap();
+        let db = StateDb::open(interim.path().join("state.sqlite")).unwrap();
+        let first = db
+            .record_attempt(
+                "request-1",
+                "fast",
+                "provider/model",
+                "provider",
+                &RouteEventMeta::default(),
+                None,
+            )
+            .unwrap();
+        let second = db
+            .record_attempt(
+                "request-2",
+                "fast",
+                "provider/model",
+                "provider",
+                &RouteEventMeta::default(),
+                None,
+            )
+            .unwrap();
+        let tail = db.recent_metric_events_after(first.id, 10).unwrap();
+        assert_eq!(tail.len(), 1);
+        assert_eq!(tail[0].id, second.id);
     }
 }

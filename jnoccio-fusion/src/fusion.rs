@@ -15,7 +15,8 @@ use crate::routing::{
     plan_route,
 };
 use crate::state::{
-    MetricEvent, ModelLimitEstimate, ModelMetric, ModelState, RequestRoute, RouteEventMeta, StateDb,
+    AgentSource, MetricEvent, ModelLimitEstimate, ModelMetric, ModelState, RequestRoute,
+    RouteEventMeta, StateDb,
 };
 use anyhow::{Context, Result};
 use rand::Rng;
@@ -248,8 +249,11 @@ impl Gateway {
             &usage_rows,
         );
         let totals = dashboard_totals(&models);
+        let token_rate = self.state.token_rate_estimate(now, 24 * 60, 10)?;
+        let active_agents = self.state.active_agents_live(now).unwrap_or_default();
         Ok(DashboardSnapshot {
             totals,
+            token_rate,
             capacity,
             context: ContextDashboard {
                 estimates: limit_rows.into_values().collect(),
@@ -260,6 +264,9 @@ impl Gateway {
             },
             models,
             recent_events: self.state.recent_metric_events(100)?,
+            agent_count: active_agents.len(),
+            max_agents: self.mcp.max_instances(),
+            active_agents,
             instance_count: self.mcp.instance_count(),
             max_instances: self.mcp.max_instances(),
             available_instance_slots: self.mcp.available_instance_slots(),
@@ -302,10 +309,16 @@ impl Gateway {
         let _ = self.events.send(DashboardMessage::RequestEvent { event });
     }
 
-    fn record_winner(&self, request_id: &str, model_id: &str, meta: &RouteEventMeta) {
+    fn record_winner(
+        &self,
+        request_id: &str,
+        model_id: &str,
+        meta: &RouteEventMeta,
+        agent: Option<&AgentSource>,
+    ) {
         if let Ok(event) = self
             .state
-            .record_winner_for_request(request_id, model_id, meta)
+            .record_winner_for_request(request_id, model_id, meta, agent)
         {
             self.emit_metric_event(event);
             self.emit_model_metric(model_id);
@@ -376,6 +389,7 @@ impl Gateway {
     pub async fn complete(
         &self,
         request: ChatCompletionRequest,
+        agent: Option<&AgentSource>,
     ) -> Result<GatewayResult, GatewayError> {
         if !model_matches_visible(&self.config.visible_model_id, &request.model) {
             return Err(GatewayError::ModelNotFound(request.model));
@@ -428,9 +442,13 @@ impl Gateway {
             })
             .map_err(|err| GatewayError::Upstream(err.to_string()))?;
 
+        if let Some(agent) = agent {
+            let _ = self.state.record_agent_activity(agent);
+        }
+
         if route.sampled {
             return self
-                .complete_fusion_sample(&request_id, &request, &models, &route)
+                .complete_fusion_sample(&request_id, &request, &models, &route, agent)
                 .await;
         }
 
@@ -451,6 +469,7 @@ impl Gateway {
                 true,
                 None,
                 &self.route_meta(&route, &primary, None),
+                agent,
             )
             .await
         {
@@ -488,6 +507,7 @@ impl Gateway {
                     true,
                     None,
                     &self.route_meta(&route, &backup, Some(index as u64 + 1)),
+                    agent,
                 )
                 .await
             {
@@ -523,6 +543,7 @@ impl Gateway {
         request: &ChatCompletionRequest,
         models: &[RuntimeModel],
         route: &RoutePlan,
+        agent: Option<&AgentSource>,
     ) -> Result<GatewayResult, GatewayError> {
         let draft_candidates = route
             .draft_model_ids
@@ -541,7 +562,7 @@ impl Gateway {
         }
 
         let draft_results = self
-            .run_drafts(request_id, request, &draft_candidates, route)
+            .run_drafts(request_id, request, &draft_candidates, route, agent)
             .await;
         let receipts = self.build_receipts(
             request_id,
@@ -552,7 +573,7 @@ impl Gateway {
         let successful_drafts = draft_results.iter().any(|item| item.output.is_some());
 
         if !successful_drafts {
-            let fallback = fusion_candidates
+            let alternative_path = fusion_candidates
                 .first()
                 .cloned()
                 .or_else(|| draft_candidates.first().cloned())
@@ -561,14 +582,15 @@ impl Gateway {
                 .run_phase(
                     request_id,
                     "fusion_sample",
-                    &fallback,
+                    &alternative_path,
                     request,
                     true,
                     None,
-                    &self.route_meta(route, &fallback, None),
+                    &self.route_meta(route, &alternative_path, None),
+                    agent,
                 )
                 .await?;
-            let winner_model_id = fallback.visible_id.clone();
+            let winner_model_id = alternative_path.visible_id.clone();
             let response = self.finalize_response(
                 request_id,
                 outcome.response,
@@ -578,11 +600,7 @@ impl Gateway {
                 None,
                 route,
             );
-            self.record_winner(
-                request_id,
-                &winner_model_id,
-                &self.route_meta(route, &fallback, None),
-            );
+            self.record_winner(request_id, &winner_model_id, &self.route_meta(route, &alternative_path, None), agent);
             return Ok(GatewayResult {
                 response,
                 receipts,
@@ -615,6 +633,7 @@ impl Gateway {
                 true,
                 Some(fusion_messages.clone()),
                 &self.route_meta(route, &fusion_model, None),
+                agent,
             )
             .await;
 
@@ -635,6 +654,7 @@ impl Gateway {
                     request_id,
                     &winner_model_id,
                     &self.route_meta(route, &fusion_model, None),
+                    agent,
                 );
                 Ok(GatewayResult {
                     response,
@@ -644,21 +664,22 @@ impl Gateway {
                 })
             }
             Err(_) if request.tools.is_some() => {
-                let fallback = self
+                let alternative_path = self
                     .pick_fallback(models, &draft_candidates, &[])
                     .ok_or(GatewayError::NoAvailableModels)?;
                 let outcome = self
                     .run_phase(
                         request_id,
                         "backup",
-                        &fallback,
+                        &alternative_path,
                         request,
                         true,
                         None,
-                        &self.route_meta(route, &fallback, Some(1)),
+                        &self.route_meta(route, &alternative_path, Some(1)),
+                        agent,
                     )
                     .await?;
-                let winner_model_id = fallback.visible_id.clone();
+                let winner_model_id = alternative_path.visible_id.clone();
                 let response = self.finalize_response(
                     request_id,
                     outcome.response,
@@ -671,7 +692,8 @@ impl Gateway {
                 self.record_winner(
                     request_id,
                     &winner_model_id,
-                    &self.route_meta(route, &fallback, Some(1)),
+                    &self.route_meta(route, &alternative_path, Some(1)),
+                    agent,
                 );
                 Ok(GatewayResult {
                     response,
@@ -700,6 +722,7 @@ impl Gateway {
                         request_id,
                         &winner_model_id,
                         &self.route_meta(route, &best.model, None),
+                        agent,
                     );
                     return Ok(GatewayResult {
                         response,
@@ -907,11 +930,12 @@ impl Gateway {
         request: &ChatCompletionRequest,
         drafts: &[RuntimeModel],
         route: &RoutePlan,
+        agent: Option<&AgentSource>,
     ) -> Vec<DraftResult> {
         let futures = drafts.iter().cloned().map(|model| async move {
             let meta = self.route_meta(route, &model, None);
             match self
-                .run_phase(request_id, "draft", &model, request, false, None, &meta)
+                .run_phase(request_id, "draft", &model, request, false, None, &meta, agent)
                 .await
             {
                 Ok(outcome) => DraftResult {
@@ -935,6 +959,7 @@ impl Gateway {
         include_tools: bool,
         messages_override: Option<Vec<Value>>,
         meta: &RouteEventMeta,
+        agent: Option<&AgentSource>,
     ) -> Result<PhaseOutcome, GatewayError> {
         let attempt_event = self
             .state
@@ -944,6 +969,7 @@ impl Gateway {
                 &model.visible_id,
                 &model.entry.provider,
                 meta,
+                agent,
             )
             .map_err(|err| GatewayError::Upstream(err.to_string()))?;
         self.emit_metric_event(attempt_event);
@@ -995,16 +1021,17 @@ impl Gateway {
                 let success_event = self
                     .state
                     .record_success(
-                        request_id,
-                        phase,
-                        &model.visible_id,
-                        &model.entry.provider,
-                        latency_ms,
-                        None,
-                        output.usage.as_ref(),
-                        meta,
-                    )
-                    .map_err(|err| GatewayError::Upstream(err.to_string()))?;
+                    request_id,
+                    phase,
+                    &model.visible_id,
+                    &model.entry.provider,
+                    latency_ms,
+                    None,
+                    output.usage.as_ref(),
+                    meta,
+                    agent,
+                )
+                .map_err(|err| GatewayError::Upstream(err.to_string()))?;
                 self.state
                     .record_context_success(
                         request_id,
@@ -1073,17 +1100,18 @@ impl Gateway {
                 let failure_event = self
                     .state
                     .record_failure(
-                        request_id,
-                        phase,
-                        &model.visible_id,
-                        &model.entry.provider,
-                        &kind,
-                        latency_ms,
-                        disabled_until,
-                        Some(&text),
-                        meta,
-                    )
-                    .map_err(|db_err| GatewayError::Upstream(db_err.to_string()))?;
+                    request_id,
+                    phase,
+                    &model.visible_id,
+                    &model.entry.provider,
+                    &kind,
+                    latency_ms,
+                    disabled_until,
+                    Some(&text),
+                    meta,
+                    agent,
+                )
+                .map_err(|db_err| GatewayError::Upstream(db_err.to_string()))?;
                 self.emit_metric_event(failure_event);
                 self.emit_model_metric(&model.visible_id);
                 let _ = write_failure_log(
@@ -1552,12 +1580,12 @@ mod tests {
 
     #[test]
     fn status_view_exposes_disabled_reason() {
-        let temp = tempfile::tempdir().unwrap();
+        let interim = tempfile::tempdir().unwrap();
         let gateway = Gateway {
             config: AppConfig {
-                config_path: temp.path().join("config/server.json"),
-                env_path: temp.path().join(".env.jnoccio"),
-                root: temp.path().to_path_buf(),
+                config_path: interim.path().join("config/server.json"),
+                env_path: interim.path().join(".env.jnoccio"),
+                root: interim.path().to_path_buf(),
                 server: ServerConfig {
                     bind: None,
                     database: None,
@@ -1576,8 +1604,8 @@ mod tests {
                 },
                 env: HashMap::new(),
                 bind: "127.0.0.1:4317".to_string(),
-                database: temp.path().join("state.sqlite"),
-                receipts_dir: temp.path().join("receipts"),
+                database: interim.path().join("state.sqlite"),
+                receipts_dir: interim.path().join("receipts"),
                 visible_model_id: "jnoccio/jnoccio-fusion".to_string(),
                 provider_id: "jnoccio".to_string(),
                 routing: crate::config::RoutingDefaults::from_config(None),
@@ -1586,7 +1614,7 @@ mod tests {
                 instance_role: InstanceRole::Main,
                 worker_threads: RuntimeSettings::from_config(None).unwrap().worker_threads,
             },
-            state: Arc::new(StateDb::open(temp.path().join("state.sqlite")).unwrap()),
+            state: Arc::new(StateDb::open(interim.path().join("state.sqlite")).unwrap()),
             mcp: Arc::new(McpState::new(
                 InstanceRole::Main,
                 ScalingSettings::from_config(None).unwrap(),

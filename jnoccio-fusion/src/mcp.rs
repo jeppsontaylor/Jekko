@@ -359,7 +359,7 @@ impl McpState {
         gateway: &Arc<Gateway>,
         request: ChatCompletionRequest,
     ) -> Result<Value, RpcError> {
-        match gateway.complete(request).await {
+        match gateway.complete(request, None).await {
             Ok(result) => Ok(tool_result(
                 json!({
                     "answer": response_answer(&result.response),
@@ -793,7 +793,7 @@ fn tools_list() -> Vec<Value> {
         ),
         tool_descriptor(
             "jnoccio_spawn_instance",
-            "Start an extra local Jnoccio gateway instance on an available localhost port. Main instances enforce a 10-total-instance cap, including the main gateway.",
+            "Start an extra local Jnoccio gateway instance on an available localhost port. Main instances enforce a 20-total-instance cap, including the main gateway.",
             json!({
                 "type": "object",
                 "properties": {
@@ -805,11 +805,11 @@ fn tools_list() -> Vec<Value> {
         ),
         tool_descriptor(
             "jnoccio_spawn_parallel",
-            "Spawn multiple local Jnoccio gateway instances in parallel for concurrent workloads. Main instances enforce a 10-total-instance cap, including the main gateway.",
+            "Spawn multiple local Jnoccio gateway instances in parallel for concurrent workloads. Main instances enforce a 20-total-instance cap, including the main gateway.",
             json!({
                 "type": "object",
                 "properties": {
-                    "count": { "type": "integer", "minimum": 1, "maximum": 10, "default": 2, "description": "Number of instances to spawn in parallel" }
+                    "count": { "type": "integer", "minimum": 1, "maximum": 20, "default": 2, "description": "Number of instances to spawn in parallel" }
                 },
                 "additionalProperties": false
             }),
@@ -898,7 +898,7 @@ fn agent_instructions() -> String {
         "Keep prompts compact and self-contained.",
         "Do not send secrets, API keys, or full logs.",
         "Use jnoccio_status before heavy delegation when capacity matters.",
-        "Use jnoccio_spawn_parallel to spin up multiple gateway instances for concurrent workloads (e.g. parallel research, multi-file edits, batch delegation); it respects the 10-total-instance hard cap.",
+        "Use jnoccio_spawn_parallel to spin up multiple gateway instances for concurrent workloads (e.g. parallel research, multi-file edits, batch delegation); it respects the 20-total-instance hard cap.",
         "Use jnoccio_spawn_instance to add a single extra instance when incremental scaling is needed.",
         "All spawned instances share the same database, model pool, and dashboard — no data is lost.",
         "Use jnoccio_instances to check how many instances are currently running.",
@@ -955,12 +955,16 @@ fn route_summary(response: &ChatCompletionResponse) -> Value {
 }
 
 fn compact_metrics(snapshot: DashboardSnapshot) -> Value {
-    json!({
-        "totals": snapshot.totals,
-        "capacity": snapshot.capacity,
-        "instance_count": snapshot.instance_count,
-        "max_instances": snapshot.max_instances,
-        "available_instance_slots": snapshot.available_instance_slots,
+        json!({
+            "totals": snapshot.totals,
+            "token_rate": snapshot.token_rate,
+            "capacity": snapshot.capacity,
+            "agent_count": snapshot.agent_count,
+            "max_agents": snapshot.max_agents,
+            "active_agents": snapshot.active_agents,
+            "instance_count": snapshot.instance_count,
+            "max_instances": snapshot.max_instances,
+            "available_instance_slots": snapshot.available_instance_slots,
         "role": snapshot.instance_role,
         "worker_threads": snapshot.worker_threads,
         "models": snapshot

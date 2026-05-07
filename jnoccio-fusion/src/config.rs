@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 pub const MAX_RUNTIME_WORKER_THREADS: usize = 10;
-pub const MAX_MANAGED_INSTANCES: usize = 10;
+pub const MAX_MANAGED_INSTANCES: usize = 20;
 pub const DEFAULT_SPAWN_BATCH_LIMIT: usize = 5;
 
 #[derive(Clone, Debug, Deserialize)]

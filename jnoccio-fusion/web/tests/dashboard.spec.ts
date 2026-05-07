@@ -26,6 +26,14 @@ test('all tabs render without errors', async ({ page }) => {
   await page.goto('/dashboard/');
   await page.waitForTimeout(1000);
 
+  await expect(page.locator('.agent-badge')).toBeVisible();
+  await expect(page.locator('.instance-badge')).toBeVisible();
+  await expect(page.locator('.agent-badge', { hasText: 'Agents' })).toBeVisible();
+  await expect(page.locator('.instance-badge', { hasText: 'Gateways' })).toBeVisible();
+  await expect(page.locator('.instance-badge')).not.toContainText('/20');
+  await expect(page.locator('.kpi-card', { hasText: 'Tokens / 24h' })).toBeVisible();
+  await expect(page.locator('.kpi-card', { hasText: '10m max' })).toBeVisible();
+
   const tabs = ['Board', 'Speed', 'Vault', 'Limits', 'Feed'];
   for (const label of tabs) {
     const btn = page.locator('.tab-btn', { hasText: label });

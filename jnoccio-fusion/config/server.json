@@ -16,7 +16,7 @@
     "spawned_worker_threads": 2
   },
   "scaling": {
-    "max_instances": 10,
+    "max_instances": 20,
     "spawn_batch_limit": 5
   }
 }
