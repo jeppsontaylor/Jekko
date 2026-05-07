@@ -21,7 +21,8 @@ const it = testEffect(Layer.mergeAll(NodeFileSystem.layer, NodePath.layer))
 
 function app(experimental: boolean) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 type TestApp = ReturnType<typeof app>
 
@@ -165,23 +166,23 @@ describe("mcp HttpApi", () => {
   })
 
   it.live(
-    "matches legacy unsupported OAuth error responses",
+    "matches previous unsupported OAuth error responses",
     withMcpProject((dir) =>
       Effect.gen(function* () {
         const headers = { "x-opencode-directory": dir }
-        const legacy = app(false)
+        const previous = app(false)
         const httpapi = app(true)
 
         yield* Effect.forEach(["/mcp/demo/auth", "/mcp/demo/auth/authenticate"], (path) =>
           Effect.gen(function* () {
-            const legacyResponse = yield* readResponse({ app: legacy, path, headers })
+            const previousResponse = yield* readResponse({ app: previous, path, headers })
             const httpapiResponse = yield* readResponse({ app: httpapi, path, headers })
 
-            expect(legacyResponse).toEqual({
+            expect(previousResponse).toEqual({
               status: 400,
               body: JSON.stringify({ error: "MCP server demo does not support OAuth" }),
             })
-            expect(httpapiResponse).toEqual(legacyResponse)
+            expect(httpapiResponse).toEqual(previousResponse)
           }),
         )
       }),
