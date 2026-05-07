@@ -23,6 +23,7 @@ import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
 import { provideTmpdirServer } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 import { raw, reply, TestLLMServer } from "../lib/llm-server"
+import { Memory } from "../../src/memory"
 
 void Log.init({ print: false })
 
@@ -168,7 +169,7 @@ const deps = Layer.mergeAll(
 ).pipe(Layer.provideMerge(infra))
 const env = Layer.mergeAll(
   TestLLMServer.layer,
-  SessionProcessor.layer.pipe(Layer.provide(summary), Layer.provideMerge(deps)),
+  SessionProcessor.layer.pipe(Layer.provide(summary), Layer.provide(Memory.layer), Layer.provideMerge(deps)),
 )
 
 const it = testEffect(env)

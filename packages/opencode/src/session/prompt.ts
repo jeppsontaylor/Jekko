@@ -17,6 +17,7 @@ import { ProviderTransform } from "@/provider/transform"
 import { SystemPrompt } from "./system"
 import { Instruction } from "./instruction"
 import { Plugin } from "../plugin"
+import { Memory } from "../memory"
 import PROMPT_PLAN from "../session/prompt/plan.txt"
 import BUILD_SWITCH from "../session/prompt/build-switch.txt"
 import MAX_STEPS from "../session/prompt/max-steps.txt"
@@ -116,6 +117,7 @@ export const layer = Layer.effect(
     const summary = yield* SessionSummary.Service
     const sys = yield* SystemPrompt.Service
     const llm = yield* LLM.Service
+    const memory = yield* Memory.Service
     const runner = Effect.fn("SessionPrompt.runner")(function* () {
       return yield* EffectBridge.make()
     })
@@ -1565,13 +1567,22 @@ NOTE: At any point in time through this workflow you should feel free to ask the
 
             yield* plugin.trigger("experimental.chat.messages.transform", {}, { messages: msgs })
 
-            const [skills, env, instructions, modelMsgs] = yield* Effect.all([
+            const [skills, env, instructions, modelMsgs, negativeMemories] = yield* Effect.all([
               sys.skills(agent),
               sys.environment(model),
               instruction.system().pipe(Effect.orDie),
               MessageV2.toModelMessagesEffect(msgs, model),
+              memory.recall({ projectId: session.projectID, tier: "negative" }),
             ])
             const system = [...env, ...instructions, ...(skills ? [skills] : [])]
+            if (negativeMemories.length > 0) {
+              system.push([
+                "<negative-memory>",
+                "The following approaches have been proven to fail for this project. DO NOT REPEAT THEM:",
+                ...negativeMemories.map(m => `- ${m.snippet}`),
+                "</negative-memory>"
+              ].join("\n"))
+            }
             const format = lastUser.format ?? { type: "text" as const }
             if (format.type === "json_schema") system.push(STRUCTURED_OUTPUT_SYSTEM_PROMPT)
             const result = yield* handle.process({
@@ -1788,6 +1799,7 @@ export const defaultLayer = Layer.suspend(() =>
     Layer.provide(Session.defaultLayer),
     Layer.provide(SessionRevert.defaultLayer),
     Layer.provide(SessionSummary.defaultLayer),
+    Layer.provide(Memory.layer),
     Layer.provide(
       Layer.mergeAll(
         Agent.defaultLayer,

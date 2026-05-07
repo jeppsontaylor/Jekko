@@ -309,11 +309,11 @@ interface ApplyPatchFileUpdate {
   bom: boolean
 }
 
-export function deriveNewContentsFromChunks(filePath: string, chunks: UpdateFileChunk[]): ApplyPatchFileUpdate {
+export function deriveNewContentsFromChunks(filePath: string, chunks: UpdateFileChunk[], oldContent?: string): ApplyPatchFileUpdate {
   // Read original file content
   let originalContent: ReturnType<typeof Bom.split>
   try {
-    originalContent = Bom.split(readFileSync(filePath, "utf-8"))
+    originalContent = Bom.split(oldContent ?? readFileSync(filePath, "utf-8"))
   } catch (error) {
     throw new Error(`Failed to read file ${filePath}: ${error}`, { cause: error })
   }

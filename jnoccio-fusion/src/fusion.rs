@@ -145,10 +145,11 @@ impl Gateway {
             config.routing.event_retention_rows,
         )?);
         let (events, _) = broadcast::channel(512);
+        let mcp = Arc::new(McpState::new(config.instance_role, config.scaling.clone()));
         let gateway = Self {
             config,
             state,
-            mcp: Arc::new(McpState::new()),
+            mcp,
             events,
             http: reqwest::Client::builder()
                 .timeout(std::time::Duration::from_secs(900))
@@ -259,6 +260,11 @@ impl Gateway {
             },
             models,
             recent_events: self.state.recent_metric_events(100)?,
+            instance_count: self.mcp.instance_count(),
+            max_instances: self.mcp.max_instances(),
+            available_instance_slots: self.mcp.available_instance_slots(),
+            instance_role: self.config.instance_role.as_str().to_string(),
+            worker_threads: self.config.worker_threads,
         })
     }
 
@@ -342,6 +348,11 @@ impl Gateway {
           "bind": self.config.bind,
           "database": self.config.database,
           "receipts_dir": self.config.receipts_dir,
+          "instance_count": self.mcp.instance_count(),
+          "max_instances": self.mcp.max_instances(),
+          "available_instance_slots": self.mcp.available_instance_slots(),
+          "instance_role": self.config.instance_role.as_str(),
+          "worker_threads": self.config.worker_threads,
           "models": models.iter().map(|model| self.model_status_view(model)).collect::<Vec<_>>(),
           "state_rows": states,
         })
@@ -897,29 +908,21 @@ impl Gateway {
         drafts: &[RuntimeModel],
         route: &RoutePlan,
     ) -> Vec<DraftResult> {
-        let mut results = Vec::new();
-        for model in drafts {
+        let futures = drafts.iter().cloned().map(|model| async move {
+            let meta = self.route_meta(route, &model, None);
             match self
-                .run_phase(
-                    request_id,
-                    "draft",
-                    model,
-                    request,
-                    false,
-                    None,
-                    &self.route_meta(route, model, None),
-                )
+                .run_phase(request_id, "draft", &model, request, false, None, &meta)
                 .await
             {
-                Ok(outcome) => results.push(DraftResult {
+                Ok(outcome) => DraftResult {
                     model: model.clone(),
                     output: Some(outcome.output),
                     error: None,
-                }),
-                Err(err) => results.push(DraftResult::from_error(model.clone(), err)),
+                },
+                Err(err) => DraftResult::from_error(model.clone(), err),
             }
-        }
-        results
+        });
+        futures::future::join_all(futures).await
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1542,8 +1545,8 @@ fn model_matches_visible(visible_model_id: &str, request_model: &str) -> bool {
 mod tests {
     use super::*;
     use crate::config::{
-        AppConfig, ModelApi, ModelCapabilities, ModelEnv, ModelLimits, ModelRouting, ModelScore,
-        Registry, ServerConfig,
+        AppConfig, InstanceRole, ModelApi, ModelCapabilities, ModelEnv, ModelLimits, ModelRouting,
+        ModelScore, Registry, RuntimeSettings, ScalingSettings, ServerConfig,
     };
     use std::collections::HashMap;
 
@@ -1564,6 +1567,8 @@ mod tests {
                     model: None,
                     provider: None,
                     routing: None,
+                    runtime: None,
+                    scaling: None,
                 },
                 registry: Registry {
                     schema_version: 1,
@@ -1576,9 +1581,16 @@ mod tests {
                 visible_model_id: "jnoccio/jnoccio-fusion".to_string(),
                 provider_id: "jnoccio".to_string(),
                 routing: crate::config::RoutingDefaults::from_config(None),
+                runtime: RuntimeSettings::from_config(None).unwrap(),
+                scaling: ScalingSettings::from_config(None).unwrap(),
+                instance_role: InstanceRole::Main,
+                worker_threads: RuntimeSettings::from_config(None).unwrap().worker_threads,
             },
             state: Arc::new(StateDb::open(temp.path().join("state.sqlite")).unwrap()),
-            mcp: Arc::new(McpState::new()),
+            mcp: Arc::new(McpState::new(
+                InstanceRole::Main,
+                ScalingSettings::from_config(None).unwrap(),
+            )),
             events: broadcast::channel(16).0,
             http: reqwest::Client::new(),
         };

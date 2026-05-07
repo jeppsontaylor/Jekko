@@ -23,6 +23,8 @@ import { SessionMessageTable } from "../../src/session/session.sql"
 import { LLM } from "../../src/session/llm"
 import { MessageV2 } from "../../src/session/message-v2"
 import { AppFileSystem } from "@opencode-ai/core/filesystem"
+import { PatchVmModule } from "../../src/patch/vm"
+import { Memory } from "../../src/memory"
 import { SessionCompaction } from "../../src/session/compaction"
 import { SessionSummary } from "../../src/session/summary"
 import { Instruction } from "../../src/session/instruction"
@@ -169,6 +171,7 @@ function makeHttp() {
     ProviderSvc.defaultLayer,
     lsp,
     mcp,
+    Memory.layer,
     AppFileSystem.defaultLayer,
     status,
   ).pipe(Layer.provideMerge(infra))
@@ -182,6 +185,7 @@ function makeHttp() {
     Layer.provide(Format.defaultLayer),
     Layer.provideMerge(todo),
     Layer.provideMerge(question),
+    Layer.provideMerge(PatchVmModule.layer),
     Layer.provideMerge(deps),
   )
   const trunc = Truncate.layer.pipe(Layer.provideMerge(deps))

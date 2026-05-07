@@ -8,7 +8,9 @@ Jnoccio exposes a local MCP server that Codex agents can use for focused delegat
 - Keep delegated prompts small and self-contained. Include only the goal, relevant paths or short snippets, constraints, and expected output.
 - Do not send secrets, API keys, private headers, full prompt logs, full tool arguments, or unnecessary raw files.
 - Use `jnoccio_status` before expensive delegation when provider health, context limits, or remaining capacity matter.
-- Use `jnoccio_spawn_instance` only when the default Jnoccio server is saturated, down, or long-running work would block other agents.
+- Use `jnoccio_spawn_parallel` to spin up multiple gateway instances for concurrent workloads (e.g. parallel research, multi-file edits, batch delegation). It respects a 10-total-instance hard cap including the main gateway, and all instances share the same database and model pool.
+- Use `jnoccio_spawn_instance` to add a single extra gateway instance when incremental scaling is needed.
+- Use `jnoccio_instances` to check how many instances are currently running before spawning more.
 - Treat Jnoccio output as advice unless the prompt requested deterministic data from an explicit resource or tool.
 
 ## Bootstrap

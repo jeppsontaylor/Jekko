@@ -22,6 +22,7 @@ import { FetchHttpClient } from "effect/unstable/http"
 import { Format } from "@/format"
 import { Ripgrep } from "@/file/ripgrep"
 import * as Truncate from "@/tool/truncate"
+import { PatchVmModule } from "@/patch/vm"
 import { InstanceState } from "@/effect/instance-state"
 
 const node = CrossSpawnSpawner.defaultLayer
@@ -40,6 +41,7 @@ const registryLayer = ToolRegistry.layer.pipe(
   Layer.provide(Provider.defaultLayer),
   Layer.provide(LSP.defaultLayer),
   Layer.provide(Instruction.defaultLayer),
+  Layer.provide(PatchVmModule.layer),
   Layer.provide(AppFileSystem.defaultLayer),
   Layer.provide(Bus.layer),
   Layer.provide(FetchHttpClient.layer),

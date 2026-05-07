@@ -3,6 +3,11 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
+
+pub const MAX_RUNTIME_WORKER_THREADS: usize = 10;
+pub const MAX_MANAGED_INSTANCES: usize = 10;
+pub const DEFAULT_SPAWN_BATCH_LIMIT: usize = 5;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ServerConfig {
@@ -14,6 +19,8 @@ pub struct ServerConfig {
     pub model: Option<String>,
     pub provider: Option<String>,
     pub routing: Option<ServerRoutingConfig>,
+    pub runtime: Option<ServerRuntimeConfig>,
+    pub scaling: Option<ServerScalingConfig>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -24,12 +31,63 @@ pub struct ServerRoutingConfig {
     pub minute_bucket_retention_days: Option<u64>,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ServerRuntimeConfig {
+    pub worker_threads: Option<usize>,
+    pub spawned_worker_threads: Option<usize>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ServerScalingConfig {
+    pub max_instances: Option<usize>,
+    pub spawn_batch_limit: Option<usize>,
+}
+
 #[derive(Clone, Debug)]
 pub struct RoutingDefaults {
     pub fusion_sample_rate: f64,
     pub fast_backup_count: usize,
     pub event_retention_rows: usize,
     pub minute_bucket_retention_days: u64,
+}
+
+#[derive(Clone, Debug)]
+pub struct RuntimeSettings {
+    pub worker_threads: usize,
+    pub spawned_worker_threads: usize,
+}
+
+#[derive(Clone, Debug)]
+pub struct ScalingSettings {
+    pub max_instances: usize,
+    pub spawn_batch_limit: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum InstanceRole {
+    Main,
+    Spawned,
+}
+
+impl InstanceRole {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Main => "main",
+            Self::Spawned => "spawned",
+        }
+    }
+}
+
+impl FromStr for InstanceRole {
+    type Err = anyhow::Error;
+
+    fn from_str(value: &str) -> Result<Self> {
+        match value {
+            "main" => Ok(Self::Main),
+            "spawned" => Ok(Self::Spawned),
+            _ => bail!("invalid instance role {value:?}; expected main or spawned"),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -149,6 +207,10 @@ pub struct AppConfig {
     pub visible_model_id: String,
     pub provider_id: String,
     pub routing: RoutingDefaults,
+    pub runtime: RuntimeSettings,
+    pub scaling: ScalingSettings,
+    pub instance_role: InstanceRole,
+    pub worker_threads: usize,
 }
 
 pub fn load_app_config(
@@ -217,6 +279,9 @@ pub fn load_app_config(
     let receipts_dir =
         resolve_relative(&root, server.receipts_dir.as_deref().unwrap_or("receipts"));
     let routing = RoutingDefaults::from_config(server.routing.as_ref());
+    let runtime = RuntimeSettings::from_config(server.runtime.as_ref())?;
+    let scaling = ScalingSettings::from_config(server.scaling.as_ref())?;
+    let worker_threads = runtime.worker_threads;
 
     Ok(AppConfig {
         config_path,
@@ -231,6 +296,10 @@ pub fn load_app_config(
         visible_model_id,
         provider_id,
         routing,
+        runtime,
+        scaling,
+        instance_role: InstanceRole::Main,
+        worker_threads,
     })
 }
 
@@ -251,6 +320,51 @@ impl RoutingDefaults {
                 .and_then(|config| config.minute_bucket_retention_days)
                 .unwrap_or(30),
         }
+    }
+}
+
+impl RuntimeSettings {
+    pub fn from_config(config: Option<&ServerRuntimeConfig>) -> Result<Self> {
+        let worker_threads = match config.and_then(|config| config.worker_threads) {
+            Some(0) => bail!("runtime.worker_threads must be at least 1"),
+            Some(value) => value.min(MAX_RUNTIME_WORKER_THREADS),
+            None => default_worker_threads(),
+        };
+        let spawned_worker_threads = match config.and_then(|config| config.spawned_worker_threads) {
+            Some(0) => bail!("runtime.spawned_worker_threads must be at least 1"),
+            Some(value) => value.min(MAX_RUNTIME_WORKER_THREADS),
+            None => 2,
+        };
+        Ok(Self {
+            worker_threads,
+            spawned_worker_threads,
+        })
+    }
+
+    pub fn worker_threads_for_role(&self, role: InstanceRole) -> usize {
+        match role {
+            InstanceRole::Main => self.worker_threads,
+            InstanceRole::Spawned => self.spawned_worker_threads,
+        }
+    }
+}
+
+impl ScalingSettings {
+    pub fn from_config(config: Option<&ServerScalingConfig>) -> Result<Self> {
+        let max_instances = match config.and_then(|config| config.max_instances) {
+            Some(0) => bail!("scaling.max_instances must be at least 1"),
+            Some(value) => value.min(MAX_MANAGED_INSTANCES),
+            None => MAX_MANAGED_INSTANCES,
+        };
+        let spawn_batch_limit = match config.and_then(|config| config.spawn_batch_limit) {
+            Some(0) => bail!("scaling.spawn_batch_limit must be at least 1"),
+            Some(value) => value.min(MAX_MANAGED_INSTANCES),
+            None => DEFAULT_SPAWN_BATCH_LIMIT,
+        };
+        Ok(Self {
+            max_instances,
+            spawn_batch_limit,
+        })
     }
 }
 
@@ -417,6 +531,17 @@ fn push_missing_key(missing_keys: &mut Vec<String>, key: &str) {
     missing_keys.push(key.to_string());
 }
 
+fn default_worker_threads() -> usize {
+    let available = std::thread::available_parallelism()
+        .map(|threads| threads.get())
+        .unwrap_or(2);
+    if available == 1 {
+        1
+    } else {
+        available.clamp(2, MAX_RUNTIME_WORKER_THREADS)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -445,6 +570,70 @@ mod tests {
         let env = parse_env_file("A=1\n# comment\nexport B='two'\n");
         assert_eq!(env.get("A").map(String::as_str), Some("1"));
         assert_eq!(env.get("B").map(String::as_str), Some("two"));
+    }
+
+    #[test]
+    fn runtime_and_scaling_defaults_are_bounded() {
+        let runtime = RuntimeSettings::from_config(None).unwrap();
+        assert_eq!(runtime.worker_threads, default_worker_threads());
+        assert_eq!(runtime.spawned_worker_threads, 2);
+        assert!((1..=MAX_RUNTIME_WORKER_THREADS).contains(&runtime.worker_threads));
+        assert!((1..=MAX_RUNTIME_WORKER_THREADS).contains(&runtime.spawned_worker_threads));
+
+        let scaling = ScalingSettings::from_config(None).unwrap();
+        assert_eq!(scaling.max_instances, MAX_MANAGED_INSTANCES);
+        assert_eq!(scaling.spawn_batch_limit, DEFAULT_SPAWN_BATCH_LIMIT);
+    }
+
+    #[test]
+    fn runtime_and_scaling_reject_zero_values() {
+        assert!(
+            RuntimeSettings::from_config(Some(&ServerRuntimeConfig {
+                worker_threads: Some(0),
+                spawned_worker_threads: None,
+            }))
+            .is_err()
+        );
+        assert!(
+            RuntimeSettings::from_config(Some(&ServerRuntimeConfig {
+                worker_threads: None,
+                spawned_worker_threads: Some(0),
+            }))
+            .is_err()
+        );
+        assert!(
+            ScalingSettings::from_config(Some(&ServerScalingConfig {
+                max_instances: Some(0),
+                spawn_batch_limit: None,
+            }))
+            .is_err()
+        );
+        assert!(
+            ScalingSettings::from_config(Some(&ServerScalingConfig {
+                max_instances: None,
+                spawn_batch_limit: Some(0),
+            }))
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn runtime_and_scaling_clamp_values_above_hard_cap() {
+        let runtime = RuntimeSettings::from_config(Some(&ServerRuntimeConfig {
+            worker_threads: Some(64),
+            spawned_worker_threads: Some(64),
+        }))
+        .unwrap();
+        assert_eq!(runtime.worker_threads, MAX_RUNTIME_WORKER_THREADS);
+        assert_eq!(runtime.spawned_worker_threads, MAX_RUNTIME_WORKER_THREADS);
+
+        let scaling = ScalingSettings::from_config(Some(&ServerScalingConfig {
+            max_instances: Some(64),
+            spawn_batch_limit: Some(64),
+        }))
+        .unwrap();
+        assert_eq!(scaling.max_instances, MAX_MANAGED_INSTANCES);
+        assert_eq!(scaling.spawn_batch_limit, MAX_MANAGED_INSTANCES);
     }
 
     #[test]

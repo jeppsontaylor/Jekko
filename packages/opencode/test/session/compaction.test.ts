@@ -22,6 +22,7 @@ import { SessionStatus } from "../../src/session/status"
 import { SessionSummary } from "../../src/session/summary"
 import { SessionV2 } from "../../src/v2/session"
 import { ModelID, ProviderID } from "../../src/provider/schema"
+import { Memory } from "../../src/memory"
 import type { Provider } from "@/provider/provider"
 import * as SessionProcessorModule from "../../src/session/processor"
 import { Snapshot } from "../../src/snapshot"
@@ -242,6 +243,7 @@ const deps = Layer.mergeAll(
   Agent.defaultLayer,
   Plugin.defaultLayer,
   Bus.layer,
+  Memory.layer,
   Config.defaultLayer,
 )
 
@@ -289,6 +291,7 @@ function liveRuntime(layer: Layer.Layer<LLM.Service>, provider = ProviderTest.fa
       Layer.provide(Agent.defaultLayer),
       Layer.provide(Plugin.defaultLayer),
       Layer.provide(status),
+      Layer.provide(Memory.layer),
       Layer.provide(bus),
       Layer.provide(config),
     ),

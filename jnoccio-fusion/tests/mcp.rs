@@ -1,6 +1,7 @@
 use anyhow::{Context, Result, bail};
 use jnoccio_fusion::{config::load_app_config, fusion::Gateway, router};
 use serde_json::{Value, json};
+use std::collections::HashSet;
 use std::fs;
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
@@ -11,8 +12,11 @@ use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
 use tokio::time::{Duration, sleep};
 
+static SPAWN_TEST_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
 #[tokio::test]
 async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
+    let _spawn_lock = SPAWN_TEST_LOCK.lock().await;
     let temp = TempDir::new().context("create tempdir")?;
     let upstream = start_upstream("upstream answer").await?;
     let bind = free_bind().await?;
@@ -101,6 +105,13 @@ async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
         .as_str()
         .context("spawned instance bind missing")?
         .to_string();
+    assert_eq!(spawn["result"]["structuredContent"]["instance_count"], 2);
+    assert_eq!(spawn["result"]["structuredContent"]["max_instances"], 10);
+    assert_eq!(
+        spawn["result"]["structuredContent"]["available_instance_slots"],
+        8
+    );
+    assert_eq!(spawn["result"]["structuredContent"]["role"], "main");
     let child_health = wait_for_http(&format!("http://{bind}/health")).await?;
     assert_eq!(child_health["provider"], "jnoccio");
     let child_status = wait_for_http(&format!("http://{bind}/v1/jnoccio/status")).await?;
@@ -112,6 +123,28 @@ async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
                 .display()
                 .to_string()
         )
+    );
+
+    let child_spawn_refusal = post_mcp(
+        &client,
+        &format!("http://{bind}"),
+        json!({
+            "jsonrpc": "2.0",
+            "id": 7,
+            "method": "tools/call",
+            "params": {
+                "name": "jnoccio_spawn_instance",
+                "arguments": {}
+            }
+        }),
+    )
+    .await?;
+    assert!(
+        child_spawn_refusal["error"]["message"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("main Jnoccio instance"),
+        "unexpected child spawn refusal: {child_spawn_refusal}"
     );
 
     let instances = post_mcp(
@@ -134,6 +167,18 @@ async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
             .context("instances should be an array")?
             .iter()
             .any(|instance| instance["bind"].as_str() == Some(bind.as_str()))
+    );
+    assert_eq!(
+        instances["result"]["structuredContent"]["instance_count"],
+        2
+    );
+    assert_eq!(
+        instances["result"]["structuredContent"]["max_instances"],
+        10
+    );
+    assert_eq!(
+        instances["result"]["structuredContent"]["available_instance_slots"],
+        8
     );
 
     let instance_id = spawn["result"]["structuredContent"]["instance"]["id"]
@@ -167,6 +212,142 @@ async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
     assert_eq!(get.status(), reqwest::StatusCode::METHOD_NOT_ALLOWED);
 
     server.abort();
+    Ok(())
+}
+
+#[tokio::test]
+async fn http_mcp_spawn_parallel_uses_unique_binds_and_enforces_total_cap() -> Result<()> {
+    let _spawn_lock = SPAWN_TEST_LOCK.lock().await;
+    let temp = TempDir::new().context("create tempdir")?;
+    let upstream = start_upstream("parallel answer").await?;
+    let bind = free_bind().await?;
+    let config_path = write_config_with_scaling(temp.path(), &bind, &upstream, 4, 10).await?;
+    let (base_url, server) = start_gateway(&config_path).await?;
+    let client = reqwest::Client::new();
+
+    let parallel = post_mcp(
+        &client,
+        &base_url,
+        json!({
+            "jsonrpc": "2.0",
+            "id": 11,
+            "method": "tools/call",
+            "params": {
+                "name": "jnoccio_spawn_parallel",
+                "arguments": { "count": 3 }
+            }
+        }),
+    )
+    .await?;
+    let spawned = parallel["result"]["structuredContent"]["spawned"]
+        .as_array()
+        .context("spawned should be an array")?;
+    let ids = spawned
+        .iter()
+        .map(|instance| {
+            instance["id"]
+                .as_str()
+                .context("spawned instance id missing")
+                .map(str::to_string)
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let binds = spawned
+        .iter()
+        .map(|instance| {
+            instance["bind"]
+                .as_str()
+                .context("spawned instance bind missing")
+                .map(str::to_string)
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let unique_binds = binds.iter().collect::<HashSet<_>>();
+
+    let status = post_mcp(
+        &client,
+        &base_url,
+        json!({
+            "jsonrpc": "2.0",
+            "id": 12,
+            "method": "tools/call",
+            "params": {
+                "name": "jnoccio_status",
+                "arguments": {}
+            }
+        }),
+    )
+    .await?;
+
+    let cap_refusal = post_mcp(
+        &client,
+        &base_url,
+        json!({
+            "jsonrpc": "2.0",
+            "id": 13,
+            "method": "tools/call",
+            "params": {
+                "name": "jnoccio_spawn_instance",
+                "arguments": {}
+            }
+        }),
+    )
+    .await?;
+
+    for id in &ids {
+        let _ = post_mcp(
+            &client,
+            &base_url,
+            json!({
+                "jsonrpc": "2.0",
+                "id": 14,
+                "method": "tools/call",
+                "params": {
+                    "name": "jnoccio_stop_instance",
+                    "arguments": {
+                        "instance_id": id
+                    }
+                }
+            }),
+        )
+        .await;
+    }
+    server.abort();
+
+    assert_eq!(
+        spawned.len(),
+        3,
+        "unexpected parallel spawn response: {parallel}"
+    );
+    assert_eq!(
+        unique_binds.len(),
+        binds.len(),
+        "duplicate binds: {binds:?}"
+    );
+    assert_eq!(parallel["result"]["structuredContent"]["instance_count"], 4);
+    assert_eq!(parallel["result"]["structuredContent"]["max_instances"], 4);
+    assert_eq!(
+        parallel["result"]["structuredContent"]["available_instance_slots"],
+        0
+    );
+    assert_eq!(status["result"]["structuredContent"]["instance_count"], 4);
+    assert_eq!(status["result"]["structuredContent"]["max_instances"], 4);
+    assert_eq!(
+        status["result"]["structuredContent"]["available_instance_slots"],
+        0
+    );
+    assert_eq!(status["result"]["structuredContent"]["role"], "main");
+    assert!(
+        status["result"]["structuredContent"]["worker_threads"]
+            .as_u64()
+            .unwrap_or(0)
+            > 0
+    );
+    assert!(
+        cap_refusal["error"]["message"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("instance cap reached"),
+        "unexpected cap refusal: {cap_refusal}"
+    );
     Ok(())
 }
 
@@ -333,6 +514,16 @@ async fn start_upstream(answer: &'static str) -> Result<String> {
 }
 
 async fn write_config(root: &Path, bind: &str, upstream_url: &str) -> Result<PathBuf> {
+    write_config_with_scaling(root, bind, upstream_url, 10, 5).await
+}
+
+async fn write_config_with_scaling(
+    root: &Path,
+    bind: &str,
+    upstream_url: &str,
+    max_instances: usize,
+    spawn_batch_limit: usize,
+) -> Result<PathBuf> {
     fs::create_dir_all(root.join("config")).context("create config dir")?;
     fs::create_dir_all(root.join("state")).context("create state dir")?;
     fs::create_dir_all(root.join("receipts")).context("create receipts dir")?;
@@ -403,6 +594,10 @@ async fn write_config(root: &Path, bind: &str, upstream_url: &str) -> Result<Pat
                 "fast_backup_count": 1,
                 "event_retention_rows": 1000,
                 "minute_bucket_retention_days": 7
+            },
+            "scaling": {
+                "max_instances": max_instances,
+                "spawn_batch_limit": spawn_batch_limit
             }
         })
         .to_string(),

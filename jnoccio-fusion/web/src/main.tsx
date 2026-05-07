@@ -11,6 +11,11 @@ const emptySnapshot: DashboardSnapshot = {
   context: emptyContext,
   models: [],
   recent_events: [],
+  instance_count: 1,
+  max_instances: 10,
+  available_instance_slots: 9,
+  instance_role: "main",
+  worker_threads: 0,
 }
 
 type TabId = "leaderboard" | "latency" | "tokens" | "limits" | "feed"
@@ -84,6 +89,11 @@ function App() {
           </div>
         </div>
         <KpiStrip totals={snapshot.totals} />
+        <div className={`instance-badge ${snapshot.instance_count > 1 ? "multi" : ""}`}>
+          <span className="instance-icon">{snapshot.instance_count > 1 ? "⚡" : "●"}</span>
+          <span className="instance-label">Agents</span>
+          <span className="instance-value">{snapshot.instance_count}/{snapshot.max_instances}</span>
+        </div>
         <div className={`conn-pill ${connection}`}>{connLabel(connection, lastHeartbeat)}</div>
       </header>
 
@@ -632,6 +642,11 @@ function normalizeSnapshot(raw: Partial<DashboardSnapshot> & Record<string, unkn
       smallest_overrun_requested_tokens: m.smallest_overrun_requested_tokens ?? null,
     })),
     recent_events: raw.recent_events ?? [],
+    instance_count: (raw.instance_count as number | undefined) ?? 1,
+    max_instances: (raw.max_instances as number | undefined) ?? 10,
+    available_instance_slots: (raw.available_instance_slots as number | undefined) ?? Math.max(0, ((raw.max_instances as number | undefined) ?? 10) - ((raw.instance_count as number | undefined) ?? 1)),
+    instance_role: (raw.instance_role as string | undefined) ?? "main",
+    worker_threads: (raw.worker_threads as number | undefined) ?? 0,
   }
 }
 

@@ -4,6 +4,11 @@ export type DashboardSnapshot = {
   context: ContextDashboard
   models: DashboardModel[]
   recent_events: MetricEvent[]
+  instance_count: number
+  max_instances: number
+  available_instance_slots: number
+  instance_role: string
+  worker_threads: number
 }
 
 export type ContextDashboard = {

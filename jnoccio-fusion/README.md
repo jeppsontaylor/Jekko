@@ -16,6 +16,10 @@ Jnoccio is a standalone OpenAI-compatible gateway for routing one visible model,
 
 The dashboard is served from `/dashboard/` and shows model health, wins, latency, token usage, capacity, recent events, and context-run histograms. Failed context buckets are shown in red with learned safe-limit markers for selected models.
 
+## Runtime And Scaling
+
+Jnoccio runs as a Rust `axum`/Tokio gateway. The main instance uses up to 10 Tokio worker threads by default based on available CPU parallelism, while spawned instances default to 2 worker threads. Managed gateway scaling is capped at 10 total instances including the main gateway; `jnoccio_spawn_parallel` and `jnoccio_spawn_instance` report the current count, max count, and available slots.
+
 ## Setup
 
 ```bash

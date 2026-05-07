@@ -12,7 +12,10 @@ pub mod routing;
 pub mod state;
 pub mod telemetry;
 
-pub use config::{AppConfig, ModelEntry, Registry, ResolvedModel, ServerConfig};
+pub use config::{
+    AppConfig, InstanceRole, ModelEntry, Registry, ResolvedModel, RuntimeSettings, ScalingSettings,
+    ServerConfig,
+};
 pub use fusion::{DashboardMessage, Gateway, GatewayError, GatewayResult};
 pub use metrics::{DashboardModel, DashboardSnapshot, DashboardTotals};
 pub use openai::{

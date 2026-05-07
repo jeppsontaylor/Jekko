@@ -1,3 +1,4 @@
+use crate::config::{InstanceRole, ScalingSettings};
 use crate::fusion::Gateway;
 use crate::metrics::DashboardSnapshot;
 use crate::openai::{ChatCompletionRequest, ChatCompletionResponse};
@@ -10,12 +11,17 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex};
+use tokio::sync::Mutex as AsyncMutex;
 use tokio::time::{Duration, sleep};
 
 #[derive(Clone)]
 pub struct McpState {
     instances: Arc<Mutex<HashMap<String, ManagedInstance>>>,
+    spawn_gate: Arc<AsyncMutex<()>>,
     http: reqwest::Client,
+    role: InstanceRole,
+    max_instances: usize,
+    spawn_batch_limit: usize,
 }
 
 struct ManagedInstance {
@@ -36,6 +42,14 @@ struct InstanceView {
     database: String,
 }
 
+#[derive(Clone, Debug, serde::Serialize)]
+struct InstanceUsage {
+    instance_count: usize,
+    max_instances: usize,
+    available_instance_slots: usize,
+    role: String,
+}
+
 #[derive(Deserialize)]
 struct JsonRpcRequest {
     #[serde(default, rename = "jsonrpc")]
@@ -48,10 +62,14 @@ struct JsonRpcRequest {
 }
 
 impl McpState {
-    pub fn new() -> Self {
+    pub fn new(role: InstanceRole, scaling: ScalingSettings) -> Self {
         Self {
             instances: Arc::new(Mutex::new(HashMap::new())),
+            spawn_gate: Arc::new(AsyncMutex::new(())),
             http: reqwest::Client::new(),
+            role,
+            max_instances: scaling.max_instances,
+            spawn_batch_limit: scaling.spawn_batch_limit,
         }
     }
 
@@ -65,12 +83,11 @@ impl McpState {
     async fn dispatch(self: &Arc<Self>, gateway: Arc<Gateway>, body: Value) -> HttpReply {
         match body {
             Value::Array(items) => {
-                let mut replies = Vec::new();
-                for item in items {
-                    if let Some(reply) = self.dispatch_one(gateway.clone(), item).await {
-                        replies.push(reply);
-                    }
-                }
+                let futures = items
+                    .into_iter()
+                    .map(|item| self.dispatch_one(gateway.clone(), item));
+                let results = futures::future::join_all(futures).await;
+                let replies: Vec<Value> = results.into_iter().flatten().collect();
                 if replies.is_empty() {
                     HttpReply::Accepted
                 } else {
@@ -228,18 +245,33 @@ impl McpState {
             "jnoccio_metrics" => Ok(tool_result(self.metrics_snapshot(&gateway), false)),
             "jnoccio_instances" => Ok(tool_result(
                 json!({
-                    "instances": self.instances_view(&gateway)
+                    "instances": self.instances_view(&gateway),
+                    "instance_count": self.instance_count(),
+                    "max_instances": self.max_instances(),
+                    "available_instance_slots": self.available_instance_slots(),
+                    "role": self.role.as_str(),
                 }),
                 false,
             )),
             "jnoccio_spawn_instance" => {
+                self.ensure_main_role()?;
                 let spawned = self.spawn_instance(&gateway, arguments).await?;
+                let usage = self.instance_usage();
                 Ok(tool_result(
                     json!({
-                        "instance": spawned
+                        "instance": spawned,
+                        "instance_count": usage.instance_count,
+                        "max_instances": usage.max_instances,
+                        "available_instance_slots": usage.available_instance_slots,
+                        "role": usage.role,
                     }),
                     false,
                 ))
+            }
+            "jnoccio_spawn_parallel" => {
+                self.ensure_main_role()?;
+                let spawned = self.spawn_parallel(&gateway, arguments).await?;
+                Ok(tool_result(spawned, false))
             }
             "jnoccio_stop_instance" => {
                 let stopped = self.stop_instance(arguments)?;
@@ -348,6 +380,7 @@ impl McpState {
     fn status_snapshot(&self, gateway: &Gateway) -> Value {
         let health = gateway.health();
         let snapshot = gateway.dashboard_snapshot().ok();
+        let usage = self.instance_usage();
         json!({
             "health": health,
             "model_count": health.available_models,
@@ -358,6 +391,11 @@ impl McpState {
             "bind": gateway.config.bind,
             "database": gateway.config.database,
             "receipts_dir": gateway.config.receipts_dir,
+            "instance_count": usage.instance_count,
+            "max_instances": usage.max_instances,
+            "available_instance_slots": usage.available_instance_slots,
+            "role": usage.role,
+            "worker_threads": gateway.config.worker_threads,
         })
     }
 
@@ -376,7 +414,7 @@ impl McpState {
             bind: gateway.config.bind.clone(),
             pid: std::process::id(),
             started_at: chrono::Utc::now().to_rfc3339(),
-            role: "main".to_string(),
+            role: self.role.as_str().to_string(),
             database: gateway.config.database.display().to_string(),
         }];
         let mut lock = self.instances.lock().expect("instance map poisoned");
@@ -392,10 +430,63 @@ impl McpState {
         views
     }
 
+    pub fn instance_count(&self) -> usize {
+        let mut lock = self.instances.lock().expect("instance map poisoned");
+        lock.retain(|_, instance| instance.child.try_wait().ok().flatten().is_none());
+        1 + lock.len()
+    }
+
+    pub fn max_instances(&self) -> usize {
+        self.max_instances
+    }
+
+    pub fn available_instance_slots(&self) -> usize {
+        self.max_instances.saturating_sub(self.instance_count())
+    }
+
+    fn instance_usage(&self) -> InstanceUsage {
+        let instance_count = self.instance_count();
+        InstanceUsage {
+            instance_count,
+            max_instances: self.max_instances,
+            available_instance_slots: self.max_instances.saturating_sub(instance_count),
+            role: self.role.as_str().to_string(),
+        }
+    }
+
+    fn ensure_main_role(&self) -> Result<(), RpcError> {
+        if self.role == InstanceRole::Main {
+            return Ok(());
+        }
+        Err(RpcError::invalid_params(
+            "spawn tools are only available on the main Jnoccio instance; call jnoccio_spawn_instance or jnoccio_spawn_parallel on the main gateway",
+        ))
+    }
+
     async fn spawn_instance(&self, gateway: &Gateway, arguments: Value) -> Result<Value, RpcError> {
+        let _gate = self.spawn_gate.lock().await;
+        self.spawn_instance_locked(gateway, arguments, None).await
+    }
+
+    async fn spawn_instance_locked(
+        &self,
+        gateway: &Gateway,
+        arguments: Value,
+        reserved_binds: Option<&mut Vec<String>>,
+    ) -> Result<Value, RpcError> {
+        let available_slots = self.available_instance_slots();
+        if available_slots == 0 {
+            return Err(RpcError::invalid_params(format!(
+                "instance cap reached: {} total managed instances are already running",
+                self.max_instances
+            )));
+        }
         let requested_bind = argument_string(&arguments, "bind").ok();
         let requested_port = argument_u64(&arguments, "port");
-        let bind = choose_bind(requested_bind, requested_port)?;
+        let bind = match reserved_binds {
+            Some(reserved) => choose_bind_reserved(requested_bind, requested_port, reserved)?,
+            None => choose_bind(requested_bind, requested_port)?,
+        };
         let started_at = chrono::Utc::now().to_rfc3339();
         let child = spawn_gateway_process(gateway, &bind)
             .map_err(|err| RpcError::internal(format!("failed to spawn child instance: {err}")))?;
@@ -426,6 +517,59 @@ impl McpState {
             "started_at": started_at,
             "database": gateway.config.database.display().to_string(),
             "role": "spawned"
+        }))
+    }
+
+    async fn spawn_parallel(&self, gateway: &Gateway, arguments: Value) -> Result<Value, RpcError> {
+        let requested = argument_u64(&arguments, "count").unwrap_or(2).max(1) as usize;
+        let _gate = self.spawn_gate.lock().await;
+        let available_slots = self.available_instance_slots();
+        if available_slots == 0 {
+            return Err(RpcError::invalid_params(format!(
+                "instance cap reached: {} total managed instances are already running",
+                self.max_instances
+            )));
+        }
+        let capped = requested.min(self.spawn_batch_limit).min(available_slots);
+        let mut reserved_binds = Vec::new();
+        let mut spawn_args = Vec::new();
+        let mut errors = Vec::new();
+        if requested > self.spawn_batch_limit {
+            errors.push(format!(
+                "requested {requested} instances; batch limited to {}",
+                self.spawn_batch_limit
+            ));
+        }
+        if requested.min(self.spawn_batch_limit) > available_slots {
+            errors.push(format!(
+                "requested {requested} instances; only {available_slots} instance slots available"
+            ));
+        }
+        for _ in 0..capped {
+            let bind = choose_bind_reserved(None, None, &mut reserved_binds)?;
+            spawn_args.push(json!({ "bind": bind }));
+        }
+        let futures = spawn_args
+            .into_iter()
+            .map(|arguments| self.spawn_instance_locked(gateway, arguments, None));
+        let results = futures::future::join_all(futures).await;
+        let mut spawned = Vec::new();
+        for result in results {
+            match result {
+                Ok(instance) => spawned.push(instance),
+                Err(err) => errors.push(err.message),
+            }
+        }
+        let usage = self.instance_usage();
+        Ok(json!({
+            "spawned": spawned,
+            "count": spawned.len(),
+            "errors": errors,
+            "total_instances": usage.instance_count,
+            "instance_count": usage.instance_count,
+            "max_instances": usage.max_instances,
+            "available_instance_slots": usage.available_instance_slots,
+            "role": usage.role,
         }))
     }
 
@@ -547,7 +691,10 @@ impl RpcError {
 
 impl Default for McpState {
     fn default() -> Self {
-        Self::new()
+        Self::new(
+            InstanceRole::Main,
+            ScalingSettings::from_config(None).expect("default scaling config is valid"),
+        )
     }
 }
 
@@ -646,12 +793,23 @@ fn tools_list() -> Vec<Value> {
         ),
         tool_descriptor(
             "jnoccio_spawn_instance",
-            "Start an extra local Jnoccio instance on an available localhost port.",
+            "Start an extra local Jnoccio gateway instance on an available localhost port. Main instances enforce a 10-total-instance cap, including the main gateway.",
             json!({
                 "type": "object",
                 "properties": {
                     "bind": { "type": "string" },
                     "port": { "type": "integer", "minimum": 1024, "maximum": 65535 }
+                },
+                "additionalProperties": false
+            }),
+        ),
+        tool_descriptor(
+            "jnoccio_spawn_parallel",
+            "Spawn multiple local Jnoccio gateway instances in parallel for concurrent workloads. Main instances enforce a 10-total-instance cap, including the main gateway.",
+            json!({
+                "type": "object",
+                "properties": {
+                    "count": { "type": "integer", "minimum": 1, "maximum": 10, "default": 2, "description": "Number of instances to spawn in parallel" }
                 },
                 "additionalProperties": false
             }),
@@ -740,7 +898,10 @@ fn agent_instructions() -> String {
         "Keep prompts compact and self-contained.",
         "Do not send secrets, API keys, or full logs.",
         "Use jnoccio_status before heavy delegation when capacity matters.",
-        "Use jnoccio_spawn_instance only when the main instance is down or saturated.",
+        "Use jnoccio_spawn_parallel to spin up multiple gateway instances for concurrent workloads (e.g. parallel research, multi-file edits, batch delegation); it respects the 10-total-instance hard cap.",
+        "Use jnoccio_spawn_instance to add a single extra instance when incremental scaling is needed.",
+        "All spawned instances share the same database, model pool, and dashboard — no data is lost.",
+        "Use jnoccio_instances to check how many instances are currently running.",
         "Prefer direct Jnoccio MCP rather than routing through another client.",
     ]
     .join("\n")
@@ -797,6 +958,11 @@ fn compact_metrics(snapshot: DashboardSnapshot) -> Value {
     json!({
         "totals": snapshot.totals,
         "capacity": snapshot.capacity,
+        "instance_count": snapshot.instance_count,
+        "max_instances": snapshot.max_instances,
+        "available_instance_slots": snapshot.available_instance_slots,
+        "role": snapshot.instance_role,
+        "worker_threads": snapshot.worker_threads,
         "models": snapshot
             .models
             .into_iter()
@@ -839,14 +1005,44 @@ fn choose_bind(
     requested_bind: Option<String>,
     requested_port: Option<u64>,
 ) -> Result<String, RpcError> {
+    choose_bind_reserved(requested_bind, requested_port, &mut Vec::new())
+}
+
+fn choose_bind_reserved(
+    requested_bind: Option<String>,
+    requested_port: Option<u64>,
+    reserved_binds: &mut Vec<String>,
+) -> Result<String, RpcError> {
     if let Some(bind) = requested_bind {
+        if reserved_binds.iter().any(|reserved| reserved == &bind) {
+            return Err(RpcError::invalid_params(format!(
+                "duplicate bind requested in spawn batch: {bind}"
+            )));
+        }
+        reserved_binds.push(bind.clone());
         return Ok(bind);
     }
     let start = requested_port.unwrap_or(4318);
-    let port = (start..start + 200)
-        .find(|port| port_available(*port as u16))
+    if start > u16::MAX as u64 {
+        return Err(RpcError::invalid_params(format!(
+            "requested port {start} is outside the valid TCP port range"
+        )));
+    }
+    let end = start.saturating_add(200).min(u16::MAX as u64 + 1);
+    let bind = (start..end)
+        .map(|port| format!("127.0.0.1:{port}"))
+        .find(|bind| {
+            !reserved_binds.iter().any(|reserved| reserved == bind)
+                && bind
+                    .rsplit(':')
+                    .next()
+                    .and_then(|port| port.parse::<u16>().ok())
+                    .map(port_available)
+                    .unwrap_or(false)
+        })
         .ok_or_else(|| RpcError::internal("no available localhost ports in range 4318-4517"))?;
-    Ok(format!("127.0.0.1:{port}"))
+    reserved_binds.push(bind.clone());
+    Ok(bind)
 }
 
 fn port_available(port: u16) -> bool {
@@ -863,6 +1059,8 @@ fn spawn_gateway_process(gateway: &Gateway, bind: &str) -> Result<Child, String>
         .arg(&gateway.config.env_path)
         .arg("--bind")
         .arg(bind)
+        .arg("--instance-role")
+        .arg("spawned")
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::inherit());

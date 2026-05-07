@@ -8,7 +8,9 @@ Jnoccio exposes a local MCP server that Claude agents can use to offload focused
 - Keep MCP inputs concise. Provide the goal, relevant local paths or snippets, constraints, and expected output.
 - Do not send secrets, API keys, private headers, full transcript logs, complete tool arguments, or unnecessary file contents.
 - Use `jnoccio_status` before expensive delegation or when routing health, context limits, or capacity matter.
-- Use `jnoccio_spawn_instance` only when the default Jnoccio server is unavailable or additional local capacity is explicitly useful.
+- Use `jnoccio_spawn_parallel` to spin up multiple gateway instances for concurrent workloads (e.g. parallel research, multi-file edits, batch delegation). It respects a 10-total-instance hard cap including the main gateway, and all instances share the same database and model pool.
+- Use `jnoccio_spawn_instance` to add a single extra gateway instance when incremental scaling is needed.
+- Use `jnoccio_instances` to check how many instances are currently running before spawning more.
 - Prefer direct Jnoccio MCP calls over routing through another agent or application.
 
 ## Bootstrap

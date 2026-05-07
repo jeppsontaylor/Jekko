@@ -40,6 +40,8 @@ import { Command } from "@/command"
 import { Truncate } from "@/tool/truncate"
 import { ToolRegistry } from "@/tool/registry"
 import { Format } from "@/format"
+import { Memory } from "@/memory"
+import { PatchVmModule } from "@/patch/vm"
 import { InstanceLayer } from "@/project/instance-layer"
 import { Project } from "@/project/project"
 import { Vcs } from "@/project/vcs"
@@ -94,6 +96,8 @@ export const AppLayer = Layer.mergeAll(
   Truncate.defaultLayer,
   ToolRegistry.defaultLayer,
   Format.defaultLayer,
+  Memory.layer,
+  PatchVmModule.layer.pipe(Layer.provide(AppFileSystem.defaultLayer)),
   Project.defaultLayer,
   Vcs.defaultLayer,
   Workspace.defaultLayer,

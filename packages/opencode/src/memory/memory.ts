@@ -10,7 +10,7 @@ export interface FailureFingerprint {
   signature: string
   failureKind: string
   attemptedFixHash: string
-  evidenceHash: string
+  evidenceHash?: string
 }
 
 export type RetryDecision =
@@ -48,7 +48,7 @@ export interface MemoryQuery {
 export interface Interface {
   readonly record: (event: MemoryEvent) => Effect.Effect<void>
   readonly recall: (query: MemoryQuery) => Effect.Effect<MemoryHit[]>
-  readonly retryDecision: (projectId: ProjectID, fingerprint: FailureFingerprint) => Effect.Effect<RetryDecision>
+  readonly retryDecision: (projectId: ProjectID, fingerprint: Omit<FailureFingerprint, "evidenceHash" | "failureKind">) => Effect.Effect<RetryDecision>
   readonly recordFailedAttempt: (projectId: ProjectID, fingerprint: FailureFingerprint, sessionId?: string) => Effect.Effect<void>
   readonly failedAttemptsForSignature: (projectId: ProjectID, signature: string) => Effect.Effect<FailedAttemptRecord[]>
   readonly decayTick: (projectId: ProjectID) => Effect.Effect<void>
@@ -174,21 +174,19 @@ export const layer = Layer.effect(
 
     const retryDecision = Effect.fn("MemoryOS.retryDecision")(function* (
       projectId: ProjectID,
-      fingerprint: FailureFingerprint,
+      fingerprint: Omit<FailureFingerprint, "evidenceHash" | "failureKind">,
     ) {
       return yield* db((tx) => {
+        const conditions = [
+          eq(FailedAttemptTable.project_id, projectId),
+          eq(FailedAttemptTable.signature, fingerprint.signature),
+          eq(FailedAttemptTable.attempted_fix_hash, fingerprint.attemptedFixHash)
+        ]
+        
         const existing = tx
           .select()
           .from(FailedAttemptTable)
-          .where(
-            and(
-              eq(FailedAttemptTable.project_id, projectId),
-              eq(FailedAttemptTable.signature, fingerprint.signature),
-              eq(FailedAttemptTable.failure_kind, fingerprint.failureKind),
-              eq(FailedAttemptTable.attempted_fix_hash, fingerprint.attemptedFixHash),
-              eq(FailedAttemptTable.evidence_hash, fingerprint.evidenceHash),
-            ),
-          )
+          .where(and(...conditions))
           .get()
 
         if (existing) {
@@ -215,7 +213,7 @@ export const layer = Layer.effect(
             signature: fingerprint.signature,
             failure_kind: fingerprint.failureKind,
             attempted_fix_hash: fingerprint.attemptedFixHash,
-            evidence_hash: fingerprint.evidenceHash,
+            evidence_hash: fingerprint.evidenceHash || "",
             session_id: sessionId,
             time_created: now,
             time_updated: now,

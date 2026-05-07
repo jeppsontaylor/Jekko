@@ -29,3 +29,7 @@ UPCOMING_CHANGELOG.md
 logs/
 *.bun-build
 tsconfig.tsbuildinfo
+# jankurai scaffold .gitignore
+# Keep Jankurai receipts local without hiding the rest of target/.
+target/jankurai/
+.jankurai/

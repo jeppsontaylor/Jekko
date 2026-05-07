@@ -16,6 +16,8 @@ import { SessionRetry } from "./retry"
 import { SessionStatus } from "./status"
 import { SessionSummary } from "./summary"
 import type { Provider } from "@/provider/provider"
+import { Memory } from "../memory"
+import { hashString } from "../patch/hash"
 import { Question } from "@/question"
 import { errorMessage } from "@/util/error"
 import * as Log from "@opencode-ai/core/util/log"
@@ -94,6 +96,7 @@ export const layer: Layer.Layer<
   | Plugin.Service
   | SessionSummary.Service
   | SessionStatus.Service
+  | Memory.Service
 > = Layer.effect(
   Service,
   Effect.gen(function* () {
@@ -108,6 +111,7 @@ export const layer: Layer.Layer<
     const summary = yield* SessionSummary.Service
     const scope = yield* Scope.Scope
     const status = yield* SessionStatus.Service
+    const memory = yield* Memory.Service
 
     const create = Effect.fn("SessionProcessor.create")(function* (input: Input) {
       // Pre-capture snapshot before the LLM stream starts. The AI SDK
@@ -364,6 +368,49 @@ export const layer: Layer.Layer<
             }
 
             const agent = yield* agents.get(ctx.assistantMessage.agent)
+            
+            // Doom-loop prevention
+            if (value.toolName === "apply_patch") {
+              const sessionData = yield* session.get(ctx.sessionID)
+              const fixSignature = hashString(typeof value.input === "object" && value.input !== null ? JSON.stringify(value.input) : String(value.input))
+              
+              const decision = yield* memory.retryDecision(
+                sessionData.projectID,
+                { signature: value.toolName, attemptedFixHash: fixSignature }
+              )
+
+              if (decision.type === "block") {
+                yield* updateToolCall(value.toolCallId, (match) => ({
+                  ...match,
+                  tool: value.toolName,
+                  state: {
+                    ...match.state,
+                    status: "running",
+                    input: value.input,
+                    time: { start: Date.now() },
+                  },
+                }))
+
+                const blockedError = new Error(`Memory OS Doom-Loop Prevention: You have already tried this exact fix for this exact error previously, and it failed. You are blocked from retrying this exact fix again. You must formulate a DIFFERENT approach or look for the root cause elsewhere.`)
+                
+                // TODO(v2): Temporary dual-write while migrating session messages to v2 events.
+                EventV2.run(SessionEvent.Tool.Failed.Sync, {
+                  sessionID: ctx.sessionID,
+                  callID: value.toolCallId,
+                  error: {
+                    type: "unknown",
+                    message: blockedError.message,
+                  },
+                  provider: {
+                    executed: toolCall?.part.metadata?.providerExecuted === true,
+                  },
+                  timestamp: DateTime.makeUnsafe(Date.now()),
+                })
+                yield* failToolCall(value.toolCallId, blockedError)
+                return
+              }
+            }
+
             yield* permission.ask({
               permission: "doom_loop",
               patterns: [value.toolName],
@@ -405,6 +452,24 @@ export const layer: Layer.Layer<
 
           case "tool-error": {
             const toolCall = yield* readToolCall(value.toolCallId)
+            
+            if (toolCall && toolCall.part.tool === "apply_patch") {
+              const sessionData = yield* session.get(ctx.sessionID)
+              const fixSignature = hashString(JSON.stringify(toolCall.part.state.input))
+              const evidenceStr = errorMessage(value.error)
+              const evidenceHash = hashString(evidenceStr)
+              
+              yield* memory.recordFailedAttempt(
+                sessionData.projectID,
+                {
+                  signature: toolCall.part.tool,
+                  attemptedFixHash: fixSignature,
+                  evidenceHash: evidenceHash,
+                  failureKind: "test_failure",
+                }
+              ).pipe(Effect.ignore)
+            }
+
             // TODO(v2): Temporary dual-write while migrating session messages to v2 events.
             EventV2.run(SessionEvent.Tool.Failed.Sync, {
               sessionID: ctx.sessionID,
@@ -756,6 +821,7 @@ export const defaultLayer = Layer.suspend(() =>
     Layer.provide(Plugin.defaultLayer),
     Layer.provide(SessionSummary.defaultLayer),
     Layer.provide(SessionStatus.defaultLayer),
+    Layer.provide(Memory.layer),
     Layer.provide(Bus.layer),
     Layer.provide(Config.defaultLayer),
   ),

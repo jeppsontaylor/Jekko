@@ -9,6 +9,11 @@ pub struct DashboardSnapshot {
     pub context: ContextDashboard,
     pub models: Vec<DashboardModel>,
     pub recent_events: Vec<MetricEvent>,
+    pub instance_count: usize,
+    pub max_instances: usize,
+    pub available_instance_slots: usize,
+    pub instance_role: String,
+    pub worker_threads: usize,
 }
 
 #[derive(Clone, Debug, Default, serde::Serialize)]

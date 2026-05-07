@@ -11,5 +11,12 @@
     "fast_backup_count": 2,
     "event_retention_rows": 50000,
     "minute_bucket_retention_days": 30
+  },
+  "runtime": {
+    "spawned_worker_threads": 2
+  },
+  "scaling": {
+    "max_instances": 10,
+    "spawn_batch_limit": 5
   }
 }

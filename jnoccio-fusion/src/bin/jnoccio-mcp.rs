@@ -122,6 +122,8 @@ fn spawn_main_server(config: &jnoccio_fusion::AppConfig) -> Result<std::process:
         .arg(&config.env_path)
         .arg("--bind")
         .arg(&config.bind)
+        .arg("--instance-role")
+        .arg("main")
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::inherit())

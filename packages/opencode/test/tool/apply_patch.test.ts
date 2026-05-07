@@ -3,6 +3,7 @@ import path from "path"
 import * as fs from "fs/promises"
 import { Effect, ManagedRuntime, Layer } from "effect"
 import { ApplyPatchTool } from "../../src/tool/apply_patch"
+import { PatchVmModule } from "../../src/patch/vm"
 import { Instance } from "../../src/project/instance"
 import { WithInstance } from "../../src/project/with-instance"
 import { LSP } from "@/lsp/lsp"
@@ -22,6 +23,7 @@ const runtime = ManagedRuntime.make(
     Bus.layer,
     Truncate.defaultLayer,
     Agent.defaultLayer,
+    PatchVmModule.layer.pipe(Layer.provide(AppFileSystem.defaultLayer)),
   ),
 )
 
