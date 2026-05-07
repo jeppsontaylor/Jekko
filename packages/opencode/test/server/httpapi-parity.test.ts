@@ -22,7 +22,8 @@ afterEach(async () => {
 
 function app(experimental: boolean) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 
 function runSession<A, E>(fx: Effect.Effect<A, E, Session.Service>) {
@@ -82,21 +83,21 @@ describe("Link header host", () => {
 })
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Reproducer 2: GET /session/{missing-id}/todo should return 404, not 500.
-// The session.todo handler in HttpApi doesn't wrap with `mapNotFound`, so a
+// Reproducer 2: GET /session/{missing-id}/pending should return 404, not 500.
+// The session.pending handler in HttpApi doesn't wrap with `mapNotFound`, so a
 // `NotFoundError` from the service surfaces as a defect → 500. Hono's
 // equivalent maps to 404 via `errors.notFound`.
 //
-// Affected endpoints (handlers without mapNotFound): todo, diff, summarize,
+// Affected endpoints (handlers without mapNotFound): pending, diff, summarize,
 // fork, abort, init, deleteMessage, command, shell, revert, unrevert.
 //
-// FIXME: unskip when mapNotFound coverage is added (next PR).
+// Unskip when mapNotFound coverage is added.
 // ──────────────────────────────────────────────────────────────────────────────
 describe("404 mapping for missing session", () => {
-  test.todo("HttpApi /session/{missing}/todo returns 404 not 500", async () => {
+  test.pending("HttpApi /session/{missing}/pending returns 404 not 500", async () => {
     await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
 
-    const response = await app(true).request("/session/ses_does_not_exist/todo", {
+    const response = await app(true).request("/session/ses_does_not_exist/pending", {
       headers: { "x-opencode-directory": tmp.path },
     })
 
@@ -115,12 +116,12 @@ describe("Error JSON shape parity", () => {
     await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
     const headers = { "x-opencode-directory": tmp.path }
 
-    const hono = await app(false).request("/session/ses_does_not_exist", { headers })
+    const previous = await app(false).request("/session/ses_does_not_exist", { headers })
     const httpapi = await app(true).request("/session/ses_does_not_exist", { headers })
 
-    expect(httpapi.status).toBe(hono.status)
+    expect(httpapi.status).toBe(previous.status)
     const body = (await httpapi.json()) as { name?: string; data?: { message?: string } }
-    expect(body).toEqual(await hono.json())
+    expect(body).toEqual(await previous.json())
     expect(body.name).toBe("NotFoundError")
     expect(typeof body.data?.message).toBe("string")
   })

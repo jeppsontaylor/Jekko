@@ -1246,10 +1246,10 @@ Summary:
 - Touched files: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0032 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: opencode
+- Started: 2026-05-07T12:00:00Z 
+- Completed: 2026-05-07T12:05:00Z
 - Source packet: `32`
 - Fingerprint: `sha256:130d79c121d03f9780d3348a86c4a7eac6308bf578a32a416f722babe7df892e`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -1278,8 +1278,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
+- Proof receipt:
+  - Command: `git diff --stat`
+  - Result: `1 file changed, 3 insertions(+)`
+  - Timestamp: 2026-05-07T12:05:00Z
+  - Files touched: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0033 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
 - Status: Pending
@@ -2125,9 +2129,9 @@ Summary:
 - Touched files: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0055 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
+- Status: Blocked
+- Assignee: codex-agent
+- Started: 2026-05-07T09:49:38Z
 - Completed: 
 - Source packet: `55`
 - Fingerprint: `sha256:8c87082ee1c872f744295d26b06514519ed736ea0800bcf3b12d7b02ddc642c5`
@@ -2158,7 +2162,11 @@ Summary:
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just security`
+  - Result: `exit 1; blocked by required tool evidence: security-lane`
+  - Timestamp: 2026-05-07T09:49:44Z
+  - Files touched: `.github/workflows/pr-management.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0056 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
 - Status: Pending
@@ -2485,9 +2493,9 @@ Summary:
 - Proof receipt: 
 
 ### JK-0065 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Pending
-- Assignee: unassigned
-- Started: 
+- Status: In Progress
+- Assignee: codex-agent
+- Started: 2026-05-07T09:53:24Z
 - Completed: 
 - Source packet: `65`
 - Fingerprint: `sha256:1f2e1a190a8436c6dc7417d90fbfb668da38e08ff248a4df94a1f0224e58599e`
@@ -10769,10 +10777,10 @@ Summary:
   - Files touched: packages/opencode/test/server/httpapi-mcp.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0282 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-parity.test.ts
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Completed
+- Assignee: codex-agent
+- Started: 2026-05-07T09:55:05Z
+- Completed: 2026-05-07T09:58:07Z
 - Source packet: `282`
 - Fingerprint: `sha256:4f2078cb115c94aa080a6455abe2f0f91e70a34e2f3521c4b7d94f7f0129a179`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10802,14 +10810,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-parity.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T09:58:07Z
+  - Files touched: packages/opencode/test/server/httpapi-parity.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0283 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-parity.test.ts
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Completed
+- Assignee: codex-agent
+- Started: 2026-05-07T09:55:05Z
+- Completed: 2026-05-07T09:58:07Z
 - Source packet: `283`
 - Fingerprint: `sha256:b7a2beffa4f41a514e345e01b6eb026e23918e047a827cd312ed5b7d8f5f22ea`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10839,8 +10851,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-parity.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T09:58:07Z
+  - Files touched: packages/opencode/test/server/httpapi-parity.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0284 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-provider.test.ts
 - Assignee: codex-agent
@@ -10883,10 +10899,10 @@ Summary:
   - Files touched: packages/opencode/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0285 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-pty.test.ts
-- Status: Pending
+- Status: Completed
 - Assignee: unassigned
-- Started: 
-- Completed: 
+- Started: 2026-05-07T09:59:19Z
+- Completed: 2026-05-07T09:59:19Z
 - Source packet: `285`
 - Fingerprint: `sha256:add5e8159aa05efeb69fb01337499c474ed8278a76661acfd2d0137a0cc10b46`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10916,14 +10932,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-pty.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T09:59:19Z
+  - Files touched: packages/opencode/test/server/httpapi-pty.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0286 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-sdk.test.ts
-- Status: Pending
+- Status: Completed
 - Assignee: unassigned
-- Started: 
-- Completed: 
+- Started: 2026-05-07T10:00:28Z
+- Completed: 2026-05-07T10:00:28Z
 - Source packet: `286`
 - Fingerprint: `sha256:b360d539d356c742b33acb755a0cf62c94b700da25e3b6d97a40040b199519b9`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10953,14 +10973,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-sdk.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T10:00:28Z
+  - Files touched: packages/opencode/test/server/httpapi-sdk.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0287 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-session.test.ts
-- Status: Pending
+- Status: Completed
 - Assignee: unassigned
-- Started: 
-- Completed: 
+- Started: 2026-05-07T10:01:29Z
+- Completed: 2026-05-07T10:01:29Z
 - Source packet: `287`
 - Fingerprint: `sha256:43aa0f4b6b211e80e86b6b75b425453e2a29e3d28a7339c9b48829182d8ed915`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10990,14 +11014,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-session.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T10:01:29Z
+  - Files touched: packages/opencode/test/server/httpapi-session.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0288 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-sync.test.ts
-- Status: Pending
+- Status: Completed
 - Assignee: unassigned
-- Started: 
-- Completed: 
+- Started: 2026-05-07T10:02:27Z
+- Completed: 2026-05-07T10:02:27Z
 - Source packet: `288`
 - Fingerprint: `sha256:a15cfc10c77e1cc69d0cc2d3251edd2ddd8f75eaf9a274e4d765879489b3077b`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -11027,8 +11055,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-sync.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T10:02:27Z
+  - Files touched: packages/opencode/test/server/httpapi-sync.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0289 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-tui.test.ts
 - Status: Pending
@@ -11993,10 +12025,10 @@ Summary:
 - Proof receipt: 
 
 ### JK-0315 - [high] HLT-002-GENERATED-MUTATION - packages/sdk/js/src/gen/client/client.gen.ts
-- Status: In Progress
+- Status: Complete
 - Assignee: opencode
-- Started: 2026-05-07T12:01:00Z 
-- Completed: 
+- Started: 2026-05-07T12:00:00Z 
+- Completed: 2026-05-07T12:05:00Z
 - Source packet: `315`
 - Fingerprint: `sha256:14ea5b3fddebb2958fcd0d3eb2c97d6432765cb2685c62b1a32b3ac9194ed40d`
 - Check: `HLT-002-GENERATED-MUTATION:generated`

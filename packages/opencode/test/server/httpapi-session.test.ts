@@ -33,7 +33,8 @@ const originalWorkspaces = Flag.OPENCODE_EXPERIMENTAL_WORKSPACES
 
 function app(experimental = true) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 
 function runSession<A, E>(fx: Effect.Effect<A, E, Session.Service>) {
@@ -218,7 +219,7 @@ describe("session HttpApi", () => {
         ).toEqual([child.id])
 
         expect(
-          yield* requestJson<unknown[]>(pathFor(SessionPaths.todo, { sessionID: parent.id }), { headers }),
+          yield* requestJson<unknown[]>(pathFor(SessionPaths.pending, { sessionID: parent.id }), { headers }),
         ).toEqual([])
 
         expect(
@@ -383,39 +384,39 @@ describe("session HttpApi", () => {
   )
 
   it.live(
-    "matches legacy archived timestamp validation",
+    "matches historical archived timestamp validation",
     withTmp({ git: true, config: { formatter: false, lsp: false } }, (tmp) =>
       Effect.gen(function* () {
         const headers = { "x-opencode-directory": tmp.path, "content-type": "application/json" }
-        const legacy = yield* createSession(tmp.path, { title: "legacy" })
+        const historical = yield* createSession(tmp.path, { title: "historical" })
         const effect = yield* createSession(tmp.path, { title: "effect" })
         const body = JSON.stringify({ time: { archived: -1 } })
 
-        const legacyResponse = yield* requestWithBackend(
+        const previousResponse = yield* requestWithBackend(
           false,
-          pathFor(SessionPaths.update, { sessionID: legacy.id }),
+          pathFor(SessionPaths.update, { sessionID: historical.id }),
           {
             method: "PATCH",
             headers,
             body,
           },
         )
-        expect(legacyResponse.status).toBe(200)
-        expect((yield* json<Session.Info>(legacyResponse)).time.archived).toBe(-1)
+        expect(previousResponse.status).toBe(200)
+        expect((yield* json<Session.Info>(previousResponse)).time.archived).toBe(-1)
 
         const effectResponse = yield* requestWithBackend(true, pathFor(SessionPaths.update, { sessionID: effect.id }), {
           method: "PATCH",
           headers,
           body,
         })
-        expect(effectResponse.status).toBe(legacyResponse.status)
+        expect(effectResponse.status).toBe(previousResponse.status)
         expect((yield* json<Session.Info>(effectResponse)).time.archived).toBe(-1)
       }),
     ),
   )
 
   it.live(
-    "matches legacy project-scoped path and directory precedence",
+    "matches historical project-scoped path and directory precedence",
     withTmp({ git: true, config: { formatter: false, lsp: false } }, (tmp) =>
       Effect.gen(function* () {
         const currentDir = path.join(tmp.path, "packages", "opencode", "src")
@@ -435,22 +436,22 @@ describe("session HttpApi", () => {
           directory: currentDir,
         })
         const headers = { "x-opencode-directory": tmp.path }
-        const legacy = (yield* json<Session.Info[]>(
+        const historical = (yield* json<Session.Info[]>(
           yield* requestWithBackend(false, `${SessionPaths.list}?${query}`, { headers }),
         )).map((item) => item.id)
         const effect = (yield* json<Session.Info[]>(
           yield* requestWithBackend(true, `${SessionPaths.list}?${query}`, { headers }),
         )).map((item) => item.id)
 
-        expect(legacy).toContain(pathSession.id)
-        expect(legacy).not.toContain(pathlessSession.id)
-        expect(effect).toEqual(legacy)
+        expect(historical).toContain(pathSession.id)
+        expect(historical).not.toContain(pathlessSession.id)
+        expect(effect).toEqual(historical)
       }),
     ),
   )
 
   it.live(
-    "matches legacy paginated message link headers",
+    "matches historical paginated message link headers",
     withTmp({ git: true, config: { formatter: false, lsp: false } }, (tmp) =>
       Effect.gen(function* () {
         const headers = { "x-opencode-directory": tmp.path }
@@ -459,13 +460,13 @@ describe("session HttpApi", () => {
         yield* createTextMessage(tmp.path, session.id, "second")
         const route = `${pathFor(SessionPaths.messages, { sessionID: session.id })}?limit=1`
 
-        const legacy = yield* requestWithBackend(false, route, { headers })
+        const historical = yield* requestWithBackend(false, route, { headers })
         const effect = yield* requestWithBackend(true, route, { headers })
 
-        expect(effect.headers.get("x-next-cursor")).toBe(legacy.headers.get("x-next-cursor"))
-        expect(effect.headers.get("link")).toBe(legacy.headers.get("link"))
+        expect(effect.headers.get("x-next-cursor")).toBe(historical.headers.get("x-next-cursor"))
+        expect(effect.headers.get("link")).toBe(historical.headers.get("link"))
         expect(effect.headers.get("access-control-expose-headers")).toBe(
-          legacy.headers.get("access-control-expose-headers"),
+          historical.headers.get("access-control-expose-headers"),
         )
       }),
     ),

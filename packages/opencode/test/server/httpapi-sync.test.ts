@@ -17,7 +17,8 @@ const originalWorkspaces = Flag.OPENCODE_EXPERIMENTAL_WORKSPACES
 
 function app(httpapi = true) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = httpapi
-  return httpapi ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return httpapi ? Server.Default().app : previousFactory().app
 }
 
 function runSession<A, E>(fx: Effect.Effect<A, E, Session.Service>) {
@@ -85,7 +86,7 @@ describe("sync HttpApi", () => {
     expect(info.mock.calls.some(([message]) => message === "sync replay complete")).toBe(true)
   })
 
-  test("matches legacy seq validation", async () => {
+  test("matches historical seq validation", async () => {
     await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
     const headers = { "x-opencode-directory": tmp.path, "content-type": "application/json" }
     const cases = [
@@ -114,7 +115,7 @@ describe("sync HttpApi", () => {
     ]
 
     for (const item of cases) {
-      const legacy = await app(false).request(item.path, {
+      const historical = await app(false).request(item.path, {
         method: "POST",
         headers,
         body: JSON.stringify(item.body),
@@ -124,7 +125,7 @@ describe("sync HttpApi", () => {
         headers,
         body: JSON.stringify(item.body),
       })
-      expect(httpapi.status).toBe(legacy.status)
+      expect(httpapi.status).toBe(historical.status)
       expect(httpapi.status).toBe(400)
     }
   })

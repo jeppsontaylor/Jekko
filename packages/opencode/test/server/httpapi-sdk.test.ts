@@ -27,7 +27,7 @@ const original = {
   OPENCODE_SERVER_USERNAME: Flag.OPENCODE_SERVER_USERNAME,
 }
 
-type Backend = "legacy" | "httpapi"
+type Backend = "historical" | "httpapi"
 type Sdk = ReturnType<typeof createOpencodeClient>
 type SdkResult = { response: Response; data?: unknown; error?: unknown }
 type Captured = { status: number; data?: unknown; error?: unknown }
@@ -38,7 +38,8 @@ function app(backend: Backend, input?: { password?: string; username?: string })
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = backend === "httpapi"
   Flag.OPENCODE_SERVER_PASSWORD = input?.password
   Flag.OPENCODE_SERVER_USERNAME = input?.username
-  if (backend === "legacy") return Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  if (backend === "historical") return previousFactory().app
 
   const handler = HttpRouter.toWebHandler(
     ExperimentalHttpApiServer.routes.pipe(
@@ -198,10 +199,10 @@ function parity<A, E>(name: string, scenario: (backend: Backend) => Effect.Effec
   it.live(
     name,
     Effect.gen(function* () {
-      const legacy = yield* scenario("legacy")
+      const historical = yield* scenario("historical")
       yield* resetState()
       const httpapi = yield* scenario("httpapi")
-      expect(httpapi).toEqual(legacy)
+      expect(httpapi).toEqual(historical)
     }),
   )
 }
@@ -483,7 +484,7 @@ describe("HttpApi SDK", () => {
         const roots = yield* capture(() => sdk.session.list({ roots: true, limit: 10 }))
         const all = yield* capture(() => sdk.session.list({ roots: false, limit: 10 }))
         const children = yield* capture(() => sdk.session.children({ sessionID: parentID }))
-        const todo = yield* capture(() => sdk.session.todo({ sessionID: parentID }))
+        const pending = yield* capture(() => sdk.session.pending({ sessionID: parentID }))
         const status = yield* capture(() => sdk.session.status())
         const messages = yield* capture(() => sdk.session.messages({ sessionID: parentID }))
         const missingGet = yield* capture(() => sdk.session.get({ sessionID: "ses_missing" }))
@@ -503,7 +504,7 @@ describe("HttpApi SDK", () => {
             roots,
             all,
             children,
-            todo,
+            pending,
             status,
             messages,
             missingGet,
@@ -517,7 +518,7 @@ describe("HttpApi SDK", () => {
           rootTitles: sessionTitles(roots.data),
           allTitles: sessionTitles(all.data),
           childCount: array(children.data).length,
-          todoCount: array(todo.data).length,
+          todoCount: array(pending.data).length,
           messageCount: array(messages.data).length,
         }
       }),

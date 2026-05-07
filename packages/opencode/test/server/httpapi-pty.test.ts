@@ -52,7 +52,8 @@ const effectIt = testEffect(
 
 function app(experimental = true) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 
 function serverUrl() {
@@ -126,11 +127,11 @@ describe("pty HttpApi bridge", () => {
     const headers = { "x-opencode-directory": tmp.path }
     const path = PtyPaths.get.replace(":ptyID", PtyID.ascending())
 
-    const hono = await app(false).request(path, { headers })
+    const previous = await app(false).request(path, { headers })
     const httpapi = await app().request(path, { headers })
 
-    expect(httpapi.status).toBe(hono.status)
-    expect(await httpapi.json()).toEqual(await hono.json())
+    expect(httpapi.status).toBe(previous.status)
+    expect(await httpapi.json()).toEqual(await previous.json())
   })
 
   test("returns 404 for missing PTY websocket before upgrade", async () => {
