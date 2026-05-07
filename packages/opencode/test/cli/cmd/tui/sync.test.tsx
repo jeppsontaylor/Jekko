@@ -14,7 +14,7 @@ import { ThemeProvider } from "../../../../src/cli/cmd/tui/context/theme"
 import { LocalProvider, useLocal } from "../../../../src/cli/cmd/tui/context/local"
 import { ToastProvider } from "../../../../src/cli/cmd/tui/ui/toast"
 import { tmpdir } from "../../../fixture/fixture"
-import type { Provider } from "@opencode-ai/sdk/v2"
+import type { Event as SDKEvent, GlobalEvent, Message, Part, Provider } from "@opencode-ai/sdk/v2"
 
 const worktree = "/tmp/opencode"
 const directory = `${worktree}/packages/opencode`
@@ -33,9 +33,25 @@ function json(data: unknown) {
   })
 }
 
-function eventSource(): EventSource {
+type ControlledEventSource = EventSource & {
+  emit: (payload: SDKEvent, options?: Partial<Omit<GlobalEvent, "payload">>) => void
+}
+
+function eventSource(): ControlledEventSource {
+  const handlers = new Set<(event: GlobalEvent) => void>()
   return {
-    subscribe: async () => () => {},
+    subscribe: async (handler) => {
+      handlers.add(handler)
+      return () => handlers.delete(handler)
+    },
+    emit: (payload, options) => {
+      const event = {
+        directory,
+        ...options,
+        payload,
+      } as GlobalEvent
+      for (const handler of handlers) handler(event)
+    },
   }
 }
 
@@ -176,6 +192,7 @@ function createFetch() {
 
 async function mount() {
   const calls = createFetch()
+  const events = eventSource()
   let sync!: ReturnType<typeof useSync>
   let kv!: ReturnType<typeof useKV>
   let local!: ReturnType<typeof useLocal>
@@ -190,7 +207,7 @@ async function mount() {
         <KVProvider>
           <ToastProvider>
             <TuiConfigProvider config={{}}>
-              <SDKProvider url="http://test" directory={directory} fetch={calls.fetch} events={eventSource()}>
+              <SDKProvider url="http://test" directory={directory} fetch={calls.fetch} events={events}>
                 <ProjectProvider>
                   <SyncProvider>
                     <ThemeProvider mode="dark">
@@ -218,7 +235,7 @@ async function mount() {
   await ready
   await wait(() => sync.status === "complete")
   await wait(() => local.model.ready)
-  return { app, kv, local, sync, session: calls.session }
+  return { app, events, kv, local, sync, session: calls.session }
 }
 
 function Probe(props: {
@@ -237,6 +254,53 @@ function Probe(props: {
   })
 
   return <box />
+}
+
+function assistantMessage(id: string, sessionID: string) {
+  return {
+    id,
+    sessionID,
+    role: "assistant",
+    time: { created: 1 },
+    parentID: "msg_parent",
+    modelID: "jnoccio-fusion",
+    providerID: "jnoccio",
+    mode: "build",
+    agent: "build",
+    path: { cwd: directory, root: worktree },
+    cost: 0,
+    tokens: {
+      input: 0,
+      output: 0,
+      reasoning: 0,
+      cache: { read: 0, write: 0 },
+    },
+  } satisfies Message
+}
+
+function reasoningPart(id: string, sessionID: string, messageID: string) {
+  return {
+    id,
+    sessionID,
+    messageID,
+    type: "reasoning",
+    text: "",
+    time: { start: 1 },
+  } satisfies Part
+}
+
+function textPart(id: string, sessionID: string, messageID: string) {
+  return {
+    id,
+    sessionID,
+    messageID,
+    type: "text",
+    text: "",
+  } satisfies Part
+}
+
+function streamedText(part: Part | undefined) {
+  return part && "text" in part ? part.text : undefined
 }
 
 describe("tui sync", () => {
@@ -290,6 +354,89 @@ describe("tui sync", () => {
         provider: "Jnoccio",
         model: "Jnoccio Fusion",
       })
+    } finally {
+      app.renderer.destroy()
+      Global.Path.state = previous
+    }
+  })
+
+  test("streams message part deltas into reasoning and text parts", async () => {
+    const previous = Global.Path.state
+    await using tmp = await tmpdir()
+    Global.Path.state = tmp.path
+    await Bun.write(`${tmp.path}/kv.json`, "{}")
+    const { app, events, sync } = await mount()
+
+    const sessionID = "ses_stream"
+    const messageID = "msg_stream"
+    const reasoningID = "part_reasoning"
+    const textID = "part_text"
+
+    try {
+      events.emit({
+        id: "evt_message",
+        type: "message.updated",
+        properties: { sessionID, info: assistantMessage(messageID, sessionID) },
+      })
+      events.emit({
+        id: "evt_reasoning",
+        type: "message.part.updated",
+        properties: {
+          sessionID,
+          part: reasoningPart(reasoningID, sessionID, messageID),
+          time: 1,
+        },
+      })
+      events.emit({
+        id: "evt_reasoning_delta",
+        type: "message.part.delta",
+        properties: {
+          sessionID,
+          messageID,
+          partID: reasoningID,
+          field: "text",
+          delta: "thinking...",
+        },
+      })
+      events.emit({
+        id: "evt_text",
+        type: "message.part.updated",
+        properties: {
+          sessionID,
+          part: textPart(textID, sessionID, messageID),
+          time: 2,
+        },
+      })
+      events.emit({
+        id: "evt_text_delta",
+        type: "message.part.delta",
+        properties: {
+          sessionID,
+          messageID,
+          partID: textID,
+          field: "text",
+          delta: "answer",
+        },
+      })
+
+      await wait(
+        () => streamedText(sync.data.part[messageID]?.find((part) => part.id === reasoningID)) === "thinking...",
+      )
+      expect(streamedText(sync.data.part[messageID]?.find((part) => part.id === textID))).toBe("answer")
+
+      events.emit({
+        id: "evt_text_removed",
+        type: "message.part.removed",
+        properties: { sessionID, messageID, partID: textID },
+      })
+      await wait(() => !sync.data.part[messageID]?.some((part) => part.id === textID))
+
+      events.emit({
+        id: "evt_message_removed",
+        type: "message.removed",
+        properties: { sessionID, messageID },
+      })
+      await wait(() => !sync.data.message[sessionID]?.some((message) => message.id === messageID))
     } finally {
       app.renderer.destroy()
       Global.Path.state = previous

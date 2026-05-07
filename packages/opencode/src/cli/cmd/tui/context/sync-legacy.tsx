@@ -382,22 +382,68 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           )
           break
         }
-        case "part.updated": {
-          const parts = store.part[evt.properties.info.messageID]
+        case "message.removed": {
+          const messages = store.message[evt.properties.sessionID]
+          if (!messages) break
+          const result = Binary.search(messages, evt.properties.messageID, (m) => m.id)
+          if (!result.found) break
+          setStore(
+            "message",
+            evt.properties.sessionID,
+            produce((draft) => {
+              draft.splice(result.index, 1)
+            }),
+          )
+          break
+        }
+        case "message.part.updated": {
+          const part = evt.properties.part
+          const parts = store.part[part.messageID]
           if (!parts) {
-            setStore("part", evt.properties.info.messageID, [evt.properties.info])
+            setStore("part", part.messageID, [part])
             break
           }
-          const result = Binary.search(parts, evt.properties.info.id, (m) => m.id)
+          const result = Binary.search(parts, part.id, (m) => m.id)
           if (result.found) {
-            setStore("part", evt.properties.info.messageID, result.index, reconcile(evt.properties.info))
+            setStore("part", part.messageID, result.index, reconcile(part))
             break
           }
           setStore(
             "part",
-            evt.properties.info.messageID,
+            part.messageID,
             produce((draft) => {
-              draft.splice(result.index, 0, evt.properties.info)
+              draft.splice(result.index, 0, part)
+            }),
+          )
+          break
+        }
+        case "message.part.delta": {
+          const parts = store.part[evt.properties.messageID]
+          if (!parts) break
+          const result = Binary.search(parts, evt.properties.partID, (part) => part.id)
+          if (!result.found) break
+          setStore(
+            "part",
+            evt.properties.messageID,
+            result.index,
+            produce((draft) => {
+              const field = evt.properties.field
+              const value = (draft as Record<string, unknown>)[field]
+              if (typeof value === "string") (draft as Record<string, unknown>)[field] = value + evt.properties.delta
+            }),
+          )
+          break
+        }
+        case "message.part.removed": {
+          const parts = store.part[evt.properties.messageID]
+          if (!parts) break
+          const result = Binary.search(parts, evt.properties.partID, (part) => part.id)
+          if (!result.found) break
+          setStore(
+            "part",
+            evt.properties.messageID,
+            produce((draft) => {
+              draft.splice(result.index, 1)
             }),
           )
           break
