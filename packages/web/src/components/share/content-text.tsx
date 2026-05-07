@@ -1,7 +1,7 @@
 import style from "./content-text.module.css"
 import { createSignal } from "solid-js"
 import { createOverflow, useShareMessages } from "./common"
-import { CopyButton } from "./copy-button"
+import { CopyButton } from "./clipboard-button"
 
 interface Props {
   text: string

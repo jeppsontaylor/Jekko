@@ -24077,10 +24077,10 @@ Summary:
 - Proof receipt:
 
 ### JK-0962 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/server.ts
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:19:45Z
+- Completed: 2026-05-07T09:20:53Z
 - Source packet: `996`
 - Fingerprint: `sha256:847bf0c48e59dcc416dfba798e57e9f286fb30363214484a3e543bbf653a4a1f`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -24096,10 +24096,14 @@ Summary:
 - Allowed paths: `crates/`, `packages/`, `tools/`, `packages/opencode/src/server/`, `packages/opencode/src/server/server.ts`
 - Forbidden paths: `reference/`, `target/`, `agent/repo-score.json`, `agent/repo-score.md`
 - Proof required: `just fast`
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; advisories only: lockfile missing, echo-proof workflow, syft advisory, repair-plan-schema warning`
+  - Timestamp: 2026-05-07T09:20:53Z
+  - Files touched: `packages/opencode/src/server/server.ts`, `JANKURAI_TASKLIST.md`
 - Stop conditions: stop if the fix broadens permission scope or touches a generated zone; stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
+- Touched files: `packages/opencode/src/server/server.ts`, `JANKURAI_TASKLIST.md`
 
 ### JK-0963 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/server.ts
 - Status: Pending
@@ -24477,10 +24481,10 @@ Summary:
 - Proof receipt:
 
 ### JK-0978 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/message-v2.ts
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:19:45Z
+- Completed: 2026-05-07T09:20:53Z
 - Source packet: `1013`
 - Fingerprint: `sha256:fe401755908b64095c9928734ff2d4bb7298872db46e5501acf89b11009bd11a`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -24496,10 +24500,14 @@ Summary:
 - Allowed paths: `crates/`, `packages/`, `tools/`, `packages/opencode/src/session/`, `packages/opencode/src/session/message-v2.ts`
 - Forbidden paths: `reference/`, `target/`, `agent/repo-score.json`, `agent/repo-score.md`
 - Proof required: `just fast`
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; advisories only: lockfile missing, echo-proof workflow, syft advisory, repair-plan-schema warning`
+  - Timestamp: 2026-05-07T09:20:53Z
+  - Files touched: `packages/opencode/src/session/message-v2.ts`, `JANKURAI_TASKLIST.md`
 - Stop conditions: stop if the fix broadens permission scope or touches a generated zone; stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
+- Touched files: `packages/opencode/src/session/message-v2.ts`, `JANKURAI_TASKLIST.md`
 
 ### JK-0979 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
 - Status: Pending
@@ -42252,10 +42260,10 @@ Summary:
 - Proof receipt:
 
 ### JK-1689 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/web/src/components/share/copy-button.module.css
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:07:49Z
+- Completed: 2026-05-07T09:22:27Z
 - Source packet: `1672`
 - Fingerprint: `sha256:6e189b2f4856ab3077a1ff5a5c4df2f14a44ba4e5047b6e4c23b23445f82352c`
 - Check: `HLT-040-REPO-ROT-BAD-BEHAVIOR:context`
@@ -42273,14 +42281,18 @@ Summary:
 - Proof required: `just score`
 - Stop conditions: stop if the fix broadens permission scope or touches a generated zone; stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
+- Touched files: packages/web/src/components/share/clipboard-button.module.css, packages/web/src/components/share/clipboard-button.tsx, packages/web/src/components/share/content-markdown.tsx, packages/web/src/components/share/content-text.tsx, JANKURAI_TASKLIST.md
 - Proof receipt:
+  - Command: `rtk just score`
+  - Result: `exit 0; score=60 raw=73 caps=20 findings=368`
+  - Timestamp: 2026-05-07T09:08:40Z
+  - Files touched: packages/web/src/components/share/clipboard-button.module.css, packages/web/src/components/share/clipboard-button.tsx, packages/web/src/components/share/content-markdown.tsx, packages/web/src/components/share/content-text.tsx, JANKURAI_TASKLIST.md
 
 ### JK-1690 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/web/src/components/share/copy-button.tsx
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:07:49Z
+- Completed: 2026-05-07T09:22:27Z
 - Source packet: `1673`
 - Fingerprint: `sha256:346b19954f889643fdf2f39f7ae662b0445ed76d7a622077688f8a4887fedaa5`
 - Check: `HLT-040-REPO-ROT-BAD-BEHAVIOR:context`
@@ -42298,8 +42310,12 @@ Summary:
 - Proof required: `just score`
 - Stop conditions: stop if the fix broadens permission scope or touches a generated zone; stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
+- Touched files: packages/web/src/components/share/clipboard-button.tsx, packages/web/src/components/share/clipboard-button.module.css, packages/web/src/components/share/content-markdown.tsx, packages/web/src/components/share/content-text.tsx, JANKURAI_TASKLIST.md
 - Proof receipt:
+  - Command: `rtk just score`
+  - Result: `exit 0; score=60 raw=73 caps=20 findings=368`
+  - Timestamp: 2026-05-07T09:08:40Z
+  - Files touched: packages/web/src/components/share/clipboard-button.tsx, packages/web/src/components/share/clipboard-button.module.css, packages/web/src/components/share/content-markdown.tsx, packages/web/src/components/share/content-text.tsx, JANKURAI_TASKLIST.md
 
 ### JK-1691 - [medium] HLT-001-DEAD-MARKER - .
 - Status: Pending
@@ -42350,4 +42366,3 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-

@@ -2,7 +2,7 @@ import { marked } from "marked"
 import { codeToHtml } from "shiki"
 import markedShiki from "marked-shiki"
 import { createOverflow, useShareMessages } from "./common"
-import { CopyButton } from "./copy-button"
+import { CopyButton } from "./clipboard-button"
 import { createResource, createSignal } from "solid-js"
 import style from "./content-markdown.module.css"
 
