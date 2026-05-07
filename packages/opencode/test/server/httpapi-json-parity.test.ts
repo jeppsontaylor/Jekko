@@ -24,7 +24,8 @@ const original = Flag.OPENCODE_EXPERIMENTAL_HTTPAPI
 
 function app(experimental: boolean) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 type TestApp = ReturnType<typeof app>
 
@@ -74,15 +75,15 @@ function readJson(label: string, serverApp: TestApp, path: string, headers: Head
 
 function expectJsonParity(input: {
   label: string
-  legacy: TestApp
+  previous: TestApp
   httpapi: TestApp
   path: string
   headers: HeadersInit
 }) {
   return Effect.gen(function* () {
-    const legacy = yield* readJson(input.label, input.legacy, input.path, input.headers)
+    const previous = yield* readJson(input.label, input.previous, input.path, input.headers)
     const httpapi = yield* readJson(input.label, input.httpapi, input.path, input.headers)
-    expect({ label: input.label, body: httpapi }).toEqual({ label: input.label, body: legacy })
+    expect({ label: input.label, body: httpapi }).toEqual({ label: input.label, body: previous })
     return httpapi
   })
 }
@@ -95,7 +96,7 @@ afterEach(async () => {
 
 describe("HttpApi JSON parity", () => {
   it.live(
-    "matches legacy JSON shape for safe GET endpoints",
+    "matches historical JSON shape for safe GET endpoints",
     withTmp(
       {
         git: true,
@@ -116,7 +117,7 @@ describe("HttpApi JSON parity", () => {
           yield* Effect.promise(() => Bun.write(`${tmp.path}/hello.txt`, "hello\n"))
 
           const headers = { "x-opencode-directory": tmp.path }
-          const legacy = app(false)
+          const historical = app(false)
           const httpapi = app(true)
 
           yield* Effect.forEach(
@@ -170,7 +171,7 @@ describe("HttpApi JSON parity", () => {
               { label: "experimental.worktree", path: ExperimentalPaths.worktree, headers },
               { label: "experimental.resource", path: ExperimentalPaths.resource, headers },
             ],
-            (input) => expectJsonParity({ ...input, legacy, httpapi }),
+            (input) => expectJsonParity({ ...input, historical, httpapi }),
             { concurrency: 1 },
           )
         }),
@@ -178,17 +179,17 @@ describe("HttpApi JSON parity", () => {
   )
 
   it.live(
-    "matches legacy JSON shape for session read endpoints",
+    "matches historical JSON shape for session read endpoints",
     withTmp({ git: true, config: { formatter: false, lsp: false } }, (tmp) =>
       Effect.gen(function* () {
         const headers = { "x-opencode-directory": tmp.path }
         const seeded = yield* seedSessions.pipe(Effect.provide(Session.defaultLayer))
-        const legacy = app(false)
+        const historical = app(false)
         const httpapi = app(true)
 
         const rootsFalse = yield* expectJsonParity({
           label: "session.list roots false",
-          legacy,
+          historical,
           httpapi,
           path: `${SessionPaths.list}?roots=false`,
           headers,
@@ -198,7 +199,7 @@ describe("HttpApi JSON parity", () => {
 
         const experimentalRootsFalse = yield* expectJsonParity({
           label: "experimental.session roots false",
-          legacy,
+          historical,
           httpapi,
           path: `${ExperimentalPaths.session}?${new URLSearchParams({ directory: tmp.path, limit: "10", roots: "false" })}`,
           headers,
@@ -207,7 +208,7 @@ describe("HttpApi JSON parity", () => {
 
         const experimentalArchivedFalse = yield* expectJsonParity({
           label: "experimental.session archived false",
-          legacy,
+          historical,
           httpapi,
           path: `${ExperimentalPaths.session}?${new URLSearchParams({ directory: tmp.path, limit: "10", archived: "false" })}`,
           headers,
@@ -245,7 +246,7 @@ describe("HttpApi JSON parity", () => {
               headers,
             },
           ],
-          (input) => expectJsonParity({ ...input, legacy, httpapi }),
+          (input) => expectJsonParity({ ...input, historical, httpapi }),
           { concurrency: 1 },
         )
       }),

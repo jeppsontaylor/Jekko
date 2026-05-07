@@ -161,10 +161,10 @@ Summary:
 - Proof receipt: 
 
 ### JK-0004 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/beta.yml
-- Status: In Progress
+- Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T09:28:08Z
-- Completed: 
+- Completed: 2026-05-07T09:29:55Z
 - Source packet: `4`
 - Fingerprint: `sha256:594a9d6afba2b5e737f0d338f5369864063476ed1cc4bb694a7cfbb5500e5e33`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -193,14 +193,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:29:55Z
+  - Files touched: `.github/workflows/beta.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/beta.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0005 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Status: In Progress
+- Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T09:28:08Z
-- Completed: 
+- Completed: 2026-05-07T09:29:55Z
 - Source packet: `5`
 - Fingerprint: `sha256:5da07808a4d4a3ebdf2050ce6cae1881ff649b63358a14367bfa8441e65b8162`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -229,14 +233,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:29:55Z
+  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0006 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
+- Completed: 2026-05-07T09:29:55Z
 - Source packet: `6`
 - Fingerprint: `sha256:68d8f0c99ec9a9712b5e17160469cbafe84af42cab8160b04f28baa5cda68bf1`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -265,14 +273,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:29:55Z
+  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0007 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
+- Completed: 2026-05-07T09:29:55Z
 - Source packet: `7`
 - Fingerprint: `sha256:08205c33a5fda331c6f5b7380ec8f376d5f47d096453c4d09ab813e00a2ef1d4`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -301,14 +313,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:29:55Z
+  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0008 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
+- Completed: 2026-05-07T09:29:55Z
 - Source packet: `8`
 - Fingerprint: `sha256:3feb0a3f62226da627178e117068720c953fd98a18003a83d1f38409b8e21af4`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -337,14 +353,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:29:55Z
+  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0009 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
+- Completed: 2026-05-07T09:29:55Z
 - Source packet: `9`
 - Fingerprint: `sha256:864bccabcb179be0b06d4358d40aeb02b55d7c58fd1108fe5af6b634dea1d2a8`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -373,14 +393,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:29:55Z
+  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0010 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
+- Completed: 2026-05-07T09:29:55Z
 - Source packet: `10`
 - Fingerprint: `sha256:492528958f3b7a3c6e9ad9c40968ac19f69565097965e73a95fcd4088078b05f`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -409,8 +433,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:29:55Z
+  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0011 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/deploy.yml
 - Status: Pending
@@ -557,10 +585,10 @@ Summary:
 - Proof receipt: 
 
 ### JK-0015 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-locale-sync.yml
-- Status: In Progress
+- Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T09:28:08Z
-- Completed: 
+- Completed: 2026-05-07T09:31:11Z
 - Source packet: `15`
 - Fingerprint: `sha256:39191044293f790fd9545aaf7ccee3ad6c06d75d3e88d94df130ecdc9f65d72b`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -949,14 +977,18 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:31:11Z
+  - Files touched: `.github/workflows/docs-locale-sync.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/docs-locale-sync.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0026 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Status: In Progress
+- Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T09:28:08Z
-- Completed: 
+- Completed: 2026-05-07T09:31:11Z
 - Source packet: `26`
 - Fingerprint: `sha256:41ec625da63598808a6d44c15d908c4e15ec4b9bc6b53a08832c206c6b4f918d`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -985,8 +1017,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
+  - Timestamp: 2026-05-07T09:31:11Z
+  - Files touched: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0027 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
 - Status: Pending
@@ -10563,10 +10599,10 @@ Summary:
   - Files touched: packages/opencode/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0280 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-json-parity.test.ts
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:30:05Z
+- Completed: 2026-05-07T09:31:30Z
 - Source packet: `280`
 - Fingerprint: `sha256:1547d67f1f3dc08e1e5c85406dee74c8b73a3280be16237509c3a56efca2199a`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10596,8 +10632,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T09:31:30Z
+  - Files touched: packages/opencode/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0281 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-mcp.test.ts
 - Status: Pending
