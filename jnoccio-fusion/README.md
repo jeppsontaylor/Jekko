@@ -1,0 +1,53 @@
+<img src="assets/jnoccio_header.png" alt="Jnoccio" width="100%" />
+
+# Jnoccio Fusion Gateway
+
+Jnoccio is a standalone OpenAI-compatible gateway for routing one visible model, `jnoccio/jnoccio-fusion`, across many upstream providers. It learns provider health, rate capacity, context limits, and winning models from real traffic so future requests avoid unsafe routes.
+
+## Routing
+
+- `config/models.json` declares upstream models, context windows, output caps, roles, scores, and published rate limits.
+- Runtime state is stored in SQLite under `state/jnoccio.sqlite`.
+- Context overruns are parsed for concrete limits such as context window, request token cap, TPM cap, requested tokens, and prompt/tool/output token splits.
+- Learned safe windows are used as hard routing eligibility: estimated prompt tokens plus requested output reserve must fit before a model can be selected.
+- Small prompts prefer the smallest safe context band while larger prompts route only to models with learned-safe headroom.
+
+## Dashboard
+
+The dashboard is served from `/dashboard/` and shows model health, wins, latency, token usage, capacity, recent events, and context-run histograms. Failed context buckets are shown in red with learned safe-limit markers for selected models.
+
+## Setup
+
+```bash
+cd /Users/bentaylor/Code/opencode/jnoccio-fusion
+cp .env.jnoccio.example .env.jnoccio
+$EDITOR .env.jnoccio
+rtk cargo run -- --config config/server.json --env-file .env.jnoccio
+```
+
+Install the OpenCode config fragment when needed:
+
+```bash
+./scripts/install-opencode-config.sh
+```
+
+Agent MCP snippets live in:
+
+- `agents/codex/AGENTS.md`
+- `agents/codex/config.toml.snippet`
+- `agents/claude/CLAUDE.md`
+- `agents/claude/.mcp.json`
+
+## Validation
+
+```bash
+rtk cargo test
+rtk cargo check
+cd web && rtk npm run build
+```
+
+Run `rtk ./scripts/smoke.sh` only when upstream keys are present.
+
+## Safety
+
+Do not commit `.env.jnoccio`, `KEYS.md`, `state/`, `receipts/`, `target/`, `web/dist/`, Playwright reports, or SQLite files. Failure receipts are local runtime artifacts and may include provider error bodies after secret redaction.

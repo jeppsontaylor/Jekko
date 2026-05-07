@@ -1,0 +1,11 @@
+target/
+state/
+receipts/
+web/dist/
+web/playwright-report/
+web/test-results/
+.env.jnoccio
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+Cargo.lock
