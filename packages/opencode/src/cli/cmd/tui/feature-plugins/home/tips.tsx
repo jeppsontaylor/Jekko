@@ -1,6 +1,7 @@
 import type { TuiPlugin, TuiPluginModule } from "@opencode-ai/plugin/tui"
 import { createMemo, Show } from "solid-js"
 import { Tips } from "./tips-view"
+import { hasConnectedProvider } from "../../component/use-connected"
 
 const id = "internal:home-tips"
 
@@ -35,11 +36,7 @@ const tui: TuiPlugin = async (api) => {
       home_bottom() {
         const hidden = createMemo(() => api.kv.get("tips_hidden", false))
         const first = createMemo(() => api.state.session.count() === 0)
-        const connected = createMemo(() =>
-          api.state.provider.some(
-            (item) => item.id !== "opencode" || Object.values(item.models).some((model) => model.cost?.input !== 0),
-          ),
-        )
+        const connected = createMemo(() => api.state.provider.some(hasConnectedProvider))
         const show = createMemo(() => (!first() || !connected()) && !hidden())
         return <View show={show()} connected={connected()} />
       },

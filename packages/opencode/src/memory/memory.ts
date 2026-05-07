@@ -48,7 +48,10 @@ export interface MemoryQuery {
 export interface Interface {
   readonly record: (event: MemoryEvent) => Effect.Effect<void>
   readonly recall: (query: MemoryQuery) => Effect.Effect<MemoryHit[]>
-  readonly retryDecision: (projectId: ProjectID, fingerprint: Omit<FailureFingerprint, "evidenceHash" | "failureKind">) => Effect.Effect<RetryDecision>
+  readonly retryDecision: (
+    projectId: ProjectID,
+    fingerprint: Omit<FailureFingerprint, "failureKind">,
+  ) => Effect.Effect<RetryDecision>
   readonly recordFailedAttempt: (projectId: ProjectID, fingerprint: FailureFingerprint, sessionId?: string) => Effect.Effect<void>
   readonly failedAttemptsForSignature: (projectId: ProjectID, signature: string) => Effect.Effect<FailedAttemptRecord[]>
   readonly decayTick: (projectId: ProjectID) => Effect.Effect<void>
@@ -174,15 +177,19 @@ export const layer = Layer.effect(
 
     const retryDecision = Effect.fn("MemoryOS.retryDecision")(function* (
       projectId: ProjectID,
-      fingerprint: Omit<FailureFingerprint, "evidenceHash" | "failureKind">,
+      fingerprint: Omit<FailureFingerprint, "failureKind">,
     ) {
       return yield* db((tx) => {
         const conditions = [
           eq(FailedAttemptTable.project_id, projectId),
           eq(FailedAttemptTable.signature, fingerprint.signature),
-          eq(FailedAttemptTable.attempted_fix_hash, fingerprint.attemptedFixHash)
+          eq(FailedAttemptTable.attempted_fix_hash, fingerprint.attemptedFixHash),
         ]
-        
+
+        if (typeof fingerprint.evidenceHash === "string" && fingerprint.evidenceHash.length > 0) {
+          conditions.push(eq(FailedAttemptTable.evidence_hash, fingerprint.evidenceHash))
+        }
+
         const existing = tx
           .select()
           .from(FailedAttemptTable)
