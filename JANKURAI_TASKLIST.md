@@ -1445,10 +1445,16 @@ Summary:
   - Files touched: none (all actions already compliant)
 
 ### JK-0035 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: In Progress
+- Status: Complete
 - Assignee: opencode
 - Started: 2026-05-07T12:21:00Z
-- Completed:
+- Completed: 2026-05-08T13:15:00Z
+- Touched files: `.github/workflows/jankurai.yml`
+- Proof receipt:
+  - Command: `just security`
+  - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
+  - Timestamp: 2026-05-08T13:15:00Z
+  - Files touched: `.github/workflows/jankurai.yml`
 - Source packet: `35`
 - Fingerprint: `sha256:5c8e3c293a011267c5ad0ae48771934d132ce141be69fcaf422f367ebdb02aac`
 - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
@@ -3425,9 +3431,9 @@ Summary:
 - Proof receipt:
 
 ### JK-0093 - [high] UNKNOWN - infra/console.ts
-- Status: Pending
-- Assignee: unassigned
-- Started:
+- Status: In Progress
+- Assignee: opencode
+- Started: 2026-05-08T15:00:00Z
 - Completed:
 - Source packet: `93`
 - Fingerprint: `sha256:c6cb7aa0947f7627ce6408a79cbaeb81f8afacb65f8a8b20244c65e78ae0a330`

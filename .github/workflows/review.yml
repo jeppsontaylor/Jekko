@@ -29,10 +29,15 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup-bun@main
 
       - name: Install opencode
-        run: curl -fsSL https://opencode.ai/install | bash -s -- --version v1.0.220
+        run: |
+          OP_VERSION="v1.0.220"
+          OP_SHA256="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          curl -fsSL "https://opencode.ai/install" > /tmp/install-opencode.sh
+          echo "${OP_SHA256}  /tmp/install-opencode.sh" | shasum -a 256 -c || exit 1
+          bash /tmp/install-opencode.sh --version "${OP_VERSION}"
 
       - name: Get PR details
         id: pr-details
