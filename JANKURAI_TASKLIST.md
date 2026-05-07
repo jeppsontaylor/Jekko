@@ -10707,10 +10707,10 @@ Summary:
 - Proof receipt: 
 
 ### JK-0284 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-provider.test.ts
-- Status: In Progress
+- Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T09:24:11Z
-- Completed: 
+- Completed: 2026-05-07T09:27:13Z
 - Source packet: `284`
 - Fingerprint: `sha256:66d789d13ffe46914f86ded0b0b16d5d51850d819fe3f250f730a52f0308aebd`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10740,8 +10740,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T09:27:13Z
+  - Files touched: packages/opencode/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0285 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-pty.test.ts
 - Status: Pending

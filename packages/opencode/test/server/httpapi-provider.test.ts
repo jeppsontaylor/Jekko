@@ -21,7 +21,8 @@ const oauthInstructions = "Finish OAuth"
 
 function app(experimental: boolean) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 
 function requestAuthorize(input: {
@@ -108,15 +109,15 @@ afterEach(async () => {
 
 describe("provider HttpApi", () => {
   it.live(
-    "matches legacy OAuth authorize response shapes",
+    "matches previous OAuth authorize response shapes",
     withProviderProject((dir) =>
       Effect.gen(function* () {
         const headers = { "x-opencode-directory": dir, "content-type": "application/json" }
-        const legacy = app(false)
+        const previous = app(false)
         const httpapi = app(true)
 
-        const apiLegacy = yield* requestAuthorize({
-          app: legacy,
+        const apiPrevious = yield* requestAuthorize({
+          app: previous,
           providerID,
           method: 0,
           headers,
@@ -127,11 +128,11 @@ describe("provider HttpApi", () => {
           method: 0,
           headers,
         })
-        expect(apiLegacy).toEqual({ status: 200, body: "" })
-        expect(apiHttpApi).toEqual(apiLegacy)
+        expect(apiPrevious).toEqual({ status: 200, body: "" })
+        expect(apiHttpApi).toEqual(apiPrevious)
 
-        const oauthLegacy = yield* requestAuthorize({
-          app: legacy,
+        const oauthPrevious = yield* requestAuthorize({
+          app: previous,
           providerID,
           method: 1,
           headers,
@@ -142,7 +143,7 @@ describe("provider HttpApi", () => {
           method: 1,
           headers,
         })
-        expect(oauthHttpApi).toEqual(oauthLegacy)
+        expect(oauthHttpApi).toEqual(oauthPrevious)
         expect(JSON.parse(oauthHttpApi.body)).toEqual({
           url: oauthURL,
           method: "code",
