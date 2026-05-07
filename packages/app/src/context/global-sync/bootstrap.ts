@@ -8,7 +8,6 @@ import type {
   ProviderListResponse,
   QuestionRequest,
   Session,
-  Todo,
 } from "@opencode-ai/sdk/v2/client"
 import { showToast } from "@opencode-ai/ui/toast"
 import { getFilename } from "@opencode-ai/core/util/path"
@@ -25,9 +24,6 @@ type GlobalStore = {
   ready: boolean
   path: Path
   project: Project[]
-  session_todo: {
-    [sessionID: string]: Todo[]
-  }
   provider: ProviderListResponse
   provider_auth: ProviderAuthResponse
   config: Config

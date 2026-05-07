@@ -118,7 +118,7 @@ describe("todoState", () => {
     expect(todoState({ count: 2, done: true, live: true })).toBe("close")
   })
 
-  test("clears stale todos when the turn ends", () => {
+  test("clears outdated todos when the turn ends", () => {
     expect(todoState({ count: 2, done: false, live: false })).toBe("clear")
   })
 

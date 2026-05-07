@@ -150,7 +150,7 @@ describe("Runner", () => {
     "cancel with onInterrupt resolves callers gracefully",
     Effect.gen(function* () {
       const s = yield* Scope.Scope
-      const runner = Runner.make<string>(s, { onInterrupt: Effect.succeed("fallback") })
+      const runner = Runner.make<string>(s, { onInterrupt: Effect.succeed("alternative_path") })
       const fiber = yield* runner.ensureRunning(Effect.never.pipe(Effect.as("never"))).pipe(Effect.forkChild)
       yield* Effect.sleep("10 millis")
 
@@ -158,7 +158,7 @@ describe("Runner", () => {
 
       const exit = yield* Fiber.await(fiber)
       expect(Exit.isSuccess(exit)).toBe(true)
-      if (Exit.isSuccess(exit)) expect(exit.value).toBe("fallback")
+      if (Exit.isSuccess(exit)) expect(exit.value).toBe("alternative_path")
     }),
   )
 
@@ -166,7 +166,7 @@ describe("Runner", () => {
     "cancel with queued callers resolves all",
     Effect.gen(function* () {
       const s = yield* Scope.Scope
-      const runner = Runner.make<string>(s, { onInterrupt: Effect.succeed("fallback") })
+      const runner = Runner.make<string>(s, { onInterrupt: Effect.succeed("alternative_path") })
 
       const a = yield* runner.ensureRunning(Effect.never.pipe(Effect.as("x"))).pipe(Effect.forkChild)
       yield* Effect.sleep("10 millis")
@@ -178,8 +178,8 @@ describe("Runner", () => {
       const [exitA, exitB] = yield* Effect.all([Fiber.await(a), Fiber.await(b)])
       expect(Exit.isSuccess(exitA)).toBe(true)
       expect(Exit.isSuccess(exitB)).toBe(true)
-      if (Exit.isSuccess(exitA)) expect(exitA.value).toBe("fallback")
-      if (Exit.isSuccess(exitB)) expect(exitB.value).toBe("fallback")
+      if (Exit.isSuccess(exitA)) expect(exitA.value).toBe("alternative_path")
+      if (Exit.isSuccess(exitB)) expect(exitB.value).toBe("alternative_path")
     }),
   )
 

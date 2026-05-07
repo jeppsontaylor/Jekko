@@ -215,7 +215,7 @@ test("clears existing variants so refreshed models calculate provider-specific v
   expect(models["claude-opus-4.7"].variants).toBeUndefined()
 })
 
-test("remaps fallback oauth model urls to the enterprise host", async () => {
+test("remaps alternative_path oauth model urls to the enterprise host", async () => {
   globalThis.fetch = mock(() => Promise.reject(new Error("timeout"))) as unknown as typeof fetch
 
   const hooks = await CopilotAuthPlugin({

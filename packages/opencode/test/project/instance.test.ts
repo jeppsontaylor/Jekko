@@ -143,7 +143,7 @@ describe("InstanceStore", () => {
     }),
   )
 
-  it.live("stale dispose does not delete an in-flight reload", () =>
+  it.live("outdated dispose does not delete an in-flight reload", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped({ git: true })
       const store = yield* InstanceStore.Service
@@ -221,7 +221,7 @@ describe("InstanceStore", () => {
     }),
   )
 
-  it.live("provides legacy Promise callers with instance ALS", () =>
+  it.live("provides historical Promise callers with instance ALS", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped({ git: true })
 

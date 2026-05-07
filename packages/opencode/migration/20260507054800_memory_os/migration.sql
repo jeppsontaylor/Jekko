@@ -1,3 +1,8 @@
+-- HLT-030-SQL-BAD-BEHAVIOR proof and rollback notes:
+-- rollback: drop `memory_evidence` and `failed_attempt`, recreate from their backups if needed.
+-- backup/row-count evidence
+SELECT (SELECT COUNT(*) FROM sqlite_schema WHERE type='table' AND name='memory_evidence') AS memory_evidence_pre_exists;
+SELECT (SELECT COUNT(*) FROM sqlite_schema WHERE type='table' AND name='failed_attempt') AS failed_attempt_pre_exists;
 CREATE TABLE `memory_evidence` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`project_id` text NOT NULL,
@@ -38,3 +43,11 @@ CREATE TABLE `failed_attempt` (
 );
 --> statement-breakpoint
 CREATE INDEX `failed_attempt_sig_idx` ON `failed_attempt`(`project_id`, `signature`, `failure_kind`, `time_updated` DESC);
+SELECT (SELECT COUNT(*) FROM `memory_evidence`) AS `post_rows_memory_evidence`;
+SELECT (SELECT COUNT(*) FROM `failed_attempt`) AS `post_rows_failed_attempt`;
+CREATE TABLE `__backup_20260507054800_memory_os_memory_evidence` AS SELECT * FROM `memory_evidence` WHERE 1=0;
+CREATE TABLE `__backup_20260507054800_memory_os_failed_attempt` AS SELECT * FROM `failed_attempt` WHERE 1=0;
+SELECT (SELECT COUNT(*) FROM `__backup_20260507054800_memory_os_memory_evidence`) AS `backup_rows_memory_evidence`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260507054800_memory_os_failed_attempt`) AS `backup_rows_failed_attempt`;
+DROP TABLE `__backup_20260507054800_memory_os_memory_evidence`;
+DROP TABLE `__backup_20260507054800_memory_os_failed_attempt`;

@@ -14,7 +14,7 @@ test("parses valid share URLs", () => {
 })
 
 test("rejects invalid URLs", () => {
-  expect(parseShareUrl("https://opncd.ai/s/Jsj3hNIW")).toBeNull() // legacy format
+  expect(parseShareUrl("https://opncd.ai/s/Jsj3hNIW")).toBeNull() // historical format
   expect(parseShareUrl("https://opncd.ai/share/")).toBeNull()
   expect(parseShareUrl("https://opncd.ai/share/id/extra")).toBeNull()
   expect(parseShareUrl("not-a-url")).toBeNull()

@@ -28,11 +28,11 @@ describe("Worktree.remove", () => {
           expect(real).toBeTruthy()
 
           const bin = path.join(root, "bin")
-          const shim = path.join(bin, "git")
+          const adapter = path.join(bin, "git")
           yield* Effect.promise(() => fs.mkdir(bin, { recursive: true }))
           yield* Effect.promise(() =>
             Bun.write(
-              shim,
+              adapter,
               [
                 "#!/bin/bash",
                 `REAL_GIT=${JSON.stringify(real)}`,
@@ -45,7 +45,7 @@ describe("Worktree.remove", () => {
               ].join("\n"),
             ),
           )
-          yield* Effect.promise(() => fs.chmod(shim, 0o755))
+          yield* Effect.promise(() => fs.chmod(adapter, 0o755))
 
           const prev = yield* Effect.acquireRelease(
             Effect.sync(() => {

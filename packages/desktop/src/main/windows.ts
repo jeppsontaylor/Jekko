@@ -233,7 +233,7 @@ function upsertKeyValue(obj: Record<string, any>, keyToChange: string, value: an
   const keyToChangeLower = keyToChange.toLowerCase()
   for (const key of Object.keys(obj)) {
     if (key.toLowerCase() === keyToChangeLower) {
-      // Reassign old key
+      // Reassign prior key
       obj[key] = value
       // Done
       return

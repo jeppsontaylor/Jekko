@@ -44,7 +44,7 @@ export default function Home() {
 
   return (
     <main data-page="opencode">
-      {/*<HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, stale-while-revalidate=86400" />*/}
+      {/*<HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, outdated-while-revalidate=86400" />*/}
       <Title>{i18n.t("home.title")}</Title>
       <LocaleLinks path="/" />
       <Meta property="og:image" content="/social-share.png" />

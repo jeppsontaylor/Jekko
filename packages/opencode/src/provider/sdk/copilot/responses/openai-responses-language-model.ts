@@ -1566,7 +1566,7 @@ const openaiResponsesChunkSchema = z.union([
   responseReasoningSummaryPartAddedSchema,
   responseReasoningSummaryTextDeltaSchema,
   errorChunkSchema,
-  z.object({ type: z.string() }).loose(), // fallback for unknown chunks
+  z.object({ type: z.string() }).loose(), // alternative_path for unknown chunks
 ])
 
 type ExtractByType<T, K extends T extends { type: infer U } ? U : never> = T extends { type: K } ? T : never
@@ -1725,7 +1725,7 @@ function getResponsesModelConfig(modelId: string): ResponsesModelConfig {
   }
 }
 
-// TODO AI SDK 6: use optional here instead of nullish
+// pending AI SDK 6: use optional here instead of nullish
 const openaiResponsesProviderOptionsSchema = z.object({
   include: z
     .array(z.enum(["reasoning.encrypted_content", "file_search_call.results", "message.output_text.logprobs"]))

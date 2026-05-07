@@ -20,7 +20,7 @@ Use in forms and multi-select lists.
 - Controlled or uncontrolled usage.
 
 ### Accessibility
-- TODO: confirm aria attributes from Kobalte.
+- pending: confirm aria attributes from Kobalte.
 
 ### Theming/tokens
 - Uses \`data-component="checkbox"\` and related slots.

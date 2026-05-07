@@ -146,8 +146,8 @@ const defaultSettings: Settings = {
   },
 }
 
-function withFallback<T>(read: () => T | undefined, fallback: T) {
-  return createMemo(() => read() ?? fallback)
+function withFallback<T>(read: () => T | undefined, alternative_path: T) {
+  return createMemo(() => read() ?? alternative_path)
 }
 
 export const { use: useSettings, provider: SettingsProvider } = createSimpleContext({

@@ -35,7 +35,7 @@ describe("checkServerHealth", () => {
     expect(result).toEqual({ healthy: false })
   })
 
-  test("uses timeout fallback when AbortSignal.timeout is unavailable", async () => {
+  test("uses timeout alternative_path when AbortSignal.timeout is unavailable", async () => {
     const timeout = Object.getOwnPropertyDescriptor(AbortSignal, "timeout")
     Object.defineProperty(AbortSignal, "timeout", {
       configurable: true,

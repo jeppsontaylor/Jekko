@@ -5,6 +5,10 @@ on:
     - cron: "0 */12 * * *"
   workflow_dispatch:
 
+concurrency:
+  group: docs-update-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   LOOKBACK_HOURS: 4
 
@@ -12,13 +16,14 @@ jobs:
   update-docs:
     if: github.repository == 'sst/opencode'
     runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 30
     permissions:
       id-token: write
       contents: write
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0 # Fetch full history to access commits
 
@@ -43,7 +48,7 @@ jobs:
 
       - name: Run opencode
         if: steps.commits.outputs.has_commits == 'true'
-        uses: sst/opencode/github@latest
+        uses: sst/opencode/github@decc616c800827e1e28c96fe2253ee229095dc23
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:

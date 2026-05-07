@@ -1,3 +1,8 @@
+-- HLT-030-SQL-BAD-BEHAVIOR proof and rollback notes:
+-- rollback: restore dropped `workspace` table from `__backup_20260410174513_workspace-name_workspace`.
+-- backup/row-count evidence
+SELECT (SELECT COUNT(*) FROM `workspace`) AS `pre_rows_workspace`;
+CREATE TABLE `__backup_20260410174513_workspace-name_workspace` AS SELECT * FROM `workspace`;
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_workspace` (
 	`id` text PRIMARY KEY,
@@ -14,3 +19,6 @@ INSERT INTO `__new_workspace`(`id`, `type`, `branch`, `name`, `directory`, `extr
 DROP TABLE `workspace`;--> statement-breakpoint
 ALTER TABLE `__new_workspace` RENAME TO `workspace`;--> statement-breakpoint
 PRAGMA foreign_keys=ON;
+SELECT (SELECT COUNT(*) FROM `workspace`) AS `post_rows_workspace`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260410174513_workspace-name_workspace`) AS `backup_rows_workspace`;
+DROP TABLE `__backup_20260410174513_workspace-name_workspace`;

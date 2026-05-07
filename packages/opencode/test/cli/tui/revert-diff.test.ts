@@ -10,13 +10,13 @@ index 0000000..3b18e51
 +++ b/new.txt
 @@ -0,0 +1 @@
 +new content
-diff --git a/old.txt b/old.txt
+diff --git a/prior.txt b/prior.txt
 deleted file mode 100644
 index 3b18e51..0000000
---- a/old.txt
+--- a/prior.txt
 +++ /dev/null
 @@ -1 +0,0 @@
--old content
+-prior content
 `)
 
     expect(files).toEqual([
@@ -26,7 +26,7 @@ index 3b18e51..0000000
         deletions: 0,
       },
       {
-        filename: "old.txt",
+        filename: "prior.txt",
         additions: 0,
         deletions: 1,
       },

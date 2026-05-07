@@ -3,6 +3,7 @@
 import os from "os"
 import path from "path"
 import fs from "fs/promises"
+import { Database } from "bun:sqlite"
 import { setTimeout as sleep } from "node:timers/promises"
 import { afterAll } from "bun:test"
 
@@ -76,8 +77,26 @@ delete process.env["SAMBANOVA_API_KEY"]
 delete process.env["OPENCODE_SERVER_PASSWORD"]
 delete process.env["OPENCODE_SERVER_USERNAME"]
 
-// Use in-memory sqlite
-process.env["OPENCODE_DB"] = ":memory:"
+// Use a sqlite DB so migration and runtime connections share the same schema.
+process.env["OPENCODE_DB"] = path.join(dir, "opencode.sqlite")
+process.env["OPENCODE_SKIP_MIGRATIONS"] = "true"
+
+const seedDb = new Database(process.env["OPENCODE_DB"])
+seedDb.exec("PRAGMA foreign_keys = ON")
+seedDb.exec("PRAGMA journal_mode = WAL")
+seedDb.exec("PRAGMA synchronous = NORMAL")
+seedDb.exec("PRAGMA busy_timeout = 5000")
+
+const migrationDir = path.join(import.meta.dir, "..", "migration")
+for (const entry of (await fs.readdir(migrationDir, { withFileTypes: true }))
+  .filter((item) => item.isDirectory())
+  .map((item) => item.name)
+  .sort()) {
+  const sqlPath = path.join(migrationDir, entry, "migration.sql")
+  const sql = await fs.readFile(sqlPath, "utf8")
+  seedDb.exec(sql)
+}
+seedDb.close()
 
 // Now safe to import from src/
 const { Log } = await import("@opencode-ai/core/util/log")

@@ -82,8 +82,10 @@ describe("cross-spawn spawner", () => {
     fx.effect(
       "returns exit code",
       Effect.gen(function* () {
-        const handle = yield* js("process.exit(0)")
+        const handle = yield* js('process.stdout.write("done")')
+        const out = yield* decodeByteStream(handle.stdout)
         const code = yield* handle.exitCode
+        expect(out).toBe("done")
         expect(code).toBe(ChildProcessSpawner.ExitCode(0))
       }),
     )

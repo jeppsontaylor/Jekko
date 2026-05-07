@@ -3,16 +3,18 @@ use crate::mcp;
 use crate::openai::{
     ChatChoiceDelta, ChatCompletionRequest, build_chunk, error_response, sse_data, sse_done,
 };
+use crate::state::AgentSource;
 use axum::Json;
 use axum::body::Body;
 use axum::extract::State;
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
-use axum::http::{HeaderValue, StatusCode, header};
+use axum::http::{HeaderMap, HeaderValue, StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use bytes::Bytes;
 use futures::{SinkExt, StreamExt};
 use serde_json::json;
+use std::collections::HashSet;
 use std::convert::Infallible;
 use std::sync::Arc;
 use tokio::time::{Duration, interval};
@@ -27,6 +29,7 @@ pub fn router(gateway: Arc<Gateway>) -> axum::Router {
         .route("/v1/jnoccio/status", get(status))
         .route("/v1/jnoccio/metrics", get(metrics))
         .route("/v1/jnoccio/metrics/ws", get(metrics_ws))
+        .route("/v1/jnoccio/agents/heartbeat", post(agent_heartbeat))
         .route("/v1/chat/completions", post(chat))
         .route("/mcp", get(mcp_get).post(mcp_post))
         .nest_service(
@@ -66,8 +69,12 @@ async fn metrics_ws(State(gateway): State<Arc<Gateway>>, ws: WebSocketUpgrade) -
 
 async fn dashboard_socket(socket: WebSocket, gateway: Arc<Gateway>) {
     let (mut sender, mut receiver) = socket.split();
-    if let Ok(snapshot) = gateway.dashboard_snapshot()
-        && sender
+    let mut last_event_id = 0i64;
+    let mut seen_event_ids = HashSet::new();
+    if let Ok(snapshot) = gateway.dashboard_snapshot() {
+        last_event_id = snapshot.recent_events.iter().map(|event| event.id).max().unwrap_or(0);
+        seen_event_ids.extend(snapshot.recent_events.iter().map(|event| event.id));
+        if sender
             .send(Message::Text(
                 serde_json::to_string(&DashboardMessage::Snapshot { snapshot })
                     .expect("dashboard snapshot serializes")
@@ -75,17 +82,25 @@ async fn dashboard_socket(socket: WebSocket, gateway: Arc<Gateway>) {
             ))
             .await
             .is_err()
-    {
-        return;
+        {
+            return;
+        }
     }
 
     let mut updates = gateway.subscribe();
     let mut heartbeat = interval(Duration::from_secs(15));
+    let mut poll = interval(Duration::from_secs(5));
     loop {
         tokio::select! {
             item = updates.recv() => {
                 match item {
                     Ok(message) => {
+                        if let DashboardMessage::RequestEvent { event } = &message {
+                            if !seen_event_ids.insert(event.id) {
+                                continue;
+                            }
+                            last_event_id = last_event_id.max(event.id);
+                        }
                         if sender
                             .send(Message::Text(serde_json::to_string(&message).expect("dashboard message serializes").into()))
                             .await
@@ -94,15 +109,61 @@ async fn dashboard_socket(socket: WebSocket, gateway: Arc<Gateway>) {
                         }
                     }
                     Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {
-                        if let Ok(snapshot) = gateway.dashboard_snapshot()
-                            && sender
+                        if let Ok(snapshot) = gateway.dashboard_snapshot() {
+                            last_event_id = snapshot.recent_events.iter().map(|event| event.id).max().unwrap_or(last_event_id);
+                            seen_event_ids.extend(snapshot.recent_events.iter().map(|event| event.id));
+                            if sender
                                 .send(Message::Text(serde_json::to_string(&DashboardMessage::Snapshot { snapshot }).expect("dashboard snapshot serializes").into()))
                                 .await
                                 .is_err() {
-                            return;
+                                return;
+                            }
                         }
                     }
                     Err(tokio::sync::broadcast::error::RecvError::Closed) => return,
+                }
+            }
+            _ = poll.tick() => {
+                let mut saw_new_event = false;
+                loop {
+                    let Ok(events) = gateway.state.recent_metric_events_after(last_event_id, 200) else {
+                        break;
+                    };
+                    if events.is_empty() {
+                        break;
+                    }
+                    let event_count = events.len();
+                    for event in events {
+                        if !seen_event_ids.insert(event.id) {
+                            continue;
+                        }
+                        last_event_id = last_event_id.max(event.id);
+                        saw_new_event = true;
+                        if sender
+                            .send(Message::Text(serde_json::to_string(&DashboardMessage::RequestEvent { event }).expect("dashboard event serializes").into()))
+                            .await
+                            .is_err() {
+                            return;
+                        }
+                    }
+                    if event_count < 200 {
+                        break;
+                    }
+                }
+                if saw_new_event {
+                    if let Ok(snapshot) = gateway.dashboard_snapshot()
+                        && sender
+                            .send(Message::Text(serde_json::to_string(&DashboardMessage::Snapshot { snapshot }).expect("dashboard snapshot serializes").into()))
+                            .await
+                            .is_err() {
+                        return;
+                    }
+                } else if let Ok(snapshot) = gateway.dashboard_snapshot()
+                    && sender
+                        .send(Message::Text(serde_json::to_string(&DashboardMessage::Snapshot { snapshot }).expect("dashboard snapshot serializes").into()))
+                        .await
+                        .is_err() {
+                    return;
                 }
             }
             _ = heartbeat.tick() => {
@@ -124,9 +185,11 @@ async fn dashboard_socket(socket: WebSocket, gateway: Arc<Gateway>) {
 
 async fn chat(
     State(gateway): State<Arc<Gateway>>,
+    headers: HeaderMap,
     Json(request): Json<ChatCompletionRequest>,
 ) -> Response {
-    match gateway.complete(request.clone()).await {
+    let agent = agent_source_from_headers(&headers);
+    match gateway.complete(request.clone(), agent.as_ref()).await {
         Ok(result) => {
             if request.stream.unwrap_or(false) {
                 stream_response(&result)
@@ -158,6 +221,13 @@ async fn mcp_post(
     Json(body): Json<serde_json::Value>,
 ) -> Response {
     mcp::handle_http(gateway, body).await
+}
+
+async fn agent_heartbeat(State(gateway): State<Arc<Gateway>>, headers: HeaderMap) -> Response {
+    if let Some(agent) = agent_source_from_headers(&headers) {
+        let _ = gateway.state.record_agent_activity(&agent);
+    }
+    StatusCode::NO_CONTENT.into_response()
 }
 
 fn stream_response(result: &crate::fusion::GatewayResult) -> Response {
@@ -272,6 +342,23 @@ fn error_response_for(err: GatewayError) -> Response {
         Json(json!(error_response(err.to_string(), err.kind(), None))),
     )
         .into_response()
+}
+
+fn agent_source_from_headers(headers: &HeaderMap) -> Option<AgentSource> {
+    let id = header_string(headers, "x-opencode-run-id")?;
+    Some(AgentSource {
+        id,
+        client: header_string(headers, "x-opencode-client"),
+        session_id: header_string(headers, "x-opencode-session"),
+        process_role: header_string(headers, "x-opencode-process-role"),
+        pid: header_string(headers, "x-opencode-pid").and_then(|value| value.parse::<i64>().ok()),
+        user_agent: header_string(headers, "user-agent"),
+        version: header_string(headers, "x-opencode-version"),
+    })
+}
+
+fn header_string(headers: &HeaderMap, key: &str) -> Option<String> {
+    headers.get(key).and_then(|value| value.to_str().ok()).map(|value| value.to_string())
 }
 
 fn chunk_text(text: &str, size: usize) -> Vec<String> {

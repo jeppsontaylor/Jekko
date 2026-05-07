@@ -1,5 +1,5 @@
 import { Effect, Schema } from "effect"
-import type { MessageV2 } from "../session/message-v2"
+import type { MessageV2 } from "../session/message"
 import type { Permission } from "../permission"
 import type { SessionID, MessageID } from "../session/schema"
 import * as Truncate from "./truncate"
@@ -9,7 +9,7 @@ interface Metadata {
   [key: string]: any
 }
 
-// TODO: remove this hack
+// pending: remove this shortcut
 export type DynamicDescription = (agent: Agent.Info) => Effect.Effect<string>
 
 export type Context<M extends Metadata = Metadata> = {

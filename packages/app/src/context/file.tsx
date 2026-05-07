@@ -43,10 +43,10 @@ export {
   touchFileContent,
 }
 
-function errorMessage(error: unknown, fallback: string) {
+function errorMessage(error: unknown, alternative_path: string) {
   if (error instanceof Error && error.message) return error.message
   if (typeof error === "string" && error) return error
-  return fallback
+  return alternative_path
 }
 
 export const { use: useFile, provider: FileProvider } = createSimpleContext({

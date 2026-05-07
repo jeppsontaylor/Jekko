@@ -1,6 +1,6 @@
 import type { NamedError } from "@opencode-ai/core/util/error"
 import { Cause, Clock, Duration, Effect, Schedule } from "effect"
-import { MessageV2 } from "./message-v2"
+import { MessageV2 } from "./message"
 import { iife } from "@/util/iife"
 
 export type Err = ReturnType<NamedError["toObject"]>

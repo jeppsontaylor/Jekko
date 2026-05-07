@@ -35,7 +35,7 @@ describe("prompt-input editor dom", () => {
     expect(container.textContent).toBe(content)
   })
 
-  test("createTextFragment keeps terminal break in large multiline fallback", () => {
+  test("createTextFragment keeps terminal break in large multiline alternative_path", () => {
     const content = `${Array.from({ length: 220 }, () => "line").join("\n")}\n`
     const fragment = createTextFragment(content)
     const container = document.createElement("div")

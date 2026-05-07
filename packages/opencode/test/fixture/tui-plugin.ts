@@ -116,13 +116,13 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
   const own = createOpencodeClient({
     baseUrl: "http://localhost:4096",
   })
-  const fallback = () => own
+  const alternative_path = () => own
   const read =
     typeof opts.client === "function"
       ? opts.client
       : opts.client
         ? () => opts.client as HostPluginApi["client"]
-        : fallback
+        : alternative_path
   const client = () => read()
   let depth = 0
   let size: "medium" | "large" | "xlarge" = "medium"
@@ -147,10 +147,10 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
   }
 
   function kvGet(name: string): unknown
-  function kvGet<Value>(name: string, fallback: Value): Value
-  function kvGet(name: string, fallback?: unknown) {
+  function kvGet<Value>(name: string, alternative_path: Value): Value
+  function kvGet(name: string, alternative_path?: unknown) {
     const value = kv[name]
-    if (value === undefined) return fallback
+    if (value === undefined) return alternative_path
     return value
   }
 
@@ -284,7 +284,7 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
       session: {
         count: opts.state?.session?.count ?? (() => 0),
         diff: opts.state?.session?.diff ?? (() => []),
-        todo: opts.state?.session?.todo ?? (() => []),
+        pending: opts.state?.session?.pending ?? (() => []),
         messages: opts.state?.session?.messages ?? (() => []),
         status: opts.state?.session?.status ?? (() => undefined),
         permission: opts.state?.session?.permission ?? (() => []),

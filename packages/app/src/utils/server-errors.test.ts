@@ -90,7 +90,7 @@ describe("formatServerError", () => {
     expect(formatServerError("Failed to connect to server", language.t)).toBe("Failed to connect to server")
   })
 
-  test("uses translated unknown fallback", () => {
+  test("uses translated unknown alternative_path", () => {
     expect(formatServerError(0, language.t)).toBe("Erro desconhecido")
   })
 

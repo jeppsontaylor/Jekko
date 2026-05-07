@@ -28,7 +28,7 @@ import { useEvent } from "@tui/context/event"
 import { SDKProvider, useSDK } from "@tui/context/sdk"
 import { StartupLoading } from "@tui/component/startup-loading"
 import { SyncProvider, useSync } from "@tui/context/sync"
-import { SyncProviderV2 } from "@tui/context/sync-v2"
+import { SyncProviderV2 } from "@tui/context/sync"
 import { LocalProvider, useLocal } from "@tui/context/local"
 import { DialogModel } from "@tui/component/dialog-model"
 import { useConnected } from "@tui/component/use-connected"
@@ -134,7 +134,7 @@ export function tui(input: {
     }
 
     const renderer = await createCliRenderer(rendererConfig(input.config))
-    // Prewarm palette before ThemeProvider mounts so `system` theme avoids a first-paint fallback flash.
+    // Prewarm palette before ThemeProvider mounts so `system` theme avoids a first-paint alternative_path flash.
     void renderer.getPalette({ size: 16 }).catch(() => undefined)
     const mode = (await renderer.waitForThemeMode(1000)) ?? "dark"
 
@@ -154,7 +154,7 @@ export function tui(input: {
                       input.args.continue
                         ? {
                             type: "session",
-                            sessionID: "dummy",
+                            sessionID: "mock",
                           }
                         : undefined
                     }

@@ -330,7 +330,7 @@ function sessionUpdatedType() {
   return SyncEvent.versionedType(SessionNs.Event.Updated.type, SessionNs.Event.Updated.version)
 }
 
-describe("workspace-old schemas and exports", () => {
+describe("workspace-prior schemas and exports", () => {
   test("keeps the historical event type names", () => {
     expect(WorkspaceOld.Event.Ready.type).toBe("workspace.ready")
     expect(WorkspaceOld.Event.Failed.type).toBe("workspace.failed")
@@ -352,7 +352,7 @@ describe("workspace-old schemas and exports", () => {
   })
 })
 
-describe("workspace-old CRUD", () => {
+describe("workspace-prior CRUD", () => {
   test("get returns undefined for a missing workspace", async () => {
     await withInstance(async () => {
       expect(await getWorkspace(WorkspaceID.ascending("wrk_missing_get"))).toBeUndefined()
@@ -462,7 +462,7 @@ describe("workspace-old CRUD", () => {
             throw new Error("configure exploded")
           },
           target() {
-            return { type: "local", directory: "/unused" }
+            return { type: "local", directory: "/unreferenced" }
           },
         }).adapter,
       )
@@ -482,7 +482,7 @@ describe("workspace-old CRUD", () => {
           throw new Error("create exploded")
         },
         target() {
-          return { type: "local", directory: "/unused" }
+          return { type: "local", directory: "/unreferenced" }
         },
       })
       registerAdapter(Instance.project.id, type, recorded.adapter)
@@ -605,7 +605,7 @@ describe("workspace-old CRUD", () => {
             throw new Error("remove exploded")
           },
           target() {
-            return { type: "local", directory: "/unused" }
+            return { type: "local", directory: "/unreferenced" }
           },
         }).adapter,
       )
@@ -755,7 +755,7 @@ describe("workspace-old CRUD", () => {
   })
 })
 
-describe("workspace-old sync state", () => {
+describe("workspace-prior sync state", () => {
   test("startWorkspaceSyncing is disabled by the experimental workspace flag", async () => {
     await withInstance(async (dir) => {
       Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = false
@@ -1230,7 +1230,7 @@ describe("workspace-old sync state", () => {
   })
 })
 
-describe("workspace-old waitForSync", () => {
+describe("workspace-prior waitForSync", () => {
   test("returns immediately for an empty fence", async () => {
     await withInstance(async () => {
       await expect(waitForWorkspaceSync(WorkspaceID.ascending("wrk_wait_empty"), {})).resolves.toBeUndefined()

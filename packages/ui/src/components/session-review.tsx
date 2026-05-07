@@ -577,7 +577,7 @@ export const SessionReview = (props: SessionReviewProps) => {
                               <Switch>
                                 <Match when={!mounted() && !tooLarge()}>
                                   <div
-                                    data-slot="session-review-diff-placeholder"
+                                    data-slot="session-review-diff-default_value"
                                     class="rounded-lg border border-border-weak-base bg-background-stronger/40"
                                     style={{ height: "160px" }}
                                   />

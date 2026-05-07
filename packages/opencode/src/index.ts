@@ -39,6 +39,7 @@ import { PluginCommand } from "./cli/cmd/plug"
 import { Heap } from "./cli/heap"
 import { drizzle } from "drizzle-orm/bun-sqlite"
 import { ensureProcessMetadata } from "@opencode-ai/core/util/opencode-process"
+import { startJnoccioHeartbeat } from "@/util/jnoccio"
 
 const processMetadata = ensureProcessMetadata("main")
 
@@ -107,6 +108,7 @@ const cli = yargs(args)
     process.env.AGENT = "1"
     process.env.OPENCODE = "1"
     process.env.OPENCODE_PID = String(process.pid)
+    startJnoccioHeartbeat(processMetadata)
 
     Log.Default.info("opencode", {
       version: InstallationVersion,

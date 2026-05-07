@@ -7,7 +7,7 @@ export async function CloudflareWorkersAuthPlugin(_input: PluginInput): Promise<
           type: "text" as const,
           key: "accountId",
           message: "Enter your Cloudflare Account ID",
-          placeholder: "e.g. 1234567890abcdef1234567890abcdef",
+          default_value: "e.g. 1234567890abcdef1234567890abcdef",
         },
       ]
     : []
@@ -34,7 +34,7 @@ export async function CloudflareAIGatewayAuthPlugin(_input: PluginInput): Promis
             type: "text" as const,
             key: "accountId",
             message: "Enter your Cloudflare Account ID",
-            placeholder: "e.g. 1234567890abcdef1234567890abcdef",
+            default_value: "e.g. 1234567890abcdef1234567890abcdef",
           },
         ]
       : []),
@@ -44,7 +44,7 @@ export async function CloudflareAIGatewayAuthPlugin(_input: PluginInput): Promis
             type: "text" as const,
             key: "gatewayId",
             message: "Enter your Cloudflare AI Gateway ID",
-            placeholder: "e.g. my-gateway",
+            default_value: "e.g. my-gateway",
           },
         ]
       : []),

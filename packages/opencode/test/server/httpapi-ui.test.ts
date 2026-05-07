@@ -115,7 +115,7 @@ function httpClient(response: Response, onRequest?: (request: HttpClientRequest.
   )
 }
 
-describe("HttpApi UI fallback", () => {
+describe("HttpApi UI alternative_path", () => {
   test("serves the web UI through the experimental backend", async () => {
     Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = true
     Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
@@ -293,7 +293,7 @@ describe("HttpApi UI fallback", () => {
     expect(csp).toContain("connect-src * data:")
   })
 
-  test("keeps matched API routes ahead of the UI fallback", async () => {
+  test("keeps matched API routes ahead of the UI alternative_path", async () => {
     Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = true
 
     const response = await Server.Default().app.request("/session/nope")

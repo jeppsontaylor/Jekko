@@ -95,9 +95,9 @@ describe("prompt-input history", () => {
     expect(up.entry.comments).toEqual([comment("c1")])
   })
 
-  test("normalizePromptHistoryEntry supports legacy prompt arrays", () => {
-    const entry = normalizePromptHistoryEntry(text("legacy"))
-    expect(entry.prompt[0]?.type === "text" ? entry.prompt[0].content : "").toBe("legacy")
+  test("normalizePromptHistoryEntry supports historical prompt arrays", () => {
+    const entry = normalizePromptHistoryEntry(text("historical"))
+    expect(entry.prompt[0]?.type === "text" ? entry.prompt[0].content : "").toBe("historical")
     expect(entry.comments).toEqual([])
   })
 

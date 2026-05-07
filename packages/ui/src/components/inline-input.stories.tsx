@@ -25,7 +25,7 @@ Use inside text or table rows for quick edits.
 
 `
 
-const story = create({ title: "UI/InlineInput", mod, args: { placeholder: "Type...", value: "Inline" } })
+const story = create({ title: "UI/InlineInput", mod, args: { default_value: "Type...", value: "Inline" } })
 export default {
   title: "UI/InlineInput",
   id: "components-inline-input",

@@ -96,7 +96,7 @@ describe("persist localStorage resilience", () => {
     expect(storage.getItem("opencode.safe.scope:value")).toBe('{"value":3}')
   })
 
-  test("failing fallback scope does not poison direct storage scope", () => {
+  test("failing alternative_path scope does not poison direct storage scope", () => {
     const broken = persistTesting.localStorageWithPrefix("opencode.throw.scope2")
     broken.setItem("value", '{"value":1}')
 
@@ -119,23 +119,23 @@ describe("persist localStorage resilience", () => {
     expect(/[:\\/]/.test(result)).toBeFalse()
   })
 
-  test("workspace target keeps raw path storage as legacy fallback", () => {
+  test("workspace target keeps raw path storage as historical alternative_path", () => {
     const target = Persist.workspace("C:\\Users\\foo", "vcs")
 
     expect(target.storage).toBe(persistTesting.workspaceStorage("C:/Users/foo"))
     expect(target.legacyStorageNames).toEqual([persistTesting.workspaceStorage("C:\\Users\\foo")])
   })
 
-  test("workspace target keeps backslash storage as fallback for normalized Windows paths", () => {
+  test("workspace target keeps backslash storage as alternative_path for normalized Windows paths", () => {
     const target = Persist.workspace("C:/Users/foo", "vcs")
 
     expect(target.storage).toBe(persistTesting.workspaceStorage("C:/Users/foo"))
     expect(target.legacyStorageNames).toEqual([persistTesting.workspaceStorage("C:\\Users\\foo")])
   })
 
-  test("migrates direct legacy keys into scoped storage", () => {
-    storage.setItem("legacy.workspace", '{"value":2}')
-    const target = Persist.workspace("C:/Users/foo", "demo", ["legacy.workspace"])
+  test("migrates direct historical keys into scoped storage", () => {
+    storage.setItem("historical.workspace", '{"value":2}')
+    const target = Persist.workspace("C:/Users/foo", "demo", ["historical.workspace"])
     const current = persistTesting.localStorageWithPrefix(target.storage!)
     const legacyStore = persistTesting.localStorageDirect()
 
@@ -143,18 +143,18 @@ describe("persist localStorage resilience", () => {
       current,
       legacyStore,
       stores: [],
-      keys: target.legacy!,
+      keys: target.historical!,
       key: target.key,
       defaults: { value: 1 },
     })
 
     expect(result).toBe('{"value":2}')
     expect(storage.getItem(`${target.storage}:${target.key}`)).toBe('{"value":2}')
-    expect(legacyStore.getItem("legacy.workspace")).toBeNull()
-    expect(storage.getItem("legacy.workspace")).toBeNull()
+    expect(legacyStore.getItem("historical.workspace")).toBeNull()
+    expect(storage.getItem("historical.workspace")).toBeNull()
   })
 
-  test("removes legacy workspace storage when removing persisted target", () => {
+  test("removes historical workspace storage when removing persisted target", () => {
     const target = Persist.workspace("C:\\Users\\foo", "terminal")
     storage.setItem(`${target.storage}:${target.key}`, '{"value":1}')
     storage.setItem(`${target.legacyStorageNames![0]}:${target.key}`, '{"value":2}')

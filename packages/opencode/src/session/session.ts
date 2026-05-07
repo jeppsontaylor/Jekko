@@ -24,7 +24,7 @@ import { PartTable, SessionTable } from "./session.sql"
 import { ProjectTable } from "../project/project.sql"
 import { Storage } from "@/storage/storage"
 import * as Log from "@opencode-ai/core/util/log"
-import { MessageV2 } from "./message-v2"
+import { MessageV2 } from "./message"
 import type { InstanceContext } from "../project/instance"
 import { InstanceState } from "@/effect/instance-state"
 import { Snapshot } from "@/snapshot"
@@ -152,7 +152,7 @@ const Share = Schema.Struct({
   url: Schema.String,
 })
 
-// Legacy HTTP accepted negative values here. Keep archive timestamps permissive
+// Previous HTTP accepted negative values here. Keep archive timestamps permissive
 // while excluding non-finite values that cannot round-trip through JSON.
 export const ArchivedTimestamp = Schema.Finite
 
@@ -406,7 +406,7 @@ export const getUsage = (input: { model: Provider.Model; usage: LanguageModelUsa
         .add(new Decimal(tokens.output).mul(costInfo?.output ?? 0).div(1_000_000))
         .add(new Decimal(tokens.cache.read).mul(costInfo?.cache?.read ?? 0).div(1_000_000))
         .add(new Decimal(tokens.cache.write).mul(costInfo?.cache?.write ?? 0).div(1_000_000))
-        // TODO: update models.dev to have better pricing model, for now:
+        // pending: update models.dev to have better pricing model, for now:
         // charge reasoning tokens at the same rate as output tokens
         .add(new Decimal(tokens.reasoning).mul(costInfo?.output ?? 0).div(1_000_000))
         .toNumber(),

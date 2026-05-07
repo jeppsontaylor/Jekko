@@ -80,7 +80,7 @@ export namespace Share {
     await Storage.write<Snapshot>(["share_snapshot", shareID], { data })
   }
 
-  async function legacy(shareID: string) {
+  async function historical(shareID: string) {
     const compaction: Compaction = (await Storage.read<Compaction>(["share_compaction", shareID])) ?? {
       data: [],
       event: undefined,
@@ -153,13 +153,13 @@ export namespace Share {
       const share = await get(input.share.id)
       if (!share) throw new Errors.NotFound(input.share.id)
       if (share.secret !== input.share.secret) throw new Errors.InvalidSecret(input.share.id)
-      const data = (await readSnapshot(input.share.id)) ?? (await legacy(input.share.id))
+      const data = (await readSnapshot(input.share.id)) ?? (await historical(input.share.id))
       await writeSnapshot(input.share.id, merge(data, input.data))
     },
   )
 
   export async function data(shareID: string) {
-    return (await readSnapshot(shareID)) ?? legacy(shareID)
+    return (await readSnapshot(shareID)) ?? historical(shareID)
   }
 
   export const syncOld = fn(

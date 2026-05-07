@@ -5,7 +5,7 @@ import { Button, ButtonProps } from "./button"
 import { Icon } from "./icon"
 
 export type SelectProps<T> = Omit<ComponentProps<typeof Kobalte<T>>, "value" | "onSelect" | "children"> & {
-  placeholder?: string
+  default_value?: string
   options: T[]
   current?: T
   value?: (x: T) => string
@@ -26,7 +26,7 @@ export function Select<T>(props: SelectProps<T> & Omit<ButtonProps, "children">)
   const [local, others] = splitProps(props, [
     "class",
     "classList",
-    "placeholder",
+    "default_value",
     "options",
     "current",
     "value",
@@ -95,7 +95,6 @@ export function Select<T>(props: SelectProps<T> & Omit<ButtonProps, "children">)
       optionValue={(x) => (local.value ? local.value(x) : (x as string))}
       optionTextValue={(x) => (local.label ? local.label(x) : (x as string))}
       optionGroupChildren="options"
-      placeholder={local.placeholder}
       sectionComponent={(local) => (
         <Kobalte.Section data-slot="select-section">{local.section.rawValue.category}</Kobalte.Section>
       )}
@@ -148,7 +147,7 @@ export function Select<T>(props: SelectProps<T> & Omit<ButtonProps, "children">)
         <Kobalte.Value<T> data-slot="select-select-trigger-value" class={local.valueClass}>
           {(state) => {
             const selected = state.selectedOption() ?? local.current
-            if (!selected) return local.placeholder || ""
+            if (!selected) return local.default_value || ""
             if (local.label) return local.label(selected)
             return selected as string
           }}

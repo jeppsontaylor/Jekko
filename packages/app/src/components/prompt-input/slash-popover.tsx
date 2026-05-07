@@ -23,8 +23,8 @@ type PromptPopoverProps = {
   atFlat: AtOption[]
   atActive?: string
   atKey: (item: AtOption) => string
-  setAtActive: (id: string) => void
-  onAtSelect: (item: AtOption) => void
+  setMentionActive: (id: string) => void
+  onMentionSelect: (item: AtOption) => void
   slashFlat: SlashCommand[]
   slashActive?: string
   setSlashActive: (id: string) => void
@@ -60,8 +60,8 @@ export const PromptPopover: Component<PromptPopoverProps> = (props) => {
                       <button
                         class="w-full flex items-center gap-x-2 rounded-md px-2 py-0.5"
                         classList={{ "bg-surface-raised-base-hover": props.atActive === key }}
-                        onClick={() => props.onAtSelect(item)}
-                        onMouseEnter={() => props.setAtActive(key)}
+                        onClick={() => props.onMentionSelect(item)}
+                        onMouseEnter={() => props.setMentionActive(key)}
                       >
                         <Icon name="brain" size="small" class="text-icon-info-active shrink-0" />
                         <span class="text-14-regular text-text-strong whitespace-nowrap">@{item.name}</span>
@@ -77,8 +77,8 @@ export const PromptPopover: Component<PromptPopoverProps> = (props) => {
                     <button
                       class="w-full flex items-center gap-x-2 rounded-md px-2 py-0.5"
                       classList={{ "bg-surface-raised-base-hover": props.atActive === key }}
-                      onClick={() => props.onAtSelect(item)}
-                      onMouseEnter={() => props.setAtActive(key)}
+                      onClick={() => props.onMentionSelect(item)}
+                      onMouseEnter={() => props.setMentionActive(key)}
                     >
                       <FileIcon node={{ path: item.path, type: "file" }} class="shrink-0 size-4" />
                       <div class="flex items-center text-14-regular min-w-0">

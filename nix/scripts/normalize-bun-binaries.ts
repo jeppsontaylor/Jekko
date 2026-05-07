@@ -32,9 +32,9 @@ for (const entry of bunEntries) {
     }
     const seen = new Set<string>()
     if (typeof binField === "string") {
-      const fallback = manifest.name ?? packageDir.split("/").pop()
-      if (fallback) {
-        await linkBinary(binRoot, fallback, packageDir, binField, seen)
+      const alternative_path = manifest.name ?? packageDir.split("/").pop()
+      if (alternative_path) {
+        await linkBinary(binRoot, alternative_path, packageDir, binField, seen)
       }
     } else {
       const entries = Object.entries(binField).sort((a, b) => a[0].localeCompare(b[0]))

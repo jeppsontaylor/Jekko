@@ -201,7 +201,7 @@ export function ContentDiff(props: Props) {
 // @@ -1,21 +1,25 @@
 //  unchanged line
 // -deleted line
-// -old content
+// -prior content
 // +added line
 // +new content
 //

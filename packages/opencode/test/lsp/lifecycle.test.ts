@@ -168,10 +168,10 @@ describe("LSP.Diagnostic", () => {
   test("pretty() formats warning diagnostic", () => {
     const result = LSP.Diagnostic.pretty({
       range: { start: { line: 0, character: 0 }, end: { line: 0, character: 5 } },
-      message: "Unused variable",
+      message: "Ignored variable",
       severity: 2,
     } as any)
-    expect(result).toBe("WARN [1:1] Unused variable")
+    expect(result).toBe("WARN [1:1] Ignored variable")
   })
 
   test("pretty() defaults to ERROR when no severity", () => {

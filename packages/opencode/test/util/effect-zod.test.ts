@@ -222,7 +222,7 @@ describe("util.effect-zod", () => {
       expect(result.error!.issues[0].message).toBe("expected an even number")
     })
 
-    test("filter returning false triggers refinement with fallback message", () => {
+    test("filter returning false triggers refinement with alternative_path message", () => {
       const nonEmpty = Schema.makeFilter((s: string) => s.length > 0)
       const schema = zod(Schema.String.check(nonEmpty))
 
@@ -734,10 +734,10 @@ describe("util.effect-zod", () => {
       // Simulates `keybinds.ts` style of per-platform defaults: the default is
       // produced by an Effect that computes a value at decode time.
       const platform = "darwin"
-      const fallback = platform === "darwin" ? "cmd-k" : "ctrl-k"
+      const alternative_path = platform === "darwin" ? "cmd-k" : "ctrl-k"
       const schema = zod(
         Schema.Struct({
-          command_palette: Schema.String.pipe(Schema.optional, Schema.withDecodingDefault(Effect.sync(() => fallback))),
+          command_palette: Schema.String.pipe(Schema.optional, Schema.withDecodingDefault(Effect.sync(() => alternative_path))),
         }),
       )
       expect(schema.parse({})).toEqual({ command_palette: "cmd-k" })

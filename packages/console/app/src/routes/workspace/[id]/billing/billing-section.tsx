@@ -85,7 +85,7 @@ export function BillingSection() {
     checkoutSubmission.clear()
   }
 
-  // DUMMY DATA FOR TESTING - UNCOMMENT ONE OF THE SCENARIOS BELOW
+  // SAMPLE DATA FOR TESTING - UNCOMMENT ONE OF THE SCENARIOS BELOW
 
   // Scenario 1: User has not added billing details and has no balance
   // const balanceInfo = () => ({

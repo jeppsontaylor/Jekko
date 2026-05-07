@@ -432,7 +432,7 @@ export const layer = Layer.effect(
       yield* FiberMap.run(
         syncFibers,
         space.id,
-        // TODO: look into `tapError` to set the status but still
+        // pending: look into `tapError` to set the status but still
         // allow the fiber to fail and automatically get removed
         syncWorkspaceLoop(space).pipe(
           Effect.catch((error) =>
@@ -552,7 +552,7 @@ export const layer = Layer.effect(
             }
 
             // "claim" this session so any future events coming from
-            // the old workspace are ignored
+            // the prior workspace are ignored
             SyncEvent.claim(input.sessionID, input.workspaceID ?? Instance.project.id)
           }
         }

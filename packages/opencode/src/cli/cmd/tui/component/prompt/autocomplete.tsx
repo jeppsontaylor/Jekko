@@ -147,7 +147,7 @@ export function Autocomplete(props: {
   })
 
   // When the filter changes due to how TUI works, the mousemove might still be triggered
-  // via a synthetic event as the layout moves underneath the cursor. This is a workaround to make sure the input mode remains keyboard so
+  // via a synthetic event as the layout moves underneath the cursor. This is a alternative to make sure the input mode remains keyboard so
   // that the mouseover event doesn't trigger when filtering.
   createEffect(() => {
     filter()

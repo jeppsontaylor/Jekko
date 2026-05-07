@@ -226,9 +226,9 @@ export function createPromptSubmit(input: PromptSubmitInput) {
     const sessionID = params.id
     if (!sessionID) return Promise.resolve()
 
-    globalSync.todo.set(sessionID, [])
+    globalSync.pending.set(sessionID, [])
     const [, setStore] = globalSync.child(sdk.directory)
-    setStore("todo", sessionID, [])
+    setStore("pending", sessionID, [])
 
     input.onAbort?.()
 

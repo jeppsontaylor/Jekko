@@ -212,7 +212,7 @@ export function createChildStoreManager(input: {
             sessionTotal: 0,
             session_status: {},
             session_diff: {},
-            todo: {},
+            pending: {},
             permission: {},
             question: {},
             get mcp_ready() {

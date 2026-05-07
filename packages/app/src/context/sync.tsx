@@ -3,6 +3,7 @@ import { createStore, produce, reconcile } from "solid-js/store"
 import { Binary } from "@opencode-ai/core/util/binary"
 import { retry } from "@opencode-ai/core/util/retry"
 import { createSimpleContext } from "@opencode-ai/ui/context"
+import type { PendingItem } from "./global-sync/types"
 import {
   clearSessionPrefetch,
   getSessionPrefetch,
@@ -138,34 +139,6 @@ export function applyOptimisticRemove(draft: OptimisticStore, input: OptimisticR
   delete draft.part[input.messageID]
 }
 
-function setOptimisticAdd(setStore: (...args: unknown[]) => void, input: OptimisticAddInput) {
-  setStore("message", input.sessionID, (messages: Message[] | undefined) => {
-    if (!messages) return [input.message]
-    const result = Binary.search(messages, input.message.id, (m) => m.id)
-    const next = [...messages]
-    next.splice(result.index, 0, input.message)
-    return next
-  })
-  setStore("part", input.message.id, sortParts(input.parts))
-}
-
-function setOptimisticRemove(setStore: (...args: unknown[]) => void, input: OptimisticRemoveInput) {
-  setStore("message", input.sessionID, (messages: Message[] | undefined) => {
-    if (!messages) return messages
-    const result = Binary.search(messages, input.messageID, (m) => m.id)
-    if (!result.found) return messages
-    const next = [...messages]
-    next.splice(result.index, 1)
-    return next
-  })
-  setStore("part", (part: Record<string, Part[] | undefined>) => {
-    if (!(input.messageID in part)) return part
-    const next = { ...part }
-    delete next[input.messageID]
-    return next
-  })
-}
-
 export const { use: useSync, provider: SyncProvider } = createSimpleContext({
   name: "Sync",
   init: () => {
@@ -174,6 +147,34 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
 
     type Child = ReturnType<(typeof globalSync)["child"]>
     type Setter = Child[1]
+
+    const setOptimisticAdd = (setStore: Setter, input: OptimisticAddInput) => {
+      setStore("message", input.sessionID, (messages: Message[] | undefined) => {
+        if (!messages) return [input.message]
+        const result = Binary.search(messages, input.message.id, (m) => m.id)
+        const next = [...messages]
+        next.splice(result.index, 0, input.message)
+        return next
+      })
+      setStore("part", input.message.id, sortParts(input.parts))
+    }
+
+    const setOptimisticRemove = (setStore: Setter, input: OptimisticRemoveInput) => {
+      setStore("message", input.sessionID, (messages: Message[] | undefined) => {
+        if (!messages) return []
+        const result = Binary.search(messages, input.messageID, (m) => m.id)
+        if (!result.found) return messages
+        const next = [...messages]
+        next.splice(result.index, 1)
+        return next
+      })
+      setStore("part", (part: Record<string, Part[] | undefined>) => {
+        if (!(input.messageID in part)) return part
+        const next = { ...part }
+        delete next[input.messageID]
+        return next
+      })
+    }
 
     const current = createMemo(() => globalSync.child(sdk.directory))
     const target = (directory?: string) => {
@@ -242,10 +243,10 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       while (seen.size > maxDirs) {
         const first = seen.keys().next().value
         if (!first) break
-        const stale = [...(seen.get(first) ?? [])]
+        const outdated = [...(seen.get(first) ?? [])]
         seen.delete(first)
         const [, setStore] = globalSync.child(first, { bootstrap: false })
-        evict(first, setStore, stale)
+        evict(first, setStore, outdated)
       }
       return created
     }
@@ -272,7 +273,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       if (sessionIDs.length === 0) return
       clearSessionPrefetch(directory, sessionIDs)
       for (const sessionID of sessionIDs) {
-        globalSync.todo.set(sessionID, undefined)
+        globalSync.pending.set(sessionID, undefined)
       }
       setStore(
         produce((draft) => {
@@ -283,12 +284,12 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
     }
 
     const touch = (directory: string, setStore: Setter, sessionID: string) => {
-      const stale = pickSessionCacheEvictions({
+      const outdated = pickSessionCacheEvictions({
         seen: seenFor(directory),
         keep: sessionID,
         limit: SESSION_CACHE_LIMIT,
       })
-      evict(directory, setStore, stale)
+      evict(directory, setStore, outdated)
     }
 
     const fetchMessages = async (input: {
@@ -394,13 +395,13 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
             const directory = input.directory ?? sdk.directory
             const [, setStore] = target(input.directory)
             setOptimistic(directory, input.sessionID, { message: input.message, parts: input.parts })
-            setOptimisticAdd(setStore as (...args: unknown[]) => void, input)
+            setOptimisticAdd(setStore, input)
           },
           remove(input: { directory?: string; sessionID: string; messageID: string }) {
             const directory = input.directory ?? sdk.directory
             const [, setStore] = target(input.directory)
             clearOptimistic(directory, input.sessionID, input.messageID)
-            setOptimisticRemove(setStore as (...args: unknown[]) => void, input)
+            setOptimisticRemove(setStore, input)
           },
         },
         addOptimisticMessage(input: {
@@ -421,7 +422,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           }
           const [, setStore] = target()
           setOptimistic(sdk.directory, input.sessionID, { message, parts: input.parts })
-          setOptimisticAdd(setStore as (...args: unknown[]) => void, {
+          setOptimisticAdd(setStore, {
             sessionID: input.sessionID,
             message,
             parts: input.parts,
@@ -514,31 +515,31 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
             }),
           )
         },
-        async todo(sessionID: string, opts?: { force?: boolean }) {
+        async pending(sessionID: string, opts?: { force?: boolean }) {
           const directory = sdk.directory
           const client = sdk.client
           const [store, setStore] = globalSync.child(directory)
           touch(directory, setStore, sessionID)
-          const existing = store.todo[sessionID]
+          const existing = store.pending[sessionID]
           const cached = globalSync.data.session_todo[sessionID]
           if (existing !== undefined) {
             if (cached === undefined) {
-              globalSync.todo.set(sessionID, existing)
+              globalSync.pending.set(sessionID, existing)
             }
             if (!opts?.force) return
           }
 
           if (cached !== undefined) {
-            setStore("todo", sessionID, reconcile(cached, { key: "id" }))
+            setStore("pending", sessionID, cached)
           }
 
           const key = keyFor(directory, sessionID)
           return runInflight(inflightTodo, key, () =>
             retry(() => client.session.todo({ sessionID })).then((todo) => {
               if (!tracked(directory, sessionID)) return
-              const list = todo.data ?? []
-              setStore("todo", sessionID, reconcile(list, { key: "id" }))
-              globalSync.todo.set(sessionID, list)
+              const list = (todo.data ?? []) as PendingItem[]
+              setStore("pending", sessionID, list)
+              globalSync.pending.set(sessionID, list)
             }),
           )
         },

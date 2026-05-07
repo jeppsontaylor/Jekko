@@ -4,10 +4,10 @@ import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } fr
 import { Account } from "@/account/account"
 import { Bus } from "@/bus"
 import { InstanceState } from "@/effect/instance-state"
-import { Provider } from "@/provider/provider"
+import { Provider, type Model as ProviderModel } from "@/provider/provider"
 import { ModelID, ProviderID } from "@/provider/schema"
 import { Session } from "@/session/session"
-import { MessageV2 } from "@/session/message-v2"
+import { MessageV2 } from "@/session/message"
 import type { SessionID } from "@/session/schema"
 import { Database } from "@/storage/db"
 import { eq } from "drizzle-orm"
@@ -106,6 +106,10 @@ function key(item: Data) {
   }
 }
 
+function toSDKModel(model: ProviderModel): SDK.Model {
+  return model as SDK.Model
+}
+
 export const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
@@ -192,7 +196,7 @@ export const layer = Layer.effect(
             yield* sync(info.sessionID, [{ type: "message", data: info }])
             if (info.role !== "user") return
             const model = yield* provider.getModel(info.model.providerID, info.model.modelID)
-            yield* sync(info.sessionID, [{ type: "model", data: [model] }])
+            yield* sync(info.sessionID, [{ type: "model", data: [toSDKModel(model)] }])
           }),
         )
         yield* watch(MessageV2.Event.PartUpdated, (evt) =>
@@ -291,7 +295,7 @@ export const layer = Layer.effect(
         ...messages.map((item) => ({ type: "message" as const, data: item.info })),
         ...messages.flatMap((item) => item.parts.map((part) => ({ type: "part" as const, data: part }))),
         { type: "session_diff", data: diffs },
-        { type: "model", data: models },
+        { type: "model", data: models.map(toSDKModel) },
       ])
     })
 

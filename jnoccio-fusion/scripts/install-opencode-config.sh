@@ -12,9 +12,9 @@ if [[ -f "$target" ]]; then
   echo "Backed up existing config to $backup"
 fi
 
-node --input-type=module - "$template" "$target" <<'NODE'
+node --input-type=module - "$repo_root" "$template" "$target" <<'NODE'
 import fs from "node:fs"
-const [templatePath, targetPath] = process.argv.slice(2)
+const [repoRoot, templatePath, targetPath] = process.argv.slice(2)
 const stripJsonc = (input) => {
   let out = ""
   let i = 0
@@ -70,7 +70,30 @@ const merge = (target, source) => {
 const template = JSON.parse(stripJsonc(fs.readFileSync(templatePath, "utf8")))
 const existing = fs.existsSync(targetPath) ? JSON.parse(stripJsonc(fs.readFileSync(targetPath, "utf8"))) : {}
 const merged = merge(existing, template)
-fs.writeFileSync(targetPath, JSON.stringify(merged, null, 2) + "\n")
+const jnoccioLauncher = {
+  mcp: {
+    jnoccio: {
+      type: "local",
+      command: [
+        "cargo",
+        "run",
+        "--quiet",
+        "--manifest-path",
+        `${repoRoot}/Cargo.toml`,
+        "--bin",
+        "jnoccio-mcp",
+        "--",
+        "--config",
+        `${repoRoot}/config/server.json`,
+        "--ensure-server",
+      ],
+      enabled: true,
+      timeout: 300000,
+    },
+  },
+}
+const finalConfig = merge(jnoccioLauncher, merged)
+fs.writeFileSync(targetPath, JSON.stringify(finalConfig, null, 2) + "\n")
 NODE
 
 echo "Installed OpenCode config to $target"

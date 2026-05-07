@@ -9,10 +9,9 @@ import { ProviderTransform } from "@/provider/transform"
 import { Config } from "@/config/config"
 import { InstanceState } from "@/effect/instance-state"
 import type { Agent } from "@/agent/agent"
-import type { MessageV2 } from "./message-v2"
+import type { MessageV2 } from "./message"
 import { Plugin } from "@/plugin"
 import { SystemPrompt } from "./system"
-import { Flag } from "@opencode-ai/core/flag/flag"
 import { Permission } from "@/permission"
 import { PermissionID } from "@/permission/schema"
 import { Bus } from "@/bus"
@@ -24,10 +23,32 @@ import { InstallationVersion } from "@opencode-ai/core/installation/version"
 import { EffectBridge } from "@/effect/bridge"
 import * as Option from "effect/Option"
 import * as OtelTracer from "@effect/opentelemetry/Tracer"
+import { ensureProcessMetadata } from "@opencode-ai/core/util/opencode-process"
+import { jnoccioIdentityHeaders, startJnoccioHeartbeat, type JnoccioProcessMetadata } from "@/util/jnoccio"
 
 const log = Log.create({ service: "llm" })
 export const OUTPUT_TOKEN_MAX = ProviderTransform.OUTPUT_TOKEN_MAX
 type Result = Awaited<ReturnType<typeof streamText>>
+
+function jnoccioRequestHeaders(
+  metadata: JnoccioProcessMetadata,
+  sessionID: string,
+  requestID: string,
+  projectID: string | undefined,
+) {
+  const headers = {
+    ...jnoccioIdentityHeaders(metadata),
+    "x-opencode-session": sessionID,
+    "x-opencode-request": requestID,
+  }
+  if (projectID) {
+    return {
+      ...headers,
+      "x-opencode-project": projectID,
+    }
+  }
+  return headers
+}
 
 // Avoid re-instantiating remeda's deep merge types in this hot LLM path; the runtime behavior is still mergeDeep.
 const mergeOptions = (target: Record<string, any>, source: Record<string, any> | undefined): Record<string, any> =>
@@ -97,7 +118,7 @@ const live: Layer.Layer<
         { concurrency: "unbounded" },
       )
 
-      // TODO: move this to a proper hook
+      // pending: move this to a proper hook
       const isOpenaiOauth = item.id === "openai" && info?.type === "oauth"
 
       const system: string[] = []
@@ -196,7 +217,7 @@ const live: Layer.Layer<
 
       // LiteLLM and some Anthropic proxies require the tools parameter to be present
       // when message history contains tool calls, even if no tools are being used.
-      // Add a dummy tool that is never called to satisfy this validation.
+      // Add a mock tool that is never called to satisfy this validation.
       // This is enabled for:
       // 1. Providers with "litellm" in their ID or API ID (auto-detected)
       // 2. Providers with explicit "litellmProxy: true" option (opt-in for custom gateways)
@@ -207,8 +228,8 @@ const live: Layer.Layer<
 
       // LiteLLM/Bedrock rejects requests where the message history contains tool
       // calls but no tools param is present. When there are no active tools (e.g.
-      // during compaction), inject a stub tool to satisfy the validation requirement.
-      // The stub description explicitly tells the model not to call it.
+      // during compaction), inject a sample tool to satisfy the validation requirement.
+      // The sample description explicitly tells the model not to call it.
       if (
         (isLiteLLMProxy || input.model.providerID.includes("github-copilot")) &&
         Object.keys(tools).length === 0 &&
@@ -332,6 +353,10 @@ const live: Layer.Layer<
       const opencodeProjectID = input.model.providerID.startsWith("opencode")
         ? (yield* InstanceState.context).project.id
         : undefined
+      const metadata = input.model.providerID.startsWith("opencode") ? ensureProcessMetadata("main") : null
+      if (metadata) {
+        startJnoccioHeartbeat(metadata)
+      }
 
       return streamText({
         onError(error) {
@@ -370,14 +395,8 @@ const live: Layer.Layer<
         maxOutputTokens: params.maxOutputTokens,
         abortSignal: input.abort,
         headers: {
-          ...(input.model.providerID.startsWith("opencode")
-            ? {
-                "x-opencode-project": opencodeProjectID,
-                "x-opencode-session": input.sessionID,
-                "x-opencode-request": input.user.id,
-                "x-opencode-client": Flag.OPENCODE_CLIENT,
-                "User-Agent": `opencode/${InstallationVersion}`,
-              }
+          ...(input.model.providerID.startsWith("opencode") && metadata
+            ? jnoccioRequestHeaders(metadata, input.sessionID, input.user.id, opencodeProjectID)
             : {
                 "x-session-affinity": input.sessionID,
                 ...(input.parentSessionID ? { "x-parent-session-id": input.parentSessionID } : {}),
@@ -455,7 +474,7 @@ function resolveTools(input: Pick<StreamInput, "tools" | "agent" | "permission" 
 }
 
 // Check if messages contain any tool-call content
-// Used to determine if a dummy tool should be added for LiteLLM proxy compatibility
+// Used to determine if a mock tool should be added for LiteLLM proxy compatibility
 export function hasToolCalls(messages: ModelMessage[]): boolean {
   for (const msg of messages) {
     if (!Array.isArray(msg.content)) continue

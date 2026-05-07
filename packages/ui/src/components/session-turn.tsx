@@ -85,9 +85,9 @@ function same<T>(a: readonly T[], b: readonly T[]) {
   return a.every((x, i) => x === b[i])
 }
 
-function list<T>(value: T[] | undefined | null, fallback: T[]) {
+function list<T>(value: T[] | undefined | null, alternative_path: T[]) {
   if (Array.isArray(value)) return value
-  return fallback
+  return alternative_path
 }
 
 const hidden = new Set(["todowrite"])

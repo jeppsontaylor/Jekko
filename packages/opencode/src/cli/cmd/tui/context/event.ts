@@ -12,7 +12,7 @@ export function useEvent() {
         return
       }
 
-      // Special hack for truly global events
+      // Special shortcut for truly global events
       if (event.directory === "global") {
         handler(event.payload)
       }

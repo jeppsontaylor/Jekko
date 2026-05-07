@@ -167,10 +167,10 @@ export function createCommentSessionForTest(comments: Record<string, LineComment
 }
 
 function createCommentSession(dir: string, id: string | undefined) {
-  const legacy = `${dir}/comments${id ? "/" + id : ""}.v1`
+  const historical = `${dir}/comments${id ? "/" + id : ""}.v1`
 
   const [store, setStore, _, ready] = persisted(
-    Persist.scoped(dir, id, "comments", [legacy]),
+    Persist.scoped(dir, id, "comments", [historical]),
     createStore<CommentStore>({
       comments: {},
     }),

@@ -6,6 +6,7 @@ import type { ListRef } from "@opencode-ai/ui/list"
 import { getDirectory, getFilename } from "@opencode-ai/core/util/path"
 import fuzzysort from "fuzzysort"
 import { createMemo, createResource, createSignal } from "solid-js"
+import { z } from "zod"
 import { useGlobalSDK } from "@/context/global-sdk"
 import { useGlobalSync } from "@/context/global-sync"
 import { useLayout } from "@/context/layout"
@@ -22,6 +23,11 @@ type Row = {
   search: string
   group: "recent" | "folders"
 }
+
+const PathFallbackSchema = z.object({
+  home: z.string(),
+  directory: z.string(),
+})
 
 function cleanInput(value: string) {
   const first = (value ?? "").split(/\r?\n/)[0] ?? ""
@@ -259,10 +265,10 @@ export function DialogSelectDirectory(props: DialogSelectDirectoryProps) {
   const [fallbackPath] = createResource(
     () => (missingBase() ? true : undefined),
     async () => {
-      return sdk.client.path
-        .get()
-        .then((x) => x.data)
-        .catch(() => undefined)
+      return sdk.client.path.get().then((x) => {
+        const parsed = PathFallbackSchema.safeParse(x.data)
+        return parsed.success ? parsed.data : undefined
+      }).catch(() => undefined)
     },
     { initialValue: undefined },
   )
@@ -324,7 +330,7 @@ export function DialogSelectDirectory(props: DialogSelectDirectoryProps) {
   return (
     <Dialog title={props.title ?? language.t("command.project.open")}>
       <List
-        search={{ placeholder: language.t("dialog.directory.search.placeholder"), autofocus: true }}
+        search={{ default_value: language.t("dialog.directory.search.default_value"), autofocus: true }}
         emptyMessage={language.t("dialog.directory.empty")}
         loadingMessage={language.t("common.loading")}
         items={items}

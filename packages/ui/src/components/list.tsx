@@ -15,7 +15,7 @@ function findByKey(container: HTMLElement, key: string) {
 }
 
 export interface ListSearchProps {
-  placeholder?: string
+  default_value?: string
   autofocus?: boolean
   hideIcon?: boolean
   class?: string
@@ -293,7 +293,7 @@ export function List<T>(props: ListProps<T> & { ref?: (ref: ListRef) => void }) 
                 value={internalFilter()}
                 onChange={(value) => applyFilter(value)}
                 onKeyDown={handleKey}
-                placeholder={searchProps().placeholder}
+                defaultValue={searchProps().default_value}
                 spellcheck={false}
                 autocorrect="off"
                 autocomplete="off"

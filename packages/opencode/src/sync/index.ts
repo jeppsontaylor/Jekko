@@ -137,7 +137,7 @@ export const layer = Layer.effect(Service)(
       }
 
       if (def.version !== versions.get(def.type)) {
-        throw new Error(`SyncEvent.run: running old versions of events is not allowed: ${def.type}`)
+        throw new Error(`SyncEvent.run: running prior versions of events is not allowed: ${def.type}`)
       }
 
       const { publish = true } = options || {}
@@ -208,7 +208,7 @@ export function init(input: { projectors: Array<[Definition, ProjectorFunc]>; co
   projectors = new Map(input.projectors)
 
   // Install all the latest event defs to the bus. We only ever emit
-  // latest versions from code, and keep around old versions for
+  // latest versions from code, and keep around prior versions for
   // replaying. Replaying does not go through the bus, and it
   // simplifies the bus to only use unversioned latest events
   for (let [type, version] of versions.entries()) {

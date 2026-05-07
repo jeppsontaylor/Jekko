@@ -7,13 +7,13 @@ import { Flag } from "@opencode-ai/core/flag/flag"
 import { AppFileSystem } from "@opencode-ai/core/filesystem"
 import { withTransientReadRetry } from "@/util/effect-http-client"
 import { Global } from "@opencode-ai/core/global"
-import type { MessageV2 } from "./message-v2"
+import type { MessageV2 } from "./message"
 import type { MessageID } from "./schema"
 
 const FILES = [
   "AGENTS.md",
   ...(Flag.OPENCODE_DISABLE_CLAUDE_CODE_PROMPT ? [] : ["CLAUDE.md"]),
-  "CONTEXT.md", // deprecated
+  "CONTEXT.md", // discouraged
 ]
 
 function extract(messages: MessageV2.WithParts[]) {

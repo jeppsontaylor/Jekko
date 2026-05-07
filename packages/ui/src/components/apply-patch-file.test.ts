@@ -22,7 +22,7 @@ describe("apply patch file", () => {
     expect(text(file!.view, "additions")).toBe("one\nthree\n")
   })
 
-  test("keeps legacy before and after payloads working", () => {
+  test("keeps historical before and after payloads working", () => {
     const file = patchFiles([
       {
         filePath: "/tmp/a.ts",

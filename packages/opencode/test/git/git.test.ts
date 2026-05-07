@@ -117,7 +117,7 @@ describe("Git", () => {
   test("patch() returns capped native patch output", async () => {
     await using tmp = await tmpdir({ git: true })
     await fs.writeFile(path.join(tmp.path, weird), "before\n", "utf-8")
-    await fs.writeFile(path.join(tmp.path, "other.txt"), "old\n", "utf-8")
+    await fs.writeFile(path.join(tmp.path, "other.txt"), "prior\n", "utf-8")
     await $`git add .`.cwd(tmp.path).quiet()
     await $`git commit --no-gpg-sign -m "add file"`.cwd(tmp.path).quiet()
     await fs.writeFile(path.join(tmp.path, weird), "after\n", "utf-8")

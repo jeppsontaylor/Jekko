@@ -331,7 +331,7 @@ export function Session() {
     return [...visibleMessages].reverse().find((c) => c.y < scrollTop - 10)?.id ?? null
   }
 
-  // Helper: Scroll to message in direction or fallback to page scroll
+  // Helper: Scroll to message in direction or alternative_path to page scroll
   const scrollToMessage = (direction: "next" | "prev", dialog: ReturnType<typeof useDialog>) => {
     const targetID = findNextVisibleMessage(direction)
 
@@ -2161,7 +2161,7 @@ function TodoWrite(props: ToolProps<typeof TodoWriteTool>) {
         <BlockTool title="# Todos" part={props.part}>
           <box>
             <For each={props.input.todos ?? []}>
-              {(todo) => <TodoItem status={todo.status} content={todo.content} />}
+              {(pending) => <TodoItem status={pending.status} content={pending.content} />}
             </For>
           </box>
         </BlockTool>

@@ -84,7 +84,7 @@ const handlePluginAuth = Effect.fn("Cli.providers.pluginAuth")(function* (
       }
       const value = yield* Prompt.text({
         message: prompt.message,
-        placeholder: prompt.placeholder,
+        defaultValue: prompt.default_value,
         validate: prompt.validate ? (v) => prompt.validate!(v ?? "") : undefined,
       })
       inputs[prompt.key] = yield* promptValue(value)

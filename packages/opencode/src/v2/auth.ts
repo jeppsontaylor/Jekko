@@ -5,7 +5,7 @@ import { NonNegativeInt, withStatics } from "@/util/schema"
 import { Global } from "@opencode-ai/core/global"
 import { AppFileSystem } from "@opencode-ai/core/filesystem"
 
-export const OAUTH_DUMMY_KEY = "opencode-oauth-dummy-key"
+export const OAUTH_DUMMY_KEY = "opencode-oauth-mock-key"
 
 const AccountID = Schema.String.pipe(
   Schema.brand("AccountID"),
@@ -58,10 +58,10 @@ interface Writable {
 
 const decodeV1 = Schema.decodeUnknownOption(Schema.Record(Schema.String, Credential))
 
-function migrate(old: Record<string, unknown>): Writable {
+function migrate(prior: Record<string, unknown>): Writable {
   const accounts: Record<string, Account> = {}
   const active: Record<string, AccountID> = {}
-  for (const [serviceID, value] of Object.entries(old)) {
+  for (const [serviceID, value] of Object.entries(prior)) {
     const decoded = Option.getOrElse(decodeV1({ [serviceID]: value }), () => ({}))
     const parsed = (decoded as Record<string, Credential>)[serviceID]
     if (!parsed) continue

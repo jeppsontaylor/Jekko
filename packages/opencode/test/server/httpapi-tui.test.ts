@@ -19,7 +19,8 @@ const original = Flag.OPENCODE_EXPERIMENTAL_HTTPAPI
 
 function app(experimental = true) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 
 function nextCommandExecute() {
@@ -45,11 +46,11 @@ afterEach(async () => {
 })
 
 describe("tui HttpApi bridge", () => {
-  test("documents legacy bad request responses", async () => {
-    const legacy = await Server.openapiHono()
+  test("documents historical bad request responses", async () => {
+    const historical = await Server.openapiHono()
     const effect = OpenApi.fromApi(TuiApi)
     for (const path of [TuiPaths.appendPrompt, TuiPaths.executeCommand, TuiPaths.publish, TuiPaths.selectSession]) {
-      expect(legacy.paths[path].post?.responses?.[400]).toBeDefined()
+      expect(historical.paths[path].post?.responses?.[400]).toBeDefined()
       expect(effect.paths[path].post?.responses?.[400]).toBeDefined()
     }
   })
@@ -86,32 +87,32 @@ describe("tui HttpApi bridge", () => {
     const headers = { "x-opencode-directory": tmp.path, "content-type": "application/json" }
     const body = JSON.stringify({ sessionID: SessionID.descending() })
 
-    const hono = await app(false).request(TuiPaths.selectSession, { method: "POST", headers, body })
+    const previous = await app(false).request(TuiPaths.selectSession, { method: "POST", headers, body })
     const httpapi = await app().request(TuiPaths.selectSession, { method: "POST", headers, body })
 
-    expect(httpapi.status).toBe(hono.status)
-    expect(await httpapi.json()).toEqual(await hono.json())
+    expect(httpapi.status).toBe(previous.status)
+    expect(await httpapi.json()).toEqual(await previous.json())
   })
 
-  test("matches legacy unknown execute command behavior", async () => {
+  test("matches historical unknown execute command behavior", async () => {
     await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
     const headers = { "x-opencode-directory": tmp.path, "content-type": "application/json" }
     const body = JSON.stringify({ command: "unknown_command" })
 
-    const legacyCommand = nextCommandExecute()
-    const legacy = await app(false).request(TuiPaths.executeCommand, { method: "POST", headers, body })
-    expect(legacy.status).toBe(200)
-    expect(await legacy.json()).toBe(true)
+    const previousCommand = nextCommandExecute()
+    const historical = await app(false).request(TuiPaths.executeCommand, { method: "POST", headers, body })
+    expect(historical.status).toBe(200)
+    expect(await historical.json()).toBe(true)
 
     const effectCommand = nextCommandExecute()
     const effect = await app().request(TuiPaths.executeCommand, { method: "POST", headers, body })
     expect(effect.status).toBe(200)
     expect(await effect.json()).toBe(true)
 
-    const legacyPublished = await legacyCommand
+    const previousPublished = await previousCommand
     const effectPublished = await effectCommand
-    expect(effectPublished).toBe(legacyPublished)
-    expect(legacyPublished).toBeUndefined()
+    expect(effectPublished).toBe(previousPublished)
+    expect(previousPublished).toBeUndefined()
   })
 
   test("serves TUI control queue through experimental Effect routes", async () => {

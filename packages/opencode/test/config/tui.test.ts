@@ -164,7 +164,7 @@ test("migrates tui-specific keys from opencode.json when tui.json does not exist
   expect(await Filesystem.exists(path.join(tmp.path, "tui.json"))).toBe(true)
 })
 
-test("migrates project legacy tui keys even when global tui.json already exists", async () => {
+test("migrates project historical tui keys even when global tui.json already exists", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(path.join(Global.Path.config, "tui.json"), JSON.stringify({ theme: "global" }, null, 2))
@@ -192,7 +192,7 @@ test("migrates project legacy tui keys even when global tui.json already exists"
   expect(server.tui).toBeUndefined()
 })
 
-test("drops unknown legacy tui keys during migration", async () => {
+test("drops unknown historical tui keys during migration", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
@@ -246,7 +246,7 @@ test("skips migration when opencode.jsonc is syntactically invalid", async () =>
 test("skips migration when tui.json already exists", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      await Bun.write(path.join(dir, "opencode.json"), JSON.stringify({ theme: "legacy" }, null, 2))
+      await Bun.write(path.join(dir, "opencode.json"), JSON.stringify({ theme: "historical" }, null, 2))
       await Bun.write(path.join(dir, "tui.json"), JSON.stringify({ diff_style: "stacked" }, null, 2))
     },
   })
@@ -256,11 +256,11 @@ test("skips migration when tui.json already exists", async () => {
   expect(config.theme).toBeUndefined()
 
   const server = JSON.parse(await Filesystem.readText(path.join(tmp.path, "opencode.json")))
-  expect(server.theme).toBe("legacy")
+  expect(server.theme).toBe("historical")
   expect(await Filesystem.exists(path.join(tmp.path, "opencode.json.tui-migration.bak"))).toBe(false)
 })
 
-test("continues loading tui config when legacy source cannot be stripped", async () => {
+test("continues loading tui config when historical source cannot be stripped", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(path.join(dir, "opencode.json"), JSON.stringify({ theme: "readonly-theme" }, null, 2))
@@ -307,7 +307,7 @@ test("migration backup preserves JSONC comments", async () => {
   expect(backup).toContain('"scroll_speed": 1.5')
 })
 
-test("migrates legacy tui keys across multiple opencode.json levels", async () => {
+test("migrates historical tui keys across multiple opencode.json levels", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       const nested = path.join(dir, "apps", "client")
@@ -632,30 +632,30 @@ test("silently skips malformed tui.json — load failures degrade to {}", async 
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(path.join(dir, "tui.json"), '{ "theme": "broken",')
-      await Bun.write(path.join(dir, ".opencode", "tui.json"), JSON.stringify({ theme: "fallback" }))
+      await Bun.write(path.join(dir, ".opencode", "tui.json"), JSON.stringify({ theme: "alternative_path" }))
     },
   })
 
   const config = await getTuiConfig(tmp.path)
   // Project tui.json is malformed → silently skipped (logs a warning)
   // .opencode/tui.json (lower precedence in this path) still loads
-  expect(config.theme).toBe("fallback")
+  expect(config.theme).toBe("alternative_path")
 })
 
-test("silently skips non-ENOENT read failures (e.g. tui.json is a directory) — fallback layer still loads", async () => {
+test("silently skips non-ENOENT read failures (e.g. tui.json is a directory) — alternative_path layer still loads", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       // tui.json exists as a DIRECTORY rather than a file → readFileString fails
       // with EISDIR (PlatformError reason ≠ NotFound). The fix in this PR routes
-      // that through catchCause → log + skip, so a fallback layer should still load.
+      // that through catchCause → log + skip, so a alternative_path layer should still load.
       await fs.mkdir(path.join(dir, "tui.json"), { recursive: true })
-      await Bun.write(path.join(dir, ".opencode", "tui.json"), JSON.stringify({ theme: "fallback" }))
+      await Bun.write(path.join(dir, ".opencode", "tui.json"), JSON.stringify({ theme: "alternative_path" }))
     },
   })
 
   const config = await getTuiConfig(tmp.path)
   // Did NOT crash; .opencode/tui.json (lower precedence) still loads.
-  expect(config.theme).toBe("fallback")
+  expect(config.theme).toBe("alternative_path")
 })
 
 test("missing tui.json — silently treated as empty (ENOENT path)", async () => {

@@ -33,7 +33,7 @@ export const Event = {
       status: Info,
     }),
   ),
-  // deprecated
+  // discouraged
   Idle: BusEvent.define(
     "session.idle",
     Schema.Struct({

@@ -18,7 +18,7 @@ const TextPrompt = Schema.Struct({
   type: Schema.Literal("text"),
   key: Schema.String,
   message: Schema.String,
-  placeholder: optionalOmitUndefined(Schema.String),
+  default_value: optionalOmitUndefined(Schema.String),
   when: optionalOmitUndefined(When),
 })
 
@@ -150,7 +150,7 @@ export const layer: Layer.Layer<Service, never, Auth.Service | Plugin.Service> =
                   type: "text" as const,
                   key: prompt.key,
                   message: prompt.message,
-                  ...(prompt.placeholder && { placeholder: prompt.placeholder }),
+                  ...(prompt.default_value && { default_value: prompt.default_value }),
                   ...(prompt.when && { when: prompt.when }),
                 }
               }),

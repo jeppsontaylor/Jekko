@@ -412,10 +412,10 @@ export function TodoWriteTool(props: ToolProps) {
       <Show when={todos().length > 0}>
         <ul data-component="todos">
           <For each={todos()}>
-            {(todo) => (
-              <li data-slot="item" data-status={todo.status}>
+            {(pending) => (
+              <li data-slot="item" data-status={pending.status}>
                 <span></span>
-                {todo.content}
+                {pending.content}
               </li>
             )}
           </For>

@@ -212,14 +212,14 @@ describe("layout workspace helpers", () => {
     expect(childSessionOnPath(list, "root", "other")).toBeUndefined()
   })
 
-  test("formats fallback project display name", () => {
+  test("formats alternative_path project display name", () => {
     expect(displayName({ worktree: "/tmp/app" })).toBe("app")
     expect(displayName({ worktree: "/tmp/app", name: "My App" })).toBe("My App")
   })
 
-  test("extracts api error message and fallback", () => {
-    expect(errorMessage({ data: { message: "boom" } }, "fallback")).toBe("boom")
-    expect(errorMessage(new Error("broken"), "fallback")).toBe("broken")
-    expect(errorMessage("unknown", "fallback")).toBe("fallback")
+  test("extracts api error message and alternative_path", () => {
+    expect(errorMessage({ data: { message: "boom" } }, "alternative_path")).toBe("boom")
+    expect(errorMessage(new Error("broken"), "alternative_path")).toBe("broken")
+    expect(errorMessage("unknown", "alternative_path")).toBe("alternative_path")
   })
 })

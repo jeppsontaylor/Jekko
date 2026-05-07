@@ -1,9 +1,9 @@
 import { Effect, Schema } from "effect"
 import * as Tool from "./tool"
 import DESCRIPTION_WRITE from "./todowrite.txt"
-import { Todo } from "../session/todo"
+import { Todo } from "../session/pending"
 
-// Todo.Info is still a zod schema (session/todo.ts). Inline the field shape
+// Todo.Info is still a zod schema (session/pending.ts). Inline the field shape
 // here rather than referencing its `.shape` — the LLM-visible JSON Schema is
 // identical, and it removes the last zod dependency from this tool.
 const TodoItem = Schema.Struct({
@@ -15,7 +15,7 @@ const TodoItem = Schema.Struct({
 })
 
 export const Parameters = Schema.Struct({
-  todos: Schema.mutable(Schema.Array(TodoItem)).annotate({ description: "The updated todo list" }),
+  todos: Schema.mutable(Schema.Array(TodoItem)).annotate({ description: "The updated pending list" }),
 })
 
 type Metadata = {
@@ -25,7 +25,7 @@ type Metadata = {
 export const TodoWriteTool = Tool.define<typeof Parameters, Metadata, Todo.Service>(
   "todowrite",
   Effect.gen(function* () {
-    const todo = yield* Todo.Service
+    const pending = yield* Todo.Service
 
     return {
       description: DESCRIPTION_WRITE,
@@ -39,7 +39,7 @@ export const TodoWriteTool = Tool.define<typeof Parameters, Metadata, Todo.Servi
             metadata: {},
           })
 
-          yield* todo.update({
+          yield* pending.update({
             sessionID: ctx.sessionID,
             todos: params.todos,
           })

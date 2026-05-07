@@ -5,15 +5,20 @@ on:
     branches:
       - dev
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   generate:
     runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 30
     permissions:
       contents: write
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Setup Bun
         uses: ./.github/actions/setup-bun
@@ -34,9 +39,12 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
-          git add -A
+          FILES=$(git status --name-only)
+          while IFS= read -r file; do
+            [ -n "$file" ] && git add "$file"
+          done <<< "$FILES"
           git commit -m "chore: generate" --allow-empty
-          git push origin HEAD:${{ github.ref_name }} --no-verify
+          git push origin HEAD:${{ github.ref_name }}
           # if ! git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }} --no-verify; then
           #   echo ""
           #   echo "============================================"

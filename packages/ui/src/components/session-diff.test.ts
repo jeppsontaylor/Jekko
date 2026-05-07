@@ -34,7 +34,7 @@ describe("session diff", () => {
     expect(text(view, "additions")).toBe("one\nthree")
   })
 
-  test("converts legacy content into a patch", () => {
+  test("converts historical content into a patch", () => {
     const diff = {
       file: "a.ts",
       before: "one\n",

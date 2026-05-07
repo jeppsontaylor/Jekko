@@ -463,9 +463,9 @@ function taskSession(
 const CONTEXT_GROUP_TOOLS = new Set(["read", "glob", "grep", "list"])
 const HIDDEN_TOOLS = new Set(["todowrite"])
 
-function list<T>(value: T[] | undefined | null, fallback: T[]) {
+function list<T>(value: T[] | undefined | null, alternative_path: T[]) {
   if (Array.isArray(value)) return value
-  return fallback
+  return alternative_path
 }
 
 function same<T>(a: readonly T[] | undefined, b: readonly T[] | undefined) {
@@ -939,7 +939,7 @@ function ContextToolGroup(props: { parts: ToolPart[]; busy?: boolean }) {
                     other: i18n.t("ui.messagePart.context.list.other"),
                   },
                 ]}
-                fallback=""
+                alternative_path=""
               />
             </span>
           </span>
@@ -2206,13 +2206,13 @@ ToolRegistry.register({
         <Show when={todos().length}>
           <div data-component="todos">
             <For each={todos()}>
-              {(todo: Todo) => (
-                <Checkbox readOnly checked={todo.status === "completed"}>
+              {(pending: Todo) => (
+                <Checkbox readOnly checked={pending.status === "completed"}>
                   <span
-                    data-slot="message-part-todo-content"
-                    data-completed={todo.status === "completed" ? "completed" : undefined}
+                    data-slot="message-part-pending-content"
+                    data-completed={pending.status === "completed" ? "completed" : undefined}
                   >
-                    {todo.content}
+                    {pending.content}
                   </span>
                 </Checkbox>
               )}

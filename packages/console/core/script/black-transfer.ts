@@ -95,10 +95,10 @@ if (!toBilling) throw new Error(`Error: TO workspace has no billing record`)
 if (toBilling.subscriptionID) throw new Error(`Error: TO workspace already has a subscription`)
 
 console.log(`FROM:`)
-console.log(`  Old Customer ID: ${fromBilling.customerID}`)
+console.log(`  Current Customer ID: ${fromBilling.customerID}`)
 console.log(`  New Customer ID: ${fromPrevPayment.customerID}`)
 console.log(`TO:`)
-console.log(`  Old Customer ID: ${toBilling.customerID}`)
+console.log(`  Current Customer ID: ${toBilling.customerID}`)
 console.log(`  New Customer ID: ${fromBilling.customerID}`)
 
 // Clear workspaceID from Stripe customer metadata

@@ -51,7 +51,7 @@ describe("memory: abort controller leak", () => {
   test("compare closure vs bind pattern directly", async () => {
     const ITERATIONS = 500
 
-    // Test OLD pattern: arrow function closure
+    // Test previous pattern: arrow function closure
     // Store closures in a map keyed by content to force retention
     const closureMap = new Map<string, () => void>()
     const timers: Timer[] = []
@@ -67,7 +67,7 @@ describe("memory: abort controller leak", () => {
       const controller = new AbortController()
       controllers.push(controller)
 
-      // OLD pattern - closure captures `content`
+      // Previous pattern - closure captures `content`
       const handler = () => {
         // Actually use content so it can't be optimized away
         if (content.length > 1000000000) controller.abort()
@@ -80,9 +80,9 @@ describe("memory: abort controller leak", () => {
     Bun.gc(true)
     Bun.sleepSync(100)
     const after = getHeapMB()
-    const oldGrowth = after - baseline
+    const previousGrowth = after - baseline
 
-    console.log(`OLD pattern (closure): ${oldGrowth.toFixed(2)} MB growth (${closureMap.size} closures)`)
+    console.log(`Previous pattern (closure): ${previousGrowth.toFixed(2)} MB growth (${closureMap.size} closures)`)
 
     // Cleanup after measuring
     timers.forEach(clearTimeout)
@@ -120,8 +120,8 @@ describe("memory: abort controller leak", () => {
     handlers2.length = 0
 
     console.log(`NEW pattern (bind): ${newGrowth.toFixed(2)} MB growth`)
-    console.log(`Improvement: ${(oldGrowth - newGrowth).toFixed(2)} MB saved`)
+    console.log(`Improvement: ${(previousGrowth - newGrowth).toFixed(2)} MB saved`)
 
-    expect(newGrowth).toBeLessThanOrEqual(oldGrowth)
+    expect(newGrowth).toBeLessThanOrEqual(previousGrowth)
   })
 })

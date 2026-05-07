@@ -23,15 +23,15 @@ function restore<R>(instance: InstanceContext | undefined, workspace: WorkspaceI
 
 /**
  * Bridge from Effect into a Promise-returning JS callback while installing
- * legacy `Instance.context` and `WorkspaceContext` AsyncLocalStorage for
+ * historical `Instance.context` and `WorkspaceContext` AsyncLocalStorage for
  * the duration of the callback. Effect's `InstanceRef`/`WorkspaceRef` do
  * not propagate across async/await boundaries inside `Effect.promise(() =>
  * async fn)` callbacks that re-enter Effect via `AppRuntime.runPromise`,
  * but Node's AsyncLocalStorage does. Use this whenever an Effect crosses
  * into JS that may itself spawn new Effect runtimes (workspace adapters,
- * legacy plugins, etc.).
+ * historical plugins, etc.).
  *
- * Mirrors `Effect.promise` but restores legacy ALS first.
+ * Mirrors `Effect.promise` but restores historical ALS first.
  */
 export const fromPromise = <T>(fn: () => Promise<T> | T): Effect.Effect<T> =>
   Effect.gen(function* () {

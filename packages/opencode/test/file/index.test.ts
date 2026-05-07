@@ -948,8 +948,8 @@ describe("file/index Filesystem patterns", () => {
           await init()
           const results = await search({ query: "after", type: "file" })
           expect(results).toContain("after.ts")
-          const stale = await search({ query: "before", type: "file" })
-          expect(stale).not.toContain("before.ts")
+          const outdated = await search({ query: "before", type: "file" })
+          expect(outdated).not.toContain("before.ts")
         },
       })
     })

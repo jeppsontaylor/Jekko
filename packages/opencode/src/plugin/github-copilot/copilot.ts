@@ -5,7 +5,7 @@ import { iife } from "@/util/iife"
 import * as Log from "@opencode-ai/core/util/log"
 import { setTimeout as sleep } from "node:timers/promises"
 import { CopilotModels } from "./models"
-import { MessageV2 } from "@/session/message-v2"
+import { MessageV2 } from "@/session/message"
 
 const log = Log.create({ service: "plugin.copilot" })
 
@@ -195,7 +195,7 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
               type: "text",
               key: "enterpriseUrl",
               message: "Enter your GitHub Enterprise URL or domain",
-              placeholder: "company.ghe.com or https://company.ghe.com",
+              default_value: "company.ghe.com or https://company.ghe.com",
               when: { key: "deploymentType", op: "eq", value: "enterprise" },
               validate: (value) => {
                 if (!value) return "URL or domain is required"
@@ -335,7 +335,7 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
         output.maxOutputTokens = undefined
       }
 
-      // GitHub Copilot's /v1/messages shim rejects the GA `eager_input_streaming`
+      // GitHub Copilot's /v1/messages adapter rejects the GA `eager_input_streaming`
       // field on tool definitions ("Extra inputs are not permitted"). Opt out of
       // the @ai-sdk/anthropic default so it stops injecting the field.
       if (incoming.model.api.npm === "@ai-sdk/anthropic") {

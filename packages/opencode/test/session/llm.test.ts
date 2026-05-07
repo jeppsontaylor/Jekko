@@ -396,6 +396,196 @@ describe("session.llm.stream", () => {
     })
   })
 
+  test("adds jnoccio identity headers for opencode providers", async () => {
+    const server = state.server
+    if (!server) {
+      throw new Error("Server not initialized")
+    }
+
+    const providerID = "opencode"
+    const modelID = "gpt-5.2-codex"
+    const fixture = await loadFixture(providerID, modelID)
+    const model = fixture.model
+
+    const request = waitRequest(
+      "",
+      new Response(createChatStream("Hello"), {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream" },
+      }),
+    )
+
+    await using tmp = await tmpdir({
+      init: async (dir) => {
+        await Bun.write(
+          path.join(dir, "opencode.json"),
+          JSON.stringify({
+            $schema: "https://opencode.ai/config.json",
+            enabled_providers: [providerID],
+            provider: {
+              [providerID]: {
+                options: {
+                  apiKey: "test-key",
+                  baseURL: `${server.url.origin}/v1`,
+                },
+              },
+            },
+          }),
+        )
+      },
+    })
+
+    await WithInstance.provide({
+      directory: tmp.path,
+      fn: async () => {
+        const resolved = await getModel(ProviderID.make(providerID), ModelID.make(model.id))
+        const sessionID = SessionID.make("session-opencode-headers")
+        const agent = {
+          name: "test",
+          mode: "primary",
+          options: {},
+          permission: [{ permission: "*", pattern: "*", action: "allow" }],
+        } satisfies Agent.Info
+
+        const user = {
+          id: MessageID.make("user-opencode-headers"),
+          sessionID,
+          role: "user",
+          time: { created: Date.now() },
+          agent: agent.name,
+          model: { providerID: ProviderID.make(providerID), modelID: resolved.id },
+        } satisfies MessageV2.User
+
+        await drain({
+          user,
+          sessionID,
+          model: resolved,
+          agent,
+          system: ["You are a helpful assistant."],
+          messages: [{ role: "user", content: "Hello" }],
+          tools: {},
+        })
+
+        const capture = await request
+        expect(capture.headers.get("x-opencode-run-id")).toBeTruthy()
+        expect(capture.headers.get("x-opencode-client")).toBeTruthy()
+        expect(capture.headers.get("x-opencode-process-role")).toBeTruthy()
+        expect(capture.headers.get("x-opencode-pid")).toBeTruthy()
+        expect(capture.headers.get("x-opencode-session")).toBe(sessionID)
+        expect(capture.headers.get("x-opencode-request")).toBe(user.id)
+        expect(capture.headers.get("x-opencode-version")).toBeTruthy()
+      },
+    })
+  })
+
+  test("does not add jnoccio identity headers for non-opencode providers", async () => {
+    const server = state.server
+    if (!server) {
+      throw new Error("Server not initialized")
+    }
+
+    const providerID = "openai"
+    const modelID = "gpt-5.2"
+    const fixture = await loadFixture(providerID, modelID)
+    const model = fixture.model
+
+    const request = waitRequest(
+      "",
+      createEventResponse([
+        {
+          type: "response.created",
+          response: {
+            id: "resp-1",
+            created_at: Math.floor(Date.now() / 1000),
+            model: model.id,
+            service_tier: null,
+          },
+        },
+        {
+          type: "response.output_text.delta",
+          item_id: "item-1",
+          delta: "Hello",
+          logprobs: null,
+        },
+        {
+          type: "response.completed",
+          response: {
+            incomplete_details: null,
+            usage: {
+              input_tokens: 1,
+              input_tokens_details: null,
+              output_tokens: 1,
+              output_tokens_details: null,
+            },
+            service_tier: null,
+          },
+        },
+      ], true),
+    )
+
+    await using tmp = await tmpdir({
+      init: async (dir) => {
+        await Bun.write(
+          path.join(dir, "opencode.json"),
+          JSON.stringify({
+            $schema: "https://opencode.ai/config.json",
+            enabled_providers: [providerID],
+            provider: {
+              [providerID]: {
+                options: {
+                  apiKey: "test-key",
+                  baseURL: `${server.url.origin}/v1`,
+                },
+              },
+            },
+          }),
+        )
+      },
+    })
+
+    await WithInstance.provide({
+      directory: tmp.path,
+      fn: async () => {
+        const resolved = await getModel(ProviderID.make(providerID), ModelID.make(model.id))
+        const sessionID = SessionID.make("session-non-opencode-headers")
+        const agent = {
+          name: "test",
+          mode: "primary",
+          options: {},
+          permission: [{ permission: "*", pattern: "*", action: "allow" }],
+        } satisfies Agent.Info
+
+        const user = {
+          id: MessageID.make("user-non-opencode-headers"),
+          sessionID,
+          role: "user",
+          time: { created: Date.now() },
+          agent: agent.name,
+          model: { providerID: ProviderID.make(providerID), modelID: resolved.id, variant: "high" },
+        } satisfies MessageV2.User
+
+        await drain({
+          user,
+          sessionID,
+          model: resolved,
+          agent,
+          system: ["You are a helpful assistant."],
+          messages: [{ role: "user", content: "Hello" }],
+          tools: {},
+        })
+
+        const capture = await request
+        expect(capture.headers.get("x-opencode-run-id")).toBeNull()
+        expect(capture.headers.get("x-opencode-client")).toBeNull()
+        expect(capture.headers.get("x-opencode-process-role")).toBeNull()
+        expect(capture.headers.get("x-opencode-pid")).toBeNull()
+        expect(capture.headers.get("x-opencode-session")).toBeNull()
+        expect(capture.headers.get("x-opencode-request")).toBeNull()
+        expect(capture.headers.get("x-opencode-version")).toBeNull()
+      },
+    })
+  })
+
   test("service stream cancellation cancels provider response body promptly", async () => {
     const server = state.server
     if (!server) throw new Error("Server not initialized")
@@ -1100,19 +1290,19 @@ describe("session.llm.stream", () => {
           messages: await MessageV2.toModelMessages(input as any, resolved),
           tools: {
             read: tool({
-              description: "Stub read tool",
+              description: "Read tool",
               inputSchema: z.object({
                 filePath: z.string(),
               }),
-              execute: async () => ({ output: "stub" }),
+              execute: async () => ({ output: "sample" }),
             }),
             glob: tool({
-              description: "Stub glob tool",
+              description: "Glob tool",
               inputSchema: z.object({
                 pattern: z.string(),
                 path: z.string().optional(),
               }),
-              execute: async () => ({ output: "stub" }),
+              execute: async () => ({ output: "sample" }),
             }),
           },
         })

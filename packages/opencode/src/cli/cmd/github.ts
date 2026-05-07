@@ -27,7 +27,7 @@ import type { SessionID } from "../../session/schema"
 import { MessageID, PartID } from "../../session/schema"
 import { Provider } from "@/provider/provider"
 import { Bus } from "../../bus"
-import { MessageV2 } from "../../session/message-v2"
+import { MessageV2 } from "../../session/message"
 import { SessionPrompt } from "@/session/prompt"
 import { Git } from "@/git"
 import { setTimeout as sleep } from "node:timers/promises"
@@ -215,7 +215,7 @@ export const GithubInstallCommand = effectCmd({
         await installGitHubApp()
 
         const providers = await Effect.runPromise(modelsDev.get()).then((p) => {
-          // TODO: add guide for copilot, for now just hide it
+          // pending: add guide for copilot, for now just hide it
           delete p["github-copilot"]
           return p
         })
@@ -667,7 +667,7 @@ export const GithubRunCommand = effectCmd({
           const { dirty, uncommittedChanges, switched } = await branchIsDirty(head, branch)
           if (switched) {
             // Agent switched branches (likely created its own branch/PR).
-            // Don't push the stale infrastructure branch — just comment.
+            // Don't push the outdated infrastructure branch — just comment.
             await createComment(`${response}${footer({ image: true })}`)
             await removeReaction(commentType)
           } else if (dirty) {

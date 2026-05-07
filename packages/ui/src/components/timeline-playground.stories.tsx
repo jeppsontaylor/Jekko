@@ -260,7 +260,7 @@ You can also visit https://example.com/docs for more info.`,
 
 Here's what the output looks like:
 
-![Alt text](https://via.placeholder.com/400x200)
+![Alt text](https://via.default_value.com/400x200)
 
 And below is the final result.`,
 }
@@ -1126,7 +1126,7 @@ const CSS_CONTROLS: CSSControl[] = [
 // Playground component
 // ---------------------------------------------------------------------------
 function FileStub() {
-  return <div style={{ padding: "8px", color: "var(--text-weak)", "font-size": "13px" }}>File viewer stub</div>
+  return <div style={{ padding: "8px", color: "var(--text-weak)", "font-size": "13px" }}>File viewer sample</div>
 }
 
 function Playground() {
@@ -1249,7 +1249,7 @@ function Playground() {
   const ensureTurn = (): string => {
     const id = lastAssistantID()
     if (id) return id
-    // Create a minimal placeholder turn
+    // Create a minimal default_value turn
     const user = mkUser("...", [], session().id)
     const asst = mkAssistant(user.message.id, session().id)
     setState(

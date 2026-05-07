@@ -106,7 +106,7 @@ describe("tool.apply_patch freeform", () => {
         const modifyPath = path.join(fixture.path, "modify.txt")
         const deletePath = path.join(fixture.path, "delete.txt")
         await fs.writeFile(modifyPath, "line1\nline2\n", "utf-8")
-        await fs.writeFile(deletePath, "obsolete\n", "utf-8")
+        await fs.writeFile(deletePath, "superseded\n", "utf-8")
 
         const patchText =
           "*** Begin Patch\n*** Add File: nested/new.txt\n+created\n*** Delete File: delete.txt\n*** Update File: modify.txt\n@@\n-line2\n+changed\n*** End Patch"
@@ -155,12 +155,12 @@ describe("tool.apply_patch freeform", () => {
     await WithInstance.provide({
       directory: fixture.path,
       fn: async () => {
-        const original = path.join(fixture.path, "old", "name.txt")
+        const original = path.join(fixture.path, "prior", "name.txt")
         await fs.mkdir(path.dirname(original), { recursive: true })
-        await fs.writeFile(original, "old content\n", "utf-8")
+        await fs.writeFile(original, "prior content\n", "utf-8")
 
         const patchText =
-          "*** Begin Patch\n*** Update File: old/name.txt\n*** Move to: renamed/dir/name.txt\n@@\n-old content\n+new content\n*** End Patch"
+          "*** Begin Patch\n*** Update File: prior/name.txt\n*** Move to: renamed/dir/name.txt\n@@\n-prior content\n+new content\n*** End Patch"
 
         await execute({ patchText }, ctx)
 
@@ -172,7 +172,7 @@ describe("tool.apply_patch freeform", () => {
         expect(moveFile.type).toBe("move")
         expect(moveFile.relativePath).toBe("renamed/dir/name.txt")
         expect(moveFile.movePath).toBe(path.join(fixture.path, "renamed/dir/name.txt"))
-        expect(moveFile.patch).toContain("-old content")
+        expect(moveFile.patch).toContain("-prior content")
         expect(moveFile.patch).toContain("+new content")
       },
     })
@@ -275,12 +275,12 @@ describe("tool.apply_patch freeform", () => {
     await WithInstance.provide({
       directory: fixture.path,
       fn: async () => {
-        const original = path.join(fixture.path, "old", "name.txt")
+        const original = path.join(fixture.path, "prior", "name.txt")
         await fs.mkdir(path.dirname(original), { recursive: true })
-        await fs.writeFile(original, "old content\n", "utf-8")
+        await fs.writeFile(original, "prior content\n", "utf-8")
 
         const patchText =
-          "*** Begin Patch\n*** Update File: old/name.txt\n*** Move to: renamed/dir/name.txt\n@@\n-old content\n+new content\n*** End Patch"
+          "*** Begin Patch\n*** Update File: prior/name.txt\n*** Move to: renamed/dir/name.txt\n@@\n-prior content\n+new content\n*** End Patch"
 
         await execute({ patchText }, ctx)
 
@@ -298,7 +298,7 @@ describe("tool.apply_patch freeform", () => {
     await WithInstance.provide({
       directory: fixture.path,
       fn: async () => {
-        const original = path.join(fixture.path, "old", "name.txt")
+        const original = path.join(fixture.path, "prior", "name.txt")
         const destination = path.join(fixture.path, "renamed", "dir", "name.txt")
         await fs.mkdir(path.dirname(original), { recursive: true })
         await fs.mkdir(path.dirname(destination), { recursive: true })
@@ -306,7 +306,7 @@ describe("tool.apply_patch freeform", () => {
         await fs.writeFile(destination, "existing\n", "utf-8")
 
         const patchText =
-          "*** Begin Patch\n*** Update File: old/name.txt\n*** Move to: renamed/dir/name.txt\n@@\n-from\n+new\n*** End Patch"
+          "*** Begin Patch\n*** Update File: prior/name.txt\n*** Move to: renamed/dir/name.txt\n@@\n-from\n+new\n*** End Patch"
 
         await execute({ patchText }, ctx)
 
@@ -324,7 +324,7 @@ describe("tool.apply_patch freeform", () => {
       directory: fixture.path,
       fn: async () => {
         const target = path.join(fixture.path, "duplicate.txt")
-        await fs.writeFile(target, "old content\n", "utf-8")
+        await fs.writeFile(target, "prior content\n", "utf-8")
 
         const patchText = "*** Begin Patch\n*** Add File: duplicate.txt\n+new content\n*** End Patch"
 
@@ -421,7 +421,7 @@ describe("tool.apply_patch freeform", () => {
       directory: fixture.path,
       fn: async () => {
         const patchText =
-          "*** Begin Patch\n*** Add File: created.txt\n+hello\n*** Update File: missing.txt\n@@\n-old\n+new\n*** End Patch"
+          "*** Begin Patch\n*** Add File: created.txt\n+hello\n*** Update File: missing.txt\n@@\n-prior\n+new\n*** End Patch"
 
         await expect(execute({ patchText }, ctx)).rejects.toThrow()
 

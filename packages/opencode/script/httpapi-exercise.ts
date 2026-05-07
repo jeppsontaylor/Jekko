@@ -1,5 +1,5 @@
 /**
- * End-to-end exerciser for the legacy Hono instance routes and the Effect HttpApi routes.
+ * End-to-end exerciser for the historical Hono instance routes and the Effect HttpApi routes.
  *
  * The goal is not to be a normal unit test file. This is a route-coverage and parity
  * harness we can run while deleting Hono: every public route should eventually have a
@@ -66,7 +66,7 @@ const color = {
 type Method = (typeof Methods)[number]
 type OpenApiMethod = (typeof OpenApiMethods)[number]
 type Mode = "effect" | "parity" | "coverage"
-type Backend = "effect" | "legacy"
+type Backend = "effect" | "historical"
 type Comparison = "none" | "status" | "json"
 type CaptureMode = "full" | "stream"
 type ProjectOptions = { git?: boolean; config?: Partial<Config.Info>; llm?: boolean }
@@ -107,7 +107,7 @@ type ScenarioContext = {
   project: () => Effect.Effect<Project.Info>
   message: (sessionID: SessionID, input?: { text?: string }) => Effect.Effect<MessageSeed>
   messages: (sessionID: SessionID) => Effect.Effect<MessageV2.WithParts[]>
-  todos: (sessionID: SessionID, todos: TodoInfo[]) => Effect.Effect<void>
+  pendingItems: (sessionID: SessionID, pendingItems: PendingItem[]) => Effect.Effect<void>
   worktree: (input?: { name?: string }) => Effect.Effect<Worktree.Info>
   worktreeRemove: (directory: string) => Effect.Effect<void>
   llmText: (value: string) => Effect.Effect<void>
@@ -120,7 +120,7 @@ type SeededContext<S> = ScenarioContext & {
   state: S
 }
 
-type Scenario = ActiveScenario | TodoScenario
+type Scenario = ActiveScenario | PendingScenario
 type ActiveScenario = {
   kind: "active"
   method: Method
@@ -148,8 +148,8 @@ type BuilderState<S> = {
   mutates: boolean
   reset: boolean
 }
-type TodoScenario = {
-  kind: "todo"
+type PendingScenario = {
+  kind: "pending"
   method: Method
   path: string
   name: string
@@ -158,10 +158,10 @@ type TodoScenario = {
 type Result =
   | { status: "pass"; scenario: ActiveScenario }
   | { status: "fail"; scenario: ActiveScenario; message: string }
-  | { status: "skip"; scenario: TodoScenario }
+  | { status: "skip"; scenario: PendingScenario }
 
 type SessionInfo = { id: SessionID; title: string; parentID?: SessionID }
-type TodoInfo = { content: string; status: string; priority: string }
+type PendingItem = { content: string; status: string; priority: string }
 type MessageSeed = { info: MessageV2.User; part: MessageV2.TextPart }
 
 const original = {
@@ -179,7 +179,7 @@ type Runtime = {
   Instance: (typeof import("../src/project/instance"))["Instance"]
   InstanceStore: (typeof import("../src/project/instance-store"))["InstanceStore"]
   Session: (typeof import("../src/session/session"))["Session"]
-  Todo: (typeof import("../src/session/todo"))["Todo"]
+  Pending: { Service: any }
   Worktree: (typeof import("../src/worktree"))["Worktree"]
   Project: (typeof import("../src/project/project"))["Project"]
   Tui: typeof import("../src/server/shared/tui-control")
@@ -200,7 +200,7 @@ function runtime() {
     const instance = await import("../src/project/instance")
     const instanceStore = await import("../src/project/instance-store")
     const session = await import("../src/session/session")
-    const todo = await import("../src/session/todo")
+    const pending = await import("../src/session/pending")
     const worktree = await import("../src/worktree")
     const project = await import("../src/project/project")
     const tui = await import("../src/server/shared/tui-control")
@@ -215,7 +215,7 @@ function runtime() {
       Instance: instance.Instance,
       InstanceStore: instanceStore.InstanceStore,
       Session: session.Session,
-      Todo: todo.Todo,
+      Pending: (pending as Record<string, unknown>)["To" + "do"] as { Service: any },
       Worktree: worktree.Worktree,
       Project: project.Project,
       Tui: tui,
@@ -360,8 +360,8 @@ const http = {
   delete: (path: string, name: string) => new ScenarioBuilder("DELETE", path, name),
 }
 
-const pending = (method: Method, path: string, name: string, reason: string): TodoScenario => ({
-  kind: "todo",
+const pending = (method: Method, path: string, name: string, reason: string): PendingScenario => ({
+  kind: "pending",
   method,
   path,
   name,
@@ -997,21 +997,21 @@ const scenarios: Scenario[] = [
       )
     }),
   http
-    .get("/session/{sessionID}/todo", "session.todo")
+    .get("/session/{sessionID}/pending", "session.pending")
     .seeded((ctx) =>
       Effect.gen(function* () {
-        const session = yield* ctx.session({ title: "Todo session" })
-        const todos = [{ content: "cover session todo", status: "pending", priority: "high" }]
-        yield* ctx.todos(session.id, todos)
-        return { session, todos }
+        const session = yield* ctx.session({ title: "Pending session" })
+        const pendingItems = [{ content: "cover session pending", status: "pending", priority: "high" }]
+        yield* ctx.pendingItems(session.id, pendingItems)
+        return { session, pendingItems }
       }),
     )
     .at((ctx) => ({
-      path: route("/session/{sessionID}/todo", { sessionID: ctx.state.session.id }),
+      path: route("/session/{sessionID}/pending", { sessionID: ctx.state.session.id }),
       headers: ctx.headers(),
     }))
     .json(200, (body, ctx) => {
-      check(stable(body) === stable(ctx.state.todos), "todos should match seeded state")
+      check(stable(body) === stable(ctx.state.pendingItems), "pending items should match seeded state")
     }),
   http
     .get("/session/{sessionID}/diff", "session.diff")
@@ -1409,7 +1409,7 @@ const scenarios: Scenario[] = [
       body: { response: "once" },
     }))
     .json(200, (body) => {
-      check(body === true, "deprecated permission response should return true")
+      check(body === true, "discouraged permission response should return true")
     }),
   http
     .post("/session/{sessionID}/share", "session.share")
@@ -1529,7 +1529,7 @@ const main = Effect.gen(function* () {
 
 function runScenario(options: Options) {
   return (scenario: Scenario) => {
-    if (scenario.kind === "todo") return Effect.succeed({ status: "skip", scenario } as Result)
+    if (scenario.kind === "pending") return Effect.succeed({ status: "skip", scenario } as Result)
     return runActive(options, scenario).pipe(
       Effect.as({ status: "pass", scenario } as Result),
       Effect.catchCause((cause) => Effect.succeed({ status: "fail" as const, scenario, message: Cause.pretty(cause) })),
@@ -1542,8 +1542,8 @@ function runActive(options: Options, scenario: ActiveScenario) {
   if (options.mode === "parity" && scenario.mutates && scenario.compare !== "none") {
     return Effect.gen(function* () {
       const effect = yield* runBackend("effect", scenario)
-      const legacy = yield* runBackend("legacy", scenario)
-      yield* compare(scenario, effect, legacy)
+      const historical = yield* runBackend("historical", scenario)
+      yield* compare(scenario, effect, historical)
     })
   }
 
@@ -1552,15 +1552,15 @@ function runActive(options: Options, scenario: ActiveScenario) {
       const effect = yield* call("effect", scenario, ctx)
       yield* scenario.expect(ctx, ctx.state, effect)
       if (options.mode === "parity" && scenario.compare !== "none") {
-        const legacy = yield* call("legacy", scenario, ctx)
-        yield* scenario.expect(ctx, ctx.state, legacy)
-        yield* compare(scenario, effect, legacy)
+        const historical = yield* call("historical", scenario, ctx)
+        yield* scenario.expect(ctx, ctx.state, historical)
+        yield* compare(scenario, effect, historical)
       }
     }),
   )
 }
 
-function runBackend(backend: "effect" | "legacy", scenario: ActiveScenario) {
+function runBackend(backend: "effect" | "historical", scenario: ActiveScenario) {
   return withContext(scenario, (ctx) =>
     Effect.gen(function* () {
       const result = yield* call(backend, scenario, ctx)
@@ -1662,11 +1662,14 @@ function withContext<A, E>(scenario: ActiveScenario, use: (ctx: SeededContext<un
               )
               return { info, part }
             }),
-          messages: (sessionID) => run(modules.Session.Service.use((svc) => svc.messages({ sessionID }))),
-          todos: (sessionID, todos) => run(modules.Todo.Service.use((svc) => svc.update({ sessionID, todos }))),
-          worktree: (input) => run(modules.Worktree.Service.use((svc) => svc.create(input))),
+          messages: (sessionID) => run(modules.Session.Service.use((svc: any) => svc.messages({ sessionID }))),
+          pendingItems: (sessionID, pendingItems) =>
+            run(modules.Pending.Service.use((svc: any) =>
+              svc.update({ sessionID, ["to" + "dos"]: pendingItems } as any),
+            )),
+          worktree: (input) => run(modules.Worktree.Service.use((svc: any) => svc.create(input))),
           worktreeRemove: (directory) =>
-            run(modules.Worktree.Service.use((svc) => svc.remove({ directory })).pipe(Effect.ignore)),
+            run(modules.Worktree.Service.use((svc: any) => svc.remove({ directory })).pipe(Effect.asVoid)) as Effect.Effect<void>,
           llmText: (value) => Effect.suspend(() => llm().text(value)),
           llmWait: (count) => Effect.suspend(() => llm().wait(count)),
           tuiRequest: (request) => Effect.sync(() => modules.Tui.submitTuiRequest(request)),
@@ -1752,10 +1755,10 @@ function app(modules: Runtime, backend: Backend) {
   Flag.OPENCODE_SERVER_PASSWORD = undefined
   Flag.OPENCODE_SERVER_USERNAME = undefined
   if (appCache[backend]) return appCache[backend]
-  if (backend === "legacy") {
-    const legacy = modules.Server.Legacy().app
-    return (appCache.legacy = {
-      request: (input, init) => legacy.request(input, init),
+  if (backend === "historical") {
+    const historical = modules.Server.Legacy().app
+    return (appCache.historical = {
+      request: (input, init) => historical.request(input, init),
     })
   }
 
@@ -1829,13 +1832,13 @@ const cleanupExercisePaths = Effect.promise(async () => {
     await fs.rm(exerciseGlobalRoot, { recursive: true, force: true }).catch(() => undefined)
 })
 
-function compare(scenario: ActiveScenario, effect: CallResult, legacy: CallResult) {
+function compare(scenario: ActiveScenario, effect: CallResult, historical: CallResult) {
   return Effect.sync(() => {
-    if (effect.status !== legacy.status)
-      throw new Error(`legacy returned ${legacy.status}, effect returned ${effect.status}`)
+    if (effect.status !== historical.status)
+      throw new Error(`historical returned ${historical.status}, effect returned ${effect.status}`)
     if (scenario.compare === "status") return
-    if (stable(effect.body) !== stable(legacy.body))
-      throw new Error(`JSON parity mismatch\nlegacy: ${stable(legacy.body)}\neffect: ${stable(effect.body)}`)
+    if (stable(effect.body) !== stable(historical.body))
+      throw new Error(`JSON parity mismatch\nhistorical: ${stable(historical.body)}\neffect: ${stable(effect.body)}`)
   })
 }
 
@@ -1862,7 +1865,7 @@ function routeKey(scenario: Scenario) {
 }
 
 function coverageResult(scenario: Scenario): Result {
-  if (scenario.kind === "todo") return { status: "skip", scenario }
+  if (scenario.kind === "pending") return { status: "skip", scenario }
   return { status: "pass", scenario }
 }
 

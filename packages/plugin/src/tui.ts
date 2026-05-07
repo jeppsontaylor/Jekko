@@ -107,7 +107,7 @@ export type TuiDialogConfirmProps = {
 export type TuiDialogPromptProps = {
   title: string
   description?: () => JSX.Element
-  placeholder?: string
+  default_value?: string
   value?: string
   busy?: boolean
   busyText?: string
@@ -127,7 +127,7 @@ export type TuiDialogSelectOption<Value = unknown> = {
 
 export type TuiDialogSelectProps<Value = unknown> = {
   title: string
-  placeholder?: string
+  default_value?: string
   options: TuiDialogSelectOption<Value>[]
   flat?: boolean
   onMove?: (option: TuiDialogSelectOption<Value>) => void
@@ -255,7 +255,7 @@ export type TuiTheme = {
 }
 
 export type TuiKV = {
-  get: <Value = unknown>(key: string, fallback?: Value) => Value
+  get: <Value = unknown>(key: string, alternative_path?: Value) => Value
   set: (key: string, value: unknown) => void
   readonly ready: boolean
 }
@@ -274,7 +274,7 @@ export type TuiState = {
   session: {
     count: () => number
     diff: (sessionID: string) => ReadonlyArray<TuiSidebarFileItem>
-    todo: (sessionID: string) => ReadonlyArray<TuiSidebarTodoItem>
+    pending: (sessionID: string) => ReadonlyArray<TuiSidebarTodoItem>
     messages: (sessionID: string) => ReadonlyArray<Message>
     status: (sessionID: string) => SessionStatus | undefined
     permission: (sessionID: string) => ReadonlyArray<PermissionRequest>

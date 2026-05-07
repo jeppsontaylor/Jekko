@@ -43,24 +43,24 @@ export default function Home() {
 
   return (
     <main data-page="home">
-      <Title>{i18n.t("temp.title")}</Title>
+      <Title>{i18n.t("home.title")}</Title>
 
       <div data-component="content">
         <section data-component="top">
-          <img data-slot="logo light" src={logoLight} alt={i18n.t("temp.logoLightAlt")} />
-          <img data-slot="logo dark" src={logoDark} alt={i18n.t("temp.logoDarkAlt")} />
-          <h1 data-slot="title">{i18n.t("temp.hero.title")}</h1>
+          <img data-slot="logo light" src={logoLight} alt="OpenCode logo" />
+          <img data-slot="logo dark" src={logoDark} alt="OpenCode logo" />
+          <h1 data-slot="title">OpenCode</h1>
           <div data-slot="login">
-            <a href="/auth">{i18n.t("temp.zen")}</a>
+            <a href="/auth">{i18n.t("zen.title")}</a>
           </div>
         </section>
 
         <section data-component="cta">
           <div data-slot="left">
-            <a href={language.route("/docs")}>{i18n.t("temp.getStarted")}</a>
+            <a href={language.route("/docs")}>Get started</a>
           </div>
           <div data-slot="center">
-            <a href="/auth">{i18n.t("temp.zen")}</a>
+            <a href="/auth">{i18n.t("zen.title")}</a>
           </div>
           <div data-slot="right">
             <button data-copy data-slot="command">
@@ -78,15 +78,14 @@ export default function Home() {
         <section data-component="features">
           <ul data-slot="list">
             <li>
-              <strong>{i18n.t("temp.feature.native.title")}</strong> {i18n.t("temp.feature.native.body")}
+              <strong>Native app</strong> Works offline first and keeps the desktop workflow close to the terminal.
             </li>
             <li>
               <strong>{i18n.t("home.what.lsp.title")}</strong> {i18n.t("home.what.lsp.body")}
             </li>
             <li>
-              <strong>{i18n.t("temp.zen")}</strong> {i18n.t("temp.feature.zen.beforeLink")}{" "}
-              <a href={language.route("/docs/zen")}>{i18n.t("temp.feature.zen.link")}</a>{" "}
-              {i18n.t("temp.feature.zen.afterLink")} <label>{i18n.t("home.banner.badge")}</label>
+              <strong>{i18n.t("zen.title")}</strong> Learn about the browser workflow{" "}
+              <a href={language.route("/docs/zen")}>in the docs</a>. <label>{i18n.t("home.banner.badge")}</label>
             </li>
             <li>
               <strong>{i18n.t("home.what.multiSession.title")}</strong> {i18n.t("home.what.multiSession.body")}
@@ -101,9 +100,9 @@ export default function Home() {
               <strong>{i18n.t("home.what.chatgptPlus.title")}</strong> {i18n.t("home.what.chatgptPlus.body")}
             </li>
             <li>
-              <strong>{i18n.t("home.what.anyModel.title")}</strong> {i18n.t("temp.feature.models.beforeLink")}{" "}
+              <strong>{i18n.t("home.what.anyModel.title")}</strong> Supports models through{" "}
               <a href="https://models.dev">Models.dev</a>
-              {i18n.t("temp.feature.models.afterLink")}
+              , including local models.
             </li>
           </ul>
         </section>
@@ -149,9 +148,9 @@ export default function Home() {
 
         <section data-component="screenshots">
           <figure>
-            <figcaption>{i18n.t("temp.screenshot.caption")}</figcaption>
+            <figcaption>Product screenshot</figcaption>
             <a href={language.route("/docs/cli")}>
-              <img src={IMG_SPLASH} alt={i18n.t("temp.screenshot.alt")} />
+              <img src={IMG_SPLASH} alt="OpenCode screenshot" />
             </a>
           </figure>
         </section>

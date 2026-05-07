@@ -19,7 +19,7 @@ export const GenerateCommand = {
       .option("hono", {
         type: "boolean",
         default: false,
-        description: "Generate OpenAPI from the legacy Hono backend (parity-diff only; will be removed)",
+        description: "Generate OpenAPI from the historical Hono backend (parity-diff only; will be removed)",
       }),
   handler: async (args) => {
     const specs = args.hono ? await Server.openapiHono() : await Server.openapi()

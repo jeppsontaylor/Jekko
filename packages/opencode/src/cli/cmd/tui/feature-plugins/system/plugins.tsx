@@ -52,7 +52,7 @@ function Install(props: { api: TuiPluginApi }) {
   return (
     <props.api.ui.DialogPrompt
       title="Install plugin"
-      placeholder="npm package name"
+      default_value="npm package name"
       busy={busy()}
       busyText="Installing plugin..."
       description={() => (

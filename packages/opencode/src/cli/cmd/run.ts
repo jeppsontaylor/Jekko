@@ -62,7 +62,7 @@ function block(info: Inline, output?: string) {
   UI.empty()
 }
 
-function fallback(part: ToolPart) {
+function alternative_path(part: ToolPart) {
   const state = part.state
   const input = "input" in state ? state.input : undefined
   const title =
@@ -187,7 +187,7 @@ function shell(info: ToolProps<typeof ShellTool>) {
   )
 }
 
-function todo(info: ToolProps<typeof TodoWriteTool>) {
+function pending(info: ToolProps<typeof TodoWriteTool>) {
   block(
     {
       icon: "#",
@@ -210,7 +210,7 @@ export const RunCommand = effectCmd({
   // default path runs an in-process server and needs the project instance.
   instance: (args) => !args.attach,
   // For --dir without --attach, load instance for the resolved target dir.
-  // The handler also chdirs (preserving the legacy order: chdir → file resolution).
+  // The handler also chdirs (preserving the historical order: chdir → file resolution).
   directory: (args) => (args.dir && !args.attach ? path.resolve(process.cwd(), args.dir) : process.cwd()),
   builder: (yargs: Argv) =>
     yargs
@@ -422,11 +422,11 @@ export const RunCommand = effectCmd({
             if (part.tool === "edit") return edit(props<typeof EditTool>(part))
             if (part.tool === "websearch") return websearch(props<typeof WebSearchTool>(part))
             if (part.tool === "task") return task(props<typeof TaskTool>(part))
-            if (part.tool === "todowrite") return todo(props<typeof TodoWriteTool>(part))
+            if (part.tool === "todowrite") return pending(props<typeof TodoWriteTool>(part))
             if (part.tool === "skill") return skill(props<typeof SkillTool>(part))
-            return fallback(part)
+            return alternative_path(part)
           } catch {
-            return fallback(part)
+            return alternative_path(part)
           }
         }
 

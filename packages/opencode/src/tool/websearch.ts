@@ -9,9 +9,9 @@ export const Parameters = Schema.Struct({
   numResults: Schema.optional(Schema.Number).annotate({
     description: "Number of search results to return (default: 8)",
   }),
-  livecrawl: Schema.optional(Schema.Literals(["fallback", "preferred"])).annotate({
+  livecrawl: Schema.optional(Schema.Literals(["alternative_path", "preferred"])).annotate({
     description:
-      "Live crawl mode - 'fallback': use live crawling as backup if cached content unavailable, 'preferred': prioritize live crawling (default: 'fallback')",
+      "Live crawl mode - 'alternative_path': use live crawling as backup if cached content unavailable, 'preferred': prioritize live crawling (default: 'alternative_path')",
   }),
   type: Schema.optional(Schema.Literals(["auto", "fast", "deep"])).annotate({
     description: "Search type - 'auto': balanced search (default), 'fast': quick results, 'deep': comprehensive search",
@@ -54,7 +54,7 @@ export const WebSearchTool = Tool.define(
               query: params.query,
               type: params.type || "auto",
               numResults: params.numResults || 8,
-              livecrawl: params.livecrawl || "fallback",
+              livecrawl: params.livecrawl || "alternative_path",
               contextMaxCharacters: params.contextMaxCharacters,
             },
             "25 seconds",

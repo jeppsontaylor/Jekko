@@ -284,7 +284,7 @@ test("revert with empty patches", async () => {
       expect(run(tmp.path, (snapshot) => snapshot.revert([]))).resolves.toBeUndefined()
 
       // Should not crash with patches that have empty file lists
-      expect(run(tmp.path, (snapshot) => snapshot.revert([{ hash: "dummy", files: [] }]))).resolves.toBeUndefined()
+      expect(run(tmp.path, (snapshot) => snapshot.revert([{ hash: "mock", files: [] }]))).resolves.toBeUndefined()
     },
   })
 })

@@ -20,7 +20,7 @@ Use one trigger per item; keep content concise.
 - Controlled via \`value\`/\`onChange\` when provided.
 
 ### Accessibility
-- TODO: confirm keyboard navigation from Kobalte Accordion.
+- pending: confirm keyboard navigation from Kobalte Accordion.
 
 ### Theming/tokens
 - Uses \`data-component="accordion"\` and slot data attributes.

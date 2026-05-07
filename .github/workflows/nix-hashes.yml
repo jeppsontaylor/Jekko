@@ -25,6 +25,7 @@ jobs:
   # Native runners required: bun install cross-compilation flags (--os/--cpu)
   # do not produce byte-identical node_modules as native installs.
   compute-hash:
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -41,10 +42,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Setup Nix
-        uses: nixbuild/nix-quick-install-action@v34
+        uses: nixbuild/nix-quick-install-action@2c9db80fb984ceb1bcaa77cdda3fdf8cfba92035
 
       - name: Compute node_modules hash
         id: hash
@@ -72,20 +73,21 @@ jobs:
           echo "Computed hash for ${SYSTEM}: $HASH"
 
       - name: Upload hash
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hash-${{ matrix.system }}
           path: hash.txt
           retention-days: 1
 
   update-hashes:
+    timeout-minutes: 30
     needs: compute-hash
     if: github.event_name != 'pull_request'
     runs-on: blacksmith-4vcpu-ubuntu-2404
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -102,7 +104,7 @@ jobs:
           git pull --rebase --autostash origin "$GITHUB_REF_NAME"
 
       - name: Download hash artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           path: hashes
           pattern: hash-*

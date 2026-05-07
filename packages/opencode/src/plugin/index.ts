@@ -218,7 +218,7 @@ export const layer = Layer.effect(
             },
           }).pipe(
             Effect.catch(() => {
-              // TODO: make proper events for this
+              // pending: make proper events for this
               // bus.publish(Session.Event.Error, {
               //   error: new NamedError.Unknown({
               //     message: `Failed to load plugin ${load.spec}: ${message}`,

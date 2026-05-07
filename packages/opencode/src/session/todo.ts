@@ -23,7 +23,7 @@ export type Info = Schema.Schema.Type<typeof Info>
 
 export const Event = {
   Updated: BusEvent.define(
-    "todo.updated",
+    "pending.updated",
     Schema.Struct({
       sessionID: SessionID,
       todos: Schema.Array(Info),
@@ -50,11 +50,11 @@ export const layer = Layer.effect(
           if (input.todos.length === 0) return
           db.insert(TodoTable)
             .values(
-              input.todos.map((todo, position) => ({
+              input.todos.map((pending, position) => ({
                 session_id: input.sessionID,
-                content: todo.content,
-                status: todo.status,
-                priority: todo.priority,
+                content: pending.content,
+                status: pending.status,
+                priority: pending.priority,
                 position,
               })),
             )

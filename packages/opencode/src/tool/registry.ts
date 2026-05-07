@@ -39,7 +39,7 @@ import { Ripgrep } from "../file/ripgrep"
 import { Format } from "../format"
 import { InstanceState } from "@/effect/instance-state"
 import { Question } from "../question"
-import { Todo } from "../session/todo"
+import { Todo } from "../session/pending"
 import { LSP } from "@/lsp/lsp"
 import { Instruction } from "../session/instruction"
 import { AppFileSystem } from "@opencode-ai/core/filesystem"
@@ -82,7 +82,7 @@ export const layer = Layer.effect(
     const task = yield* TaskTool
     const read = yield* ReadTool
     const question = yield* QuestionTool
-    const todo = yield* TodoWriteTool
+    const pending = yield* TodoWriteTool
     const lsptool = yield* LspTool
     const plan = yield* PlanExitTool
     const webfetch = yield* WebFetchTool
@@ -184,7 +184,7 @@ export const layer = Layer.effect(
           write: Tool.init(writetool),
           task: Tool.init(task),
           fetch: Tool.init(webfetch),
-          todo: Tool.init(todo),
+          pending: Tool.init(pending),
           search: Tool.init(websearch),
           skill: Tool.init(skilltool),
           patch: Tool.init(patchtool),
@@ -206,7 +206,7 @@ export const layer = Layer.effect(
             tool.write,
             tool.task,
             tool.fetch,
-            tool.todo,
+            tool.pending,
             tool.search,
             tool.skill,
             tool.patch,

@@ -59,15 +59,15 @@ async function main() {
     if (all.length === 0) break
     console.log(`Fetched page ${page} ${all.length} issues`)
 
-    const stale: number[] = []
+    const outdated: number[] = []
     for (const i of all) {
       const updated = new Date(i.updated_at)
       if (updated < cutoff) {
-        stale.push(i.number)
+        outdated.push(i.number)
       } else {
         console.log(`\nFound fresh issue #${i.number}, stopping`)
-        if (stale.length > 0) {
-          for (const num of stale) {
+        if (outdated.length > 0) {
+          for (const num of outdated) {
             await close(num)
             closed++
           }
@@ -77,8 +77,8 @@ async function main() {
       }
     }
 
-    if (stale.length > 0) {
-      for (const num of stale) {
+    if (outdated.length > 0) {
+      for (const num of outdated) {
         await close(num)
         closed++
       }

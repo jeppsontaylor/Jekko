@@ -25,7 +25,7 @@ const scope = Effect.fnUntraced(function* () {
 
 // remap(root) rewrites any path under Global.Path.data to live under `root` instead.
 // Used by remappedFs to build an AppFileSystem that Storage thinks is the real global
-// data dir but actually targets a tmp dir — letting migration tests stage legacy layouts.
+// data dir but actually targets a tmp dir — letting migration tests stage historical layouts.
 // NOTE: only the 6 methods below are intercepted. If Storage starts using a different
 // AppFileSystem method that touches Global.Path.data, add it here.
 function remap(root: string, file: string) {
@@ -202,7 +202,7 @@ describe("Storage", () => {
         JSON.stringify({
           id: "ses_test",
           projectID: "proj_test",
-          title: "legacy",
+          title: "historical",
           summary: { diffs },
         }),
       )
@@ -221,7 +221,7 @@ describe("Storage", () => {
         ).toEqual({
           id: "ses_test",
           projectID: "proj_test",
-          title: "legacy",
+          title: "historical",
           summary: { additions: 5, deletions: 5 },
         })
       }).pipe(Effect.provide(remappedStorage(tmp)))
@@ -230,24 +230,24 @@ describe("Storage", () => {
     }),
   )
 
-  it.live("migration 1 tolerates malformed legacy records", () =>
+  it.live("migration 1 tolerates malformed historical records", () =>
     Effect.gen(function* () {
       const fs = yield* AppFileSystem.Service
       const tmp = yield* tmpdirScoped({ git: true })
       const storage = path.join(tmp, "storage")
-      const legacy = path.join(tmp, "project", "legacy")
+      const historical = path.join(tmp, "project", "historical")
 
-      yield* fs.writeWithDirs(path.join(legacy, "storage", "session", "message", "probe", "0.json"), "[]")
+      yield* fs.writeWithDirs(path.join(historical, "storage", "session", "message", "probe", "0.json"), "[]")
       yield* fs.writeWithDirs(
-        path.join(legacy, "storage", "session", "message", "probe", "1.json"),
+        path.join(historical, "storage", "session", "message", "probe", "1.json"),
         JSON.stringify({ path: { root: tmp } }),
       )
       yield* fs.writeWithDirs(
-        path.join(legacy, "storage", "session", "info", "ses_legacy.json"),
-        JSON.stringify({ id: "ses_legacy", title: "legacy" }),
+        path.join(historical, "storage", "session", "info", "ses_legacy.json"),
+        JSON.stringify({ id: "ses_legacy", title: "historical" }),
       )
       yield* fs.writeWithDirs(
-        path.join(legacy, "storage", "session", "message", "ses_legacy", "msg_legacy.json"),
+        path.join(historical, "storage", "session", "message", "ses_legacy", "msg_legacy.json"),
         JSON.stringify({ role: "user", text: "hello" }),
       )
 
@@ -260,7 +260,7 @@ describe("Storage", () => {
         expect(yield* svc.list(["session", project])).toEqual([["session", project, "ses_legacy"]])
         expect(yield* svc.read<{ id: string; title: string }>(["session", project, "ses_legacy"])).toEqual({
           id: "ses_legacy",
-          title: "legacy",
+          title: "historical",
         })
         expect(yield* svc.read<{ role: string; text: string }>(["message", "ses_legacy", "msg_legacy"])).toEqual({
           role: "user",
@@ -277,9 +277,9 @@ describe("Storage", () => {
       const fs = yield* AppFileSystem.Service
       const tmp = yield* tmpdirScoped()
       const storage = path.join(tmp, "storage")
-      const legacy = path.join(tmp, "project", "legacy")
+      const historical = path.join(tmp, "project", "historical")
 
-      yield* fs.writeWithDirs(path.join(legacy, "storage", "session", "message", "probe", "0.json"), "{")
+      yield* fs.writeWithDirs(path.join(historical, "storage", "session", "message", "probe", "0.json"), "{")
 
       yield* Effect.gen(function* () {
         const svc = yield* Storage.Service

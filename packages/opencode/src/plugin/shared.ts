@@ -6,7 +6,7 @@ import { Filesystem } from "@/util/filesystem"
 import { isRecord } from "@/util/record"
 import { Npm } from "@opencode-ai/core/npm"
 
-// Old npm package names for plugins that are now built-in
+// Previous npm package names for plugins that are now built-in
 export const DEPRECATED_PLUGIN_PACKAGES = ["opencode-openai-codex-auth", "opencode-copilot-auth"]
 
 export function isDeprecatedPlugin(spec: string) {

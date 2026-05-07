@@ -194,7 +194,7 @@ describe.concurrent("core.share", () => {
     await Share.remove({ id: share.id, secret: share.secret })
   })
 
-  test("should migrate legacy event data into the snapshot", async () => {
+  test("should migrate historical event data into the snapshot", async () => {
     const sessionID = Identifier.descending()
     const share = await Share.create({ sessionID })
     const data: Share.Data[] = [

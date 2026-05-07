@@ -10,7 +10,7 @@ import { InstanceRuntime } from "../../src/project/instance-runtime"
 import { InstanceMiddleware } from "../../src/server/routes/instance/middleware"
 import { disposeAllInstances, tmpdir } from "../fixture/fixture"
 
-// These regressions cover the legacy instance-loading paths fixed by PRs
+// These regressions cover the historical instance-loading paths fixed by PRs
 // #25389 and #25449. The plugin config hook writes a marker file, and the test
 // bodies deliberately avoid touching Plugin or config directly. The marker only
 // exists if InstanceBootstrap ran at the instance boundary.
@@ -67,7 +67,7 @@ test("CLI bootstrap runs InstanceBootstrap before callback", async () => {
   expect(existsSync(tmp.extra)).toBe(true)
 })
 
-test("legacy Hono instance middleware runs InstanceBootstrap before next handler", async () => {
+test("historical Hono instance middleware runs InstanceBootstrap before next handler", async () => {
   await using tmp = await bootstrapFixture()
   const app = new Hono().use(InstanceMiddleware()).get("/probe", (c) => c.text("ok"))
 

@@ -559,7 +559,7 @@ export const layer = Layer.effect(
         }
         if (diff.trim()) {
           const original = yield* git.show(ctx.directory, "HEAD", file)
-          const patch = structuredPatch(file, file, original, content, "old", "new", {
+          const patch = structuredPatch(file, file, original, content, "prior", "new", {
             context: Infinity,
             ignoreWhitespace: true,
           })

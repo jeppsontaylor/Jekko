@@ -172,7 +172,7 @@ export function buildCostChunk(format: ZenData.Format, cost: string): string {
       return `event: ping\ndata: ${JSON.stringify({ type: "ping", cost })}\n\n`
     case "openai":
       return `event: ping\ndata: ${JSON.stringify({ type: "ping", cost })}\n\n`
-    case "oa-compat":
+    case "oa-interop":
       return `data: ${JSON.stringify({ choices: [], cost })}\n\n`
     default:
       return `data: ${JSON.stringify({ type: "ping", cost })}\n\n`
@@ -190,7 +190,7 @@ export function createBodyConverter(from: ZenData.Format, to: ZenData.Format) {
 
     if (to === "anthropic") return toAnthropicRequest(raw)
     if (to === "openai") return toOpenaiRequest(raw)
-    if (to === "oa-compat") return toOaCompatibleRequest(raw)
+    if (to === "oa-interop") return toOaCompatibleRequest(raw)
   }
 }
 
@@ -208,7 +208,7 @@ export function createStreamPartConverter(from: ZenData.Format, to: ZenData.Form
 
     if (to === "anthropic") return toAnthropicChunk(raw)
     if (to === "openai") return toOpenaiChunk(raw)
-    if (to === "oa-compat") return toOaCompatibleChunk(raw)
+    if (to === "oa-interop") return toOaCompatibleChunk(raw)
   }
 }
 
@@ -223,6 +223,6 @@ export function createResponseConverter(from: ZenData.Format, to: ZenData.Format
 
     if (to === "anthropic") return toAnthropicResponse(raw)
     if (to === "openai") return toOpenaiResponse(raw)
-    if (to === "oa-compat") return toOaCompatibleResponse(raw)
+    if (to === "oa-interop") return toOaCompatibleResponse(raw)
   }
 }

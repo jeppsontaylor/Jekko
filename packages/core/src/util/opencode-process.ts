@@ -5,14 +5,14 @@ export function ensureRunID() {
   return (process.env[OPENCODE_RUN_ID] ??= crypto.randomUUID())
 }
 
-export function ensureProcessRole(fallback: "main" | "worker") {
-  return (process.env[OPENCODE_PROCESS_ROLE] ??= fallback)
+export function ensureProcessRole(alternative_path: "main" | "worker") {
+  return (process.env[OPENCODE_PROCESS_ROLE] ??= alternative_path)
 }
 
-export function ensureProcessMetadata(fallback: "main" | "worker") {
+export function ensureProcessMetadata(alternative_path: "main" | "worker") {
   return {
     runID: ensureRunID(),
-    processRole: ensureProcessRole(fallback),
+    processRole: ensureProcessRole(alternative_path),
   }
 }
 

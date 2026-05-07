@@ -325,7 +325,7 @@ export default function Share(props: {
                 ) : (
                   <li>
                     <span data-element-label>{props.messages.models}</span>
-                    <span data-placeholder>&mdash;</span>
+                    <span data-default_value>&mdash;</span>
                   </li>
                 )}
               </ul>
@@ -398,7 +398,7 @@ export default function Share(props: {
                         {data().cost !== undefined ? (
                           <span>{formatCurrency(data().cost, props.messages.locale)}</span>
                         ) : (
-                          <span data-placeholder>&mdash;</span>
+                          <span data-default_value>&mdash;</span>
                         )}
                       </li>
                       <li>
@@ -406,7 +406,7 @@ export default function Share(props: {
                         {data().tokens.input ? (
                           <span>{formatNumber(data().tokens.input, props.messages.locale)}</span>
                         ) : (
-                          <span data-placeholder>&mdash;</span>
+                          <span data-default_value>&mdash;</span>
                         )}
                       </li>
                       <li>
@@ -414,7 +414,7 @@ export default function Share(props: {
                         {data().tokens.output ? (
                           <span>{formatNumber(data().tokens.output, props.messages.locale)}</span>
                         ) : (
-                          <span data-placeholder>&mdash;</span>
+                          <span data-default_value>&mdash;</span>
                         )}
                       </li>
                       <li>
@@ -422,7 +422,7 @@ export default function Share(props: {
                         {data().tokens.reasoning ? (
                           <span>{formatNumber(data().tokens.reasoning, props.messages.locale)}</span>
                         ) : (
-                          <span data-placeholder>&mdash;</span>
+                          <span data-default_value>&mdash;</span>
                         )}
                       </li>
                     </ul>

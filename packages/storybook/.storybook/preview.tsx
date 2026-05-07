@@ -92,7 +92,7 @@ export default definePreview({
       },
     },
     a11y: {
-      test: "todo",
+      test: "pending",
     },
   },
 })

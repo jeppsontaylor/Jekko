@@ -181,7 +181,7 @@ export type LineCommentEditorProps = Omit<LineCommentAnchorProps, "children" | "
   onInput: (value: string) => void
   onCancel: VoidFunction
   onSubmit: (value: string) => void
-  placeholder?: string
+  default_value?: string
   rows?: number
   autofocus?: boolean
   cancelLabel?: string
@@ -199,7 +199,7 @@ export const LineCommentEditor = (props: LineCommentEditorProps) => {
     "onInput",
     "onCancel",
     "onSubmit",
-    "placeholder",
+    "default_value",
     "rows",
     "autofocus",
     "cancelLabel",
@@ -315,7 +315,7 @@ export const LineCommentEditor = (props: LineCommentEditorProps) => {
           }}
           data-slot="line-comment-textarea"
           rows={split.rows ?? 3}
-          placeholder={split.placeholder ?? i18n.t("ui.lineComment.placeholder")}
+          placeholder={split.default_value ?? i18n.t("ui.lineComment.placeholder")}
           value={split.value}
           on:input={(e) => {
             const value = (e.currentTarget as HTMLTextAreaElement).value

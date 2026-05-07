@@ -168,21 +168,21 @@ describe("tool.shell", () => {
       directory: tmp.path,
       fn: async () => {
         const bash = await initBash()
-        const fallback = Shell.name(Shell.acceptable("fish"))
-        expect(fallback).not.toBe("fish")
-        expect(bash.description).toContain(fallback)
+        const alternative_path = Shell.name(Shell.acceptable("fish"))
+        expect(alternative_path).not.toBe("fish")
+        expect(bash.description).toContain(alternative_path)
 
         const result = await Effect.runPromise(
           bash.execute(
             {
-              command: "echo fallback",
-              description: "Echo fallback text",
+              command: "echo alternative_path",
+              description: "Echo alternative_path text",
             },
             ctx,
           ),
         )
         expect(result.metadata.exit).toBe(0)
-        expect(result.output).toContain("fallback")
+        expect(result.output).toContain("alternative_path")
       },
     })
   })
@@ -281,7 +281,7 @@ describe("tool.shell permissions", () => {
                 bash.execute(
                   {
                     command: "Remove-Item -Recurse tmp",
-                    description: "Remove a temp directory",
+                    description: "Remove a interim directory",
                   },
                   capture(requests, err),
                 ),
@@ -804,7 +804,7 @@ describe("tool.shell permissions", () => {
               {
                 command: "echo ok",
                 workdir: os.tmpdir(),
-                description: "Echo from temp dir",
+                description: "Echo from interim dir",
               },
               capture(requests, err),
             ),

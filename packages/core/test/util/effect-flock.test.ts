@@ -189,18 +189,18 @@ describe("util.effect-flock", () => {
   )
 
   it.live(
-    "breaks stale lock dirs",
+    "breaks outdated lock dirs",
     Effect.gen(function* () {
       const flock = yield* EffectFlock.Service
       const tmp = yield* Effect.promise(() => fs.mkdtemp(path.join(os.tmpdir(), "eflock-test-")))
       const dir = path.join(tmp, "locks")
-      const key = "eflock:stale"
+      const key = "eflock:outdated"
       const lockDir = lock(dir, key)
 
       yield* Effect.promise(async () => {
         await fs.mkdir(lockDir, { recursive: true })
-        const old = new Date(Date.now() - 120_000)
-        await fs.utimes(lockDir, old, old)
+        const prior = new Date(Date.now() - 120_000)
+        await fs.utimes(lockDir, prior, prior)
       })
 
       let hit = false
@@ -217,21 +217,21 @@ describe("util.effect-flock", () => {
   )
 
   it.live(
-    "recovers from stale breaker",
+    "recovers from outdated breaker",
     Effect.gen(function* () {
       const flock = yield* EffectFlock.Service
       const tmp = yield* Effect.promise(() => fs.mkdtemp(path.join(os.tmpdir(), "eflock-test-")))
       const dir = path.join(tmp, "locks")
-      const key = "eflock:stale-breaker"
+      const key = "eflock:outdated-breaker"
       const lockDir = lock(dir, key)
       const breaker = lockDir + ".breaker"
 
       yield* Effect.promise(async () => {
         await fs.mkdir(lockDir, { recursive: true })
         await fs.mkdir(breaker)
-        const old = new Date(Date.now() - 120_000)
-        await fs.utimes(lockDir, old, old)
-        await fs.utimes(breaker, old, old)
+        const prior = new Date(Date.now() - 120_000)
+        await fs.utimes(lockDir, prior, prior)
+        await fs.utimes(breaker, prior, prior)
       })
 
       let hit = false
@@ -367,10 +367,10 @@ describe("util.effect-flock", () => {
 
           // Backdate lock files so they're past STALE_MS (60s)
           const lockDir = lock(dir, "eflock:crash")
-          const old = new Date(Date.now() - 120_000)
-          await fs.utimes(lockDir, old, old).catch(() => {})
-          await fs.utimes(path.join(lockDir, "heartbeat"), old, old).catch(() => {})
-          await fs.utimes(path.join(lockDir, "meta.json"), old, old).catch(() => {})
+          const prior = new Date(Date.now() - 120_000)
+          await fs.utimes(lockDir, prior, prior).catch(() => {})
+          await fs.utimes(path.join(lockDir, "heartbeat"), prior, prior).catch(() => {})
+          await fs.utimes(path.join(lockDir, "meta.json"), prior, prior).catch(() => {})
 
           const done = path.join(tmp, "done.log")
           const result = await run({ key: "eflock:crash", dir, done, holdMs: 10 })

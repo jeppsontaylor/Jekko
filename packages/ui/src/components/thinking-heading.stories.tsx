@@ -84,7 +84,7 @@ const STYLES = `
 
 
 /* ── 1. spring-up ───────────────────────────────────────────────── *
- * New text rises from below, old text exits upward.               */
+ * New text rises from below, prior text exits upward.               */
 
 [data-variant="spring-up"] [data-slot="entering"],
 [data-variant="spring-up"] [data-slot="leaving"] {
@@ -120,7 +120,7 @@ const STYLES = `
 
 
 /* ── 2. spring-down ─────────────────────────────────────────────── *
- * New text drops from above, old text exits downward.             */
+ * New text drops from above, prior text exits downward.             */
 
 [data-variant="spring-down"] [data-slot="entering"],
 [data-variant="spring-down"] [data-slot="leaving"] {

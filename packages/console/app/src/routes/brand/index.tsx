@@ -29,7 +29,25 @@ import wordmarkLightSvg from "../../asset/brand/opencode-wordmark-light.svg"
 import wordmarkDarkSvg from "../../asset/brand/opencode-wordmark-dark.svg"
 import wordmarkSimpleLightSvg from "../../asset/brand/opencode-wordmark-simple-light.svg"
 import wordmarkSimpleDarkSvg from "../../asset/brand/opencode-wordmark-simple-dark.svg"
-const brandAssets = "/opencode-brand-assets.zip"
+
+const brandDownloads = [
+  { url: logoLightPng, filename: "opencode-logo-light.png" },
+  { url: logoDarkPng, filename: "opencode-logo-dark.png" },
+  { url: logoLightSquarePng, filename: "opencode-logo-light-square.png" },
+  { url: logoDarkSquarePng, filename: "opencode-logo-dark-square.png" },
+  { url: wordmarkLightPng, filename: "opencode-wordmark-light.png" },
+  { url: wordmarkDarkPng, filename: "opencode-wordmark-dark.png" },
+  { url: wordmarkSimpleLightPng, filename: "opencode-wordmark-simple-light.png" },
+  { url: wordmarkSimpleDarkPng, filename: "opencode-wordmark-simple-dark.png" },
+  { url: logoLightSvg, filename: "opencode-logo-light.svg" },
+  { url: logoDarkSvg, filename: "opencode-logo-dark.svg" },
+  { url: logoLightSquareSvg, filename: "opencode-logo-light-square.svg" },
+  { url: logoDarkSquareSvg, filename: "opencode-logo-dark-square.svg" },
+  { url: wordmarkLightSvg, filename: "opencode-wordmark-light.svg" },
+  { url: wordmarkDarkSvg, filename: "opencode-wordmark-dark.svg" },
+  { url: wordmarkSimpleLightSvg, filename: "opencode-wordmark-simple-light.svg" },
+  { url: wordmarkSimpleDarkSvg, filename: "opencode-wordmark-simple-dark.svg" },
+] as const
 
 export default function Brand() {
   const i18n = useI18n()
@@ -60,6 +78,12 @@ export default function Brand() {
     }
   }
 
+  const downloadAllBrandAssets = async () => {
+    for (const asset of brandDownloads) {
+      await downloadFile(asset.url, asset.filename)
+    }
+  }
+
   return (
     <main data-page="enterprise">
       <Title>{i18n.t("brand.title")}</Title>
@@ -74,7 +98,7 @@ export default function Brand() {
             <p>{i18n.t("brand.subtitle")}</p>
             <button
               data-component="download-button"
-              onClick={() => downloadFile(brandAssets, "opencode-brand-assets.zip")}
+              onClick={() => void downloadAllBrandAssets()}
             >
               {i18n.t("brand.downloadAll")}
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

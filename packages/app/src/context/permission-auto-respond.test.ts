@@ -25,7 +25,7 @@ describe("autoRespondsPermission", () => {
     expect(autoRespondsPermission(autoAccept, sessions, permission("child"), directory)).toBe(true)
   })
 
-  test("uses a parent session's legacy auto-accept key", () => {
+  test("uses a parent session's historical auto-accept key", () => {
     const sessions = [session({ id: "root" }), session({ id: "child", parentID: "root" })]
 
     expect(autoRespondsPermission({ root: true }, sessions, permission("child"), "/tmp/project")).toBe(true)

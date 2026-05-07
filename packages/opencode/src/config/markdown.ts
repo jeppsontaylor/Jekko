@@ -15,7 +15,7 @@ export function shell(template: string) {
 }
 
 // other coding agents like claude code allow invalid yaml in their
-// frontmatter, we need to fallback to a more permissive parser for those cases
+// frontmatter, we need to alternative_path to a more permissive parser for those cases
 export function fallbackSanitization(content: string): string {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (!match) return content

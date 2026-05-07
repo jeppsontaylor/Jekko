@@ -9,7 +9,7 @@ Use \`children\` to customize option rendering.
 
 ### API
 - Required: \`options\`.
-- Optional: \`current\`, \`placeholder\`, \`value\`, \`label\`, \`groupBy\`.
+- Optional: \`current\`, \`default_value\`, \`value\`, \`label\`, \`groupBy\`.
 - Accepts Button props for the trigger (\`variant\`, \`size\`).
 
 ### Variants and states
@@ -19,7 +19,7 @@ Use \`children\` to customize option rendering.
 - Uses Kobalte Select with optional item highlight callbacks.
 
 ### Accessibility
-- TODO: confirm keyboard navigation and aria attributes from Kobalte.
+- pending: confirm keyboard navigation and aria attributes from Kobalte.
 
 ### Theming/tokens
 - Uses \`data-component="select"\` with slot attributes.
@@ -32,7 +32,7 @@ const story = create({
   args: {
     options: ["One", "Two", "Three"],
     current: "One",
-    placeholder: "Choose...",
+    default_value: "Choose...",
     variant: "secondary",
     size: "normal",
   },
@@ -74,7 +74,7 @@ export const Grouped = {
         value={(item) => item.id}
         label={(item) => item.label}
         groupBy={(item) => item.group}
-        placeholder="Choose..."
+        defaultValue="Choose..."
         variant="secondary"
       />
     )
@@ -92,7 +92,7 @@ export const CustomRender = {
     <mod.Select
       options={["Primary", "Secondary", "Ghost"]}
       current="Primary"
-      placeholder="Choose..."
+      defaultValue="Choose..."
       variant="secondary"
     >
       {(item) => <span style={{ "text-transform": "uppercase" }}>{item}</span>}

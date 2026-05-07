@@ -20,7 +20,7 @@ Use structured triggers for consistent layout; custom triggers allowed.
 - Locked state prevents closing.
 
 ### Accessibility
-- TODO: confirm trigger semantics and aria labeling.
+- pending: confirm trigger semantics and aria labeling.
 
 ### Theming/tokens
 - Uses \`data-component="tool-trigger"\` and related slots.

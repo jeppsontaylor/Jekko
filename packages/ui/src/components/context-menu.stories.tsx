@@ -17,7 +17,7 @@ Use \`ItemLabel\` and \`ItemDescription\` for rich items.
 - Opens on context menu gesture over the trigger element.
 
 ### Accessibility
-- TODO: confirm keyboard and focus behavior from Kobalte.
+- pending: confirm keyboard and focus behavior from Kobalte.
 
 ### Theming/tokens
 - Uses \`data-component="context-menu"\` and slot attributes for styling.

@@ -16,6 +16,35 @@ type Usage = {
   }
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value)
+
+const parseJson = (value: string): unknown => {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return undefined
+  }
+}
+
+const getRecord = (value: Record<string, unknown> | undefined, key: string): Record<string, unknown> | undefined => {
+  if (!value) return undefined
+  const nested = value[key]
+  return isRecord(nested) ? nested : undefined
+}
+
+const getString = (value: Record<string, unknown> | undefined, key: string): string | undefined => {
+  if (!value) return undefined
+  const nested = value[key]
+  return typeof nested === "string" ? nested : undefined
+}
+
+const getNumber = (value: Record<string, unknown> | undefined, key: string): number | undefined => {
+  if (!value) return undefined
+  const nested = value[key]
+  return typeof nested === "number" ? nested : undefined
+}
+
 export const anthropicHelper: ProviderHelper = ({ reqModel, providerModel }) => {
   const isBedrockModelArn = providerModel.startsWith("arn:aws:bedrock:")
   const isBedrockModelID = providerModel.startsWith("global.anthropic.")
@@ -119,17 +148,31 @@ export const anthropicHelper: ProviderHelper = ({ reqModel, providerModel }) => 
         data: {"type":"message_start","message":{"model":"claude-opus-4-5-20251101","id":"msg_01ETvwVWSKULxzPdkQ1xAnk2","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":3,"cache_creation_input_tokens":11543,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":11543,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}}
       ```
       */
-            if (decoded.headers[":message-type"]?.value === "event") {
-              const data = decoder.decode(decoded.body, { stream: true })
+            if (!isRecord(decoded)) continue
+            const headers = getRecord(decoded, "headers")
+            const messageType = getRecord(headers, ":message-type")
+            if (getString(messageType, "value") !== "event") continue
 
-              const parsedDataResult = JSON.parse(data)
-              delete parsedDataResult.p
-              const binary = atob(parsedDataResult.bytes)
-              const uint8 = Uint8Array.from(binary, (c) => c.charCodeAt(0))
-              const bytes = decoder.decode(uint8)
-              const eventName = JSON.parse(bytes).type
-              messages.push([`event: ${eventName}`, "\n", `data: ${bytes}`, "\n\n"].join(""))
-            }
+            const body = decoded["body"]
+            if (!(body instanceof Uint8Array)) continue
+
+            const data = decoder.decode(body, { stream: true })
+            const parsedDataResult = parseJson(data)
+            if (!isRecord(parsedDataResult)) continue
+
+            const binaryData = getString(parsedDataResult, "bytes")
+            if (!binaryData) continue
+
+            const binary = atob(binaryData)
+            const uint8 = Uint8Array.from(binary, (c) => c.charCodeAt(0))
+            const bytes = decoder.decode(uint8)
+            const parsedBytes = parseJson(bytes)
+            if (!isRecord(parsedBytes)) continue
+
+            const eventName = getString(parsedBytes, "type")
+            if (!eventName) continue
+
+            messages.push([`event: ${eventName}`, "\n", `data: ${bytes}`, "\n\n"].join(""))
           } catch (e) {
             console.log("@@@EE@@@")
             console.log(e)
@@ -148,27 +191,24 @@ export const anthropicHelper: ProviderHelper = ({ reqModel, providerModel }) => 
           const data = chunk.split("\n")[1]
           // Claude models start with "data: {"
           // Alibaba models start with "data:{"
-          if (!data.startsWith("data:")) return
+          if (typeof data !== "string" || !data.startsWith("data:")) return
 
-          let json
-          try {
-            json = JSON.parse(data.replace(/^data:\s*/, ""))
-          } catch {
-            return
-          }
+          const json = parseJson(data.replace(/^data:\s*/, ""))
+          if (!isRecord(json)) return
 
-          const usageUpdate = json.usage ?? json.message?.usage
+          const message = getRecord(json, "message")
+          const usageUpdate = getRecord(json, "usage") ?? getRecord(message, "usage")
           if (!usageUpdate) return
           usage = {
             ...usage,
             ...usageUpdate,
             cache_creation: {
               ...usage?.cache_creation,
-              ...usageUpdate.cache_creation,
+              ...(usageUpdate.cache_creation ?? {}),
             },
             server_tool_use: {
               ...usage?.server_tool_use,
-              ...usageUpdate.server_tool_use,
+              ...(usageUpdate.server_tool_use ?? {}),
             },
           }
         },
@@ -386,11 +426,8 @@ export function toAnthropicRequest(body: CommonRequest) {
             let input: any
             const a = (tc as any).function.arguments
             if (typeof a === "string") {
-              try {
-                input = JSON.parse(a)
-              } catch {
-                input = a
-              }
+              const parsed = parseJson(a)
+              input = parsed === undefined ? a : parsed
             } else input = a
             const id = (tc as any).id || `toolu_${Math.random().toString(36).slice(2)}`
             ;(out.content as any[]).push({
@@ -568,11 +605,8 @@ export function toAnthropicResponse(resp: CommonResponse) {
     for (const tc of message.tool_calls) {
       if ((tc as any).type === "function" && (tc as any).function) {
         let input: any
-        try {
-          input = JSON.parse((tc as any).function.arguments)
-        } catch {
-          input = (tc as any).function.arguments
-        }
+        const parsed = parseJson((tc as any).function.arguments)
+        input = parsed === undefined ? (tc as any).function.arguments : parsed
         content.push({
           type: "tool_use",
           id: (tc as any).id,
@@ -619,39 +653,39 @@ export function fromAnthropicChunk(chunk: string): CommonChunk | string {
   const dataLine = lines.find((l) => l.startsWith("data: "))
   if (!dataLine) return chunk
 
-  let json
-  try {
-    json = JSON.parse(dataLine.slice(6))
-  } catch {
-    return chunk
-  }
+  const json = parseJson(dataLine.slice(6))
+  if (!isRecord(json)) return chunk
+
+  const message = getRecord(json, "message")
+  const contentBlock = getRecord(json, "content_block")
+  const delta = getRecord(json, "delta")
+  const usage = getRecord(json, "usage")
 
   const out: CommonChunk = {
-    id: json.id ?? json.message?.id ?? "",
+    id: getString(json, "id") ?? getString(message, "id") ?? "",
     object: "chat.completion.chunk",
     created: Math.floor(Date.now() / 1000),
-    model: json.model ?? json.message?.model ?? "",
+    model: getString(json, "model") ?? getString(message, "model") ?? "",
     choices: [],
   }
 
-  if (json.type === "content_block_start") {
-    const cb = json.content_block
-    if (cb?.type === "text") {
+  if (getString(json, "type") === "content_block_start") {
+    if (getString(contentBlock, "type") === "text") {
       out.choices.push({
-        index: json.index ?? 0,
+        index: getNumber(json, "index") ?? 0,
         delta: { role: "assistant", content: "" },
         finish_reason: null,
       })
-    } else if (cb?.type === "tool_use") {
+    } else if (getString(contentBlock, "type") === "tool_use") {
       out.choices.push({
-        index: json.index ?? 0,
+        index: getNumber(json, "index") ?? 0,
         delta: {
           tool_calls: [
             {
-              index: json.index ?? 0,
-              id: cb.id,
+              index: getNumber(json, "index") ?? 0,
+              id: getString(contentBlock, "id") ?? "",
               type: "function",
-              function: { name: cb.name, arguments: "" },
+              function: { name: getString(contentBlock, "name") ?? "", arguments: "" },
             },
           ],
         },
@@ -660,25 +694,32 @@ export function fromAnthropicChunk(chunk: string): CommonChunk | string {
     }
   }
 
-  if (json.type === "content_block_delta") {
-    const d = json.delta
-    if (d?.type === "text_delta") {
-      out.choices.push({ index: json.index ?? 0, delta: { content: d.text }, finish_reason: null })
-    } else if (d?.type === "input_json_delta") {
+  if (getString(json, "type") === "content_block_delta") {
+    if (getString(delta, "type") === "text_delta") {
       out.choices.push({
-        index: json.index ?? 0,
+        index: getNumber(json, "index") ?? 0,
+        delta: { content: getString(delta, "text") ?? "" },
+        finish_reason: null,
+      })
+    } else if (getString(delta, "type") === "input_json_delta") {
+      out.choices.push({
+        index: getNumber(json, "index") ?? 0,
         delta: {
-          tool_calls: [{ index: json.index ?? 0, function: { arguments: d.partial_json } }],
+          tool_calls: [
+            {
+              index: getNumber(json, "index") ?? 0,
+              function: { arguments: getString(delta, "partial_json") ?? "" },
+            },
+          ],
         },
         finish_reason: null,
       })
     }
   }
 
-  if (json.type === "message_delta") {
-    const d = json.delta
+  if (getString(json, "type") === "message_delta") {
     const finish_reason = (() => {
-      const r = d?.stop_reason
+      const r = getString(delta, "stop_reason")
       if (r === "end_turn") return "stop"
       if (r === "tool_use") return "tool_calls"
       if (r === "max_tokens") return "length"
@@ -689,13 +730,14 @@ export function fromAnthropicChunk(chunk: string): CommonChunk | string {
     out.choices.push({ index: 0, delta: {}, finish_reason })
   }
 
-  if (json.usage) {
-    const u = json.usage
+  if (usage) {
     out.usage = {
-      prompt_tokens: u.input_tokens,
-      completion_tokens: u.output_tokens,
-      total_tokens: (u.input_tokens || 0) + (u.output_tokens || 0),
-      ...(u.cache_read_input_tokens ? { prompt_tokens_details: { cached_tokens: u.cache_read_input_tokens } } : {}),
+      prompt_tokens: getNumber(usage, "input_tokens"),
+      completion_tokens: getNumber(usage, "output_tokens"),
+      total_tokens: (getNumber(usage, "input_tokens") || 0) + (getNumber(usage, "output_tokens") || 0),
+      ...(getNumber(usage, "cache_read_input_tokens")
+        ? { prompt_tokens_details: { cached_tokens: getNumber(usage, "cache_read_input_tokens") } }
+        : {}),
     }
   }
 

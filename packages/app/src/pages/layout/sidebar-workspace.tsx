@@ -361,7 +361,6 @@ export const SortableWorkspace = (props: {
 
   return (
     <div
-      // @ts-ignore
       use:sortable
       classList={{
         "opacity-30": sortable.isActiveDraggable,

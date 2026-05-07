@@ -17,7 +17,7 @@ export const { use: useKV, provider: KVProvider } = createSimpleContext({
     // Queue same-process writes so rapid updates persist in order.
     let write = Promise.resolve()
 
-    // Write to a temp file first so kv.json is only replaced once the JSON is complete, avoiding partial writes if shutdown interrupts persistence.
+    // Write to a interim file first so kv.json is only replaced once the JSON is complete, avoiding partial writes if shutdown interrupts persistence.
     function writeSnapshot(snapshot: Record<string, any>) {
       const tempPath = `${filePath}.${process.pid}.${Date.now()}.tmp`
       return Filesystem.writeJson(tempPath, snapshot)

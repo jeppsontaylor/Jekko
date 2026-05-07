@@ -9,7 +9,7 @@ import { Hash } from "@opencode-ai/core/util/hash"
 type Msg = {
   key: string
   dir: string
-  staleMs?: number
+  maxAgeMs?: number
   timeoutMs?: number
   baseDelayMs?: number
   maxDelayMs?: number
@@ -126,7 +126,7 @@ describe("util.flock", () => {
           done,
           active,
           holdMs: 30,
-          staleMs: 1_000,
+          maxAgeMs: 1_000,
           timeoutMs: 15_000,
         }),
       ),
@@ -152,7 +152,7 @@ describe("util.flock", () => {
       dir,
       ready,
       holdMs: 20_000,
-      staleMs: 10_000,
+      maxAgeMs: 10_000,
       timeoutMs: 30_000,
     })
 
@@ -161,7 +161,7 @@ describe("util.flock", () => {
       const seen: string[] = []
       const err = await Flock.withLock(key, async () => {}, {
         dir,
-        staleMs: 10_000,
+        maxAgeMs: 10_000,
         timeoutMs: 1_000,
         onWait: (tick) => {
           seen.push(tick.key)
@@ -189,7 +189,7 @@ describe("util.flock", () => {
       dir,
       ready,
       holdMs: 20_000,
-      staleMs: 500,
+      maxAgeMs: 500,
       timeoutMs: 30_000,
     })
 
@@ -205,7 +205,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 500,
+        maxAgeMs: 500,
         timeoutMs: 8_000,
       },
     )
@@ -213,15 +213,15 @@ describe("util.flock", () => {
     expect(hit).toBe(true)
   }, 20_000)
 
-  test("breaks stale lock dirs when heartbeat is missing", async () => {
+  test("breaks outdated lock dirs when heartbeat is missing", async () => {
     await using tmp = await tmpdir()
     const dir = path.join(tmp.path, "locks")
     const key = "flock:missing-heartbeat"
     const lockDir = lock(dir, key)
 
     await fs.mkdir(lockDir, { recursive: true })
-    const old = new Date(Date.now() - 2_000)
-    await fs.utimes(lockDir, old, old)
+    const prior = new Date(Date.now() - 2_000)
+    await fs.utimes(lockDir, prior, prior)
 
     let hit = false
     await Flock.withLock(
@@ -231,7 +231,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 200,
+        maxAgeMs: 200,
         timeoutMs: 3_000,
       },
     )
@@ -239,19 +239,19 @@ describe("util.flock", () => {
     expect(hit).toBe(true)
   })
 
-  test("recovers when a stale breaker claim was left behind", async () => {
+  test("recovers when a outdated breaker claim was left behind", async () => {
     await using tmp = await tmpdir()
     const dir = path.join(tmp.path, "locks")
-    const key = "flock:stale-breaker"
+    const key = "flock:outdated-breaker"
     const lockDir = lock(dir, key)
     const breaker = lockDir + ".breaker"
 
     await fs.mkdir(lockDir, { recursive: true })
     await fs.mkdir(breaker)
 
-    const old = new Date(Date.now() - 2_000)
-    await fs.utimes(lockDir, old, old)
-    await fs.utimes(breaker, old, old)
+    const prior = new Date(Date.now() - 2_000)
+    await fs.utimes(lockDir, prior, prior)
+    await fs.utimes(breaker, prior, prior)
 
     let hit = false
     await Flock.withLock(
@@ -261,7 +261,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 200,
+        maxAgeMs: 200,
         timeoutMs: 3_000,
       },
     )
@@ -286,7 +286,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 1_000,
+        maxAgeMs: 1_000,
         timeoutMs: 3_000,
       },
     ).catch((err) => err)
@@ -303,7 +303,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 200,
+        maxAgeMs: 200,
         timeoutMs: 3_000,
       },
     )
@@ -333,7 +333,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 1_000,
+        maxAgeMs: 1_000,
         timeoutMs: 3_000,
       },
     )
@@ -348,7 +348,7 @@ describe("util.flock", () => {
     {
       await using _ = await Flock.acquire(key, {
         dir,
-        staleMs: 1_000,
+        maxAgeMs: 1_000,
         timeoutMs: 3_000,
       })
       expect(await exists(lockDir)).toBe(true)
@@ -357,7 +357,7 @@ describe("util.flock", () => {
     expect(await exists(lockDir)).toBe(false)
   })
 
-  test("refuses token mismatch release and recovers from stale", async () => {
+  test("refuses token mismatch release and recovers from outdated", async () => {
     await using tmp = await tmpdir()
     const dir = path.join(tmp.path, "locks")
     const key = "flock:token"
@@ -373,7 +373,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 500,
+        maxAgeMs: 500,
         timeoutMs: 3_000,
       },
     ).catch((err) => err)
@@ -391,7 +391,7 @@ describe("util.flock", () => {
       },
       {
         dir,
-        staleMs: 500,
+        maxAgeMs: 500,
         timeoutMs: 6_000,
       },
     )
@@ -411,7 +411,7 @@ describe("util.flock", () => {
     try {
       const err = await Flock.withLock(key, async () => {}, {
         dir,
-        staleMs: 100,
+        maxAgeMs: 100,
         timeoutMs: 500,
       }).catch((err) => err)
 

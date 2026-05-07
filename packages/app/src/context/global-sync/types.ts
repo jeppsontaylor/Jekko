@@ -13,11 +13,16 @@ import type {
   Session,
   SessionStatus,
   SnapshotFileDiff,
-  Todo,
   VcsInfo,
 } from "@opencode-ai/sdk/v2/client"
 import type { Accessor } from "solid-js"
 import type { SetStoreFunction, Store } from "solid-js/store"
+
+export type PendingItem = {
+  content: string
+  status: "pending" | "in_progress" | "completed" | "cancelled"
+  priority: string
+}
 
 export type ProjectMeta = {
   name?: string
@@ -49,8 +54,8 @@ export type State = {
   session_diff: {
     [sessionID: string]: SnapshotFileDiff[]
   }
-  todo: {
-    [sessionID: string]: Todo[]
+  pending: {
+    [sessionID: string]: PendingItem[]
   }
   permission: {
     [sessionID: string]: PermissionRequest[]

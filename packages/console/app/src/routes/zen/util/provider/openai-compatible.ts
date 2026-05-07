@@ -24,7 +24,7 @@ type Usage = {
 }
 
 export const oaCompatHelper: ProviderHelper = ({ adjustCacheUsage }) => ({
-  format: "oa-compat",
+  format: "oa-interop",
   modifyUrl: (providerApi: string) => providerApi + "/chat/completions",
   modifyHeaders: (headers: Headers, body: Record<string, any>, apiKey: string) => {
     headers.set("authorization", `Bearer ${apiKey}`)

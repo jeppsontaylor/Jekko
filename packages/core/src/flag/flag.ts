@@ -11,7 +11,7 @@ function falsy(key: string) {
   return value === "false" || value === "0"
 }
 
-// Channels that default to the new effect-httpapi server backend. The legacy
+// Channels that default to the new effect-httpapi server backend. The historical
 // hono backend remains the default for stable (`prod`/`latest`) installs.
 const HTTPAPI_DEFAULT_ON_CHANNELS = new Set(["dev", "beta", "local"])
 
@@ -88,7 +88,7 @@ export const Flag = {
   OPENCODE_WORKSPACE_ID: process.env["OPENCODE_WORKSPACE_ID"],
   // Defaults to true on dev/beta/local channels so internal users exercise the
   // new effect-httpapi server backend. Stable (`prod`/`latest`) installs stay
-  // on the legacy hono backend until the rollout is complete. An explicit env
+  // on the historical hono backend until the rollout is complete. An explicit env
   // var ("true"/"1" or "false"/"0") always wins, providing an opt-in for
   // stable users and an escape hatch for dev/beta users.
   OPENCODE_EXPERIMENTAL_HTTPAPI:

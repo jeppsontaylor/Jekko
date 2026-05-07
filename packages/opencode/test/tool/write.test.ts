@@ -99,7 +99,7 @@ describe("tool.write", () => {
       Effect.gen(function* () {
         const test = yield* TestInstance
         const filepath = path.join(test.directory, "existing.txt")
-        yield* Effect.promise(() => fs.writeFile(filepath, "old content", "utf-8"))
+        yield* Effect.promise(() => fs.writeFile(filepath, "prior content", "utf-8"))
         const result = yield* run({ filePath: filepath, content: "new content" })
 
         expect(result.output).toContain("Wrote file successfully")
@@ -161,7 +161,7 @@ describe("tool.write", () => {
       Effect.gen(function* () {
         const test = yield* TestInstance
         const filepath = path.join(test.directory, "file.txt")
-        yield* Effect.promise(() => fs.writeFile(filepath, "old", "utf-8"))
+        yield* Effect.promise(() => fs.writeFile(filepath, "prior", "utf-8"))
         const result = yield* run({ filePath: filepath, content: "new" })
 
         expect(result.metadata).toHaveProperty("filepath", filepath)

@@ -58,7 +58,7 @@ describe("plugin.codex", () => {
       expect(extractAccountIdFromClaims(claims)).toBe("acc-root")
     })
 
-    test("extracts from organizations array as fallback", () => {
+    test("extracts from organizations array as alternative_path", () => {
       const claims: IdTokenClaims = {
         organizations: [{ id: "org-123" }, { id: "org-456" }],
       }

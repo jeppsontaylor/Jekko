@@ -1,9 +1,45 @@
 {
   "workspace": "jankurai",
   "tests": {
+    "packages/web/": {
+      "command": "just fast",
+      "purpose": "verify web package proof routes stay visible"
+    },
     "AGENTS.md": {
       "command": "just score",
       "purpose": "verify root routing remains visible to the audit"
+    },
+    ".agents/": {
+      "command": "just fast",
+      "purpose": "verify agent instructions and workflow proof routes stay visible"
+    },
+    ".claude/": {
+      "command": "just fast",
+      "purpose": "verify Claude skill proof routes stay visible"
+    },
+    ".cursor/": {
+      "command": "just fast",
+      "purpose": "verify Cursor guidance proof routes stay visible"
+    },
+    ".github/CODEOWNERS": {
+      "command": "just fast",
+      "purpose": "verify GitHub ownership metadata remains mapped"
+    },
+    ".github/": {
+      "command": "just fast",
+      "purpose": "verify root GitHub metadata remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/actions/": {
+      "command": "just fast",
+      "purpose": "verify GitHub action proof routes remain mapped"
+    },
+    ".editorconfig": {
+      "command": "just fast",
+      "purpose": "verify root editorconfig proof route stays visible"
     },
     "apps/": {
       "command": "just fast",
@@ -60,6 +96,314 @@
     "docs/": {
       "command": "just score",
       "purpose": "verify agent-readable documentation remains routed"
+    },
+    ".agents/agents.md": {
+      "command": "just fast",
+      "purpose": "verify agent instructions and workflow proof routes stay visible"
+    },
+    ".agents/skills/jankurai/SKILL.md": {
+      "command": "just fast",
+      "purpose": "verify skill proof routes stay visible"
+    },
+    ".agents/workflows/jankurai-audit.md": {
+      "command": "just fast",
+      "purpose": "verify workflow proof routes stay visible"
+    },
+    ".claude/skills/jankurai/SKILL.md": {
+      "command": "just fast",
+      "purpose": "verify Claude skill proof routes stay visible"
+    },
+    ".cursor/rules/jankurai.mdc": {
+      "command": "just fast",
+      "purpose": "verify Cursor guidance proof routes stay visible"
+    },
+    ".editorconfig": {
+      "command": "just fast",
+      "purpose": "verify root editorconfig proof route stays visible"
+    },
+    ".gitignore": {
+      "command": "just fast",
+      "purpose": "verify gitignore proof route stays visible"
+    },
+    ".husky/pre-push": {
+      "command": "just fast",
+      "purpose": "verify husky hook proof route stays visible"
+    },
+    ".opencode/agent/duplicate-pr.md": {
+      "command": "just fast",
+      "purpose": "verify duplicate PR guidance proof route stays visible"
+    },
+    ".opencode/agent/generated-zones.toml": {
+      "command": "just fast",
+      "purpose": "verify generated zones config proof route stays visible"
+    },
+    ".opencode/agent/": {
+      "command": "just fast",
+      "purpose": "verify agent proof routes stay visible"
+    },
+    ".opencode/env.d.ts": {
+      "command": "just fast",
+      "purpose": "verify env proof route stays visible"
+    },
+    ".opencode/glossary/": {
+      "command": "just fast",
+      "purpose": "verify glossary proof route stays visible"
+    },
+    ".opencode/opencode.jsonc": {
+      "command": "just fast",
+      "purpose": "verify opencode config proof route stays visible"
+    },
+    ".opencode/plugins/": {
+      "command": "just fast",
+      "purpose": "verify plugin proof route stays visible"
+    },
+    ".opencode/skills/": {
+      "command": "just fast",
+      "purpose": "verify skill proof route stays visible"
+    },
+    ".opencode/themes/": {
+      "command": "just fast",
+      "purpose": "verify theme proof route stays visible"
+    },
+    ".opencode/tool/": {
+      "command": "just fast",
+      "purpose": "verify tool proof route stays visible"
+    },
+    ".opencode/tui.json": {
+      "command": "just fast",
+      "purpose": "verify tui proof route stays visible"
+    },
+    ".opencode/command/": {
+      "command": "just fast",
+      "purpose": "verify command proof routes stay visible"
+    },
+    ".github/CODEOWNERS": {
+      "command": "just fast",
+      "purpose": "verify GitHub ownership metadata remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/bug-report.yml": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/config.yml": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/feature-request.yml": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/instructions/": {
+      "command": "just fast",
+      "purpose": "verify GitHub instruction proof routes remain mapped"
+    },
+    ".github/workflows/": {
+      "command": "just fast",
+      "purpose": "verify GitHub workflow proof routes remain mapped"
+    },
+    "README.": {
+      "command": "just fast",
+      "purpose": "verify translated README proof routes stay visible"
+    },
+    "github/": {
+      "command": "just fast",
+      "purpose": "verify github subtree proof routes stay visible"
+    },
+    "infra/": {
+      "command": "just fast",
+      "purpose": "verify infra proof routes stay visible"
+    },
+    "install": {
+      "command": "just fast",
+      "purpose": "verify install proof route stays visible"
+    },
+    "jnoccio-fusion/": {
+      "command": "just fast",
+      "purpose": "verify jnoccio-fusion proof routes stay visible"
+    },
+    "nix/": {
+      "command": "just fast",
+      "purpose": "verify nix proof routes stay visible"
+    },
+    "package.json": {
+      "command": "just fast",
+      "purpose": "verify package proof route stays visible"
+    },
+    "packages/app/": {
+      "command": "just fast",
+      "purpose": "verify app package proof routes stay visible"
+    },
+    "packages/console/app/": {
+      "command": "just fast",
+      "purpose": "verify console app proof routes stay visible"
+    },
+    "packages/console/core/": {
+      "command": "just fast",
+      "purpose": "verify console core proof routes stay visible"
+    },
+    "packages/console/function/": {
+      "command": "just fast",
+      "purpose": "verify console function proof routes stay visible"
+    },
+    "packages/console/mail/": {
+      "command": "just fast",
+      "purpose": "verify console mail proof routes stay visible"
+    },
+    "packages/console/resource/": {
+      "command": "just fast",
+      "purpose": "verify console resource proof routes stay visible"
+    },
+    "packages/containers/": {
+      "command": "just fast",
+      "purpose": "verify container proof routes stay visible"
+    },
+    "packages/core/": {
+      "command": "just fast",
+      "purpose": "verify core proof routes stay visible"
+    },
+    "packages/desktop/": {
+      "command": "just fast",
+      "purpose": "verify desktop proof routes stay visible"
+    },
+    "packages/docs/": {
+      "command": "just fast",
+      "purpose": "verify docs proof routes stay visible"
+    },
+    "packages/enterprise/": {
+      "command": "just fast",
+      "purpose": "verify enterprise proof routes stay visible"
+    },
+    "packages/extensions/zed/": {
+      "command": "just fast",
+      "purpose": "verify zed extension proof routes stay visible"
+    },
+    "packages/function/": {
+      "command": "just fast",
+      "purpose": "verify function proof routes stay visible"
+    },
+    "packages/identity/": {
+      "command": "just fast",
+      "purpose": "verify identity proof routes stay visible"
+    },
+    "packages/opencode/": {
+      "command": "just fast",
+      "purpose": "verify opencode package proof routes stay visible"
+    },
+    "packages/plugin/": {
+      "command": "just fast",
+      "purpose": "verify plugin proof routes stay visible"
+    },
+    "packages/script/": {
+      "command": "just fast",
+      "purpose": "verify script proof routes stay visible"
+    },
+    "packages/sdk/": {
+      "command": "just fast",
+      "purpose": "verify sdk proof routes stay visible"
+    },
+    "packages/slack/": {
+      "command": "just fast",
+      "purpose": "verify slack proof routes stay visible"
+    },
+    "packages/storybook/": {
+      "command": "just fast",
+      "purpose": "verify storybook proof routes stay visible"
+    },
+    "packages/ui/": {
+      "command": "just fast",
+      "purpose": "verify ui proof routes stay visible"
+    },
+    "patches/": {
+      "command": "just fast",
+      "purpose": "verify patches proof routes stay visible"
+    },
+    "python/ai-service/": {
+      "command": "just fast",
+      "purpose": "verify python ai service proof routes stay visible"
+    },
+    "script/": {
+      "command": "just fast",
+      "purpose": "verify script proof routes stay visible"
+    },
+    "sdks/": {
+      "command": "just fast",
+      "purpose": "verify sdk proof routes stay visible"
+    },
+    "specs/": {
+      "command": "just fast",
+      "purpose": "verify specs proof routes stay visible"
+    },
+    "sst": {
+      "command": "just fast",
+      "purpose": "verify sst proof routes stay visible"
+    },
+    "tsconfig.json": {
+      "command": "just fast",
+      "purpose": "verify tsconfig proof route stays visible"
+    },
+    "turbo.json": {
+      "command": "just fast",
+      "purpose": "verify turbo proof route stays visible"
+    },
+    "SECURITY.md": {
+      "command": "just fast",
+      "purpose": "verify security doc proof route stays visible"
+    },
+    "STATS.md": {
+      "command": "just fast",
+      "purpose": "verify stats doc proof route stays visible"
+    },
+    "bun": {
+      "command": "just fast",
+      "purpose": "verify bun proof routes stay visible"
+    },
+    "flake": {
+      "command": "just fast",
+      "purpose": "verify flake proof routes stay visible"
+    },
+    ".prettierignore": {
+      "command": "just fast",
+      "purpose": "verify prettier ignore proof route stays visible"
+    },
+    ".zed/settings.json": {
+      "command": "just fast",
+      "purpose": "verify zed settings proof route stays visible"
+    },
+    "CLAUDE.md": {
+      "command": "just fast",
+      "purpose": "verify Claude instructions proof route stays visible"
+    },
+    "CONTRIBUTING.md": {
+      "command": "just fast",
+      "purpose": "verify contributing proof route stays visible"
+    },
+    "GEMINI.md": {
+      "command": "just fast",
+      "purpose": "verify Gemini instructions proof route stays visible"
+    },
+    "JANKURAI_TASKLIST.md": {
+      "command": "just fast",
+      "purpose": "verify tasklist proof route stays visible"
+    },
+    "JANKURAI_TASKLIST.md.bak": {
+      "command": "just fast",
+      "purpose": "verify tasklist backup proof route stays visible"
+    },
+    "JANKURAI_TASKLIST.md.corrupted_backup": {
+      "command": "just fast",
+      "purpose": "verify tasklist backup proof route stays visible"
+    },
+    "Justfile": {
+      "command": "just fast",
+      "purpose": "verify Justfile proof route stays visible"
+    },
+    "LICENSE": {
+      "command": "just fast",
+      "purpose": "verify license proof route stays visible"
+    },
+    ".oxlintrc.json": {
+      "command": "just fast",
+      "purpose": "verify oxlint proof route stays visible"
     }
   }
 }

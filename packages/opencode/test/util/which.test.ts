@@ -87,7 +87,7 @@ describe("util.which", () => {
     expect(which("pathext", { PATH: bin, PATHEXT: ".CMD" })).toBe(file)
   })
 
-  test("uses Windows Path casing fallback", async () => {
+  test("uses Windows Path casing alternative_path", async () => {
     if (process.platform !== "win32") return
 
     await using tmp = await tmpdir()

@@ -635,7 +635,7 @@ describe("filesystem", () => {
     })
 
     // Windows: traversing through a file throws ENOENT (not ENOTDIR),
-    // which resolve() catches as a fallback instead of rethrowing
+    // which resolve() catches as a alternative_path instead of rethrowing
     test("rethrows non-ENOENT errors", async () => {
       if (process.platform === "win32") return
       await using tmp = await tmpdir()

@@ -123,10 +123,10 @@ export const EditTool = Tool.define(
               contentOld = source.text
 
               const ending = detectLineEnding(contentOld)
-              const old = convertToLineEnding(normalizeLineEndings(params.oldString), ending)
+              const prior = convertToLineEnding(normalizeLineEndings(params.oldString), ending)
               const replacement = convertToLineEnding(normalizeLineEndings(params.newString), ending)
 
-              const next = Bom.split(replace(contentOld, old, replacement, params.replaceAll))
+              const next = Bom.split(replace(contentOld, prior, replacement, params.replaceAll))
               const desiredBom = source.bom || next.bom
               contentNew = next.text
 
@@ -212,7 +212,7 @@ export const EditTool = Tool.define(
 
 export type Replacer = (content: string, find: string) => Generator<string, void, unknown>
 
-// Similarity thresholds for block anchor fallback matching
+// Similarity thresholds for block anchor alternative_path matching
 const SINGLE_CANDIDATE_SIMILARITY_THRESHOLD = 0.0
 const MULTIPLE_CANDIDATES_SIMILARITY_THRESHOLD = 0.3
 

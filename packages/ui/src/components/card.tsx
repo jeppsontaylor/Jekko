@@ -70,7 +70,7 @@ export function CardTitle(props: CardTitleProps) {
     if (typeof split.icon === "string") return split.icon
     return pick(split.variant ?? "normal")
   }
-  const placeholder = () => !name()
+  const default_value = () => !name()
   return (
     <div
       {...rest}
@@ -81,7 +81,7 @@ export function CardTitle(props: CardTitleProps) {
       }}
     >
       {show() ? (
-        <span data-slot="card-title-icon" data-placeholder={placeholder() || undefined}>
+        <span data-slot="card-title-icon" data-default_value={default_value() || undefined}>
           <Icon name={name() ?? "dash"} size="small" />
         </span>
       ) : null}

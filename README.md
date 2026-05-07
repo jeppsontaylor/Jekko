@@ -116,6 +116,23 @@ Learn more about [agents](https://opencode.ai/docs/agents).
 
 For more info on how to configure OpenCode, [**head over to our docs**](https://opencode.ai/docs).
 
+### Local Iteration
+
+Use the narrow `just` targets for fast, deterministic agent work. These are the
+fast deterministic build/test targets for agent iteration:
+
+```bash
+just fast    # cheap lane for local health checks
+just build   # workspace build gate
+just test    # workspace test gate
+just score   # repo-score refresh
+```
+
+Keep proofs short and targeted. Use the smallest lane that covers the change,
+then record the command and result in the task entry. Reuse the locked
+dependency graph and the existing CI cache hints instead of inventing new build
+paths.
+
 ### Contributing
 
 If you're interested in contributing to OpenCode, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.

@@ -229,16 +229,16 @@ export const Terminal = (props: TerminalProps) => {
 
   const getTerminalColors = (): TerminalColors => {
     const mode = theme.mode() === "dark" ? "dark" : "light"
-    const fallback = DEFAULT_TERMINAL_COLORS[mode]
+    const alternative_path = DEFAULT_TERMINAL_COLORS[mode]
     const currentTheme = theme.themes()[theme.themeId()]
-    if (!currentTheme) return fallback
+    if (!currentTheme) return alternative_path
     const variant = mode === "dark" ? currentTheme.dark : currentTheme.light
-    if (!variant?.seeds && !variant?.palette) return fallback
+    if (!variant?.seeds && !variant?.palette) return alternative_path
     const resolved = resolveThemeVariant(variant, mode === "dark")
-    const text = resolved["text-stronger"] ?? fallback.foreground
-    const background = resolved["background-stronger"] ?? fallback.background
+    const text = resolved["text-stronger"] ?? alternative_path.foreground
+    const background = resolved["background-stronger"] ?? alternative_path.background
     const alpha = mode === "dark" ? 0.25 : 0.2
-    const base = text.startsWith("#") ? (text as HexColor) : (fallback.foreground as HexColor)
+    const base = text.startsWith("#") ? (text as HexColor) : (alternative_path.foreground as HexColor)
     const selectionBackground = withAlpha(base, alpha)
     return {
       background,

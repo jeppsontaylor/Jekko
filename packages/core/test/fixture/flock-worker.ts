@@ -4,7 +4,7 @@ import { Flock } from "@opencode-ai/core/util/flock"
 type Msg = {
   key: string
   dir: string
-  staleMs?: number
+  maxAgeMs?: number
   timeoutMs?: number
   baseDelayMs?: number
   maxDelayMs?: number
@@ -58,7 +58,7 @@ async function main() {
 
   await Flock.withLock(msg.key, () => job(msg), {
     dir: msg.dir,
-    staleMs: msg.staleMs,
+    maxAgeMs: msg.maxAgeMs,
     timeoutMs: msg.timeoutMs,
     baseDelayMs: msg.baseDelayMs,
     maxDelayMs: msg.maxDelayMs,

@@ -120,8 +120,8 @@ export default new Hono<{ Bindings: Env }>()
     const sessionID = body.sessionID
     const short = SyncServer.shortName(sessionID)
     const id = c.env.SYNC_SERVER.idFromName(short)
-    const stub = c.env.SYNC_SERVER.get(id)
-    const secret = await stub.share(sessionID)
+    const sample = c.env.SYNC_SERVER.get(id)
+    const secret = await sample.share(sessionID)
     return c.json({
       secret,
       url: `https://${c.env.WEB_DOMAIN}/s/${short}`,
@@ -132,9 +132,9 @@ export default new Hono<{ Bindings: Env }>()
     const sessionID = body.sessionID
     const secret = body.secret
     const id = c.env.SYNC_SERVER.idFromName(SyncServer.shortName(sessionID))
-    const stub = c.env.SYNC_SERVER.get(id)
-    await stub.assertSecret(secret)
-    await stub.clear()
+    const sample = c.env.SYNC_SERVER.get(id)
+    await sample.assertSecret(secret)
+    await sample.clear()
     return c.json({})
   })
   .post("/share_delete_admin", async (c) => {
@@ -143,8 +143,8 @@ export default new Hono<{ Bindings: Env }>()
     const adminSecret = body.adminSecret
     if (adminSecret !== Resource.ADMIN_SECRET.value) throw new Error("Invalid admin secret")
     const id = c.env.SYNC_SERVER.idFromName(sessionShortName)
-    const stub = c.env.SYNC_SERVER.get(id)
-    await stub.clear()
+    const sample = c.env.SYNC_SERVER.get(id)
+    await sample.clear()
     return c.json({})
   })
   .post("/share_sync", async (c) => {
@@ -156,9 +156,9 @@ export default new Hono<{ Bindings: Env }>()
     }>()
     const name = SyncServer.shortName(body.sessionID)
     const id = c.env.SYNC_SERVER.idFromName(name)
-    const stub = c.env.SYNC_SERVER.get(id)
-    await stub.assertSecret(body.secret)
-    await stub.publish(body.key, body.content)
+    const sample = c.env.SYNC_SERVER.get(id)
+    await sample.assertSecret(body.secret)
+    await sample.publish(body.key, body.content)
     return c.json({})
   })
   .get("/share_poll", async (c) => {
@@ -169,15 +169,15 @@ export default new Hono<{ Bindings: Env }>()
     const id = c.req.query("id")
     console.log("share_poll", id)
     if (!id) return c.text("Error: Share ID is required", { status: 400 })
-    const stub = c.env.SYNC_SERVER.get(c.env.SYNC_SERVER.idFromName(id))
-    return stub.fetch(c.req.raw)
+    const sample = c.env.SYNC_SERVER.get(c.env.SYNC_SERVER.idFromName(id))
+    return sample.fetch(c.req.raw)
   })
   .get("/share_data", async (c) => {
     const id = c.req.query("id")
     console.log("share_data", id)
     if (!id) return c.text("Error: Share ID is required", { status: 400 })
-    const stub = c.env.SYNC_SERVER.get(c.env.SYNC_SERVER.idFromName(id))
-    const data = await stub.getData()
+    const sample = c.env.SYNC_SERVER.get(c.env.SYNC_SERVER.idFromName(id))
+    const data = await sample.getData()
 
     let info
     const messages: Record<string, any> = {}

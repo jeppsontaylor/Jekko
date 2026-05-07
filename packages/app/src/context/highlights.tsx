@@ -137,6 +137,12 @@ function loadReleaseHighlights(value: unknown, current?: string, previous?: stri
   return sliceHighlights({ releases, current, previous })
 }
 
+async function parseChangelogResponse(response: Response) {
+  if (!response.ok) return
+  const value: unknown = await response.json()
+  return parseChangelog(value)
+}
+
 export const { use: useHighlights, provider: HighlightsProvider } = createSimpleContext({
   name: "Highlights",
   gate: false,
@@ -181,10 +187,10 @@ export const { use: useHighlights, provider: HighlightsProvider } = createSimple
         signal: controller.signal,
         headers: { Accept: "application/json" },
       })
-        .then((response) => (response.ok ? (response.json() as Promise<unknown>) : undefined))
-        .then((json) => {
-          if (!json) return
-          const highlights = loadReleaseHighlights(json, platform.version, previous)
+        .then(parseChangelogResponse)
+        .then((releases) => {
+          if (!releases?.length) return
+          const highlights = sliceHighlights({ releases, current: platform.version, previous })
           if (controller.signal.aborted) return
 
           if (highlights.length === 0) {

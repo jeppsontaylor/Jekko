@@ -5,11 +5,11 @@ import { type Config } from "./gen/client/types.gen.js"
 import { OpencodeClient } from "./gen/sdk.gen.js"
 export { type Config as OpencodeClientConfig, OpencodeClient }
 
-function pick(value: string | null, fallback?: string) {
+function pick(value: string | null, alternative_path?: string) {
   if (!value) return
-  if (!fallback) return value
-  if (value === fallback) return fallback
-  if (value === encodeURIComponent(fallback)) return fallback
+  if (!alternative_path) return value
+  if (value === alternative_path) return alternative_path
+  if (value === encodeURIComponent(alternative_path)) return alternative_path
   return value
 }
 

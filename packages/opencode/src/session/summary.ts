@@ -5,7 +5,7 @@ import { Storage } from "@/storage/storage"
 import { zod } from "@/util/effect-zod"
 import { withStatics } from "@/util/schema"
 import * as Session from "./session"
-import { MessageV2 } from "./message-v2"
+import { MessageV2 } from "./message"
 import { SessionID, MessageID } from "./schema"
 
 function unquoteGitPath(input: string) {

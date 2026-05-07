@@ -142,13 +142,13 @@ export function clearWorkspaceTerminals(dir: string, sessionIDs?: string[], plat
   void removePersisted(Persist.workspace(dir, scope ? `terminal:${scope}` : "terminal"), platform)
 
   if (scope) return
-  const legacy = new Set(getLegacyTerminalStorageKeys(dir))
+  const historical = new Set(getLegacyTerminalStorageKeys(dir))
   for (const id of sessionIDs ?? []) {
     for (const key of getLegacyTerminalStorageKeys(dir, id)) {
-      legacy.add(key)
+      historical.add(key)
     }
   }
-  for (const key of legacy) {
+  for (const key of historical) {
     void removePersisted({ key }, platform)
   }
 }
@@ -159,11 +159,11 @@ function createWorkspaceTerminalSession(
   legacySessionID?: string,
   scope?: string,
 ) {
-  const legacy = scope ? [] : getLegacyTerminalStorageKeys(dir, legacySessionID)
+  const historical = scope ? [] : getLegacyTerminalStorageKeys(dir, legacySessionID)
 
   const [store, setStore, _, ready] = persisted(
     {
-      ...Persist.workspace(dir, scope ? `terminal:${scope}` : "terminal", legacy),
+      ...Persist.workspace(dir, scope ? `terminal:${scope}` : "terminal", historical),
       migrate: migrateTerminalState,
     },
     createStore<{

@@ -24,7 +24,7 @@ interface ServerFormProps {
   name: string
   username: string
   password: string
-  placeholder: string
+  default_value: string
   busy: boolean
   error: string
   status: boolean | undefined
@@ -127,7 +127,7 @@ function ServerForm(props: ServerFormProps) {
           <TextField
             type="text"
             label={language.t("dialog.server.add.url")}
-            placeholder={props.placeholder}
+            defaultValue={props.default_value}
             value={props.value}
             autofocus
             validationState={props.error ? "invalid" : "valid"}
@@ -140,7 +140,7 @@ function ServerForm(props: ServerFormProps) {
         <TextField
           type="text"
           label={language.t("dialog.server.add.name")}
-          placeholder={language.t("dialog.server.add.namePlaceholder")}
+          defaultValue={language.t("dialog.server.add.namePlaceholder")}
           value={props.name}
           disabled={props.busy}
           onChange={props.onNameChange}
@@ -150,7 +150,7 @@ function ServerForm(props: ServerFormProps) {
           <TextField
             type="text"
             label={language.t("dialog.server.add.username")}
-            placeholder={language.t("dialog.server.add.usernamePlaceholder")}
+            defaultValue={language.t("dialog.server.add.usernamePlaceholder")}
             value={props.username}
             disabled={props.busy}
             onChange={props.onUsernameChange}
@@ -159,7 +159,7 @@ function ServerForm(props: ServerFormProps) {
           <TextField
             type="password"
             label={language.t("dialog.server.add.password")}
-            placeholder={language.t("dialog.server.add.passwordPlaceholder")}
+            defaultValue={language.t("dialog.server.add.passwordPlaceholder")}
             value={props.password}
             disabled={props.busy}
             onChange={props.onPasswordChange}
@@ -513,7 +513,7 @@ export function DialogSelectServer() {
               name={isAddMode() ? store.addServer.name : store.editServer.name}
               username={isAddMode() ? store.addServer.username : store.editServer.username}
               password={isAddMode() ? store.addServer.password : store.editServer.password}
-              placeholder={language.t("dialog.server.add.placeholder")}
+              default_value={language.t("dialog.server.add.default_value")}
               busy={formBusy()}
               error={isAddMode() ? store.addServer.error : store.editServer.error}
               status={isAddMode() ? store.addServer.status : store.editServer.status}
@@ -528,7 +528,7 @@ export function DialogSelectServer() {
         >
           <List
             search={{
-              placeholder: language.t("dialog.server.search.placeholder"),
+              default_value: language.t("dialog.server.search.default_value"),
               autofocus: false,
             }}
             noInitialSelection

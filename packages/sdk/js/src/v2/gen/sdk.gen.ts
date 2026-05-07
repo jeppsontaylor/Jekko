@@ -142,6 +142,8 @@ import type {
   SessionMessageResponses,
   SessionMessagesErrors,
   SessionMessagesResponses,
+  SessionPendingErrors,
+  SessionPendingResponses,
   SessionPromptAsyncErrors,
   SessionPromptAsyncResponses,
   SessionPromptErrors,
@@ -3061,9 +3063,41 @@ export class Session2 extends HeyApiClient {
   }
 
   /**
-   * Get session todos
+   * Get session pending items
    *
-   * Retrieve the todo list associated with a specific session, showing tasks and action items.
+   * Retrieve the pending list associated with a specific session, showing tasks and action items.
+   */
+  public pending<ThrowOnError extends boolean = false>(
+    parameters: {
+      sessionID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "sessionID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<SessionPendingResponses, SessionPendingErrors, ThrowOnError>({
+      url: "/session/{sessionID}/pending",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Get session pending items
+   *
+   * Retrieve the task list associated with a specific session, showing tasks and action items.
    */
   public todo<ThrowOnError extends boolean = false>(
     parameters: {

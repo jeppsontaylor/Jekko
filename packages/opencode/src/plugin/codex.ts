@@ -408,7 +408,7 @@ export async function CodexAuthPlugin(input: PluginInput): Promise<Hooks> {
         return {
           apiKey: OAUTH_DUMMY_KEY,
           async fetch(requestInput: RequestInfo | URL, init?: RequestInit) {
-            // Remove dummy API key authorization header
+            // Remove mock API key authorization header
             if (init?.headers) {
               if (init.headers instanceof Headers) {
                 init.headers.delete("authorization")

@@ -161,7 +161,7 @@ export const Playground = {
               color: "var(--text-base, #ccc)",
             }}
           >
-            <AnimatedCountList items={items()} fallback="" />
+            <AnimatedCountList items={items()} alternative_path="" />
           </span>
         </span>
 
@@ -213,7 +213,7 @@ export const Empty = {
           { key: "read", count: 0, one: "{{count}} read", other: "{{count}} reads" },
           { key: "search", count: 0, one: "{{count}} search", other: "{{count}} searches" },
         ]}
-        fallback=""
+        alternative_path=""
       />
     </span>
   ),
@@ -230,7 +230,7 @@ export const Done = {
             { key: "search", count: 3, one: "{{count}} search", other: "{{count}} searches" },
             { key: "list", count: 1, one: "{{count}} list", other: "{{count}} lists" },
           ]}
-          fallback=""
+          alternative_path=""
         />
       </span>
     </span>

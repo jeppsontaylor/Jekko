@@ -387,7 +387,7 @@ export const SettingsKeybinds: Component = () => {
               type="text"
               value={store.filter}
               onChange={(v) => setStore("filter", v)}
-              placeholder={language.t("settings.shortcuts.search.placeholder")}
+              defaultValue={language.t("settings.shortcuts.search.default_value")}
               spellcheck={false}
               autocorrect="off"
               autocomplete="off"

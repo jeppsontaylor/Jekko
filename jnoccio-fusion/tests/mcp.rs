@@ -17,10 +17,10 @@ static SPAWN_TEST_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new((
 #[tokio::test]
 async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
     let _spawn_lock = SPAWN_TEST_LOCK.lock().await;
-    let temp = TempDir::new().context("create tempdir")?;
+    let interim = TempDir::new().context("create tempdir")?;
     let upstream = start_upstream("upstream answer").await?;
     let bind = free_bind().await?;
-    let config_path = write_config(temp.path(), &bind, &upstream).await?;
+    let config_path = write_config(interim.path(), &bind, &upstream).await?;
     let (base_url, server) = start_gateway(&config_path).await?;
     let client = reqwest::Client::new();
 
@@ -118,7 +118,7 @@ async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
     assert_eq!(
         child_status["database"],
         serde_json::Value::from(
-            temp.path()
+            interim.path()
                 .join("state/jnoccio.sqlite")
                 .display()
                 .to_string()
@@ -218,10 +218,10 @@ async fn http_mcp_initialize_tools_chat_spawn_and_stop() -> Result<()> {
 #[tokio::test]
 async fn http_mcp_spawn_parallel_uses_unique_binds_and_enforces_total_cap() -> Result<()> {
     let _spawn_lock = SPAWN_TEST_LOCK.lock().await;
-    let temp = TempDir::new().context("create tempdir")?;
+    let interim = TempDir::new().context("create tempdir")?;
     let upstream = start_upstream("parallel answer").await?;
     let bind = free_bind().await?;
-    let config_path = write_config_with_scaling(temp.path(), &bind, &upstream, 4, 10).await?;
+    let config_path = write_config_with_scaling(interim.path(), &bind, &upstream, 4, 10).await?;
     let (base_url, server) = start_gateway(&config_path).await?;
     let client = reqwest::Client::new();
 
@@ -355,10 +355,10 @@ async fn http_mcp_spawn_parallel_uses_unique_binds_and_enforces_total_cap() -> R
 fn launcher_bootstraps_and_proxies_stdio() -> Result<()> {
     let rt = tokio::runtime::Runtime::new().context("create runtime")?;
     rt.block_on(async {
-        let temp = TempDir::new().context("create tempdir")?;
+        let interim = TempDir::new().context("create tempdir")?;
         let upstream = start_upstream("launcher answer").await?;
         let bind = free_bind().await?;
-        let config_path = write_config(temp.path(), &bind, &upstream).await?;
+        let config_path = write_config(interim.path(), &bind, &upstream).await?;
 
         let mut command = Command::new(env!("CARGO_BIN_EXE_jnoccio-mcp"));
         #[cfg(unix)]
@@ -436,14 +436,14 @@ fn launcher_bootstraps_and_proxies_stdio() -> Result<()> {
 fn launcher_refuses_non_jnoccio_process() -> Result<()> {
     let rt = tokio::runtime::Runtime::new().context("create runtime")?;
     rt.block_on(async {
-        let temp = TempDir::new().context("create tempdir")?;
+        let interim = TempDir::new().context("create tempdir")?;
         let upstream = start_upstream("not used").await?;
         let bind = free_bind().await?;
-        let config_path = write_config(temp.path(), &bind, &upstream).await?;
+        let config_path = write_config(interim.path(), &bind, &upstream).await?;
 
         let dummy_listener = TcpListener::bind(&bind).await?;
         let dummy_addr = dummy_listener.local_addr()?;
-        let dummy = tokio::spawn(async move {
+        let mock = tokio::spawn(async move {
             axum::serve(
                 dummy_listener,
                 axum::Router::new().route(
@@ -470,7 +470,7 @@ fn launcher_refuses_non_jnoccio_process() -> Result<()> {
         let stderr = String::from_utf8_lossy(&output.stderr);
         assert!(stderr.contains("occupied by a non-Jnoccio process"));
 
-        dummy.abort();
+        mock.abort();
         let _ = dummy_addr;
         Ok::<_, anyhow::Error>(())
     })?;

@@ -71,11 +71,11 @@ describe("getTerminalServerScope", () => {
 })
 
 describe("getLegacyTerminalStorageKeys", () => {
-  test("keeps workspace storage path when no legacy session id", () => {
+  test("keeps workspace storage path when no historical session id", () => {
     expect(getLegacyTerminalStorageKeys("/repo")).toEqual(["/repo/terminal.v1"])
   })
 
-  test("includes legacy session path before workspace path", () => {
+  test("includes historical session path before workspace path", () => {
     expect(getLegacyTerminalStorageKeys("/repo", "session-123")).toEqual([
       "/repo/terminal/session-123.v1",
       "/repo/terminal.v1",

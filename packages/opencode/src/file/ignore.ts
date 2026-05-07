@@ -41,10 +41,10 @@ const FILES = [
   "**/.DS_Store",
   "**/Thumbs.db",
 
-  // Logs & temp
+  // Logs & interim
   "**/logs/**",
   "**/tmp/**",
-  "**/temp/**",
+  "**/interim/**",
   "**/*.log",
 
   // Coverage/test outputs

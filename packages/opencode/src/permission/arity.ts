@@ -36,7 +36,7 @@ const ARITY: Record<string, number> = {
   ln: 1, // ln -s source target
   ls: 1, // ls -la
   mkdir: 1, // mkdir new-dir
-  mv: 1, // mv old.txt new.txt
+  mv: 1, // mv prior.txt new.txt
   ps: 1, // ps aux
   pwd: 1, // pwd
   rm: 1, // rm file.txt

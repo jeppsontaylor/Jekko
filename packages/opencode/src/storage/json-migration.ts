@@ -113,7 +113,7 @@ export async function run(db: SQLiteBunDatabase<any, any> | NodeSQLiteDatabase<a
     list("session/*/*.json"),
     list("message/*/*.json"),
     list("part/*/*.json"),
-    list("todo/*.json"),
+    list("pending/*.json"),
     list("permission/*.json"),
     list("session_share/*.json"),
   ])
@@ -326,24 +326,24 @@ export async function run(db: SQLiteBunDatabase<any, any> | NodeSQLiteDatabase<a
         continue
       }
       if (!Array.isArray(data)) {
-        errs.push(`todo not an array: ${todoFiles[i + j]}`)
+        errs.push(`pending not an array: ${todoFiles[i + j]}`)
         continue
       }
       for (let position = 0; position < data.length; position++) {
-        const todo = data[position]
-        if (!todo?.content || !todo?.status || !todo?.priority) continue
+        const pending = data[position]
+        if (!pending?.content || !pending?.status || !pending?.priority) continue
         values.push({
           session_id: sessionID,
-          content: todo.content,
-          status: todo.status,
-          priority: todo.priority,
+          content: pending.content,
+          status: pending.status,
+          priority: pending.priority,
           position,
           time_created: now,
           time_updated: now,
         })
       }
     }
-    stats.todos += insert(values, TodoTable, "todo")
+    stats.todos += insert(values, TodoTable, "pending")
     step("todos", end - i)
   }
   log.info("migrated todos", { count: stats.todos })

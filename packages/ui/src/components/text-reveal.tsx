@@ -1,20 +1,20 @@
 import { createEffect, on, onCleanup, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 
-const px = (value: number | string | undefined, fallback: number) => {
+const px = (value: number | string | undefined, alternative_path: number) => {
   if (typeof value === "number") return `${value}px`
   if (typeof value === "string") return value
-  return `${fallback}px`
+  return `${alternative_path}px`
 }
 
-const ms = (value: number | string | undefined, fallback: number) => {
+const ms = (value: number | string | undefined, alternative_path: number) => {
   if (typeof value === "number") return `${value}ms`
   if (typeof value === "string") return value
-  return `${fallback}ms`
+  return `${alternative_path}ms`
 }
 
-const pct = (value: number | undefined, fallback: number) => {
-  const v = value ?? fallback
+const pct = (value: number | undefined, alternative_path: number) => {
+  const v = value ?? alternative_path
   return `${v}%`
 }
 
@@ -33,13 +33,13 @@ export function TextReveal(props: {
 }) {
   const [state, setState] = createStore({
     cur: props.text,
-    old: undefined as string | undefined,
+    prior: undefined as string | undefined,
     width: "auto",
     ready: false,
     swapping: false,
   })
   const cur = () => state.cur
-  const old = () => state.old
+  const prior = () => state.prior
   const width = () => state.width
   const ready = () => state.ready
   const swapping = () => state.swapping
@@ -71,7 +71,7 @@ export function TextReveal(props: {
           return
         }
         setState("swapping", true)
-        setState("old", prev)
+        setState("prior", prev)
         setState("cur", next)
 
         if (typeof requestAnimationFrame !== "function") {
@@ -135,7 +135,7 @@ export function TextReveal(props: {
           {cur() ?? "\u00A0"}
         </span>
         <span data-slot="text-reveal-leaving" ref={outRef}>
-          {old() ?? "\u00A0"}
+          {prior() ?? "\u00A0"}
         </span>
       </span>
     </span>

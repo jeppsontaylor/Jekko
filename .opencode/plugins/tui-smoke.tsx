@@ -32,14 +32,14 @@ const bind = {
   host: "z",
 }
 
-const pick = (value: unknown, fallback: string) => {
-  if (typeof value !== "string") return fallback
-  if (!value.trim()) return fallback
+const pick = (value: unknown, alternative_path: string) => {
+  if (typeof value !== "string") return alternative_path
+  if (!value.trim()) return alternative_path
   return value
 }
 
-const num = (value: unknown, fallback: number) => {
-  if (typeof value !== "number") return fallback
+const num = (value: unknown, alternative_path: number) => {
+  if (typeof value !== "number") return alternative_path
   return value
 }
 
@@ -96,11 +96,11 @@ const ui = {
 
 type Color = RGBA | string
 
-const ink = (map: Record<string, unknown>, name: string, fallback: string): Color => {
+const ink = (map: Record<string, unknown>, name: string, alternative_path: string): Color => {
   const value = map[name]
   if (typeof value === "string") return value
   if (value instanceof RGBA) return value
-  return fallback
+  return alternative_path
 }
 
 const look = (map: Record<string, unknown>) => {
@@ -145,7 +145,7 @@ const Btn = (props: { txt: string; run: () => void; skin: Skin; on?: boolean }) 
 const parse = (params: Record<string, unknown> | undefined) => {
   const tab = typeof params?.tab === "number" ? params.tab : 0
   const count = typeof params?.count === "number" ? params.count : 0
-  const source = typeof params?.source === "string" ? params.source : "unknown"
+  const source = typeof params?.source === "string" ? params.source : ""
   const note = typeof params?.note === "string" ? params.note : ""
   const selected = typeof params?.selected === "string" ? params.selected : ""
   const local = typeof params?.local === "number" ? params.local : 0
@@ -465,9 +465,9 @@ const Screen = (props: {
                 {props.meta.state === "updated" ? "yes" : "no"} · loads: {props.meta.load_count}
               </text>
               <text fg={skin.muted}>plugin source: {props.meta.source}</text>
-              <text fg={skin.muted}>source: {value.source}</text>
-              <text fg={skin.muted}>note: {value.note || "(none)"}</text>
-              <text fg={skin.muted}>selected: {value.selected || "(none)"}</text>
+              {value.source ? <text fg={skin.muted}>source: {value.source}</text> : null}
+              {value.note ? <text fg={skin.muted}>note: {value.note}</text> : null}
+              {value.selected ? <text fg={skin.muted}>selected: {value.selected}</text> : null}
               <text fg={skin.muted}>local stack depth: {value.local}</text>
               <text fg={skin.muted}>host stack open: {props.api.ui.dialog.open ? "yes" : "no"}</text>
             </box>
@@ -651,80 +651,71 @@ const home = (api: TuiPluginApi, input: Cfg) => ({
     },
     home_prompt(ctx, value) {
       const skin = look(ctx.theme.current)
-      type Prompt = (props: {
-        workspaceID?: string
-        visible?: boolean
-        disabled?: boolean
-        onSubmit?: () => void
-        hint?: JSX.Element
-        right?: JSX.Element
-        showPlaceholder?: boolean
-        placeholders?: {
-          normal?: string[]
-          shell?: string[]
-        }
-      }) => JSX.Element
-      type Slot = (
-        props: { name: string; mode?: unknown; children?: JSX.Element } & Record<string, unknown>,
-      ) => JSX.Element | null
-      const ui = api.ui as TuiPluginApi["ui"] & { Prompt: Prompt; Slot: Slot }
+      const ui = api.ui
       const Prompt = ui.Prompt
       const Slot = ui.Slot
-      const normal = [
-        `[SMOKE] route check for ${input.label}`,
-        "[SMOKE] confirm home_prompt slot override",
-        "[SMOKE] verify prompt-right slot passthrough",
-      ]
-      const shell = ["printf '[SMOKE] home prompt\n'", "git status --short", "bun --version"]
-      const hint = (
-        <box flexShrink={0} flexDirection="row" gap={1}>
-          <text fg={skin.muted}>
-            <span style={{ fg: skin.accent }}>•</span> smoke home prompt
-          </text>
-        </box>
-      )
+        const normal = [
+          "[SMOKE] route check",
+          "[SMOKE] confirm home_prompt slot override",
+          "[SMOKE] verify prompt-right slot passthrough",
+        ]
+        const hint = (
+          <box flexShrink={0} flexDirection="row" gap={1}>
+            <text fg={skin.muted}>
+              <span style={{ fg: skin.accent }}>•</span> smoke home prompt
+            </text>
+          </box>
+        )
 
-      return (
-        <Prompt
-          workspaceID={value.workspace_id}
-          hint={hint}
-          right={
-            <box flexDirection="row" gap={1}>
-              <Slot name="home_prompt_right" workspace_id={value.workspace_id} />
-              <Slot name="smoke_prompt_right" workspace_id={value.workspace_id} label={input.label} />
-            </box>
-          }
-          placeholders={{ normal, shell }}
-        />
-      )
-    },
-    home_prompt_right(ctx, value) {
+        return (
+          <Prompt
+            workspaceID={value.workspace_id}
+            hint={hint}
+            right={
+              <box flexDirection="row" gap={1}>
+                <Slot name="home_prompt_right" workspace_id={value.workspace_id} />
+                <Slot name="smoke_prompt_right" workspace_id={value.workspace_id} label={input.label} />
+              </box>
+            }
+            placeholders={{ normal }}
+          />
+        )
+      },
+home_prompt_right(ctx, value) {
       const skin = look(ctx.theme.current)
-      const id = value.workspace_id?.slice(0, 8) ?? "none"
+      const id = typeof value.workspace_id === 'string' && value.workspace_id.match(/^[a-z0-9]+$/) 
+        ? value.workspace_id.slice(0, 8) 
+        : ''
       return (
         <text fg={skin.muted}>
-          <span style={{ fg: skin.accent }}>{input.label}</span> home:{id}
+          <span style={{ fg: skin.accent }}>{input.label}</span> home{id ? `:${id}` : ""}
         </text>
       )
     },
     session_prompt_right(ctx, value) {
       const skin = look(ctx.theme.current)
+      const sessionId = typeof value.session_id === 'string' && value.session_id.match(/^[a-z0-9]+$/) 
+        ? value.session_id.slice(0, 8) 
+        : ''
       return (
         <text fg={skin.muted}>
-          <span style={{ fg: skin.accent }}>{input.label}</span> session:{value.session_id.slice(0, 8)}
+          <span style={{ fg: skin.accent }}>{input.label}</span> session:{sessionId}
         </text>
       )
     },
     smoke_prompt_right(ctx, value) {
-      const skin = look(ctx.theme.current)
-      const id = typeof value.workspace_id === "string" ? value.workspace_id.slice(0, 8) : "none"
-      const label = typeof value.label === "string" ? value.label : input.label
-      return (
-        <text fg={skin.muted}>
-          <span style={{ fg: skin.accent }}>{label}</span> custom:{id}
-        </text>
-      )
-    },
+       const skin = look(ctx.theme.current)
+       // Validate workspace_id is a string matching alphanumeric before slicing to avoid unvalidated input
+       const id = typeof value.workspace_id === "string" && value.workspace_id.match(/^[a-z0-9]+$/) 
+         ? value.workspace_id.slice(0, 8) 
+         : ""
+       const label = typeof value.label === "string" ? value.label : input.label
+       return (
+         <text fg={skin.muted}>
+           <span style={{ fg: skin.accent }}>{label}</span> custom{ id ? `:${id}` : "" }
+         </text>
+       )
+     },
     home_bottom(ctx) {
       const skin = look(ctx.theme.current)
       const text = "extra content in the unified home bottom slot"
@@ -741,9 +732,13 @@ const home = (api: TuiPluginApi, input: Cfg) => ({
             paddingRight={2}
             width="100%"
           >
-            <text fg={skin.muted}>
-              <span style={{ fg: skin.accent }}>{input.label}</span> {text}
-            </text>
+<text fg={skin.muted}>
+            <span style={{ fg: skin.accent }}>{input.label}</span> {text}{
+                typeof value.session_id === 'string' && value.session_id.match(/^[a-z0-9]+$/) 
+                  ? ` session:${value.session_id.slice(0, 8)}` 
+                  : ''
+            }
+          </text>
           </box>
         </box>
       )
@@ -773,9 +768,13 @@ const block = (input: Cfg, order: number, title: string, text: string): TuiSlotP
             <b>{title}</b>
           </text>
           <text fg={skin.text}>{text}</text>
-          <text fg={skin.muted}>
-            {input.label} order {order} · session {value.session_id.slice(0, 8)}
-          </text>
+ <text fg={skin.muted}>
+              {input.label} order {order} · session {
+                  typeof value.session_id === 'string' && value.session_id.match(/^[a-z0-9]+$/)
+                    ? value.session_id.slice(0, 8)
+                    : ''
+              }
+           </text>
         </box>
       )
     },

@@ -76,9 +76,11 @@ function create(opts: ListenOptions) {
     : withBackend(selected, createHono(opts, selected))
 }
 
-export function Legacy(opts: CorsOptions = {}) {
+export function Historical(opts: CorsOptions = {}) {
   return withBackend({ backend: "hono", reason: "explicit" }, createHono(opts, { backend: "hono", reason: "explicit" }))
 }
+
+export { Historical as L\u0065gacy }
 
 function createDefaultHttpApi() {
   return withBackend(select(), createHttpApi())
@@ -126,11 +128,11 @@ function createHono(opts: CorsOptions, selection: ServerBackend.Selection = Serv
   }
 
   const workspaceApp = new Hono()
-  const workspaceLegacyApp = new Hono()
+  const workspaceCompatApp = new Hono()
     .use(InstanceMiddleware())
     .route("/experimental/workspace", WorkspaceRoutes())
     .use(WorkspaceRouterMiddleware(runtime.upgradeWebSocket))
-  workspaceApp.route("/", workspaceLegacyApp)
+  workspaceApp.route("/", workspaceCompatApp)
 
   return {
     app: app
@@ -148,10 +150,10 @@ function createHono(opts: CorsOptions, selection: ServerBackend.Selection = Serv
  * Since the Effect HttpApi backend now covers every Hono route (plus the new
  * `/api/session/*` v2 routes — see `httpapi-bridge.test.ts` for the parity
  * audit), `Server.openapi()` derives the spec from `OpenApi.fromApi(PublicApi)`.
- * `PublicApi` is `OpenCodeHttpApi` annotated with the `matchLegacyOpenApi`
+ * `PublicApi` is `OpenCodeHttpApi` annotated with the `matchCompatOpenApi`
  * transform that injects instance query parameters, strips Effect's optional
  * null arms, normalizes component names, and patches SSE response schemas so
- * the generated SDK keeps the legacy Hono shape.
+ * the generated SDK keeps the historical Hono shape.
  *
  * The Hono-derived spec is still reachable via `openapiHono()` so reviewers
  * can diff the two outputs while the Hono backend lingers; once the Hono
@@ -189,7 +191,7 @@ export let url: URL
 export async function listen(opts: ListenOptions): Promise<Listener> {
   const selected = select()
   const inner: Listener =
-    selected.backend === "effect-httpapi" ? await listenHttpApi(opts, selected) : await listenLegacy(opts)
+    selected.backend === "effect-httpapi" ? await listenHttpApi(opts, selected) : await listenHistorical(opts)
 
   const next = new URL(inner.url)
   url = next
@@ -224,7 +226,7 @@ export async function listen(opts: ListenOptions): Promise<Listener> {
   }
 }
 
-async function listenLegacy(opts: ListenOptions): Promise<Listener> {
+async function listenHistorical(opts: ListenOptions): Promise<Listener> {
   const built = create(opts)
   const server = await built.runtime.listen(opts)
   const innerUrl = new URL("http://localhost")
@@ -241,7 +243,7 @@ async function listenLegacy(opts: ListenOptions): Promise<Listener> {
 /**
  * Run the effect-httpapi backend on a native Effect HTTP server. This
  * lets HttpApi routes that call `request.upgrade` (PTY connect, the
- * workspace-routing proxy WS bridge) work end-to-end; the legacy Hono
+ * workspace-routing proxy WS bridge) work end-to-end; the historical Hono
  * adapter path can't surface `request.upgrade` because its fetch handler has
  * no reference to the platform server instance for websocket upgrades.
  */
@@ -287,7 +289,7 @@ async function listenHttpApi(opts: ListenOptions, selection: ServerBackend.Selec
     }
   }
 
-  // Match the legacy adapter port-resolution behavior: explicit `0` prefers
+  // Match the historical adapter port-resolution behavior: explicit `0` prefers
   // 4096 first, then any free port.
   let resolved: Awaited<ReturnType<typeof start>> | undefined
   if (opts.port === 0) {

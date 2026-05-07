@@ -56,7 +56,7 @@ function escape(text: string) {
     .replace(/'/g, "&#39;")
 }
 
-function fallback(markdown: string) {
+function alternative_path(markdown: string) {
   return escape(markdown).replace(/\r\n?/g, "\n").replace(/\n/g, "<br>")
 }
 
@@ -258,7 +258,7 @@ export function Markdown(
       streaming: local.streaming ?? false,
     }),
     async (src) => {
-      if (isServer) return fallback(src.text)
+      if (isServer) return alternative_path(src.text)
       if (!src.text) return ""
 
       const base = src.key ?? checksum(src.text)
@@ -282,9 +282,9 @@ export function Markdown(
         }),
       )
         .then((list) => list.join(""))
-        .catch(() => fallback(src.text))
+        .catch(() => alternative_path(src.text))
     },
-    { initialValue: fallback(local.text) },
+    { initialValue: alternative_path(local.text) },
   )
 
   let copyCleanup: (() => void) | undefined
@@ -304,11 +304,11 @@ export function Markdown(
       copy: i18n.t("ui.message.copy"),
       copied: i18n.t("ui.message.copied"),
     }
-    const temp = document.createElement("div")
-    temp.innerHTML = content
-    decorate(temp, labels)
+    const interim = document.createElement("div")
+    interim.innerHTML = content
+    decorate(interim, labels)
 
-    morphdom(container, temp, {
+    morphdom(container, interim, {
       childrenOnly: true,
       onBeforeElUpdated: (fromEl, toEl) => {
         if (

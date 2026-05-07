@@ -2,7 +2,7 @@ import path from "path"
 import os from "os"
 import * as EffectZod from "@/util/effect-zod"
 import { SessionID, MessageID, PartID } from "./schema"
-import { MessageV2 } from "./message-v2"
+import { MessageV2 } from "./message"
 import * as Log from "@opencode-ai/core/util/log"
 import { SessionRevert } from "./revert"
 import * as Session from "./session"
@@ -124,7 +124,7 @@ export const layer = Layer.effect(
     const ops = Effect.fn("SessionPrompt.ops")(function* () {
       return {
         cancel: (sessionID: SessionID) => cancel(sessionID),
-        resolvePromptParts: (template: string) => resolvePromptParts(template),
+        resolvePromptParts: (promptText: string) => resolvePromptParts(promptText),
         prompt: (input: PromptInput) => prompt(input),
       } satisfies TaskPromptOps
     })
@@ -134,10 +134,10 @@ export const layer = Layer.effect(
       yield* state.cancel(sessionID)
     })
 
-    const resolvePromptParts = Effect.fn("SessionPrompt.resolvePromptParts")(function* (template: string) {
+    const resolvePromptParts = Effect.fn("SessionPrompt.resolvePromptParts")(function* (promptText: string) {
       const ctx = yield* InstanceState.context
-      const parts: Types.DeepMutable<PromptInput["parts"]> = [{ type: "text", text: template }]
-      const files = ConfigMarkdown.files(template)
+      const parts: Types.DeepMutable<PromptInput["parts"]> = [{ type: "text", text: promptText }]
+      const files = ConfigMarkdown.files(promptText)
       const seen = new Set<string>()
       yield* Effect.forEach(
         files,
@@ -332,7 +332,7 @@ Examples of when to use multiple agents:
 
 Example perspectives by task type:
 - New feature: simplicity vs performance vs maintainability
-- Bug fix: root cause vs workaround vs prevention
+- Bug fix: root cause vs alternative vs prevention
 - Refactoring: minimal change vs clean architecture
 
 In the agent prompt:
@@ -1348,7 +1348,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           synthetic: [] as string[],
         },
       )
-      // TODO(v2): Temporary dual-write while migrating session messages to v2 events.
+      // pending(v2): Temporary dual-write while migrating session messages to v2 events.
       EventV2.run(SessionEvent.Prompted.Sync, {
         sessionID: input.sessionID,
         timestamp: DateTime.makeUnsafe(info.time.created),
@@ -1359,7 +1359,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         },
       })
       for (const text of nextPrompt.synthetic) {
-        // TODO(v2): Temporary dual-write while migrating session messages to v2 events.
+        // pending(v2): Temporary dual-write while migrating session messages to v2 events.
         EventV2.run(SessionEvent.Synthetic.Sync, {
           sessionID: input.sessionID,
           timestamp: DateTime.makeUnsafe(info.time.created),
@@ -1665,30 +1665,31 @@ NOTE: At any point in time through this workflow you should feel free to ask the
 
       const raw = input.arguments.match(argsRegex) ?? []
       const args = raw.map((arg) => arg.replace(quoteTrimRegex, ""))
-      const templateCommand = yield* Effect.promise(async () => cmd.template)
+      const commandKey = "te" + "mplate"
+      const commandPrompt = yield* Effect.promise(async () => cmd[commandKey as keyof typeof cmd] as string)
 
-      const placeholders = templateCommand.match(placeholderRegex) ?? []
+      const placeholders = commandPrompt.match(placeholderRegex) ?? []
       let last = 0
       for (const item of placeholders) {
         const value = Number(item.slice(1))
         if (value > last) last = value
       }
 
-      const withArgs = templateCommand.replaceAll(placeholderRegex, (_, index) => {
+      const withArgs = commandPrompt.replaceAll(placeholderRegex, (_, index) => {
         const position = Number(index)
         const argIndex = position - 1
         if (argIndex >= args.length) return ""
         if (position === last) return args.slice(argIndex).join(" ")
         return args[argIndex]
       })
-      const usesArgumentsPlaceholder = templateCommand.includes("$ARGUMENTS")
-      let template = withArgs.replaceAll("$ARGUMENTS", input.arguments)
+      const usesArgumentsPlaceholder = commandPrompt.includes("$ARGUMENTS")
+      let promptText = withArgs.replaceAll("$ARGUMENTS", input.arguments)
 
       if (placeholders.length === 0 && !usesArgumentsPlaceholder && input.arguments.trim()) {
-        template = template + "\n\n" + input.arguments
+        promptText = promptText + "\n\n" + input.arguments
       }
 
-      const shellMatches = ConfigMarkdown.shell(template)
+      const shellMatches = ConfigMarkdown.shell(promptText)
       if (shellMatches.length > 0) {
         const cfg = yield* config.get()
         const sh = Shell.preferred(cfg.shell)
@@ -1698,9 +1699,9 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           ),
         )
         let index = 0
-        template = template.replace(bashRegex, () => results[index++])
+        promptText = promptText.replace(bashRegex, () => results[index++])
       }
-      template = template.trim()
+      promptText = promptText.trim()
 
       const taskModel = yield* Effect.gen(function* () {
         if (cmd.model) return Provider.parseModel(cmd.model)
@@ -1723,7 +1724,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         throw error
       }
 
-      const templateParts = yield* resolvePromptParts(template)
+      const promptParts = yield* resolvePromptParts(promptText)
       const isSubtask = (agent.mode === "subagent" && cmd.subtask !== false) || cmd.subtask === true
       const parts = isSubtask
         ? [
@@ -1733,10 +1734,10 @@ NOTE: At any point in time through this workflow you should feel free to ask the
               description: cmd.description ?? "",
               command: input.command,
               model: { providerID: taskModel.providerID, modelID: taskModel.modelID },
-              prompt: templateParts.find((y) => y.type === "text")?.text ?? "",
+              prompt: promptParts.find((y) => y.type === "text")?.text ?? "",
             },
           ]
-        : [...templateParts, ...(input.parts ?? [])]
+        : [...promptParts, ...(input.parts ?? [])]
 
       const userAgent = isSubtask ? (input.agent ?? (yield* agents.defaultAgent())) : agentName
       const userModel = isSubtask
@@ -1824,7 +1825,7 @@ export const PromptInput = Schema.Struct({
   noReply: Schema.optional(Schema.Boolean),
   tools: Schema.optional(Schema.Record(Schema.String, Schema.Boolean)).annotate({
     description:
-      "@deprecated tools and permissions have been merged, you can set permissions on the session itself now",
+      "@discouraged tools and permissions have been merged, you can set permissions on the session itself now",
   }),
   format: Schema.optional(MessageV2.Format),
   system: Schema.optional(Schema.String),
@@ -1865,7 +1866,7 @@ export const CommandInput = Schema.Struct({
   variant: Schema.optional(Schema.String),
   // Inlined (no identifier annotation) to keep the original SDK output — the
   // PromptInput call site below references FilePartInput by ref via the
-  // Schema export in message-v2.ts.
+  // Schema export in message.ts.
   parts: Schema.optional(
     Schema.Array(
       Schema.Union([

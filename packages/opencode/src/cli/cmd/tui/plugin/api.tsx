@@ -152,8 +152,8 @@ function stateApi(sync: ReturnType<typeof useSync>): TuiPluginApi["state"] {
       diff(sessionID) {
         return sync.data.session_diff[sessionID] ?? []
       },
-      todo(sessionID) {
-        return sync.data.todo[sessionID] ?? []
+      pending(sessionID) {
+        return sync.data.pending[sessionID] ?? []
       },
       messages(sessionID) {
         return sync.data.message[sessionID] ?? []
@@ -247,7 +247,7 @@ export function createTuiApi(input: Input): TuiPluginApi {
         return (
           <DialogSelect
             title={props.title}
-            placeholder={props.placeholder}
+            default_value={props.default_value}
             options={props.options.map(mapOption)}
             flat={props.flat}
             onMove={mapOptionCb(props.onMove)}
@@ -321,8 +321,8 @@ export function createTuiApi(input: Input): TuiPluginApi {
       return input.tuiConfig
     },
     kv: {
-      get(key, fallback) {
-        return input.kv.get(key, fallback)
+      get(key, alternative_path) {
+        return input.kv.get(key, alternative_path)
       },
       set(key, value) {
         input.kv.set(key, value)

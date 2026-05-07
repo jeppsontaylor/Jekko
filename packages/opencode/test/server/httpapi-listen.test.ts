@@ -212,7 +212,7 @@ describe("HttpApi Server.listen", () => {
     }
   })
 
-  testPty("serves PTY websocket tickets through legacy Hono Server.listen", async () => {
+  testPty("serves PTY websocket tickets through historical Hono Server.listen", async () => {
     await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
     const listener = await startListener("hono")
     try {

@@ -44,7 +44,26 @@
       "packages/opencode/migration/*": "deny",
     },
   },
-  "mcp": {},
+  "mcp": {
+    "jnoccio": {
+      "type": "local",
+      "command": [
+        "cargo",
+        "run",
+        "--quiet",
+        "--manifest-path",
+        "./jnoccio-fusion/Cargo.toml",
+        "--bin",
+        "jnoccio-mcp",
+        "--",
+        "--config",
+        "./jnoccio-fusion/config/server.json",
+        "--ensure-server",
+      ],
+      "enabled": true,
+      "timeout": 300000,
+    },
+  },
   "tools": {
     "github-triage": false,
     "github-pr-search": false,

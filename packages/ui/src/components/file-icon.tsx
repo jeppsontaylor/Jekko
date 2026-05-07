@@ -474,7 +474,7 @@ const ICON_MAPS: IconMaps = {
     languages: "FolderI18n",
 
     // Other common patterns
-    temp: "FolderTemp",
+    interim: "FolderTemp",
     tmp: "FolderTemp",
     logs: "FolderLog",
     log: "FolderLog",

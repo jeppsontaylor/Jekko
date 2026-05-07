@@ -98,9 +98,9 @@ export type AuthHook = {
               type: "text"
               key: string
               message: string
-              placeholder?: string
+              default_value?: string
               validate?: (value: string) => string | undefined
-              /** @deprecated Use `when` instead */
+              /** @discouraged Use `when` instead */
               condition?: (inputs: Record<string, string>) => boolean
               when?: Rule
             }
@@ -113,7 +113,7 @@ export type AuthHook = {
                 value: string
                 hint?: string
               }>
-              /** @deprecated Use `when` instead */
+              /** @discouraged Use `when` instead */
               condition?: (inputs: Record<string, string>) => boolean
               when?: Rule
             }
@@ -128,9 +128,9 @@ export type AuthHook = {
               type: "text"
               key: string
               message: string
-              placeholder?: string
+              default_value?: string
               validate?: (value: string) => string | undefined
-              /** @deprecated Use `when` instead */
+              /** @discouraged Use `when` instead */
               condition?: (inputs: Record<string, string>) => boolean
               when?: Rule
             }
@@ -143,7 +143,7 @@ export type AuthHook = {
                 value: string
                 hint?: string
               }>
-              /** @deprecated Use `when` instead */
+              /** @discouraged Use `when` instead */
               condition?: (inputs: Record<string, string>) => boolean
               when?: Rule
             }
@@ -216,7 +216,7 @@ export type ProviderHook = {
   models?: (provider: ProviderV2, ctx: ProviderHookContext) => Promise<Record<string, ModelV2>>
 }
 
-/** @deprecated Use AuthOAuthResult instead. */
+/** @discouraged Use AuthOAuthResult instead. */
 export type AuthOuathResult = AuthOAuthResult
 
 export interface Hooks {

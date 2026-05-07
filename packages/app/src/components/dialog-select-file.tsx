@@ -386,9 +386,9 @@ export function DialogSelectFile(props: { mode?: DialogSelectFileMode; onOpenFil
     <Dialog class="pt-3 pb-0 !max-h-[480px]" transition>
       <List
         search={{
-          placeholder: filesOnly()
+          default_value: filesOnly()
             ? language.t("session.header.searchFiles")
-            : language.t("palette.search.placeholder"),
+            : language.t("palette.search.default_value"),
           autofocus: true,
           hideIcon: true,
         }}

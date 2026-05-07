@@ -20,7 +20,7 @@ export type Event =
   | EventQuestionAsked
   | EventQuestionReplied
   | EventQuestionRejected
-  | EventTodoUpdated
+  | EventPendingUpdated
   | EventSessionStatus
   | EventSessionIdle
   | EventSessionCompacted
@@ -785,7 +785,7 @@ export type GlobalEvent = {
     | EventQuestionAsked
     | EventQuestionReplied
     | EventQuestionRejected
-    | EventTodoUpdated
+    | EventPendingUpdated
     | EventSessionStatus
     | EventSessionIdle
     | EventSessionCompacted
@@ -1029,7 +1029,7 @@ export type ProviderConfig = {
         output: Array<"text" | "audio" | "image" | "video" | "pdf">
       }
       experimental?: boolean
-      status?: "alpha" | "beta" | "deprecated"
+      status?: "alpha" | "beta" | "deprecated" | "active"
       provider?: {
         npm?: string
         api?: string
@@ -1097,7 +1097,7 @@ export type McpRemoteConfig = {
 }
 
 /**
- * @deprecated Always uses stretch layout.
+ * @discouraged Always uses stretch layout.
  */
 export type LayoutConfig = "auto" | "stretch"
 
@@ -1580,7 +1580,7 @@ export type ProviderAuthMethod = {
         type: "text"
         key: string
         message: string
-        placeholder?: string
+        default_value?: string
         when?: {
           key: string
           op: "eq" | "neq"
@@ -2387,9 +2387,9 @@ export type EventQuestionRejected = {
   properties: QuestionRejected
 }
 
-export type EventTodoUpdated = {
+export type EventPendingUpdated = {
   id: string
-  type: "todo.updated"
+  type: "pending.updated"
   properties: {
     sessionID: string
     todos: Array<Todo>
@@ -5193,6 +5193,40 @@ export type SessionChildrenResponses = {
 }
 
 export type SessionChildrenResponse = SessionChildrenResponses[keyof SessionChildrenResponses]
+
+export type SessionPendingData = {
+  body?: never
+  path: {
+    sessionID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/session/{sessionID}/pending"
+}
+
+export type SessionPendingErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type SessionPendingError = SessionPendingErrors[keyof SessionPendingErrors]
+
+export type SessionPendingResponses = {
+  /**
+   * Todo list
+   */
+  200: Array<Todo>
+}
+
+export type SessionPendingResponse = SessionPendingResponses[keyof SessionPendingResponses]
 
 export type SessionTodoData = {
   body?: never

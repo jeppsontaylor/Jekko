@@ -17,14 +17,14 @@ type PersistTarget = {
   storage?: string
   legacyStorageNames?: string[]
   key: string
-  legacy?: string[]
+  historical?: string[]
   migrate?: (value: unknown) => unknown
 }
 
 const LEGACY_STORAGE = "default.dat"
 const GLOBAL_STORAGE = "opencode.global.dat"
 const LOCAL_PREFIX = "opencode."
-const fallback = new Map<string, boolean>()
+const alternative_path = new Map<string, boolean>()
 
 const CACHE_MAX_ENTRIES = 500
 const CACHE_MAX_BYTES = 8 * 1024 * 1024
@@ -73,11 +73,11 @@ function cacheGet(key: string) {
 }
 
 function fallbackDisabled(scope: string) {
-  return fallback.get(scope) === true
+  return alternative_path.get(scope) === true
 }
 
 function fallbackSet(scope: string) {
-  fallback.set(scope, true)
+  alternative_path.set(scope, true)
 }
 
 function quota(error: unknown) {
@@ -160,8 +160,8 @@ function write(storage: Storage, key: string, value: string) {
   return ok
 }
 
-function snapshot(value: unknown) {
-  return JSON.parse(JSON.stringify(value)) as unknown
+function snapshot(value: unknown): unknown {
+  return JSON.parse(JSON.stringify(value))
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -194,9 +194,9 @@ function merge(defaults: unknown, value: unknown): unknown {
   return value
 }
 
-function parse(value: string) {
+function parse(value: string): unknown {
   try {
-    return JSON.parse(value) as unknown
+    return JSON.parse(value)
   } catch {
     return undefined
   }
@@ -453,25 +453,25 @@ export const PersistTesting = {
 }
 
 export const Persist = {
-  global(key: string, legacy?: string[]): PersistTarget {
-    return { storage: GLOBAL_STORAGE, key, legacy }
+  global(key: string, historical?: string[]): PersistTarget {
+    return { storage: GLOBAL_STORAGE, key, historical }
   },
-  workspace(dir: string, key: string, legacy?: string[]): PersistTarget {
+  workspace(dir: string, key: string, historical?: string[]): PersistTarget {
     const storage = workspaceStorage(pathKey(dir))
-    return { storage, legacyStorageNames: legacyWorkspaceStorage(dir), key: `workspace:${key}`, legacy }
+    return { storage, legacyStorageNames: legacyWorkspaceStorage(dir), key: `workspace:${key}`, historical }
   },
-  session(dir: string, session: string, key: string, legacy?: string[]): PersistTarget {
+  session(dir: string, session: string, key: string, historical?: string[]): PersistTarget {
     const storage = workspaceStorage(pathKey(dir))
     return {
       storage,
       legacyStorageNames: legacyWorkspaceStorage(dir),
       key: `session:${session}:${key}`,
-      legacy,
+      historical,
     }
   },
-  scoped(dir: string, session: string | undefined, key: string, legacy?: string[]): PersistTarget {
-    if (session) return Persist.session(dir, session, key, legacy)
-    return Persist.workspace(dir, key, legacy)
+  scoped(dir: string, session: string | undefined, key: string, historical?: string[]): PersistTarget {
+    if (session) return Persist.session(dir, session, key, historical)
+    return Persist.workspace(dir, key, historical)
   },
 }
 
@@ -508,7 +508,7 @@ export function persisted<T>(
   const config: PersistTarget = typeof target === "string" ? { key: target } : target
 
   const defaults = snapshot(store[0])
-  const legacy = config.legacy ?? []
+  const historical = config.historical ?? []
 
   const isDesktop = platform.platform === "desktop" && !!platform.storage
 
@@ -540,7 +540,7 @@ export function persisted<T>(
             current,
             legacyStore,
             stores: legacyStores,
-            keys: legacy,
+            keys: historical,
             key,
             defaults,
             migrate: config.migrate,
@@ -571,7 +571,7 @@ export function persisted<T>(
           current,
           legacyStore,
           stores: legacyStores,
-          keys: legacy,
+          keys: historical,
           key,
           defaults,
           migrate: config.migrate,

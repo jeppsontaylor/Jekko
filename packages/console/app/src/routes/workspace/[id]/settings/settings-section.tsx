@@ -94,7 +94,6 @@ export function SettingsSection() {
                     data-component="input"
                     name="name"
                     type="text"
-                    placeholder={i18n.t("workspace.settings.workspaceName")}
                     value={workspaceInfo()?.name ?? i18n.t("workspace.settings.defaultName")}
                   />
                   <input type="hidden" name="workspaceID" value={params.id} />

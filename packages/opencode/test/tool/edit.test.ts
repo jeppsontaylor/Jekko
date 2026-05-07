@@ -190,7 +190,7 @@ describe("tool.edit", () => {
     test("replaces text in existing file", async () => {
       await using tmp = await tmpdir()
       const filepath = path.join(tmp.path, "existing.txt")
-      await fs.writeFile(filepath, "old content here", "utf-8")
+      await fs.writeFile(filepath, "prior content here", "utf-8")
 
       await WithInstance.provide({
         directory: tmp.path,
@@ -200,7 +200,7 @@ describe("tool.edit", () => {
             edit.execute(
               {
                 filePath: filepath,
-                oldString: "old content",
+                oldString: "prior content",
                 newString: "new content",
               },
               ctx,
@@ -260,7 +260,7 @@ describe("tool.edit", () => {
               edit.execute(
                 {
                   filePath: filepath,
-                  oldString: "old",
+                  oldString: "prior",
                   newString: "new",
                 },
                 ctx,
@@ -422,7 +422,7 @@ describe("tool.edit", () => {
             edit.execute(
               {
                 filePath: filepath,
-                oldString: "old",
+                oldString: "prior",
                 newString: "new",
               },
               ctx,
@@ -474,7 +474,7 @@ describe("tool.edit", () => {
               edit.execute(
                 {
                   filePath: dirpath,
-                  oldString: "old",
+                  oldString: "prior",
                   newString: "new",
                 },
                 ctx,
@@ -514,7 +514,7 @@ describe("tool.edit", () => {
   })
 
   describe("line endings", () => {
-    const old = "alpha\nbeta\ngamma"
+    const prior = "alpha\nbeta\ngamma"
     const next = "alpha\nbeta-updated\ngamma"
     const alt = "alpha\nbeta\nomega"
 
@@ -581,10 +581,10 @@ describe("tool.edit", () => {
     }
 
     test("preserves LF with LF multi-line strings", async () => {
-      const content = normalize(old + "\n", "\n")
+      const content = normalize(prior + "\n", "\n")
       const output = await apply({
         content,
-        oldString: normalize(old, "\n"),
+        oldString: normalize(prior, "\n"),
         newString: normalize(next, "\n"),
       })
       expect(output).toBe(normalize(next + "\n", "\n"))
@@ -592,32 +592,32 @@ describe("tool.edit", () => {
     })
 
     test("preserves CRLF with CRLF multi-line strings", async () => {
-      const content = normalize(old + "\n", "\r\n")
+      const content = normalize(prior + "\n", "\r\n")
       const output = await apply({
         content,
-        oldString: normalize(old, "\r\n"),
+        oldString: normalize(prior, "\r\n"),
         newString: normalize(next, "\r\n"),
       })
       expect(output).toBe(normalize(next + "\n", "\r\n"))
       expectCrlf(output)
     })
 
-    test("preserves LF when old/new use CRLF", async () => {
-      const content = normalize(old + "\n", "\n")
+    test("preserves LF when prior/new use CRLF", async () => {
+      const content = normalize(prior + "\n", "\n")
       const output = await apply({
         content,
-        oldString: normalize(old, "\r\n"),
+        oldString: normalize(prior, "\r\n"),
         newString: normalize(next, "\r\n"),
       })
       expect(output).toBe(normalize(next + "\n", "\n"))
       expectLf(output)
     })
 
-    test("preserves CRLF when old/new use LF", async () => {
-      const content = normalize(old + "\n", "\r\n")
+    test("preserves CRLF when prior/new use LF", async () => {
+      const content = normalize(prior + "\n", "\r\n")
       const output = await apply({
         content,
-        oldString: normalize(old, "\n"),
+        oldString: normalize(prior, "\n"),
         newString: normalize(next, "\n"),
       })
       expect(output).toBe(normalize(next + "\n", "\r\n"))
@@ -625,10 +625,10 @@ describe("tool.edit", () => {
     })
 
     test("preserves LF when newString uses CRLF", async () => {
-      const content = normalize(old + "\n", "\n")
+      const content = normalize(prior + "\n", "\n")
       const output = await apply({
         content,
-        oldString: normalize(old, "\n"),
+        oldString: normalize(prior, "\n"),
         newString: normalize(next, "\r\n"),
       })
       expect(output).toBe(normalize(next + "\n", "\n"))
@@ -636,18 +636,18 @@ describe("tool.edit", () => {
     })
 
     test("preserves CRLF when newString uses LF", async () => {
-      const content = normalize(old + "\n", "\r\n")
+      const content = normalize(prior + "\n", "\r\n")
       const output = await apply({
         content,
-        oldString: normalize(old, "\r\n"),
+        oldString: normalize(prior, "\r\n"),
         newString: normalize(next, "\n"),
       })
       expect(output).toBe(normalize(next + "\n", "\r\n"))
       expectCrlf(output)
     })
 
-    test("preserves LF with mixed old/new line endings", async () => {
-      const content = normalize(old + "\n", "\n")
+    test("preserves LF with mixed prior/new line endings", async () => {
+      const content = normalize(prior + "\n", "\n")
       const output = await apply({
         content,
         oldString: "alpha\nbeta\r\ngamma",
@@ -657,8 +657,8 @@ describe("tool.edit", () => {
       expectLf(output)
     })
 
-    test("preserves CRLF with mixed old/new line endings", async () => {
-      const content = normalize(old + "\n", "\r\n")
+    test("preserves CRLF with mixed prior/new line endings", async () => {
+      const content = normalize(prior + "\n", "\r\n")
       const output = await apply({
         content,
         oldString: "alpha\r\nbeta\ngamma",

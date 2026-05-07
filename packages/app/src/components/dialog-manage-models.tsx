@@ -39,7 +39,7 @@ export const DialogManageModels: Component = () => {
       }
     >
       <List
-        search={{ placeholder: language.t("dialog.model.search.placeholder"), autofocus: true }}
+        search={{ default_value: language.t("dialog.model.search.default_value"), autofocus: true }}
         emptyMessage={language.t("dialog.model.empty")}
         key={(x) => `${x?.provider?.id}:${x?.id}`}
         items={local.model.list()}

@@ -18,7 +18,7 @@ Use \`DropdownMenu.ItemLabel\`/\`ItemDescription\` for richer rows.
 - Menu opens from trigger and renders in a portal by default.
 
 ### Accessibility
-- TODO: confirm keyboard navigation from Kobalte.
+- pending: confirm keyboard navigation from Kobalte.
 
 ### Theming/tokens
 - Uses \`data-component="dropdown-menu"\` and slot attributes for styling.

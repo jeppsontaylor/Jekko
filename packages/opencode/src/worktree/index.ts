@@ -394,8 +394,8 @@ export const layer: Layer.Layer<
           })
         }
 
-        const stale = yield* locateWorktree(parseWorktreeList(next.text), directory)
-        if (stale?.path) {
+        const outdated = yield* locateWorktree(parseWorktreeList(next.text), directory)
+        if (outdated?.path) {
           throw new RemoveFailedError({ message: removed.stderr || removed.text || "Failed to remove git worktree" })
         }
       }

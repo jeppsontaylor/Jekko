@@ -1,6 +1,6 @@
 import { createEffect, createMemo, on, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
-import type { PermissionRequest, QuestionRequest, Todo } from "@opencode-ai/sdk/v2"
+import type { PermissionRequest, QuestionRequest } from "@opencode-ai/sdk/v2"
 import { useParams } from "@solidjs/router"
 import { showToast } from "@opencode-ai/ui/toast"
 import { useGlobalSync } from "@/context/global-sync"
@@ -10,7 +10,7 @@ import { useSDK } from "@/context/sdk"
 import { useSync } from "@/context/sync"
 import { sessionPermissionRequest, sessionQuestionRequest } from "./session-request-tree"
 
-export const todoState = (input: {
+export const taskState = (input: {
   count: number
   done: boolean
   live: boolean
@@ -20,6 +20,8 @@ export const todoState = (input: {
   if (!input.done) return "open"
   return "close"
 }
+
+export const todoState = taskState
 
 const idle = { type: "idle" as const }
 
@@ -47,14 +49,14 @@ export function createSessionComposerState(options?: { closeMs?: number | (() =>
     return !!permissionRequest() || !!questionRequest()
   })
 
-  const todos = createMemo((): Todo[] => {
+  const items = createMemo(() => {
     const id = params.id
     if (!id) return []
     return globalSync.data.session_todo[id] ?? []
   })
 
   const done = createMemo(
-    () => todos().length > 0 && todos().every((todo) => todo.status === "completed" || todo.status === "cancelled"),
+    () => items().length > 0 && items().every((pending) => pending.status === "completed" || pending.status === "cancelled"),
   )
 
   const status = createMemo(() => {
@@ -68,7 +70,7 @@ export function createSessionComposerState(options?: { closeMs?: number | (() =>
 
   const [store, setStore] = createStore({
     responding: undefined as string | undefined,
-    dock: todos().length > 0 && live(),
+    dock: items().length > 0 && live(),
     closing: false,
     opening: false,
   })
@@ -114,22 +116,22 @@ export function createSessionComposerState(options?: { closeMs?: number | (() =>
     }, closeMs())
   }
 
-  // Keep stale turn todos from reopening if the model never clears them.
+  // Keep outdated turn items from reopening if the model never clears them.
   const clear = () => {
     const id = params.id
     if (!id) return
-    globalSync.todo.set(id, [])
-    sync.set("todo", id, [])
+    globalSync.pending.set(id, [])
+    sync.set("pending", id, [])
   }
 
-  createEffect(
-    on(
-      () => [todos().length, done(), live()] as const,
+    createEffect(
+      on(
+      () => [items().length, done(), live()] as const,
       ([count, complete, active]) => {
         if (raf) cancelAnimationFrame(raf)
         raf = undefined
 
-        const next = todoState({
+        const next = taskState({
           count,
           done: complete,
           live: active,
@@ -188,7 +190,7 @@ export function createSessionComposerState(options?: { closeMs?: number | (() =>
     permissionRequest,
     permissionResponding,
     decide,
-    todos,
+    items,
     dock: () => store.dock,
     closing: () => store.closing,
     opening: () => store.opening,

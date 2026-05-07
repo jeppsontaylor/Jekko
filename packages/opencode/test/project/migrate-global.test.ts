@@ -119,7 +119,7 @@ describe("migrateFromGlobal", () => {
 
     ensureGlobal()
 
-    // Legacy sessions may lack a directory value.
+    // Previous sessions may lack a directory value.
     // Without a matching origin directory, they should remain global.
     const id = uid()
     seed({ id, dir: "", project: ProjectID.global })

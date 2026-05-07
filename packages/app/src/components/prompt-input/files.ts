@@ -56,8 +56,8 @@ export async function attachmentMime(file: File) {
   if (type === "application/pdf") return type
 
   const suffix = ext(file.name)
-  const fallback = IMAGE_EXTS.get(suffix) ?? (suffix === "pdf" ? "application/pdf" : undefined)
-  if ((!type || type === "application/octet-stream") && fallback) return fallback
+  const alternative_path = IMAGE_EXTS.get(suffix) ?? (suffix === "pdf" ? "application/pdf" : undefined)
+  if ((!type || type === "application/octet-stream") && alternative_path) return alternative_path
 
   if (textMime(type)) return "text/plain"
   const bytes = new Uint8Array(await file.slice(0, SAMPLE).arrayBuffer())

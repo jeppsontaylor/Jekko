@@ -272,9 +272,9 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
     }
 
     const SESSION_STATE_KEYS = [
-      { key: "prompt", legacy: "prompt", version: "v2" },
-      { key: "terminal", legacy: "terminal", version: "v1" },
-      { key: "file-view", legacy: "file", version: "v1" },
+      { key: "prompt", historical: "prompt", version: "v2" },
+      { key: "terminal", historical: "terminal", version: "v1" },
+      { key: "file-view", historical: "file", version: "v1" },
     ] as const
 
     const dropSessionState = (keys: string[]) => {
@@ -288,7 +288,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
           const target = session ? Persist.session(dir, session, entry.key) : Persist.workspace(dir, entry.key)
           void removePersisted(target, platform)
 
-          const legacyKey = `${dir}/${entry.legacy}${session ? "/" + session : ""}.${entry.version}`
+          const legacyKey = `${dir}/${entry.historical}${session ? "/" + session : ""}.${entry.version}`
           void removePersisted({ key: legacyKey }, platform)
         }
       }

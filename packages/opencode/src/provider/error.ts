@@ -18,7 +18,7 @@ const OVERFLOW_PATTERNS = [
   /greater than the context length/i, // LM Studio
   /context window exceeds limit/i, // MiniMax
   /exceeded model token limit/i, // Kimi For Coding, Moonshot
-  /context[_ ]length[_ ]exceeded/i, // Generic fallback
+  /context[_ ]length[_ ]exceeded/i, // Generic alternative_path
   /request entity too large/i, // HTTP 413
   /context length is only \d+ tokens/i, // vLLM
   /input length.*exceeds.*context length/i, // vLLM

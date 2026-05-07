@@ -141,7 +141,7 @@ describe("session.list", () => {
     })
   })
 
-  test("falls back to directory when filtering legacy sessions without path", async () => {
+  test("falls back to directory when filtering historical sessions without path", async () => {
     Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = false
     await using tmp = await tmpdir({ git: true })
     await mkdir(path.join(tmp.path, "packages", "opencode", "src"), { recursive: true })
@@ -152,11 +152,11 @@ describe("session.list", () => {
       fn: async () => {
         const current = await WithInstance.provide({
           directory: path.join(tmp.path, "packages", "opencode", "src"),
-          fn: async () => svc.create({ title: "legacy-current" }),
+          fn: async () => svc.create({ title: "historical-current" }),
         })
         const sibling = await WithInstance.provide({
           directory: path.join(tmp.path, "packages", "app"),
-          fn: async () => svc.create({ title: "legacy-sibling" }),
+          fn: async () => svc.create({ title: "historical-sibling" }),
         })
 
         Database.use((db) => db.update(SessionTable).set({ path: null }).where(eq(SessionTable.id, current.id)).run())

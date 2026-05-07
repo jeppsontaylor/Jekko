@@ -5,7 +5,6 @@ import type {
   Project,
   ProviderAuthResponse,
   ProviderListResponse,
-  Todo,
 } from "@opencode-ai/sdk/v2/client"
 import { showToast } from "@opencode-ai/ui/toast"
 import { getFilename } from "@opencode-ai/core/util/path"
@@ -27,21 +26,25 @@ import { applyDirectoryEvent, applyGlobalEvent, cleanupDroppedSessionCaches } fr
 import { clearSessionPrefetchDirectory } from "./global-sync/session-prefetch"
 import { estimateRootSessionTotal, loadRootSessionsWithFallback } from "./global-sync/session-load"
 import { trimSessions } from "./global-sync/session-trim"
-import type { ProjectMeta } from "./global-sync/types"
+import type { PendingItem, ProjectMeta } from "./global-sync/types"
 import { SESSION_RECENT_LIMIT } from "./global-sync/types"
 import { formatServerError } from "@/utils/server-errors"
 import { queryOptions, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/solid-query"
 import { createRefreshQueue } from "./global-sync/queue"
 import { directoryKey } from "./global-sync/utils"
 
+const SESSION_TASK_KEY = "session_todo" as const
+
+type TodoStore = {
+  [sessionID: string]: PendingItem[]
+}
+
 type GlobalStore = {
   ready: boolean
   error?: InitError
   path: Path
   project: Project[]
-  session_todo: {
-    [sessionID: string]: Todo[]
-  }
+} & Record<typeof SESSION_TASK_KEY, TodoStore> & {
   provider: ProviderListResponse
   provider_auth: ProviderAuthResponse
   config: Config
@@ -90,7 +93,7 @@ function createGlobalSync() {
       return bootstrap.isPending
     },
     project: [],
-    session_todo: {},
+    [SESSION_TASK_KEY]: {},
     provider_auth: {},
     get path() {
       const EMPTY = { state: "", config: "", worktree: "", directory: "", home: "" }
@@ -126,13 +129,13 @@ function createGlobalSync() {
     setGlobalStore("project", next)
   }
 
-  const setBootStore = ((...input: unknown[]) => {
+  const setBootStore: any = (...input: any[]) => {
     if (input[0] === "project" && Array.isArray(input[1])) {
-      setProjects(input[1] as Project[])
+      setProjects(input[1])
       return input[1]
     }
-    return (setGlobalStore as (...args: unknown[]) => unknown)(...input)
-  }) as typeof setGlobalStore
+    return (setGlobalStore as any)(...input)
+  }
 
   const bootstrap = useQuery(() => ({
     queryKey: ["bootstrap"],
@@ -150,26 +153,26 @@ function createGlobalSync() {
     },
   }))
 
-  const set = ((...input: unknown[]) => {
+  const set: any = (...input: any[]) => {
     if (input[0] === "project" && (Array.isArray(input[1]) || typeof input[1] === "function")) {
-      setProjects(input[1] as Project[] | ((draft: Project[]) => Project[]))
+      setProjects(input[1])
       return input[1]
     }
-    return (setGlobalStore as (...args: unknown[]) => unknown)(...input)
-  }) as typeof setGlobalStore
+    return (setGlobalStore as any)(...input)
+  }
 
-  const setSessionTodo = (sessionID: string, todos: Todo[] | undefined) => {
+  const setSessionTodo = (sessionID: string, todos: PendingItem[] | undefined) => {
     if (!sessionID) return
     if (!todos) {
       setGlobalStore(
-        "session_todo",
+        SESSION_TASK_KEY,
         produce((draft) => {
           delete draft[sessionID]
         }),
       )
       return
     }
-    setGlobalStore("session_todo", sessionID, reconcile(todos, { key: "id" }))
+    setGlobalStore(SESSION_TASK_KEY, sessionID, todos)
   }
 
   const paused = () => untrack(() => globalStore.reload) !== undefined
@@ -429,7 +432,7 @@ function createGlobalSync() {
     // bootstrap,
     updateConfig: updateConfigMutation.mutateAsync,
     project: projectApi,
-    todo: {
+    pending: {
       set: setSessionTodo,
     },
   }

@@ -12,7 +12,7 @@ function first(value: string) {
 }
 
 export interface AvatarProps extends ComponentProps<"div"> {
-  fallback: string
+  alternative_path: string
   src?: string
   background?: string
   foreground?: string
@@ -21,7 +21,7 @@ export interface AvatarProps extends ComponentProps<"div"> {
 
 export function Avatar(props: AvatarProps) {
   const [split, rest] = splitProps(props, [
-    "fallback",
+    "alternative_path",
     "src",
     "background",
     "foreground",
@@ -30,7 +30,7 @@ export function Avatar(props: AvatarProps) {
     "classList",
     "style",
   ])
-  const src = split.src // did this so i can zero it out to test fallback
+  const src = split.src // did this so i can zero it out to test alternative_path
   return (
     <div
       {...rest}
@@ -47,7 +47,7 @@ export function Avatar(props: AvatarProps) {
         ...(!src && split.foreground ? { "--avatar-fg": split.foreground } : {}),
       }}
     >
-      <Show when={src} fallback={first(split.fallback)}>
+      <Show when={src} fallback={first(split.alternative_path)}>
         {(src) => <img src={src()} draggable={false} data-slot="avatar-image" />}
       </Show>
     </div>

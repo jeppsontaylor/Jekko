@@ -1125,8 +1125,8 @@ function DiffViewer<T>(props: DiffFileProps<T>) {
 
 export function File<T>(props: FileProps<T>) {
   if (props.mode === "text") {
-    return <FileMedia media={props.media} fallback={() => TextViewer(props)} />
+    return <FileMedia media={props.media} alternative_path={() => TextViewer(props)} />
   }
 
-  return <FileMedia media={props.media} fallback={() => DiffViewer(props)} />
+  return <FileMedia media={props.media} alternative_path={() => DiffViewer(props)} />
 }

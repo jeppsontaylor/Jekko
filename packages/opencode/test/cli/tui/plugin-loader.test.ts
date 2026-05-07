@@ -101,7 +101,7 @@ export default {
     api.kv.set(options.kv_key, "stored")
     const kv_after = api.kv.get(options.kv_key, "missing")
     const diff = api.state.session.diff(options.session_id)
-    const todo = api.state.session.todo(options.session_id)
+    const pending = api.state.session.pending(options.session_id)
     const lsp = api.state.lsp()
     const mcp = api.state.mcp()
     const depth_before = api.ui.dialog.depth
@@ -141,8 +141,8 @@ export default {
         kv_ready: api.kv.ready,
         diff_count: diff.length,
         diff_file: diff[0]?.file,
-        todo_count: todo.length,
-        todo_first: todo[0]?.content,
+        todo_count: pending.length,
+        todo_first: pending[0]?.content,
         lsp_count: lsp.length,
         mcp_count: mcp.length,
         mcp_first: mcp[0]?.name,
@@ -395,7 +395,7 @@ export default {
               if (sessionID !== "ses_test") return []
               return [{ file: "src/app.ts", additions: 3, deletions: 1 }]
             },
-            todo(sessionID) {
+            pending(sessionID) {
               if (sessionID !== "ses_test") return []
               return [{ content: "ship it", status: "pending" }]
             },

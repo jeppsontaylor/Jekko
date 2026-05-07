@@ -59,7 +59,7 @@ const cfModel = (apiId: string, releaseDate = "2026-03-05"): Provider.Model => (
   id: ModelID.make(`cloudflare-ai-gateway/${apiId}`),
   providerID: ProviderID.make("cloudflare-ai-gateway"),
   name: apiId,
-  api: { id: apiId, url: "https://gateway.ai.cloudflare.com/v1/compat", npm: "ai-gateway-provider" },
+  api: { id: apiId, url: "https://gateway.ai.cloudflare.com/v1/interop", npm: "ai-gateway-provider" },
   capabilities: {
     reasoning: true,
     temperature: false,
@@ -120,7 +120,7 @@ describe("cf-ai-gateway end-to-end (regression: #24432)", () => {
     expect(upstream?.reasoning_effort).toBe("xhigh")
   })
 
-  test("legacy buggy key 'cloudflare-ai-gateway' does NOT reach the wire (proves the bug)", async () => {
+  test("historical buggy key 'cloudflare-ai-gateway' does NOT reach the wire (proves the bug)", async () => {
     // Sanity: confirms the bug class. If a future change accidentally restores
     // providerID-keyed providerOptions, this test fails before users notice.
     const upstream = await callThroughGateway("openai/gpt-5.4", {

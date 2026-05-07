@@ -63,7 +63,7 @@ describe("session prefetch", () => {
     expect(getSessionPrefetch("/tmp/e", "ses_1")).toEqual({ limit: 30, cursor: "c", complete: true, at: 3 })
   })
 
-  test("refreshes stale first-page prefetched history", () => {
+  test("refreshes outdated first-page prefetched history", () => {
     expect(
       shouldSkipSessionPrefetch({
         message: true,

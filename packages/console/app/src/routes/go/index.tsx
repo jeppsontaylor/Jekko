@@ -142,7 +142,7 @@ function LimitsGraph(props: { href: string }) {
             </For>
           </g>
 
-          <line x1={left} y1={top} x2={left} y2={h - bottom} data-stub />
+          <line x1={left} y1={top} x2={left} y2={h - bottom} data-sample />
 
           <g data-slot="bars">
             <g style={{ "--d": "0ms" } as any}>
@@ -230,7 +230,7 @@ export default function Home() {
   const language = useLanguage()
   return (
     <main data-page="go">
-      {/*<HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, stale-while-revalidate=86400" />*/}
+      {/*<HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, outdated-while-revalidate=86400" />*/}
       <Title>{i18n.t("go.title")}</Title>
       <Meta name="description" content={i18n.t("go.meta.description")} />
       <LocaleLinks path="/go" />
@@ -352,7 +352,7 @@ export default function Home() {
                       if (part === "{{price}}") {
                         return (
                           <span data-slot="cta-price">
-                            <span data-slot="cta-price-old">{i18n.t("go.cta.price")}</span>
+                            <span data-slot="cta-price-prior">{i18n.t("go.cta.price")}</span>
                             <span data-slot="cta-price-new">{i18n.t("go.cta.promo")}</span>
                           </span>
                         )

@@ -22,7 +22,7 @@ describe("prompt part", () => {
     })
   })
 
-  test("assign overwrites stale runtime ids", () => {
+  test("assign overwrites outdated runtime ids", () => {
     const part = {
       id: "prt_old",
       sessionID: "ses_old",

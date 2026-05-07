@@ -20,7 +20,7 @@ Use within panels or popovers where keyboard navigation is expected.
 - Keyboard navigation via arrow keys; Enter selects.
 
 ### Accessibility
-- TODO: confirm ARIA roles for list items and search input.
+- pending: confirm ARIA roles for list items and search input.
 
 ### Theming/tokens
 - Uses \`data-component="list"\` and data slots for structure.
@@ -126,7 +126,7 @@ export const SearchOptions = {
       items={["Apple", "Banana", "Cherry"]}
       key={(item) => item}
       search={{
-        placeholder: "Filter...",
+        default_value: "Filter...",
         hideIcon: true,
         action: <button type="button">Action</button>,
       }}

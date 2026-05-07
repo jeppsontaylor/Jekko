@@ -231,7 +231,7 @@ describe("workspace HttpApi", () => {
     }),
   )
 
-  it.live("documents legacy Hono accepting the TUI payload shape", () =>
+  it.live("documents historical Hono accepting the TUI payload shape", () =>
     Effect.gen(function* () {
       Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = true
       const dir = yield* tmpdirScoped({ git: true })

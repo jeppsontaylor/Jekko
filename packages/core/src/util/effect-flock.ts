@@ -39,11 +39,11 @@ export namespace EffectFlock {
   // Timing (baked in — no caller ever overrides these)
   // ---------------------------------------------------------------------------
 
-  const STALE_MS = 60_000
+  const EXPIRED_MS = 60_000
   const TIMEOUT_MS = 5 * 60_000
   const BASE_DELAY_MS = 100
   const MAX_DELAY_MS = 2_000
-  const HEARTBEAT_MS = Math.max(100, Math.floor(STALE_MS / 3))
+  const HEARTBEAT_MS = Math.max(100, Math.floor(EXPIRED_MS / 3))
 
   const retrySchedule = Schedule.exponential(BASE_DELAY_MS, 1.7).pipe(
     Schedule.either(Schedule.spaced(MAX_DELAY_MS)),
@@ -134,9 +134,9 @@ export namespace EffectFlock {
           ),
         )
 
-      const cleanStaleBreaker = Effect.fnUntraced(function* (breakerPath: string) {
+      const cleanExpiredBreaker = Effect.fnUntraced(function* (breakerPath: string) {
         const bs = yield* safeStat(breakerPath)
-        if (bs && wall() - mtimeMs(bs) > STALE_MS) yield* forceRemove(breakerPath)
+        if (bs && wall() - mtimeMs(bs) > EXPIRED_MS) yield* forceRemove(breakerPath)
         return false
       })
 
@@ -146,19 +146,19 @@ export namespace EffectFlock {
         ensuredDirs.add(dir)
       })
 
-      const isStale = Effect.fnUntraced(function* (lockDir: string, heartbeatPath: string, metaPath: string) {
+      const isExpired = Effect.fnUntraced(function* (lockDir: string, heartbeatPath: string, metaPath: string) {
         const now = wall()
 
         const hb = yield* safeStat(heartbeatPath)
-        if (hb) return now - mtimeMs(hb) > STALE_MS
+        if (hb) return now - mtimeMs(hb) > EXPIRED_MS
 
         const meta = yield* safeStat(metaPath)
-        if (meta) return now - mtimeMs(meta) > STALE_MS
+        if (meta) return now - mtimeMs(meta) > EXPIRED_MS
 
         const dir = yield* safeStat(lockDir)
         if (!dir) return false
 
-        return now - mtimeMs(dir) > STALE_MS
+        return now - mtimeMs(dir) > EXPIRED_MS
       })
 
       // -- single lock attempt --
@@ -175,16 +175,16 @@ export namespace EffectFlock {
           const created = yield* atomicMkdir(lockDir)
 
           if (!created) {
-            if (!(yield* isStale(lockDir, heartbeatPath, metaPath))) return yield* new NotAcquired()
+            if (!(yield* isExpired(lockDir, heartbeatPath, metaPath))) return yield* new NotAcquired()
 
-            // Stale — race for breaker ownership
+            // Expired — race for breaker ownership
             const breakerPath = lockDir + ".breaker"
 
             const claimed = yield* fs.makeDirectory(breakerPath, { mode: 0o700 }).pipe(
               Effect.as(true),
               Effect.catchIf(
                 (e) => e.reason._tag === "AlreadyExists",
-                () => cleanStaleBreaker(breakerPath),
+                () => cleanExpiredBreaker(breakerPath),
               ),
               Effect.catchIf(isPathGone, () => Effect.succeed(false)),
               Effect.orDie,
@@ -192,9 +192,9 @@ export namespace EffectFlock {
 
             if (!claimed) return yield* new NotAcquired()
 
-            // We own the breaker — double-check staleness, nuke, recreate
+            // We own the breaker — double-check expiry, nuke, recreate
             const recreated = yield* Effect.gen(function* () {
-              if (!(yield* isStale(lockDir, heartbeatPath, metaPath))) return false
+              if (!(yield* isExpired(lockDir, heartbeatPath, metaPath))) return false
               yield* forceRemove(lockDir)
               return yield* atomicMkdir(lockDir)
             }).pipe(Effect.ensuring(forceRemove(breakerPath)))

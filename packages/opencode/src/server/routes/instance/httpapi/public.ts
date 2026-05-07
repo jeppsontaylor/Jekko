@@ -90,7 +90,7 @@ const PathParameterSchemas = {
 const LegacyComponentDescriptions = {
   LogLevel: "Log level",
   ServerConfig: "Server configuration for opencode serve and web commands",
-  LayoutConfig: "@deprecated Always uses stretch layout.",
+  LayoutConfig: "@discouraged Always uses stretch layout.",
 } satisfies Record<string, string>
 
 function matchLegacyOpenApi(input: Record<string, unknown>) {
@@ -104,7 +104,7 @@ function matchLegacyOpenApi(input: Record<string, unknown>) {
   fixSelfReferencingComponents(spec)
 
   // Effect's Schema.optional emits `anyOf: [T, {type:"null"}]` in OpenAPI,
-  // but the legacy SDK expected plain `T` for optional fields. Strip null
+  // but the historical SDK expected plain `T` for optional fields. Strip null
   // from all component schemas so both request and response types match.
   for (const [name, schema] of Object.entries(spec.components?.schemas ?? {})) {
     spec.components!.schemas![name] = stripOptionalNull(structuredClone(schema))
@@ -163,7 +163,7 @@ function matchLegacyOpenApi(input: Record<string, unknown>) {
         }
       }
       // Hono applied auth as runtime middleware outside OpenAPI metadata, so the
-      // legacy SDK did not expose auth schemes or generated 401 error unions.
+      // historical SDK did not expose auth schemes or generated 401 error unions.
       delete operation.security
       delete operation.responses?.["401"]
       normalizeLegacyErrorResponses(operation)

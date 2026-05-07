@@ -40,7 +40,9 @@ export function DialogEditProject(props: { project: LocalProject }) {
     if (!file.type.startsWith("image/")) return
     const reader = new FileReader()
     reader.onload = (e) => {
-      setStore("iconOverride", e.target?.result as string)
+      const result = e.target?.result
+      if (typeof result !== "string") return
+      setStore("iconOverride", result)
       setStore("iconHover", false)
     }
     reader.readAsDataURL(file)
@@ -113,7 +115,7 @@ export function DialogEditProject(props: { project: LocalProject }) {
             autofocus
             type="text"
             label={language.t("dialog.project.edit.name")}
-            placeholder={folderName()}
+            defaultValue={folderName()}
             value={store.name}
             onChange={(v) => setStore("name", v)}
           />
@@ -153,7 +155,7 @@ export function DialogEditProject(props: { project: LocalProject }) {
                     fallback={
                       <div class="size-full flex items-center justify-center">
                         <Avatar
-                          fallback={store.name || defaultName()}
+                          alternative_path={store.name || defaultName()}
                           {...getAvatarColors(store.color)}
                           class="size-full text-[32px]"
                         />
@@ -228,7 +230,7 @@ export function DialogEditProject(props: { project: LocalProject }) {
                       }}
                     >
                       <Avatar
-                        fallback={store.name || defaultName()}
+                        alternative_path={store.name || defaultName()}
                         {...getAvatarColors(color)}
                         class="size-full rounded"
                       />
@@ -243,7 +245,7 @@ export function DialogEditProject(props: { project: LocalProject }) {
             multiline
             label={language.t("dialog.project.edit.worktree.startup")}
             description={language.t("dialog.project.edit.worktree.startup.description")}
-            placeholder={language.t("dialog.project.edit.worktree.startup.placeholder")}
+            defaultValue={language.t("dialog.project.edit.worktree.startup.default_value")}
             value={store.startup}
             onChange={(v) => setStore("startup", v)}
             spellcheck={false}

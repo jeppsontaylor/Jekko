@@ -28,7 +28,7 @@ function mediaValue(cfg: FileMediaOptions, mode: "image" | "audio") {
   return cfg.after ?? cfg.before
 }
 
-export function FileMedia(props: { media?: FileMediaOptions; fallback: () => JSX.Element }) {
+export function FileMedia(props: { media?: FileMediaOptions; alternative_path: () => JSX.Element }) {
   const i18n = useI18n()
   const cfg = () => props.media
   const kind = createMemo(() => {
@@ -167,7 +167,7 @@ export function FileMedia(props: { media?: FileMediaOptions; fallback: () => JSX
           fallback={(() => {
             const media = cfg()
             const k = kind()
-            if (!media || (k !== "image" && k !== "audio")) return props.fallback()
+            if (!media || (k !== "image" && k !== "audio")) return props.alternative_path()
             const label = kindLabel(k)
 
             if (deleted()) {
@@ -200,7 +200,7 @@ export function FileMedia(props: { media?: FileMediaOptions; fallback: () => JSX
         >
           {(value) => {
             const k = kind()
-            if (k !== "image" && k !== "audio") return props.fallback()
+            if (k !== "image" && k !== "audio") return props.alternative_path()
             if (k === "image") {
               return (
                 <div class="flex justify-center bg-background-stronger px-6 py-4">
@@ -226,11 +226,11 @@ export function FileMedia(props: { media?: FileMediaOptions; fallback: () => JSX
       </Match>
       <Match when={kind() === "svg"}>
         {(() => {
-          if (svgSource() === undefined && svgSrc() == null) return props.fallback()
+          if (svgSource() === undefined && svgSrc() == null) return props.alternative_path()
 
           return (
             <div class="flex flex-col gap-4 px-6 py-4">
-              <Show when={svgSource() !== undefined}>{props.fallback()}</Show>
+              <Show when={svgSource() !== undefined}>{props.alternative_path()}</Show>
               <Show when={svgSrc()}>
                 {(value) => (
                   <div class="flex justify-center">
@@ -261,7 +261,7 @@ export function FileMedia(props: { media?: FileMediaOptions; fallback: () => JSX
           </div>
         </div>
       </Match>
-      <Match when={true}>{props.fallback()}</Match>
+      <Match when={true}>{props.alternative_path()}</Match>
     </Switch>
   )
 }

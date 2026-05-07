@@ -12,7 +12,7 @@ describe("Patch namespace", () => {
   })
 
   afterEach(async () => {
-    // Clean up temp directory
+    // Clean up interim directory
     await fs.rm(tempDir, { recursive: true, force: true })
   })
 
@@ -34,14 +34,14 @@ describe("Patch namespace", () => {
 
     test("should parse delete file patch", () => {
       const patchText = `*** Begin Patch
-*** Delete File: old.txt
+*** Delete File: prior.txt
 *** End Patch`
 
       const result = Patch.parsePatch(patchText)
       expect(result.hunks).toHaveLength(1)
       const hunk = result.hunks[0]
       expect(hunk.type).toBe("delete")
-      expect(hunk.path).toBe("old.txt")
+      expect(hunk.path).toBe("prior.txt")
     })
 
     test("should parse patch with multiple hunks", () => {
@@ -50,7 +50,7 @@ describe("Patch namespace", () => {
 +This is a new file
 *** Update File: existing.txt
 @@
- old line
+ prior line
 -new line
 +updated line
 *** End Patch`
@@ -63,10 +63,10 @@ describe("Patch namespace", () => {
 
     test("should parse file move operation", () => {
       const patchText = `*** Begin Patch
-*** Update File: old-name.txt
+*** Update File: prior-name.txt
 *** Move to: new-name.txt
 @@
--Old content
+-Previous content
 +New content
 *** End Patch`
 
@@ -74,7 +74,7 @@ describe("Patch namespace", () => {
       expect(result.hunks).toHaveLength(1)
       const hunk = result.hunks[0]
       expect(hunk.type).toBe("update")
-      expect(hunk.path).toBe("old-name.txt")
+      expect(hunk.path).toBe("prior-name.txt")
       if (hunk.type === "update") {
         expect(hunk.move_path).toBe("new-name.txt")
       }
@@ -191,15 +191,15 @@ PATCH`
     })
 
     test("should move and update a file", async () => {
-      const oldPath = path.join(tempDir, "old-name.txt")
+      const oldPath = path.join(tempDir, "prior-name.txt")
       const newPath = path.join(tempDir, "new-name.txt")
-      await fs.writeFile(oldPath, "old content\n")
+      await fs.writeFile(oldPath, "prior content\n")
 
       const patchText = `*** Begin Patch
 *** Update File: ${oldPath}
 *** Move to: ${newPath}
 @@
--old content
+-prior content
 +new content
 *** End Patch`
 
@@ -214,8 +214,8 @@ PATCH`
       expect(oldExists).toBe(false)
 
       const newContent = await fs.readFile(newPath, "utf-8")
-      expect(newContent).toBe("new content\n")
-    })
+        expect(newContent).toBe("new content\n")
+      })
 
     test("should handle multiple operations in one patch", async () => {
       const file1 = path.join(tempDir, "file1.txt")
@@ -268,7 +268,7 @@ PATCH`
       const patchText = `*** Begin Patch
 *** Update File: ${nonExistent}
 @@
--old line
+-prior line
 +new line
 *** End Patch`
 

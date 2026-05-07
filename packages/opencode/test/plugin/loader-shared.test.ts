@@ -550,7 +550,7 @@ describe("plugin.loader.shared", () => {
     }
   })
 
-  test("skips legacy codex and copilot auth plugin specs", async () => {
+  test("skips historical codex and copilot auth plugin specs", async () => {
     await using tmp = await tmpdir({
       init: async (dir) => {
         await Bun.write(

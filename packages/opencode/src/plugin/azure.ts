@@ -7,7 +7,7 @@ export async function AzureAuthPlugin(_input: PluginInput): Promise<Hooks> {
       type: "text" as const,
       key: "resourceName",
       message: "Enter Azure Resource Name",
-      placeholder: "e.g. my-models",
+      default_value: "e.g. my-models",
     })
   }
 

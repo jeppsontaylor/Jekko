@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 import { $ } from "bun"
 import * as path from "node:path"
 
@@ -5,7 +6,7 @@ import { RUST_TARGET } from "./utils"
 
 if (!RUST_TARGET) throw new Error("RUST_TARGET not defined")
 
-const BUNDLE_DIR = "dist"
+const BUNDLE_DIR = path.join(process.cwd(), "dist")
 const BUNDLES_OUT_DIR = path.join(process.cwd(), "dist/bundles")
 
 await $`mkdir -p ${BUNDLES_OUT_DIR}`

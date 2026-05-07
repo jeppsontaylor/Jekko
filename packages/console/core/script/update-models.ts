@@ -21,13 +21,13 @@ const oldValues = Array.from({ length: PARTS }, (_, i) => {
   return value
 })
 
-// store the prettified json to a temp file
+// store the prettified json to a interim file
 const filename = `models-${Date.now()}.json`
 const tempFile = Bun.file(path.join(os.tmpdir(), filename))
 await tempFile.write(JSON.stringify(JSON.parse(oldValues.join("")), null, 2))
 console.log("tempFile", tempFile.name)
 
-// open temp file in vim and read the file on close
+// open interim file in vim and read the file on close
 await $`vim ${tempFile.name}`
 const newValue = JSON.stringify(JSON.parse(await tempFile.text()))
 ZenData.validate(JSON.parse(newValue))

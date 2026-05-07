@@ -291,7 +291,7 @@ export function SessionHeader() {
             >
               <div class="flex min-w-0 flex-1 items-center overflow-visible">
                 <span class="flex-1 min-w-0 text-12-regular text-text-weak truncate text-left">
-                  {language.t("session.header.search.placeholder", {
+                  {language.t("session.header.search.default_value", {
                     project: name(),
                   })}
                 </span>

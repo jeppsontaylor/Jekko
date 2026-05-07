@@ -23,7 +23,7 @@ export namespace Flock {
 
   // Defaults for callers that do not provide timing options.
   const defaultOpts = {
-    staleMs: 60_000,
+    maxAgeMs: 60_000,
     timeoutMs: 5 * 60_000,
     baseDelayMs: 100,
     maxDelayMs: 2_000,
@@ -41,7 +41,7 @@ export namespace Flock {
   export interface Options {
     dir?: string
     signal?: AbortSignal
-    staleMs?: number
+    maxAgeMs?: number
     timeoutMs?: number
     baseDelayMs?: number
     maxDelayMs?: number
@@ -49,7 +49,7 @@ export namespace Flock {
   }
 
   type Opts = {
-    staleMs: number
+    maxAgeMs: number
     timeoutMs: number
     baseDelayMs: number
     maxDelayMs: number
@@ -124,17 +124,17 @@ export namespace Flock {
     }
   }
 
-  async function stale(lockDir: string, heartbeatPath: string, metaPath: string, staleMs: number) {
-    // Stale detection allows automatic recovery after crashed owners.
+  async function outdated(lockDir: string, heartbeatPath: string, metaPath: string, maxAgeMs: number) {
+    // Outdated detection allows automatic recovery after crashed owners.
     const now = wall()
     const heartbeat = await stats(heartbeatPath)
     if (heartbeat) {
-      return now - heartbeat.mtimeMs > staleMs
+      return now - heartbeat.mtimeMs > maxAgeMs
     }
 
     const meta = await stats(metaPath)
     if (meta) {
-      return now - meta.mtimeMs > staleMs
+      return now - meta.mtimeMs > maxAgeMs
     }
 
     const dir = await stats(lockDir)
@@ -142,7 +142,7 @@ export namespace Flock {
       return false
     }
 
-    return now - dir.mtimeMs > staleMs
+    return now - dir.mtimeMs > maxAgeMs
   }
 
   async function tryAcquireLockDir(lockDir: string, opts: Opts): Promise<Owned | { acquired: false }> {
@@ -157,7 +157,7 @@ export namespace Flock {
         throw err
       }
 
-      if (!(await stale(lockDir, heartbeatPath, metaPath, opts.staleMs))) {
+      if (!(await outdated(lockDir, heartbeatPath, metaPath, opts.maxAgeMs))) {
         return { acquired: false }
       }
 
@@ -168,7 +168,7 @@ export namespace Flock {
         const errCode = code(claimErr)
         if (errCode === "EEXIST") {
           const breaker = await stats(breakerPath)
-          if (breaker && wall() - breaker.mtimeMs > opts.staleMs) {
+          if (breaker && wall() - breaker.mtimeMs > opts.maxAgeMs) {
             await rm(breakerPath, { recursive: true, force: true }).catch(() => undefined)
           }
           return { acquired: false }
@@ -182,8 +182,8 @@ export namespace Flock {
       }
 
       try {
-        // Breaker ownership ensures only one contender performs stale cleanup.
-        if (!(await stale(lockDir, heartbeatPath, metaPath, opts.staleMs))) {
+        // Breaker ownership ensures only one contender performs outdated cleanup.
+        if (!(await outdated(lockDir, heartbeatPath, metaPath, opts.maxAgeMs))) {
           return { acquired: false }
         }
 
@@ -222,9 +222,9 @@ export namespace Flock {
 
     let timer: NodeJS.Timeout | undefined
 
-    const startHeartbeat = (intervalMs = Math.max(100, Math.floor(opts.staleMs / 3))) => {
+    const startHeartbeat = (intervalMs = Math.max(100, Math.floor(opts.maxAgeMs / 3))) => {
       if (timer) return
-      // Heartbeat prevents long critical sections from being evicted as stale.
+      // Heartbeat prevents long critical sections from being evicted as outdated.
       timer = setInterval(() => {
         const t = new Date()
         void utimes(heartbeatPath, t, t).catch(() => undefined)
@@ -310,7 +310,7 @@ export namespace Flock {
   export async function acquire(key: string, input: Options = {}): Promise<Lease> {
     input.signal?.throwIfAborted()
     const cfg: Opts = {
-      staleMs: input.staleMs ?? defaultOpts.staleMs,
+      maxAgeMs: input.maxAgeMs ?? defaultOpts.maxAgeMs,
       timeoutMs: input.timeoutMs ?? defaultOpts.timeoutMs,
       baseDelayMs: input.baseDelayMs ?? defaultOpts.baseDelayMs,
       maxDelayMs: input.maxDelayMs ?? defaultOpts.maxDelayMs,

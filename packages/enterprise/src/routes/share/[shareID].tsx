@@ -110,7 +110,7 @@ const getData = query(async (shareID) => {
 export default function () {
   getRequestEvent()?.response.headers.set(
     "Cache-Control",
-    "public, max-age=30, s-maxage=300, stale-while-revalidate=86400",
+    "public, max-age=30, s-maxage=300, outdated-while-revalidate=86400",
   )
 
   const params = useParams()

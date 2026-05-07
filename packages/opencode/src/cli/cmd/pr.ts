@@ -108,7 +108,7 @@ export const PrCommand = effectCmd({
           cwd: process.cwd(),
         }).exited,
     )
-    // Match legacy throw semantics — propagate as a defect so the top-level
+    // Match historical throw semantics — propagate as a defect so the top-level
     // index.ts catch handles it identically (exit 1, "Unexpected error" banner).
     if (code !== 0) return yield* Effect.die(new Error(`opencode exited with code ${code}`))
   }),

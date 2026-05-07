@@ -43,7 +43,7 @@ export interface Content {
 //   1. A forwarded Ctrl+V keypress
 //   2. An empty bracketed-paste hint for image-only clipboard in Windows
 //      Terminal <1.25
-//   3. A kitty Ctrl+V key-release fallback for Windows Terminal 1.25+
+//   3. A kitty Ctrl+V key-release alternative_path for Windows Terminal 1.25+
 export async function read(): Promise<Content | undefined> {
   const os = platform()
 

@@ -55,7 +55,7 @@ function withVcsOnly(directory: string, body: () => Promise<void>) {
 type BranchEvent = { directory?: string; payload: { type: string; properties: { branch?: string } } }
 const weird = process.platform === "win32" ? "space file.txt" : "tab\tfile.txt"
 
-/** Wait for a Vcs.Event.BranchUpdated event on GlobalBus, with retry polling as fallback */
+/** Wait for a Vcs.Event.BranchUpdated event on GlobalBus, with retry polling as alternative_path */
 function nextBranchUpdate(directory: string, timeout = 10_000) {
   return new Promise<string | undefined>((resolve, reject) => {
     let settled = false
@@ -265,8 +265,8 @@ describe("Vcs diff", () => {
     if (process.platform === "win32") return
 
     await using tmp = await tmpdir({ git: true })
-    await fs.writeFile(path.join(tmp.path, "a.txt"), "old\n", "utf-8")
-    await fs.writeFile(path.join(tmp.path, "b.txt"), "old\n", "utf-8")
+    await fs.writeFile(path.join(tmp.path, "a.txt"), "prior\n", "utf-8")
+    await fs.writeFile(path.join(tmp.path, "b.txt"), "prior\n", "utf-8")
     await $`git add .`.cwd(tmp.path).quiet()
     await $`git commit --no-gpg-sign -m "add files"`.cwd(tmp.path).quiet()
     await fs.unlink(path.join(tmp.path, "a.txt"))

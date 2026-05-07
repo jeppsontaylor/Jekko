@@ -199,7 +199,7 @@ export async function convertToOpenAIResponsesInput({
                     // use item references to refer to reasoning (single reference)
                     input.push({ type: "item_reference", id: reasoningId })
 
-                    // store unused reasoning message to mark id as used
+                    // store unreferenced reasoning message to mark id as used
                     reasoningMessages[reasoningId] = {
                       type: "reasoning",
                       id: reasoningId,

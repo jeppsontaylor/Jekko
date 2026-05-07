@@ -1,4 +1,3 @@
-import type { Todo } from "@opencode-ai/sdk/v2"
 import { AnimatedNumber } from "@opencode-ai/ui/animated-number"
 import { Checkbox } from "@opencode-ai/ui/checkbox"
 import { DockTray } from "@opencode-ai/ui/dock-surface"
@@ -14,7 +13,12 @@ import { useLanguage } from "@/context/language"
 const doneToken = "\u0000done\u0000"
 const totalToken = "\u0000total\u0000"
 
-function dot(status: Todo["status"]) {
+type PendingItem = {
+  status: "pending" | "in_progress" | "completed" | "cancelled"
+  content: string
+}
+
+function dot(status: PendingItem["status"]) {
   if (status !== "in_progress") return undefined
   return (
     <svg
@@ -39,9 +43,9 @@ function dot(status: Todo["status"]) {
   )
 }
 
-export function SessionTodoDock(props: {
+export function SessionPendingDock(props: {
   sessionID?: string
-  todos: Todo[]
+  items: PendingItem[]
   collapseLabel: string
   expandLabel: string
   dockProgress: number
@@ -54,21 +58,21 @@ export function SessionTodoDock(props: {
 
   const toggle = () => setStore("collapsed", (value) => !value)
 
-  const total = createMemo(() => props.todos.length)
-  const done = createMemo(() => props.todos.filter((todo) => todo.status === "completed").length)
-  const label = createMemo(() => language.t("session.todo.progress", { done: done(), total: total() }))
+  const total = createMemo(() => props.items.length)
+  const done = createMemo(() => props.items.filter((pending) => pending.status === "completed").length)
+  const label = createMemo(() => language.t("session.pending.progress", { done: done(), total: total() }))
   const progress = createMemo(() =>
     language
-      .t("session.todo.progress", { done: doneToken, total: totalToken })
+      .t("session.pending.progress", { done: doneToken, total: totalToken })
       .split(/(\u0000done\u0000|\u0000total\u0000)/),
   )
 
   const active = createMemo(
     () =>
-      props.todos.find((todo) => todo.status === "in_progress") ??
-      props.todos.find((todo) => todo.status === "pending") ??
-      props.todos.filter((todo) => todo.status === "completed").at(-1) ??
-      props.todos[0],
+      props.items.find((pending) => pending.status === "in_progress") ??
+      props.items.find((pending) => pending.status === "pending") ??
+      props.items.filter((pending) => pending.status === "completed").at(-1) ??
+      props.items[0],
   )
 
   const preview = createMemo(() => active()?.content ?? "")
@@ -94,7 +98,7 @@ export function SessionTodoDock(props: {
 
   return (
     <DockTray
-      data-component="session-todo-dock"
+      data-component="session-pending-dock"
       style={{
         "overflow-x": "visible",
         "overflow-y": "hidden",
@@ -103,7 +107,7 @@ export function SessionTodoDock(props: {
     >
       <div ref={contentRef}>
         <div
-          data-action="session-todo-toggle"
+          data-action="session-pending-toggle"
           class="pl-3 pr-2 py-2 flex items-center gap-2 overflow-visible"
           role="button"
           tabIndex={0}
@@ -139,7 +143,7 @@ export function SessionTodoDock(props: {
             </Index>
           </span>
           <div
-            data-slot="session-todo-preview"
+            data-slot="session-pending-preview"
             class="ml-1 min-w-0 overflow-hidden"
             style={{
               flex: "1 1 auto",
@@ -160,7 +164,7 @@ export function SessionTodoDock(props: {
           </div>
           <div class="ml-auto">
             <IconButton
-              data-action="session-todo-toggle-button"
+              data-action="session-pending-toggle-button"
               data-collapsed={store.collapsed ? "true" : "false"}
               icon="chevron-down"
               size="normal"
@@ -180,7 +184,7 @@ export function SessionTodoDock(props: {
         </div>
 
         <div
-          data-slot="session-todo-list"
+          data-slot="session-pending-list"
           aria-hidden={store.collapsed || off()}
           classList={{
             "pointer-events-none": hide() > 0.1,
@@ -190,14 +194,14 @@ export function SessionTodoDock(props: {
             opacity: `${Math.max(0, Math.min(1, 1 - hide()))}`,
           }}
         >
-          <TodoList todos={props.todos} />
+          <PendingList items={props.items} />
         </div>
       </div>
     </DockTray>
   )
 }
 
-function TodoList(props: { todos: Todo[] }) {
+function PendingList(props: { items: PendingItem[] }) {
   const [store, setStore] = createStore({
     stuck: false,
   })
@@ -211,35 +215,35 @@ function TodoList(props: { todos: Todo[] }) {
           setStore("stuck", e.currentTarget.scrollTop > 0)
         }}
       >
-        <Index each={props.todos}>
-          {(todo) => (
+        <Index each={props.items}>
+          {(pending) => (
             <Checkbox
               readOnly
-              checked={todo().status === "completed"}
-              indeterminate={todo().status === "in_progress"}
-              data-in-progress={todo().status === "in_progress" ? "" : undefined}
-              data-state={todo().status}
-              icon={dot(todo().status)}
+              checked={pending().status === "completed"}
+              indeterminate={pending().status === "in_progress"}
+              data-in-progress={pending().status === "in_progress" ? "" : undefined}
+              data-state={pending().status}
+              icon={dot(pending().status)}
               style={{
                 "--checkbox-align": "flex-start",
                 "--checkbox-offset": "1px",
                 transition: "opacity 220ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1))",
-                opacity: todo().status === "pending" ? "0.94" : "1",
+                opacity: pending().status === "pending" ? "0.94" : "1",
               }}
             >
               <TextStrikethrough
-                active={todo().status === "completed" || todo().status === "cancelled"}
-                text={todo().content}
+                active={pending().status === "completed" || pending().status === "cancelled"}
+                text={pending().content}
                 class="text-14-regular min-w-0 break-words"
                 style={{
                   "line-height": "var(--line-height-normal)",
                   transition:
                     "color 220ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1)), opacity 220ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1))",
                   color:
-                    todo().status === "completed" || todo().status === "cancelled"
+                    pending().status === "completed" || pending().status === "cancelled"
                       ? "var(--text-weak)"
                       : "var(--text-strong)",
-                  opacity: todo().status === "pending" ? "0.92" : "1",
+                  opacity: pending().status === "pending" ? "0.92" : "1",
                 }}
               />
             </Checkbox>

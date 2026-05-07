@@ -7,7 +7,7 @@ import { SessionComposerRegion, createSessionComposerState } from "@/pages/sessi
 
 export default {
   title: "UI/Todo Panel Motion",
-  id: "components-todo-panel-motion",
+  id: "components-pending-panel-motion",
   tags: ["autodocs"],
   parameters: {
     docs: {
@@ -51,18 +51,18 @@ const btn = (accent?: boolean) =>
   }) as const
 
 const css = `
-[data-component="todo-stage"] {
+[data-component="pending-stage"] {
   display: grid;
   gap: 20px;
   padding: 20px;
 }
 
-[data-component="todo-preview"] {
+[data-component="pending-preview"] {
   height: 560px;
   min-height: 0;
 }
 
-[data-component="todo-session-root"] {
+[data-component="pending-session-root"] {
   position: relative;
   width: 100%;
   height: 100%;
@@ -74,14 +74,14 @@ const css = `
   border-radius: 12px;
 }
 
-[data-component="todo-session-frame"] {
+[data-component="pending-session-frame"] {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
-[data-component="todo-session-panel"] {
+[data-component="pending-session-panel"] {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
@@ -91,13 +91,13 @@ const css = `
   background: var(--background-stronger);
 }
 
-[data-slot="todo-preview-content"] {
+[data-slot="pending-preview-content"] {
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
 }
 
-[data-slot="todo-preview-scroll"] {
+[data-slot="pending-preview-scroll"] {
   height: 100%;
   overflow: auto;
   min-height: 0;
@@ -107,12 +107,12 @@ const css = `
   gap: 10px;
 }
 
-[data-slot="todo-preview-spacer"] {
+[data-slot="pending-preview-spacer"] {
   flex: 1 1 auto;
   min-height: 0;
 }
 
-[data-slot="todo-preview-msg"] {
+[data-slot="pending-preview-msg"] {
   border-radius: 8px;
   border: 1px solid var(--border-weak-base);
   background: var(--surface-base);
@@ -122,7 +122,7 @@ const css = `
   line-height: 1.35;
 }
 
-[data-slot="todo-preview-msg"][data-strong="true"] {
+[data-slot="pending-preview-msg"][data-strong="true"] {
   color: var(--text-strong);
 }
 `
@@ -176,14 +176,14 @@ export const Playground = {
     const todos = createMemo<Todo[]>(() => {
       const done = Math.max(0, Math.min(3, step()))
       return pool.slice(0, 3).map((content, i) => ({
-        id: `todo-${i + 1}`,
+        id: `pending-${i + 1}`,
         content,
         status: i < done ? "completed" : i === done && done < 3 ? "in_progress" : "pending",
       }))
     })
 
     createEffect(() => {
-      global.todo.set("story-session", todos())
+      global.pending.set("story-session", todos())
     })
 
     const clear = () => {
@@ -197,10 +197,10 @@ export const Playground = {
     }
 
     const collapsed = () =>
-      !!composerRef?.querySelector('[data-action="session-todo-toggle-button"][data-collapsed="true"]')
+      !!composerRef?.querySelector('[data-action="session-pending-toggle-button"][data-collapsed="true"]')
 
     const setCollapsed = (value: boolean) => {
-      const button = composerRef?.querySelector('[data-action="session-todo-toggle-button"]')
+      const button = composerRef?.querySelector('[data-action="session-pending-toggle-button"]')
       if (!(button instanceof HTMLButtonElement)) return
       if (collapsed() === value) return
       button.click()
@@ -250,20 +250,20 @@ export const Playground = {
     onCleanup(clear)
 
     return (
-      <div data-component="todo-stage">
+      <div data-component="pending-stage">
         <style>{css}</style>
 
-        <div data-component="todo-preview">
-          <div data-component="todo-session-root">
-            <div data-component="todo-session-frame">
-              <div data-component="todo-session-panel">
-                <div data-slot="todo-preview-content">
-                  <div data-slot="todo-preview-scroll" class="scroll-view__viewport" ref={scrollRef}>
-                    <div data-slot="todo-preview-spacer" />
-                    <div data-slot="todo-preview-msg" data-strong="true">
+        <div data-component="pending-preview">
+          <div data-component="pending-session-root">
+            <div data-component="pending-session-frame">
+              <div data-component="pending-session-panel">
+                <div data-slot="pending-preview-content">
+                  <div data-slot="pending-preview-scroll" class="scroll-view__viewport" ref={scrollRef}>
+                    <div data-slot="pending-preview-spacer" />
+                    <div data-slot="pending-preview-msg" data-strong="true">
                       Thinking Checking type safety
                     </div>
-                    <div data-slot="todo-preview-msg">Shell Prints five topic blocks between timed commands</div>
+                    <div data-slot="pending-preview-msg">Shell Prints five topic blocks between timed commands</div>
                   </div>
                 </div>
 
@@ -304,7 +304,7 @@ export const Playground = {
             {dockOpen() ? "Animate close" : "Animate open"}
           </button>
           <button onClick={toggleDrawer} style={btn(dockOpen() && collapsed())}>
-            {dockOpen() && collapsed() ? "Expand todo dock" : "Collapse todo dock"}
+            {dockOpen() && collapsed() ? "Expand pending dock" : "Collapse pending dock"}
           </button>
           <button onClick={cycle} style={btn(step() > 0)}>
             Cycle progress ({step()}/3 done)

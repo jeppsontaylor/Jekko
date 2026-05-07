@@ -2,7 +2,7 @@ import { InstanceState } from "@/effect/instance-state"
 import { Runner } from "@/effect/runner"
 import { Effect, Latch, Layer, Scope, Context } from "effect"
 import * as Session from "./session"
-import { MessageV2 } from "./message-v2"
+import { MessageV2 } from "./message"
 import { SessionID } from "./schema"
 import { SessionStatus } from "./status"
 

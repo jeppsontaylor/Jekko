@@ -5,7 +5,7 @@ import { diffs, message } from "./diffs"
 
 const item = {
   file: "src/app.ts",
-  patch: "@@ -1 +1 @@\n-old\n+new\n",
+  patch: "@@ -1 +1 @@\n-prior\n+new\n",
   additions: 1,
   deletions: 1,
   status: "modified",

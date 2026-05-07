@@ -1,5 +1,5 @@
 import type { TuiPlugin, TuiPluginApi, TuiPluginModule } from "@opencode-ai/plugin/tui"
-import { useSyncV2 } from "@tui/context/sync-v2"
+import { useSyncV2 } from "@tui/context/sync"
 import { SplitBorder } from "@tui/component/border"
 import { Spinner } from "@tui/component/spinner"
 import { useTheme } from "@tui/context/theme"
@@ -923,9 +923,9 @@ function TodoWrite(props: ToolProps) {
         <BlockTool title="# Todos" part={props.part}>
           <box>
             <For each={todos()}>
-              {(todo) => (
+              {(pending) => (
                 <text fg={theme.text}>
-                  {todoIcon(stringValue(todo.status))} {stringValue(todo.content)}
+                  {todoIcon(stringValue(pending.status))} {stringValue(pending.content)}
                 </text>
               )}
             </For>

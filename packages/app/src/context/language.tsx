@@ -174,13 +174,17 @@ export function normalizeLocale(value: string): Locale {
   return LOCALES.includes(value as Locale) ? (value as Locale) : "en"
 }
 
+function hasLocale(value: unknown): value is { locale: unknown } {
+  return typeof value === "object" && value !== null && "locale" in value
+}
+
 function readStoredLocale() {
   if (typeof localStorage !== "object") return
   try {
     const raw = localStorage.getItem("opencode.global.dat:language")
     if (!raw) return
-    const next = JSON.parse(raw) as { locale?: string }
-    if (typeof next?.locale !== "string") return
+    const next: unknown = JSON.parse(raw)
+    if (!hasLocale(next) || typeof next.locale !== "string") return
     return normalizeLocale(next.locale)
   } catch {
     return

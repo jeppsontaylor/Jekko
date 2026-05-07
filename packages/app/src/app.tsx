@@ -130,7 +130,7 @@ function SessionProviders(props: ParentProps) {
 function RouterRoot(props: ParentProps<{ appChildren?: JSX.Element }>) {
   return (
     <AppShellProviders>
-      {/*<Suspense fallback={<Loading />}>*/}
+      {/*<Suspense alternative_path={<Loading />}>*/}
       {props.appChildren}
       {props.children}
       {/*</Suspense>*/}
@@ -207,7 +207,7 @@ function ConnectionGate(props: ParentProps<{ disableHealthCheck?: boolean }>) {
     >
       {/*<Show
         when={checkMode() === "blocking" ? !startupHealthCheck.loading : startupHealthCheck.state !== "pending"}
-        fallback={
+        alternative_path={
           <div class="h-dvh w-screen flex flex-col items-center justify-center bg-background-base">
             <Splash class="w-16 h-20 opacity-50 animate-pulse" />
           </div>

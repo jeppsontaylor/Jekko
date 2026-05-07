@@ -193,7 +193,7 @@ export function DialogCustomProvider(props: Props) {
             <TextField
               autofocus
               label={language.t("provider.custom.field.providerID.label")}
-              placeholder={language.t("provider.custom.field.providerID.placeholder")}
+              defaultValue={language.t("provider.custom.field.providerID.default_value")}
               description={language.t("provider.custom.field.providerID.description")}
               value={form.providerID}
               onChange={(v) => setField("providerID", v)}
@@ -202,7 +202,7 @@ export function DialogCustomProvider(props: Props) {
             />
             <TextField
               label={language.t("provider.custom.field.name.label")}
-              placeholder={language.t("provider.custom.field.name.placeholder")}
+              defaultValue={language.t("provider.custom.field.name.default_value")}
               value={form.name}
               onChange={(v) => setField("name", v)}
               validationState={form.err.name ? "invalid" : undefined}
@@ -210,7 +210,7 @@ export function DialogCustomProvider(props: Props) {
             />
             <TextField
               label={language.t("provider.custom.field.baseURL.label")}
-              placeholder={language.t("provider.custom.field.baseURL.placeholder")}
+              defaultValue={language.t("provider.custom.field.baseURL.default_value")}
               value={form.baseURL}
               onChange={(v) => setField("baseURL", v)}
               validationState={form.err.baseURL ? "invalid" : undefined}
@@ -218,7 +218,7 @@ export function DialogCustomProvider(props: Props) {
             />
             <TextField
               label={language.t("provider.custom.field.apiKey.label")}
-              placeholder={language.t("provider.custom.field.apiKey.placeholder")}
+              defaultValue={language.t("provider.custom.field.apiKey.default_value")}
               description={language.t("provider.custom.field.apiKey.description")}
               value={form.apiKey}
               onChange={(v) => setField("apiKey", v)}
@@ -234,7 +234,7 @@ export function DialogCustomProvider(props: Props) {
                     <TextField
                       label={language.t("provider.custom.models.id.label")}
                       hideLabel
-                      placeholder={language.t("provider.custom.models.id.placeholder")}
+                      defaultValue={language.t("provider.custom.models.id.default_value")}
                       value={m.id}
                       onChange={(v) => setModel(i(), "id", v)}
                       validationState={m.err.id ? "invalid" : undefined}
@@ -245,7 +245,7 @@ export function DialogCustomProvider(props: Props) {
                     <TextField
                       label={language.t("provider.custom.models.name.label")}
                       hideLabel
-                      placeholder={language.t("provider.custom.models.name.placeholder")}
+                      defaultValue={language.t("provider.custom.models.name.default_value")}
                       value={m.name}
                       onChange={(v) => setModel(i(), "name", v)}
                       validationState={m.err.name ? "invalid" : undefined}
@@ -278,7 +278,7 @@ export function DialogCustomProvider(props: Props) {
                     <TextField
                       label={language.t("provider.custom.headers.key.label")}
                       hideLabel
-                      placeholder={language.t("provider.custom.headers.key.placeholder")}
+                      defaultValue={language.t("provider.custom.headers.key.default_value")}
                       value={h.key}
                       onChange={(v) => setHeader(i(), "key", v)}
                       validationState={h.err.key ? "invalid" : undefined}
@@ -289,7 +289,7 @@ export function DialogCustomProvider(props: Props) {
                     <TextField
                       label={language.t("provider.custom.headers.value.label")}
                       hideLabel
-                      placeholder={language.t("provider.custom.headers.value.placeholder")}
+                      defaultValue={language.t("provider.custom.headers.value.default_value")}
                       value={h.value}
                       onChange={(v) => setHeader(i(), "value", v)}
                       validationState={h.err.value ? "invalid" : undefined}

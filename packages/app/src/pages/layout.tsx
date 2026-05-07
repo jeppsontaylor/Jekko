@@ -416,6 +416,12 @@ export default function Layout(props: ParentProps) {
       })
     })
 
+  const sessionIDFromEventProperties = (value: unknown) => {
+    if (typeof value !== "object" || value === null) return
+    const sessionID = Reflect.get(value, "sessionID")
+    return typeof sessionID === "string" ? sessionID : undefined
+  }
+
   const useSDKNotificationToasts = () =>
     onMount(() => {
       const toastBySession = new Map<string, number>()
@@ -448,8 +454,9 @@ export default function Layout(props: ParentProps) {
           e.details?.type === "question.rejected" ||
           e.details?.type === "permission.replied"
         ) {
-          const props = e.details.properties as { sessionID: string }
-          const sessionKey = `${e.name}:${props.sessionID}`
+          const sessionID = sessionIDFromEventProperties(e.details.properties)
+          if (!sessionID) return
+          const sessionKey = `${e.name}:${sessionID}`
           dismissSessionAlert(sessionKey)
           return
         }
@@ -462,11 +469,13 @@ export default function Layout(props: ParentProps) {
         const icon = e.details.type === "permission.asked" ? ("checklist" as const) : ("bubble-5" as const)
         const directory = e.name
         const props = e.details.properties
+        const sessionID = sessionIDFromEventProperties(props)
+        if (!sessionID) return
         if (e.details.type === "permission.asked" && permission.autoResponds(e.details.properties, directory)) return
 
         const [store] = globalSync.child(directory, { bootstrap: false })
-        const session = store.session.find((s) => s.id === props.sessionID)
-        const sessionKey = `${directory}:${props.sessionID}`
+        const session = store.session.find((s) => s.id === sessionID)
+        const sessionKey = `${directory}:${sessionID}`
 
         const sessionTitle = session?.title ?? language.t("command.session.new")
         const projectName = getFilename(directory)
@@ -474,7 +483,7 @@ export default function Layout(props: ParentProps) {
           e.details.type === "permission.asked"
             ? language.t("notification.permission.description", { sessionTitle, projectName })
             : language.t("notification.question.description", { sessionTitle, projectName })
-        const href = `/${base64Encode(directory)}/session/${props.sessionID}`
+        const href = `/${base64Encode(directory)}/session/${sessionID}`
 
         const now = Date.now()
         const lastAlerted = alertedAtBySession.get(sessionKey) ?? 0
@@ -497,7 +506,7 @@ export default function Layout(props: ParentProps) {
         }
 
         const currentSession = params.id
-        if (pathKey(directory) === pathKey(currentDir()) && props.sessionID === currentSession) return
+        if (pathKey(directory) === pathKey(currentDir()) && sessionID === currentSession) return
         if (pathKey(directory) === pathKey(currentDir()) && session?.parentID === currentSession) return
 
         dismissSessionAlert(sessionKey)
@@ -774,7 +783,7 @@ export default function Layout(props: ParentProps) {
             const items = (messages.data ?? []).filter((x) => !!x?.info?.id)
             const next = items.map((x) => x.info).filter((m): m is Message => !!m?.id)
             const sorted = mergeByID([], next)
-            const stale = markPrefetched(directory, sessionID)
+            const outdated = markPrefetched(directory, sessionID)
             const cursor = messages.response.headers.get("x-next-cursor") ?? undefined
             const meta = {
               limit: sorted.length,
@@ -783,10 +792,10 @@ export default function Layout(props: ParentProps) {
               at: Date.now(),
             }
 
-            if (stale.length > 0) {
-              clearSessionPrefetch(directory, stale)
-              for (const id of stale) {
-                globalSync.todo.set(id, undefined)
+            if (outdated.length > 0) {
+              clearSessionPrefetch(directory, outdated)
+              for (const id of outdated) {
+                globalSync.pending.set(id, undefined)
               }
             }
 
@@ -799,10 +808,10 @@ export default function Layout(props: ParentProps) {
             if (!isSessionPrefetchCurrent(directory, sessionID, rev)) return
 
             batch(() => {
-              if (stale.length > 0) {
+              if (outdated.length > 0) {
                 setStore(
                   produce((draft) => {
-                    dropSessionCaches(draft, stale)
+                    dropSessionCaches(draft, outdated)
                   }),
                 )
               }
@@ -943,8 +952,8 @@ export default function Layout(props: ParentProps) {
     if (projects.length === 0) return
 
     const current = currentProject()?.worktree
-    const fallback = currentDir() ? projectRoot(currentDir()) : undefined
-    const active = current ?? fallback
+    const alternative_path = currentDir() ? projectRoot(currentDir()) : undefined
+    const active = current ?? alternative_path
     const index = active ? projects.findIndex((project) => project.worktree === active) : -1
 
     const target =
@@ -1511,10 +1520,10 @@ export default function Layout(props: ParentProps) {
 
     globalSync.set(
       "project",
-      produce((draft) => {
-        const project = draft.find((item) => item.worktree === root)
+      produce((draft: { worktree?: string; sandboxes?: string[] }[]) => {
+        const project = draft.find((item: { worktree?: string }) => item.worktree === root)
         if (!project) return
-        project.sandboxes = (project.sandboxes ?? []).filter((sandbox) => sandbox !== directory)
+        project.sandboxes = (project.sandboxes ?? []).filter((sandbox: string) => sandbox !== directory)
       }),
     )
     setStore("workspaceOrder", root, (order) => (order ?? []).filter((workspace) => workspace !== directory))

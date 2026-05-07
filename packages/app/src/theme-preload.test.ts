@@ -19,7 +19,7 @@ beforeEach(() => {
 })
 
 describe("theme preload", () => {
-  test("migrates legacy oc-1 to oc-2 before mount", () => {
+  test("migrates historical oc-1 to oc-2 before mount", () => {
     localStorage.setItem("opencode-theme-id", "oc-1")
     localStorage.setItem("opencode-theme-css-light", "--background-base:#fff;")
     localStorage.setItem("opencode-theme-css-dark", "--background-base:#000;")

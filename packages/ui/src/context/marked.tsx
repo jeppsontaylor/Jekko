@@ -174,7 +174,7 @@ registerCustomTheme("OpenCode", () => {
           "invalid.broken",
           "invalid.illegal",
           "invalid.unimplemented",
-          "invalid.deprecated",
+          "invalid.discouraged",
           "message.error",
           "markup.deleted",
           "meta.diff.header.from-file",

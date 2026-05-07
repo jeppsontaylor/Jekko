@@ -13,7 +13,7 @@ import { SessionQuestionDock } from "@/pages/session/composer/session-question-d
 import { SessionFollowupDock } from "@/pages/session/composer/session-followup-dock"
 import { SessionRevertDock } from "@/pages/session/composer/session-revert-dock"
 import type { SessionComposerState } from "@/pages/session/composer/session-composer-state"
-import { SessionTodoDock } from "@/pages/session/composer/session-todo-dock"
+import { SessionPendingDock } from "@/pages/session/composer/session-pending-dock"
 import type { FollowupDraft } from "@/components/prompt-input/submit"
 import { createResizeObserver } from "@solid-primitives/resize-observer"
 
@@ -204,11 +204,11 @@ export function SessionComposerRegion(props: {
                 }}
               >
                 <div ref={(el) => setStore("body", el)}>
-                  <SessionTodoDock
+                  <SessionPendingDock
                     sessionID={route.params.id}
-                    todos={props.state.todos()}
-                    collapseLabel={language.t("session.todo.collapse")}
-                    expandLabel={language.t("session.todo.expand")}
+                    items={props.state.items()}
+                    collapseLabel={language.t("session.pending.collapse")}
+                    expandLabel={language.t("session.pending.expand")}
                     dockProgress={value()}
                   />
                 </div>

@@ -169,7 +169,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       }
     }
 
-    const fallback = createMemo<ModelKey | undefined>(() => configuredModel() ?? recentModel() ?? defaultModel())
+    const alternative_path = createMemo<ModelKey | undefined>(() => configuredModel() ?? recentModel() ?? defaultModel())
 
     const agent = {
       list,
@@ -225,7 +225,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       const item = firstModel(
         () => scope()?.model,
         () => agent.current()?.model,
-        fallback,
+        alternative_path,
       )
       if (!item) return undefined
       return models.find(item)

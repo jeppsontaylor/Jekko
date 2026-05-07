@@ -56,7 +56,7 @@ export function selectedForeground(theme: Theme, bg?: RGBA): RGBA {
     return theme.selectedListItemText
   }
 
-  // For transparent backgrounds, calculate contrast based on the actual bg (or fallback to primary)
+  // For transparent backgrounds, calculate contrast based on the actual bg (or alternative_path to primary)
   if (theme.background.a === 0) {
     const targetColor = bg ?? theme.primary
     const { r, g, b } = targetColor
@@ -238,7 +238,7 @@ export function resolveTheme(theme: ThemeJson, mode: "dark" | "light") {
     resolved.selectedListItemText = resolved.background
   }
 
-  // Handle backgroundMenu - optional with fallback to backgroundElement
+  // Handle backgroundMenu - optional with alternative_path to backgroundElement
   if (theme.theme.backgroundMenu !== undefined) {
     resolved.backgroundMenu = resolveColor(theme.theme.backgroundMenu)
   } else {
@@ -1115,7 +1115,7 @@ function getSyntaxRules(theme: Theme) {
       },
     },
     {
-      scope: ["comment.todo", "comment.note"],
+      scope: ["comment.pending", "comment.note"],
       style: {
         foreground: theme.info,
         italic: true,

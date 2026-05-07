@@ -8,18 +8,26 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
+    concurrency:
+      group: jankurai-${{ github.ref }}
+      cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
       - name: Install jankurai
         run: cargo install jankurai --locked
       - run: jankurai --version
-      - name: jankurai audit
-        run: jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl
+- name: jankurai audit
+          run: jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl
+        - name: Upload SARIF to code scanning
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: target/jankurai/jankurai.sarif
       - name: Proofbind verify
         run: jankurai proofbind verify . --changed-from origin/main
       - name: Proofmark rust
@@ -28,9 +36,37 @@ jobs:
         run: jankurai rust witness build .
       - name: UX QA smoke
         run: jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json
-      - uses: actions/upload-artifact@v7
-        if: always()
+- name: Security scan
+        run: jankurai security run . --out target/jankurai/security/evidence.json
+      - name: Secret scanning (trufflehog)
+        uses: trufflesecurity/trufflehog@ba0a524d6e51744d9d4e306bc57ac5d6ca5173ea
         with:
+          path: .
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+      - name: Dependency scanning (syft + grype)
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        with:
+          path: .
+          artifact-name: sbom
+          fail-build: false
+      - name: Grype vulnerability scan
+        uses: anchore/scan-action@3343887d815d7b07465f6fdcd395bd66508d486a
+        with:
+          path: .
+          fail-build: false
+          severity-cutoff: high
+      - name: Cargo audit
+        run: cargo audit --deny-warnings
+      - name: Record security evidence
+        run: |
+          mkdir -p target/jankurai/security
+          jankurai security run . --out target/jankurai/security/evidence.json
+          echo "Security lane completed" > target/jankurai/security/lane-status.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+         if: always()
+         with:
           name: jankurai-adoption-evidence
           if-no-files-found: ignore
           path: |
@@ -45,4 +81,14 @@ jobs:
             target/jankurai/rust/witness-graph.json
             target/jankurai/ux-qa.json
             target/jankurai/security/evidence.json
+            target/jankurai/security/lane-status.txt
             target/jankurai/migration-report.json
+      - name: Upload SARIF to code scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@7851e55dc3be31ec4bcc3ef98453de2cb306e698
+        with:
+          sarif_file: target/jankurai/jankurai.sarif
+      - name: Dependency review
+        uses: actions/dependency-review-action@5f95995a508f4247e8dcd9dc70b4e1dd2a76b8da
+      - name: SLSA provenance
+        uses: slsa-framework/slsa-github-generator/.github/actions/generator-generic@53eccc4420b7522e11420f013472e2195a175b23

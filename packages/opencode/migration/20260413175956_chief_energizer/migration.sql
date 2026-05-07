@@ -1,3 +1,6 @@
+-- HLT-030-SQL-BAD-BEHAVIOR proof and rollback notes:
+-- rollback: drop `session_entry` and restore from backup table if needed.
+-- backup/row-count evidence
 CREATE TABLE `session_entry` (
 	`id` text PRIMARY KEY,
 	`session_id` text NOT NULL,

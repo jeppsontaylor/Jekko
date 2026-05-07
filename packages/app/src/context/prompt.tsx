@@ -162,10 +162,10 @@ type PromptCacheEntry = {
 }
 
 function createPromptSession(dir: string, id: string | undefined) {
-  const legacy = `${dir}/prompt${id ? "/" + id : ""}.v2`
+  const historical = `${dir}/prompt${id ? "/" + id : ""}.v2`
 
   const [store, setStore, _, ready] = persisted(
-    Persist.scoped(dir, id, "prompt", [legacy]),
+    Persist.scoped(dir, id, "prompt", [historical]),
     createStore<{
       prompt: Prompt
       cursor?: number

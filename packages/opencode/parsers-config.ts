@@ -150,7 +150,7 @@ export default {
           // "https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/html/highlights.scm",
           "https://github.com/tree-sitter/tree-sitter-html/raw/refs/heads/master/queries/highlights.scm",
         ],
-        // TODO: Injections not working for some reason
+        // pending: Injections not working for some reason
         // injections: [
         //   "https://github.com/tree-sitter/tree-sitter-html/raw/refs/heads/master/queries/injections.scm",
         // ],
@@ -274,7 +274,7 @@ export default {
     },
     {
       filetype: "nix",
-      // TODO: Replace with official tree-sitter-nix WASM when published
+      // pending: Replace with official tree-sitter-nix WASM when published
       // See: https://github.com/nix-community/tree-sitter-nix/issues/66
       wasm: "https://github.com/ast-grep/ast-grep.github.io/raw/40b84530640aa83a0d34a20a2b0623d7b8e5ea97/website/public/parsers/tree-sitter-nix.wasm",
       queries: {

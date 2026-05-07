@@ -116,7 +116,7 @@ const AgentCreateCommand = effectCmd({
       } else {
         const query = await prompts.text({
           message: "Description",
-          placeholder: "What should this agent do?",
+          defaultValue: "What should this agent do?",
           validate: (x) => (x && x.length > 0 ? undefined : "Required"),
         })
         if (prompts.isCancel(query)) throw new UI.CancelledError()

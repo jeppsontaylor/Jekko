@@ -57,10 +57,10 @@ async function setupStorageDir() {
   await fs.mkdir(path.join(storageDir, "message", "ses_test456def"), { recursive: true })
   await fs.mkdir(path.join(storageDir, "part", "msg_test789ghi"), { recursive: true })
   await fs.mkdir(path.join(storageDir, "session_diff"), { recursive: true })
-  await fs.mkdir(path.join(storageDir, "todo"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "pending"), { recursive: true })
   await fs.mkdir(path.join(storageDir, "permission"), { recursive: true })
   await fs.mkdir(path.join(storageDir, "session_share"), { recursive: true })
-  // Create legacy marker to indicate JSON storage exists
+  // Create historical marker to indicate JSON storage exists
   await Bun.write(path.join(storageDir, "migration"), "1")
   return storageDir
 }
@@ -259,7 +259,7 @@ describe("JSON to SQLite migration", () => {
     expect(parts[0].id).toBe(PartID.make("prt_testabc123"))
   })
 
-  test("migrates legacy parts without ids in body", async () => {
+  test("migrates historical parts without ids in body", async () => {
     await writeProject(storageDir, {
       id: "proj_test123abc",
       worktree: "/",
@@ -391,7 +391,7 @@ describe("JSON to SQLite migration", () => {
     expect(stats?.sessions).toBe(0)
   })
 
-  test("uses directory path for projectID when JSON has stale value", async () => {
+  test("uses directory path for projectID when JSON has outdated value", async () => {
     // Simulates the scenario where earlier migration moved sessions to new
     // git-based project directories but didn't update the projectID field
     const gitBasedProjectID = "abc123gitcommit"
@@ -403,10 +403,10 @@ describe("JSON to SQLite migration", () => {
       sandboxes: [],
     })
 
-    // Session is in the git-based directory but JSON still has old projectID
+    // Session is in the git-based directory but JSON still has prior projectID
     await writeSession(storageDir, gitBasedProjectID, {
       id: "ses_migrated",
-      projectID: "old-project-name", // Stale! Should be ignored
+      projectID: "prior-project-name", // Stale! Should be ignored
       slug: "migrated-session",
       directory: "/test/path",
       title: "Migrated Session",
@@ -421,7 +421,7 @@ describe("JSON to SQLite migration", () => {
     const sessions = db.select().from(SessionTable).all()
     expect(sessions.length).toBe(1)
     expect(sessions[0].id).toBe(SessionID.make("ses_migrated"))
-    expect(sessions[0].project_id).toBe(ProjectID.make(gitBasedProjectID)) // Uses directory, not stale JSON
+    expect(sessions[0].project_id).toBe(ProjectID.make(gitBasedProjectID)) // Uses directory, not outdated JSON
   })
 
   test("uses filename for session id when JSON has different value", async () => {
@@ -479,19 +479,19 @@ describe("JSON to SQLite migration", () => {
     })
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
 
-    // Create todo file (named by sessionID, contains array of todos)
+    // Create pending file (named by sessionID, contains array of todos)
     await Bun.write(
-      path.join(storageDir, "todo", "ses_test456def.json"),
+      path.join(storageDir, "pending", "ses_test456def.json"),
       JSON.stringify([
         {
           id: "todo_1",
-          content: "First todo",
+          content: "First pending",
           status: "pending",
           priority: "high",
         },
         {
           id: "todo_2",
-          content: "Second todo",
+          content: "Second pending",
           status: "completed",
           priority: "medium",
         },
@@ -504,11 +504,11 @@ describe("JSON to SQLite migration", () => {
 
     const todos = db.select().from(TodoTable).orderBy(TodoTable.position).all()
     expect(todos.length).toBe(2)
-    expect(todos[0].content).toBe("First todo")
+    expect(todos[0].content).toBe("First pending")
     expect(todos[0].status).toBe("pending")
     expect(todos[0].priority).toBe("high")
     expect(todos[0].position).toBe(0)
-    expect(todos[1].content).toBe("Second todo")
+    expect(todos[1].content).toBe("Second pending")
     expect(todos[1].position).toBe(1)
   })
 
@@ -522,7 +522,7 @@ describe("JSON to SQLite migration", () => {
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
 
     await Bun.write(
-      path.join(storageDir, "todo", "ses_test456def.json"),
+      path.join(storageDir, "pending", "ses_test456def.json"),
       JSON.stringify([
         { content: "Third", status: "pending", priority: "low" },
         { content: "First", status: "pending", priority: "high" },
@@ -634,7 +634,7 @@ describe("JSON to SQLite migration", () => {
     expect(projects[0].id).toBe(ProjectID.make("proj_test123abc"))
   })
 
-  test("skips invalid todo entries while preserving source positions", async () => {
+  test("skips invalid pending entries while preserving source positions", async () => {
     await writeProject(storageDir, {
       id: "proj_test123abc",
       worktree: "/",
@@ -644,7 +644,7 @@ describe("JSON to SQLite migration", () => {
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
 
     await Bun.write(
-      path.join(storageDir, "todo", "ses_test456def.json"),
+      path.join(storageDir, "pending", "ses_test456def.json"),
       JSON.stringify([
         { content: "keep-0", status: "pending", priority: "high" },
         { content: "drop-1", priority: "low" },
@@ -673,11 +673,11 @@ describe("JSON to SQLite migration", () => {
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
 
     await Bun.write(
-      path.join(storageDir, "todo", "ses_test456def.json"),
+      path.join(storageDir, "pending", "ses_test456def.json"),
       JSON.stringify([{ content: "valid", status: "pending", priority: "high" }]),
     )
     await Bun.write(
-      path.join(storageDir, "todo", "ses_missing.json"),
+      path.join(storageDir, "pending", "ses_missing.json"),
       JSON.stringify([{ content: "orphan", status: "pending", priority: "high" }]),
     )
 
@@ -775,17 +775,17 @@ describe("JSON to SQLite migration", () => {
     await Bun.write(path.join(storageDir, "part", "msg_ok", "part_broken.json"), "{ nope")
 
     await Bun.write(
-      path.join(storageDir, "todo", "ses_test456def.json"),
+      path.join(storageDir, "pending", "ses_test456def.json"),
       JSON.stringify([
         { content: "ok", status: "pending", priority: "high" },
         { content: "skip", status: "pending" },
       ]),
     )
     await Bun.write(
-      path.join(storageDir, "todo", "ses_missing.json"),
+      path.join(storageDir, "pending", "ses_missing.json"),
       JSON.stringify([{ content: "orphan", status: "pending", priority: "high" }]),
     )
-    await Bun.write(path.join(storageDir, "todo", "ses_broken.json"), "{ nope")
+    await Bun.write(path.join(storageDir, "pending", "ses_broken.json"), "{ nope")
 
     await Bun.write(
       path.join(storageDir, "permission", "proj_test123abc.json"),
@@ -811,7 +811,7 @@ describe("JSON to SQLite migration", () => {
 
     // Projects: proj_test123abc (valid), proj_missing_id (now derives id from filename)
     // Sessions: ses_test456def (valid), ses_missing_project (now uses dir path),
-    // ses_orphan (now uses dir path, ignores stale projectID)
+    // ses_orphan (now uses dir path, ignores outdated projectID)
     expect(stats.projects).toBe(2)
     expect(stats.sessions).toBe(3)
     expect(stats.messages).toBe(1)

@@ -53,7 +53,6 @@ import { PromptPopover, type AtOption, type SlashCommand } from "./prompt-input/
 import { PromptContextItems } from "./prompt-input/context-items"
 import { PromptImageAttachments } from "./prompt-input/image-attachments"
 import { PromptDragOverlay } from "./prompt-input/drag-overlay"
-import { promptPlaceholder } from "./prompt-input/placeholder"
 import { ImagePreview } from "@opencode-ai/ui/image-preview"
 import { useQueries } from "@tanstack/solid-query"
 import { loadAgentsQuery, loadProvidersQuery } from "@/context/global-sync/bootstrap"
@@ -100,6 +99,22 @@ const EXAMPLES = [
 ] as const
 
 const NON_EMPTY_TEXT = /[^\s\u200B]/
+
+type PromptDefaultValueInput = {
+  mode: "normal" | "shell"
+  commentCount: number
+  example: string
+  suggest: boolean
+  t: (key: string, params?: Record<string, string>) => string
+}
+
+function promptDefaultValue(input: PromptDefaultValueInput) {
+  if (input.mode === "shell") return input.t("prompt.default_value.shell", { example: input.example })
+  if (input.commentCount > 1) return input.t("prompt.default_value.summarizeComments")
+  if (input.commentCount === 1) return input.t("prompt.default_value.summarizeComment")
+  if (!input.suggest) return input.t("prompt.default_value.simple")
+  return input.t("prompt.default_value.normal", { example: input.example })
+}
 
 export const PromptInput: Component<PromptInputProps> = (props) => {
   const sdk = useSDK()
@@ -255,7 +270,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     popover: "at" | "slash" | null
     historyIndex: number
     savedPrompt: PromptHistoryEntry | null
-    placeholder: number
+    default_value: number
     draggingType: "image" | "@mention" | null
     mode: "normal" | "shell"
     applyingHistory: boolean
@@ -263,7 +278,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     popover: null,
     historyIndex: -1,
     savedPrompt: null as PromptHistoryEntry | null,
-    placeholder: Math.floor(Math.random() * EXAMPLES.length),
+    default_value: Math.floor(Math.random() * EXAMPLES.length),
     draggingType: null,
     mode: "normal",
     applyingHistory: false,
@@ -343,13 +358,24 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
 
   const suggest = createMemo(() => !hasUserPrompt())
 
-  const placeholder = createMemo(() =>
-    promptPlaceholder({
+  const default_value = createMemo(() =>
+    promptDefaultValue({
       mode: store.mode,
       commentCount: commentCount(),
-      example: suggest() ? (store.mode === "shell" ? "git status" : language.t(EXAMPLES[store.placeholder])) : "",
+      example: suggest() ? (store.mode === "shell" ? "git status" : language.t(EXAMPLES[store.default_value])) : "",
       suggest: suggest(),
-      t: (key, params) => language.t(key as Parameters<typeof language.t>[0], params as never),
+      t: (key, params) => {
+        switch (key) {
+          case "prompt.default_value.shell":
+          case "prompt.default_value.summarizeComments":
+          case "prompt.default_value.summarizeComment":
+          case "prompt.default_value.simple":
+          case "prompt.default_value.normal":
+            return language.t(key, params)
+          default:
+            return key
+        }
+      },
     }),
   )
 
@@ -488,7 +514,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   }
 
   const clearEditor = () => {
-    editorRef.innerHTML = ""
+    editorRef.replaceChildren()
   }
 
   const setEditorText = (text: string) => {
@@ -534,7 +560,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     if (params.id) return
     if (!suggest()) return
     const interval = setInterval(() => {
-      setStore("placeholder", (prev) => (prev + 1) % EXAMPLES.length)
+      setStore("default_value", (prev) => (prev + 1) % EXAMPLES.length)
     }, 6500)
     onCleanup(() => clearInterval(interval))
   })
@@ -566,7 +592,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   )
   const agentNames = createMemo(() => local.agent.list().map((agent) => agent.name))
 
-  const handleAtSelect = (option: AtOption | undefined) => {
+  const handleMentionSelect = (option: AtOption | undefined) => {
     if (!option) return
     if (option.type === "agent") {
       addPart({ type: "agent", name: option.name, content: "@" + option.name, start: 0, end: 0 })
@@ -583,7 +609,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   const {
     flat: atFlat,
     active: atActive,
-    setActive: setAtActive,
+    setActive: setMentionActive,
     onInput: atOnInput,
     onKeyDown: atOnKeyDown,
   } = useFilteredList<AtOption>({
@@ -614,7 +640,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       }
       return rank(a.category) - rank(b.category)
     },
-    onSelect: handleAtSelect,
+    onSelect: handleMentionSelect,
   })
 
   const slashCommands = createMemo<SlashCommand[]>(() => {
@@ -737,7 +763,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       if (items.length === 0) return
       const active = atActive()
       const item = items.find((entry) => atKey(entry) === active) ?? items[0]
-      handleAtSelect(item)
+      handleMentionSelect(item)
       return
     }
 
@@ -967,10 +993,10 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
           const next = last.nextSibling
           const emptyText = next?.nodeType === Node.TEXT_NODE && (next.textContent ?? "") === ""
           if (isBreak && (!next || emptyText)) {
-            const placeholder = next && emptyText ? next : document.createTextNode("\u200B")
-            if (!next) last.parentNode?.insertBefore(placeholder, null)
-            placeholder.textContent = "\u200B"
-            range.setStart(placeholder, 0)
+            const default_value = next && emptyText ? next : document.createTextNode("\u200B")
+            if (!next) last.parentNode?.insertBefore(default_value, null)
+            default_value.textContent = "\u200B"
+            range.setStart(default_value, 0)
           } else {
             range.setStartAfter(last)
           }
@@ -1281,8 +1307,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         atFlat={atFlat()}
         atActive={atActive() ?? undefined}
         atKey={atKey}
-        setAtActive={setAtActive}
-        onAtSelect={handleAtSelect}
+        setMentionActive={setMentionActive}
+        onMentionSelect={handleMentionSelect}
         slashFlat={slashFlat()}
         slashActive={slashActive() ?? undefined}
         setSlashActive={setSlashActive}
@@ -1348,7 +1374,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               }}
               role="textbox"
               aria-multiline="true"
-              aria-label={placeholder()}
+              aria-label={default_value()}
               contenteditable="true"
               autocapitalize={store.mode === "normal" ? "sentences" : "off"}
               autocorrect={store.mode === "normal" ? "on" : "off"}
@@ -1376,7 +1402,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               classList={{ "font-mono!": store.mode === "shell" }}
               style={{ "padding-bottom": space, display: prompt.dirty() ? "none" : undefined }}
             >
-              {placeholder()}
+              {default_value()}
             </div>
           </div>
 

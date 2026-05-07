@@ -130,12 +130,12 @@ function parseUpdateFileChunks(lines: string[], startIdx: number): { chunks: Upd
         }
 
         if (changeLine.startsWith(" ")) {
-          // Keep line - appears in both old and new
+          // Keep line - appears in both prior and new
           const content = changeLine.substring(1)
           oldLines.push(content)
           newLines.push(content)
         } else if (changeLine.startsWith("-")) {
-          // Remove line - only in old
+          // Remove line - only in prior
           oldLines.push(changeLine.substring(1))
         } else if (changeLine.startsWith("+")) {
           // Add line - only in new
@@ -364,7 +364,7 @@ function computeReplacements(
       lineIndex = contextIdx + 1
     }
 
-    // Handle pure addition (no old lines)
+    // Handle pure addition (no prior lines)
     if (chunk.old_lines.length === 0) {
       const insertionIdx =
         originalLines.length > 0 && originalLines[originalLines.length - 1] === ""
@@ -374,7 +374,7 @@ function computeReplacements(
       continue
     }
 
-    // Try to match old lines in the file
+    // Try to match prior lines in the file
     let pattern = chunk.old_lines
     let newSlice = chunk.new_lines
     let found = seekSequence(originalLines, pattern, lineIndex, chunk.is_end_of_file)
@@ -409,7 +409,7 @@ function applyReplacements(lines: string[], replacements: Array<[number, number,
   for (let i = replacements.length - 1; i >= 0; i--) {
     const [startIdx, oldLen, newSegment] = replacements[i]
 
-    // Remove old lines
+    // Remove prior lines
     result.splice(startIdx, oldLen)
 
     // Insert new lines

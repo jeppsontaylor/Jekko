@@ -29,7 +29,7 @@ interface EffectCmdOpts<Args, A> {
    *
    * `true` (default): wraps the handler in `InstanceStore.Service.provide({directory})`
    * so `InstanceRef` resolves to a loaded `InstanceContext`. Auto-disposes via
-   * `Effect.ensuring(store.dispose(ctx))` on every Exit (matches the legacy
+   * `Effect.ensuring(store.dispose(ctx))` on every Exit (matches the historical
    * `bootstrap()` finally-disposal). Runs InstanceBootstrap (config + plugin
    * init + LSP/File/etc forks) eagerly.
    *
@@ -58,7 +58,7 @@ interface EffectCmdOpts<Args, A> {
  * The handler is wrapped in `Effect.ensuring(store.dispose(ctx))` so the loaded
  * InstanceContext is disposed (runDisposers + IPC `server.instance.disposed`)
  * on every Exit — success, typed failure, defect, or interruption. Matches the
- * legacy `bootstrap()` finally-disposal semantics without per-handler boilerplate.
+ * historical `bootstrap()` finally-disposal semantics without per-handler boilerplate.
  *
  * Errors propagate to the existing top-level handler in `src/index.ts`; use
  * `fail("...")` for user-visible domain failures (clean exit, formatted message).

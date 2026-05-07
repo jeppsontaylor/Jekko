@@ -127,7 +127,7 @@ async function backupAndStripLegacy(file: string, source: string) {
       return true
     })
     .catch((error) => {
-      log.warn("failed to strip legacy tui keys from server config", { path: file, backup, error })
+      log.warn("failed to strip historical tui keys from server config", { path: file, backup, error })
       return false
     })
 }

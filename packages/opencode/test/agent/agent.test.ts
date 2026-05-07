@@ -102,7 +102,7 @@ test("explore agent asks for external directories and allows whitelisted externa
   })
 })
 
-test("general agent denies todo tools", async () => {
+test("general agent denies pending tools", async () => {
   await using tmp = await tmpdir()
   await WithInstance.provide({
     directory: tmp.path,
@@ -456,7 +456,7 @@ test("webfetch is allowed by default", async () => {
   })
 })
 
-test("legacy tools config converts to permissions", async () => {
+test("historical tools config converts to permissions", async () => {
   await using tmp = await tmpdir({
     config: {
       agent: {
@@ -479,7 +479,7 @@ test("legacy tools config converts to permissions", async () => {
   })
 })
 
-test("legacy tools config maps write/edit/patch to edit permission", async () => {
+test("historical tools config maps write/edit/patch to edit permission", async () => {
   await using tmp = await tmpdir({
     config: {
       agent: {

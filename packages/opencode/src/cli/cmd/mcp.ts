@@ -498,7 +498,7 @@ export const McpAddCommand = effectCmd({
       if (type === "local") {
         const command = await prompts.text({
           message: "Enter command to run",
-          placeholder: "e.g., opencode x @modelcontextprotocol/server-filesystem",
+          defaultValue: "e.g., opencode x @modelcontextprotocol/server-filesystem",
           validate: (x) => (x && x.length > 0 ? undefined : "Required"),
         })
         if (prompts.isCancel(command)) throw new UI.CancelledError()
@@ -517,7 +517,7 @@ export const McpAddCommand = effectCmd({
       if (type === "remote") {
         const url = await prompts.text({
           message: "Enter MCP server URL",
-          placeholder: "e.g., https://example.com/mcp",
+          defaultValue: "e.g., https://example.com/mcp",
           validate: (x) => {
             if (!x) return "Required"
             if (x.length === 0) return "Required"

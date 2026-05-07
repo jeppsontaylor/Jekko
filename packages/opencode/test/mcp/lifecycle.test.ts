@@ -350,7 +350,7 @@ test(
 // ========================================================================
 
 test(
-  "add() closes the old client when replacing a server",
+  "add() closes the prior client when replacing a server",
   // Don't put the server in config — add it dynamically so we control
   // exactly which client instance is "first" vs "second".
   withInstance({}, (mcp) =>

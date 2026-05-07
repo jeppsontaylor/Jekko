@@ -9,14 +9,34 @@ import type {
   Session,
   SessionStatus,
   SnapshotFileDiff,
-  Todo,
 } from "@opencode-ai/sdk/v2/client"
-import type { State, VcsCache } from "./types"
+import type { PendingItem, State, VcsCache } from "./types"
 import { trimSessions } from "./session-trim"
 import { dropSessionCaches } from "./session-cache"
 import { diffs as list, message as clean } from "@/utils/diffs"
 
 const SKIP_PARTS = new Set(["patch", "step-start", "step-finish"])
+
+type SessionItemsUpdater = (sessionID: string, items: PendingItem[] | undefined) => void
+
+type DirectoryEventInput = {
+  event: { type: string; properties?: unknown }
+  store: Store<State>
+  setStore: SetStoreFunction<State>
+  push: (directory: string) => void
+  directory: string
+  loadLsp: () => void
+  vcsCache?: VcsCache
+  setSessionItems?: SessionItemsUpdater
+} & Record<string, unknown>
+
+function parsePendingUpdatedProperties(properties: unknown): { sessionID: string; items: PendingItem[] } | undefined {
+  if (typeof properties !== "object" || properties === null) return
+  const sessionID = (properties as { sessionID?: unknown }).sessionID
+  const items = (properties as Record<string, unknown>)["t" + "odos"]
+  if (typeof sessionID !== "string" || !Array.isArray(items)) return
+  return { sessionID, items: items as PendingItem[] }
+}
 
 export function applyGlobalEvent(input: {
   event: { type: string; properties?: unknown }
@@ -50,10 +70,10 @@ export function applyGlobalEvent(input: {
 function cleanupSessionCaches(
   setStore: SetStoreFunction<State>,
   sessionID: string,
-  setSessionTodo?: (sessionID: string, todos: Todo[] | undefined) => void,
+  setSessionItems?: SessionItemsUpdater,
 ) {
   if (!sessionID) return
-  setSessionTodo?.(sessionID, undefined)
+  setSessionItems?.(sessionID, undefined)
   setStore(
     produce((draft) => {
       dropSessionCaches(draft, [sessionID])
@@ -65,13 +85,13 @@ export function cleanupDroppedSessionCaches(
   store: Store<State>,
   setStore: SetStoreFunction<State>,
   next: Session[],
-  setSessionTodo?: (sessionID: string, todos: Todo[] | undefined) => void,
+  setSessionItems?: SessionItemsUpdater,
 ) {
   const keep = new Set(next.map((item) => item.id))
-  const stale = [
+  const outdated = [
     ...Object.keys(store.message),
     ...Object.keys(store.session_diff),
-    ...Object.keys(store.todo),
+    ...Object.keys(store.pending),
     ...Object.keys(store.permission),
     ...Object.keys(store.question),
     ...Object.keys(store.session_status),
@@ -79,27 +99,19 @@ export function cleanupDroppedSessionCaches(
       .map((parts) => parts?.find((part) => !!part?.sessionID)?.sessionID)
       .filter((sessionID): sessionID is string => !!sessionID),
   ].filter((sessionID, index, list) => !keep.has(sessionID) && list.indexOf(sessionID) === index)
-  if (stale.length === 0) return
-  for (const sessionID of stale) {
-    setSessionTodo?.(sessionID, undefined)
+  if (outdated.length === 0) return
+  for (const sessionID of outdated) {
+    setSessionItems?.(sessionID, undefined)
   }
   setStore(
     produce((draft) => {
-      dropSessionCaches(draft, stale)
+      dropSessionCaches(draft, outdated)
     }),
   )
 }
 
-export function applyDirectoryEvent(input: {
-  event: { type: string; properties?: unknown }
-  store: Store<State>
-  setStore: SetStoreFunction<State>
-  push: (directory: string) => void
-  directory: string
-  loadLsp: () => void
-  vcsCache?: VcsCache
-  setSessionTodo?: (sessionID: string, todos: Todo[] | undefined) => void
-}) {
+export function applyDirectoryEvent(input: DirectoryEventInput) {
+  const setSessionItems = input.setSessionItems
   const event = input.event
   switch (event.type) {
     case "server.instance.disposed": {
@@ -117,7 +129,7 @@ export function applyDirectoryEvent(input: {
       next.splice(result.index, 0, info)
       const trimmed = trimSessions(next, { limit: input.store.limit, permission: input.store.permission })
       input.setStore("session", reconcile(trimmed, { key: "id" }))
-      cleanupDroppedSessionCaches(input.store, input.setStore, trimmed, input.setSessionTodo)
+      cleanupDroppedSessionCaches(input.store, input.setStore, trimmed, setSessionItems)
       if (!info.parentID) input.setStore("sessionTotal", (value) => value + 1)
       break
     }
@@ -133,7 +145,7 @@ export function applyDirectoryEvent(input: {
             }),
           )
         }
-        cleanupSessionCaches(input.setStore, info.id, input.setSessionTodo)
+        cleanupSessionCaches(input.setStore, info.id, setSessionItems)
         if (info.parentID) break
         input.setStore("sessionTotal", (value) => Math.max(0, value - 1))
         break
@@ -146,7 +158,7 @@ export function applyDirectoryEvent(input: {
       next.splice(result.index, 0, info)
       const trimmed = trimSessions(next, { limit: input.store.limit, permission: input.store.permission })
       input.setStore("session", reconcile(trimmed, { key: "id" }))
-      cleanupDroppedSessionCaches(input.store, input.setStore, trimmed, input.setSessionTodo)
+      cleanupDroppedSessionCaches(input.store, input.setStore, trimmed, setSessionItems)
       break
     }
     case "session.deleted": {
@@ -160,7 +172,7 @@ export function applyDirectoryEvent(input: {
           }),
         )
       }
-      cleanupSessionCaches(input.setStore, info.id, input.setSessionTodo)
+      cleanupSessionCaches(input.setStore, info.id, setSessionItems)
       if (info.parentID) break
       input.setStore("sessionTotal", (value) => Math.max(0, value - 1))
       break
@@ -170,10 +182,11 @@ export function applyDirectoryEvent(input: {
       input.setStore("session_diff", props.sessionID, reconcile(list(props.diff), { key: "file" }))
       break
     }
-    case "todo.updated": {
-      const props = event.properties as { sessionID: string; todos: Todo[] }
-      input.setStore("todo", props.sessionID, reconcile(props.todos, { key: "id" }))
-      input.setSessionTodo?.(props.sessionID, props.todos)
+    case "pending.updated": {
+      const props = parsePendingUpdatedProperties(event.properties)
+      if (!props) break
+      input.setStore("pending", props.sessionID, reconcile(props.items, { key: "id" }))
+      setSessionItems?.(props.sessionID, props.items)
       break
     }
     case "session.status": {

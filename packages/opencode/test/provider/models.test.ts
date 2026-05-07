@@ -219,7 +219,7 @@ describe("ModelsDev Service", () => {
     }),
   )
 
-  it.live("refresh(false) fetches when on-disk file is stale", () =>
+  it.live("refresh(false) fetches when on-disk file is outdated", () =>
     Effect.gen(function* () {
       // Stale: mtime 10 minutes ago, beyond the 5-minute TTL.
       yield* writeCache(fixture, Date.now() - 10 * 60 * 1000)

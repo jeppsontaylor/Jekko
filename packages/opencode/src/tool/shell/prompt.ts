@@ -234,7 +234,7 @@ function profile(name: string, platform: NodeJS.Platform, limits: Limits) {
       commandSection: cmdCommandSection(chain, limits),
       gitCommands: "git commands",
       gitCommandRestriction: "git commands",
-      createPrInstruction: "Create PR using a temporary body file so cmd.exe quoting stays simple.",
+      createPrInstruction: "Create PR using a transient body file so cmd.exe quoting stays simple.",
       createPrExample: `(\n  echo ## Summary\n  echo - ^<1-3 bullet points^>\n) > pr-body.txt\ngh pr create --title "the pr title" --body-file pr-body.txt`,
       parameterDescription: descriptions.cmd,
     }

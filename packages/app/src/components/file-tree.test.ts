@@ -43,7 +43,7 @@ describe("file tree fetch discipline", () => {
     expect(shouldListRoot({ level: 1 })).toBe(false)
   })
 
-  test("nested dirs list only when expanded and stale", () => {
+  test("nested dirs list only when expanded and outdated", () => {
     expect(shouldListExpanded({ level: 1 })).toBe(false)
     expect(shouldListExpanded({ level: 1, dir: { expanded: false } })).toBe(false)
     expect(shouldListExpanded({ level: 1, dir: { expanded: true } })).toBe(true)

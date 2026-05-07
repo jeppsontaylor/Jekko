@@ -201,7 +201,7 @@ export async function handler(
         })
       }
 
-      // Try another provider => stop retrying if using fallback provider
+      // Try another provider => stop retrying if using alternative_path provider
       if (
         res.status !== 200 &&
         // ie. 400 error is usually provider error like malformed request
@@ -512,7 +512,7 @@ export async function handler(
         if (provider) return provider
       }
 
-      // fallback provider
+      // alternative_path provider
       return modelInfo.providers.find((provider) => provider.id === modelInfo.fallbackProvider)
     })()
 
@@ -925,7 +925,7 @@ export async function handler(
       "cost.cache_read.microcents": cacheReadCost ? centsToMicroCents(cacheReadCost) : undefined,
       "cost.cache_write.microcents": cacheWrite5mCost ? centsToMicroCents(cacheWrite5mCost) : undefined,
       "cost.total.microcents": centsToMicroCents(totalCostInCent),
-      // deprecated - remove after May 20, 2026
+      // discouraged - remove after May 20, 2026
       "cost.input": Math.round(inputCost),
       "cost.output": Math.round(outputCost),
       "cost.reasoning": reasoningCost ? Math.round(reasoningCost) : undefined,

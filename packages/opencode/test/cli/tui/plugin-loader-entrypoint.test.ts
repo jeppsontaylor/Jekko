@@ -377,7 +377,7 @@ test("does not use directory package main for tui entry", async () => {
   }
 })
 
-test("uses directory index fallback for tui when package.json is missing", async () => {
+test("uses directory index alternative_path for tui when package.json is missing", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
       const mod = path.join(dir, "mods", "dir-index")

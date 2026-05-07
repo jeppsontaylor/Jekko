@@ -151,7 +151,7 @@ test("fromConfig - preserves top-level config key order", () => {
   expect(Permission.evaluate("bash", "ls", specificFirst).action).toBe("deny")
 })
 
-test("fromConfig - wildcard acts as fallback when it appears before specifics", () => {
+test("fromConfig - wildcard acts as alternative_path when it appears before specifics", () => {
   const ruleset = Permission.fromConfig({ "*": "ask", bash: "allow" })
   expect(Permission.evaluate("edit", "foo.ts", ruleset).action).toBe("ask")
   expect(Permission.evaluate("bash", "ls", ruleset).action).toBe("allow")
@@ -174,7 +174,7 @@ test("fromConfig - sub-pattern insertion order inside a tool key is preserved", 
   expect(Permission.evaluate("bash", "git status", ruleset).action).toBe("allow")
 })
 
-test("fromConfig - documented fallback-first example", () => {
+test("fromConfig - documented alternative_path-first example", () => {
   const ruleset = Permission.fromConfig({ "*": "ask", bash: "allow", edit: "deny" })
   expect(Permission.evaluate("bash", "ls", ruleset).action).toBe("allow")
   expect(Permission.evaluate("edit", "foo.ts", ruleset).action).toBe("deny")
@@ -432,7 +432,7 @@ test("evaluate - multiple matching permission patterns combine rules", () => {
   expect(result.action).toBe("deny")
 })
 
-test("evaluate - wildcard permission fallback for unknown tool", () => {
+test("evaluate - wildcard permission alternative_path for unknown tool", () => {
   const result = Permission.evaluate("unknown_tool", "anything", [
     { permission: "*", pattern: "*", action: "ask" },
     { permission: "bash", pattern: "*", action: "allow" },

@@ -62,7 +62,7 @@ describe("PatchVm", () => {
       expect(preview.rollbackTokens[0].preImageHash).toBe(expectedHash)
     })
 
-    test("stale hash rejection", async () => {
+    test("outdated hash rejection", async () => {
       const filePath = path.join(tempDir, "existing.txt")
       await fs.writeFile(filePath, "original content")
 
@@ -71,7 +71,7 @@ describe("PatchVm", () => {
           type: "update",
           path: filePath,
           content: "updated content",
-          expectedHash: "stale-hash-that-does-not-match",
+          expectedHash: "outdated-hash-that-does-not-match",
         },
       ]
 
@@ -299,7 +299,7 @@ describe("PatchVm", () => {
     })
 
     test("move file with correct preview_id succeeds", async () => {
-      const oldPath = path.join(tempDir, "old.txt")
+      const oldPath = path.join(tempDir, "prior.txt")
       const newPath = path.join(tempDir, "new.txt")
       await fs.writeFile(oldPath, "content")
       const hash = hashString("content")

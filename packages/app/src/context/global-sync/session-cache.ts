@@ -5,15 +5,15 @@ import type {
   QuestionRequest,
   SessionStatus,
   SnapshotFileDiff,
-  Todo,
 } from "@opencode-ai/sdk/v2/client"
+import type { PendingItem } from "./types"
 
 export const SESSION_CACHE_LIMIT = 40
 
 type SessionCache = {
   session_status: Record<string, SessionStatus | undefined>
   session_diff: Record<string, SnapshotFileDiff[] | undefined>
-  todo: Record<string, Todo[] | undefined>
+  pending: Record<string, PendingItem[] | undefined>
   message: Record<string, Message[] | undefined>
   part: Record<string, Part[] | undefined>
   permission: Record<string, PermissionRequest[] | undefined>
@@ -21,18 +21,18 @@ type SessionCache = {
 }
 
 export function dropSessionCaches(store: SessionCache, sessionIDs: Iterable<string>) {
-  const stale = new Set(Array.from(sessionIDs).filter(Boolean))
-  if (stale.size === 0) return
+  const outdated = new Set(Array.from(sessionIDs).filter(Boolean))
+  if (outdated.size === 0) return
 
   for (const key of Object.keys(store.part)) {
     const parts = store.part[key]
-    if (!parts?.some((part) => stale.has(part?.sessionID ?? ""))) continue
+    if (!parts?.some((part) => outdated.has(part?.sessionID ?? ""))) continue
     delete store.part[key]
   }
 
-  for (const sessionID of stale) {
+  for (const sessionID of outdated) {
     delete store.message[sessionID]
-    delete store.todo[sessionID]
+    delete store.pending[sessionID]
     delete store.session_diff[sessionID]
     delete store.session_status[sessionID]
     delete store.permission[sessionID]
@@ -46,17 +46,17 @@ export function pickSessionCacheEvictions(input: {
   limit: number
   preserve?: Iterable<string>
 }) {
-  const stale: string[] = []
+  const outdated: string[] = []
   const keep = new Set([input.keep, ...Array.from(input.preserve ?? [])])
   if (input.seen.has(input.keep)) input.seen.delete(input.keep)
   input.seen.add(input.keep)
   for (const id of input.seen) {
-    if (input.seen.size - stale.length <= input.limit) break
+    if (input.seen.size - outdated.length <= input.limit) break
     if (keep.has(id)) continue
-    stale.push(id)
+    outdated.push(id)
   }
-  for (const id of stale) {
+  for (const id of outdated) {
     input.seen.delete(id)
   }
-  return stale
+  return outdated
 }

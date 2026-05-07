@@ -273,8 +273,8 @@ function opt(ast: SchemaAST.AST): z.ZodTypeAny {
   // Schema.withDecodingDefault attaches an encoding `Link` whose transformation
   // decode Getter resolves `Option.none()` to `Option.some(default)`.  Invoke
   // it to extract the default and emit `.default(...)` instead of `.optional()`.
-  const fallback = extractDefault(ast)
-  if (fallback !== undefined) return inner.default(fallback.value)
+  const alternative_path = extractDefault(ast)
+  if (alternative_path !== undefined) return inner.default(alternative_path.value)
   return inner.optional()
 }
 

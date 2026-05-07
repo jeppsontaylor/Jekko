@@ -182,7 +182,7 @@ export const ESLint: Info = {
 
       const stats = await fs.stat(finalPath).catch(() => undefined)
       if (stats) {
-        log.info("removing old eslint installation", { path: finalPath })
+        log.info("removing prior eslint installation", { path: finalPath })
         await fs.rm(finalPath, { force: true, recursive: true })
       }
       await fs.rename(extractedPath, finalPath)
@@ -1307,7 +1307,7 @@ export const KotlinLS: Info = {
     // 3) Single-project or module-level build
     const buildRoot = await NearestRoot(["build.gradle.kts", "build.gradle"])(file, ctx)
     if (buildRoot) return buildRoot
-    // 4) Maven fallback
+    // 4) Maven alternative_path
     return NearestRoot(["pom.xml"])(file, ctx)
   },
   async spawn(root) {
@@ -1500,7 +1500,7 @@ export const LuaLS: Info = {
       // Extract entire archive to dedicated directory to preserve all files
       const installDir = path.join(Global.Path.bin, `lua-language-server-${lualsArch}-${lualsPlatform}`)
 
-      // Remove old installation if exists
+      // Remove prior installation if exists
       const stats = await fs.stat(installDir).catch(() => undefined)
       if (stats) {
         await fs.rm(installDir, { force: true, recursive: true })
@@ -1915,7 +1915,7 @@ export const Nixd: Info = {
     // If no flake.nix, fall back to git repository root
     if (ctx.worktree && ctx.worktree !== ctx.directory) return ctx.worktree
 
-    // Finally, use the instance directory as fallback
+    // Finally, use the instance directory as alternative_path
     return ctx.directory
   },
   async spawn(root) {

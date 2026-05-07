@@ -55,13 +55,13 @@ export const childSessionOnPath = (sessions: Session[] | undefined, rootID: stri
 export const displayName = (project: { name?: string; worktree: string }) =>
   project.name || getFilename(project.worktree)
 
-export const errorMessage = (err: unknown, fallback: string) => {
+export const errorMessage = (err: unknown, alternative_path: string) => {
   if (err && typeof err === "object" && "data" in err) {
     const data = (err as { data?: { message?: string } }).data
     if (data?.message) return data.message
   }
   if (err instanceof Error) return err.message
-  return fallback
+  return alternative_path
 }
 
 export const effectiveWorkspaceOrder = (local: string, dirs: string[], persisted?: string[]) => {

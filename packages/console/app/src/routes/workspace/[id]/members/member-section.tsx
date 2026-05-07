@@ -311,9 +311,9 @@ export function MemberSection() {
                 data-component="input"
                 name="limit"
                 type="number"
-                placeholder={i18n.t("workspace.members.noLimit")}
                 value={store.limit}
                 onInput={(e) => setStore("limit", e.currentTarget.value)}
+                placeholder={i18n.t("workspace.members.noLimit")}
                 min="0"
               />
             </div>

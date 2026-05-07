@@ -7,7 +7,7 @@ import SidebarTodo from "../feature-plugins/sidebar/todo"
 import SidebarFiles from "../feature-plugins/sidebar/files"
 import SidebarFooter from "../feature-plugins/sidebar/footer"
 import PluginManager from "../feature-plugins/system/plugins"
-import SessionV2Debug from "../feature-plugins/system/session-v2"
+import SessionV2Debug from "../feature-plugins/system/session-debug"
 import type { TuiPlugin, TuiPluginModule } from "@opencode-ai/plugin/tui"
 import { Flag } from "@opencode-ai/core/flag/flag"
 

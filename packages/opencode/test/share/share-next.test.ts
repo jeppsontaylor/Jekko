@@ -90,7 +90,7 @@ beforeEach(async () => {
 })
 
 describe("ShareNext", () => {
-  it.live("request uses legacy share API without active org account", () =>
+  it.live("request uses historical share API without active org account", () =>
     provideTmpdirInstance(
       () =>
         ShareNext.Service.use((svc) =>
@@ -101,11 +101,11 @@ describe("ShareNext", () => {
             expect(req.api.sync("shr_123")).toBe("/api/share/shr_123/sync")
             expect(req.api.remove("shr_123")).toBe("/api/share/shr_123")
             expect(req.api.data("shr_123")).toBe("/api/share/shr_123/data")
-            expect(req.baseUrl).toBe("https://legacy-share.example.com")
+            expect(req.baseUrl).toBe("https://historical-share.example.com")
             expect(req.headers).toEqual({})
           }),
         ).pipe(Effect.provide(live(none))),
-      { config: { enterprise: { url: "https://legacy-share.example.com" } } },
+      { config: { enterprise: { url: "https://historical-share.example.com" } } },
     ),
   )
 
@@ -155,7 +155,7 @@ describe("ShareNext", () => {
               return Effect.succeed(
                 json(req, {
                   id: "shr_abc",
-                  url: "https://legacy-share.example.com/share/abc",
+                  url: "https://historical-share.example.com/share/abc",
                   secret: "sec_123",
                 }),
               )
@@ -168,19 +168,19 @@ describe("ShareNext", () => {
           )
 
           expect(result.id).toBe("shr_abc")
-          expect(result.url).toBe("https://legacy-share.example.com/share/abc")
+          expect(result.url).toBe("https://historical-share.example.com/share/abc")
           expect(result.secret).toBe("sec_123")
 
           const row = share(session.id)
           expect(row?.id).toBe("shr_abc")
-          expect(row?.url).toBe("https://legacy-share.example.com/share/abc")
+          expect(row?.url).toBe("https://historical-share.example.com/share/abc")
           expect(row?.secret).toBe("sec_123")
 
           expect(seen).toHaveLength(1)
           expect(seen[0].method).toBe("POST")
-          expect(seen[0].url).toBe("https://legacy-share.example.com/api/share")
+          expect(seen[0].url).toBe("https://historical-share.example.com/api/share")
         }),
-      { config: { enterprise: { url: "https://legacy-share.example.com" } } },
+      { config: { enterprise: { url: "https://historical-share.example.com" } } },
     ),
   )
 
@@ -196,7 +196,7 @@ describe("ShareNext", () => {
               return Effect.succeed(
                 json(req, {
                   id: "shr_abc",
-                  url: "https://legacy-share.example.com/share/abc",
+                  url: "https://historical-share.example.com/share/abc",
                   secret: "sec_123",
                 }),
               )
@@ -211,11 +211,11 @@ describe("ShareNext", () => {
 
           expect(share(session.id)).toBeUndefined()
           expect(seen.map((req) => [req.method, req.url])).toEqual([
-            ["POST", "https://legacy-share.example.com/api/share"],
-            ["DELETE", "https://legacy-share.example.com/api/share/shr_abc"],
+            ["POST", "https://historical-share.example.com/api/share"],
+            ["DELETE", "https://historical-share.example.com/api/share/shr_abc"],
           ])
         }),
-      { config: { enterprise: { url: "https://legacy-share.example.com" } } },
+      { config: { enterprise: { url: "https://historical-share.example.com" } } },
     ),
   )
 
@@ -261,7 +261,7 @@ describe("ShareNext", () => {
                 .values({
                   session_id: info.id,
                   id: "shr_abc",
-                  url: "https://legacy-share.example.com/share/abc",
+                  url: "https://historical-share.example.com/share/abc",
                   secret: "sec_123",
                 })
                 .run(),
@@ -287,7 +287,7 @@ describe("ShareNext", () => {
               {
                 file: "b.ts",
                 patch:
-                  "Index: b.ts\n===================================================================\n--- b.ts\t\n+++ b.ts\t\n@@ -1,1 +1,1 @@\n-old\n\\ No newline at end of file\n+new\n\\ No newline at end of file\n",
+                  "Index: b.ts\n===================================================================\n--- b.ts\t\n+++ b.ts\t\n@@ -1,1 +1,1 @@\n-prior\n\\ No newline at end of file\n+new\n\\ No newline at end of file\n",
                 additions: 2,
                 deletions: 0,
                 status: "modified",
@@ -297,7 +297,7 @@ describe("ShareNext", () => {
           yield* Effect.sleep(1_250)
 
           expect(seen).toHaveLength(1)
-          expect(seen[0].url).toBe("https://legacy-share.example.com/api/share/shr_abc/sync")
+          expect(seen[0].url).toBe("https://historical-share.example.com/api/share/shr_abc/sync")
 
           const body = JSON.parse(seen[0].body) as {
             secret: string
@@ -319,7 +319,7 @@ describe("ShareNext", () => {
             {
               file: "b.ts",
               patch:
-                "Index: b.ts\n===================================================================\n--- b.ts\t\n+++ b.ts\t\n@@ -1,1 +1,1 @@\n-old\n\\ No newline at end of file\n+new\n\\ No newline at end of file\n",
+                "Index: b.ts\n===================================================================\n--- b.ts\t\n+++ b.ts\t\n@@ -1,1 +1,1 @@\n-prior\n\\ No newline at end of file\n+new\n\\ No newline at end of file\n",
               additions: 2,
               deletions: 0,
               status: "modified",
@@ -327,7 +327,7 @@ describe("ShareNext", () => {
           ])
         }).pipe(Effect.provide(wired(client)))
       },
-      { config: { enterprise: { url: "https://legacy-share.example.com" } } },
+      { config: { enterprise: { url: "https://historical-share.example.com" } } },
     ),
   )
 })

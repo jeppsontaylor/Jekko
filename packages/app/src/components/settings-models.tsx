@@ -69,7 +69,7 @@ export const SettingsModels: Component = () => {
               type="text"
               value={list.filter()}
               onChange={list.onInput}
-              placeholder={language.t("dialog.model.search.placeholder")}
+              defaultValue={language.t("dialog.model.search.default_value")}
               spellcheck={false}
               autocorrect="off"
               autocomplete="off"

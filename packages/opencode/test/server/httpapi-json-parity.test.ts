@@ -117,7 +117,7 @@ describe("HttpApi JSON parity", () => {
           yield* Effect.promise(() => Bun.write(`${tmp.path}/hello.txt`, "hello\n"))
 
           const headers = { "x-opencode-directory": tmp.path }
-          const historical = app(false)
+          const previous = app(false)
           const httpapi = app(true)
 
           yield* Effect.forEach(
@@ -171,7 +171,7 @@ describe("HttpApi JSON parity", () => {
               { label: "experimental.worktree", path: ExperimentalPaths.worktree, headers },
               { label: "experimental.resource", path: ExperimentalPaths.resource, headers },
             ],
-            (input) => expectJsonParity({ ...input, historical, httpapi }),
+            (input) => expectJsonParity({ ...input, previous, httpapi }),
             { concurrency: 1 },
           )
         }),
@@ -184,12 +184,12 @@ describe("HttpApi JSON parity", () => {
       Effect.gen(function* () {
         const headers = { "x-opencode-directory": tmp.path }
         const seeded = yield* seedSessions.pipe(Effect.provide(Session.defaultLayer))
-        const historical = app(false)
+        const previous = app(false)
         const httpapi = app(true)
 
         const rootsFalse = yield* expectJsonParity({
           label: "session.list roots false",
-          historical,
+          previous,
           httpapi,
           path: `${SessionPaths.list}?roots=false`,
           headers,
@@ -199,7 +199,7 @@ describe("HttpApi JSON parity", () => {
 
         const experimentalRootsFalse = yield* expectJsonParity({
           label: "experimental.session roots false",
-          historical,
+          previous,
           httpapi,
           path: `${ExperimentalPaths.session}?${new URLSearchParams({ directory: tmp.path, limit: "10", roots: "false" })}`,
           headers,
@@ -208,7 +208,7 @@ describe("HttpApi JSON parity", () => {
 
         const experimentalArchivedFalse = yield* expectJsonParity({
           label: "experimental.session archived false",
-          historical,
+          previous,
           httpapi,
           path: `${ExperimentalPaths.session}?${new URLSearchParams({ directory: tmp.path, limit: "10", archived: "false" })}`,
           headers,
@@ -246,7 +246,7 @@ describe("HttpApi JSON parity", () => {
               headers,
             },
           ],
-          (input) => expectJsonParity({ ...input, historical, httpapi }),
+          (input) => expectJsonParity({ ...input, previous, httpapi }),
           { concurrency: 1 },
         )
       }),

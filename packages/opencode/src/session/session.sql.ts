@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer, index, primaryKey } from "drizzle-orm/sqlite-core"
 import { ProjectTable } from "../project/project.sql"
-import type { MessageV2 } from "./message-v2"
+import type { MessageV2 } from "./message"
 import type { SessionMessage } from "../v2/session-message"
 import type { Snapshot } from "../snapshot"
 import type { Permission } from "../permission"
@@ -85,7 +85,7 @@ export const PartTable = sqliteTable(
 )
 
 export const TodoTable = sqliteTable(
-  "todo",
+  "pending",
   {
     session_id: text()
       .$type<SessionID>()

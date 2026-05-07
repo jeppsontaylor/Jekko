@@ -66,7 +66,7 @@ function normalizeLoadedConfig(data: unknown, source: string) {
   delete copy.theme
   delete copy.keybinds
   delete copy.tui
-  log.warn("tui keys in opencode config are deprecated; move them to tui.json", { path: source })
+  log.warn("tui keys in opencode config are discouraged; move them to tui.json", { path: source })
   return copy
 }
 
@@ -158,7 +158,7 @@ export const Info = Schema.Struct({
       "Control sharing behavior:'manual' allows manual sharing via commands, 'auto' enables automatic sharing, 'disabled' disables all sharing",
   }),
   autoshare: Schema.optional(Schema.Boolean).annotate({
-    description: "@deprecated Use 'share' field instead. Share newly created sessions automatically",
+    description: "@discouraged Use 'share' field instead. Share newly created sessions automatically",
   }),
   autoupdate: Schema.optional(Schema.Union([Schema.Boolean, Schema.Literal("notify")])).annotate({
     description:
@@ -191,7 +191,7 @@ export const Info = Schema.Struct({
       }),
       [Schema.Record(Schema.String, ConfigAgent.Info)],
     ),
-  ).annotate({ description: "@deprecated Use `agent` field instead." }),
+  ).annotate({ description: "@discouraged Use `agent` field instead." }),
   agent: Schema.optional(
     Schema.StructWithRest(
       Schema.Struct({
@@ -217,7 +217,7 @@ export const Info = Schema.Struct({
       Schema.String,
       Schema.Union([
         ConfigMCP.Info,
-        // Matches the legacy `{ enabled: false }` form used to disable a server.
+        // Matches the historical `{ enabled: false }` form used to disable a server.
         Schema.Struct({ enabled: Schema.Boolean }),
       ]),
     ),
@@ -233,7 +233,7 @@ export const Info = Schema.Struct({
   instructions: Schema.optional(Schema.mutable(Schema.Array(Schema.String))).annotate({
     description: "Additional instruction files or patterns to include",
   }),
-  layout: Schema.optional(ConfigLayout.Layout).annotate({ description: "@deprecated Always uses stretch layout." }),
+  layout: Schema.optional(ConfigLayout.Layout).annotate({ description: "@discouraged Always uses stretch layout." }),
   permission: Schema.optional(ConfigPermission.Info),
   tools: Schema.optional(Schema.Record(Schema.String, Schema.Boolean)),
   enterprise: Schema.optional(
@@ -260,7 +260,7 @@ export const Info = Schema.Struct({
         description: "Enable automatic compaction when context is full (default: true)",
       }),
       prune: Schema.optional(Schema.Boolean).annotate({
-        description: "Enable pruning of old tool outputs (default: true)",
+        description: "Enable pruning of prior tool outputs (default: true)",
       }),
       tail_turns: Schema.optional(NonNegativeInt).annotate({
         description:
@@ -423,17 +423,17 @@ export const layer = Layer.effect(
       result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, "opencode.json")))
       result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, "opencode.jsonc")))
 
-      const legacy = path.join(Global.Path.config, "config")
-      if (existsSync(legacy)) {
+      const historical = path.join(Global.Path.config, "config")
+      if (existsSync(historical)) {
         yield* Effect.promise(() =>
-          import(pathToFileURL(legacy).href, { with: { type: "toml" } })
+          import(pathToFileURL(historical).href, { with: { type: "toml" } })
             .then(async (mod) => {
               const { provider, model, ...rest } = mod.default
               if (provider && model) result.model = `${provider}/${model}`
               result["$schema"] = "https://opencode.ai/config.json"
               result = mergeConfig(result, rest)
               await fsNode.writeFile(path.join(Global.Path.config, "config.json"), JSON.stringify(result, null, 2))
-              await fsNode.unlink(legacy)
+              await fsNode.unlink(historical)
             })
             .catch(() => {}),
         )

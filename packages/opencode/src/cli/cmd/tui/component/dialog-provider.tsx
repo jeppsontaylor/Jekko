@@ -350,7 +350,7 @@ async function PromptsMethod(props: PromptsMethodProps) {
     const value = await new Promise<string | null>((resolve) => {
       props.dialog.replace(
         () => (
-          <DialogPrompt title={prompt.message} default_value={prompt.placeholder ?? "Enter text"} onConfirm={(value) => resolve(value)} />
+          <DialogPrompt title={prompt.message} default_value={prompt.default_value ?? "Enter text"} onConfirm={(value) => resolve(value)} />
         ),
         () => resolve(null),
       )

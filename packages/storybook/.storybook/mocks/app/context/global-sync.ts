@@ -18,7 +18,7 @@ const provider = {
 }
 
 const [store, setStore] = createStore({
-  todo: {} as Record<string, any[]>,
+  pending: {} as Record<string, any[]>,
   provider,
   session: [] as any[],
   config: { permission: {} },
@@ -28,14 +28,14 @@ export function useGlobalSync() {
   return {
     data: {
       provider,
-      session_todo: store.todo,
+      session_todo: store.pending,
     },
     child() {
       return [store, setStore] as const
     },
-    todo: {
+    pending: {
       set(sessionID: string, todos: any[]) {
-        setStore("todo", sessionID, todos)
+        setStore("pending", sessionID, todos)
       },
     },
   }

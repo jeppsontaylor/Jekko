@@ -162,8 +162,12 @@ function createTimelineStaging(input: TimelineStageInput) {
 
   createEffect(
     on(
-      () => [input.sessionKey(), input.turnStart() > 0, input.messages().length] as const,
-      ([sessionKey, isWindowed, total]) => {
+      () => ({
+        sessionKey: input.sessionKey(),
+        isWindowed: input.turnStart() > 0,
+        total: input.messages().length,
+      }),
+      ({ sessionKey, isWindowed, total }) => {
         cancel()
         const shouldStage =
           isWindowed &&

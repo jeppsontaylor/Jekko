@@ -33,7 +33,7 @@ describe("Auth", () => {
         yield* auth.set("https://example.com/", {
           type: "wellknown",
           key: "TOKEN",
-          token: "old",
+          token: "prior",
         })
         yield* auth.set("https://example.com", {
           type: "wellknown",

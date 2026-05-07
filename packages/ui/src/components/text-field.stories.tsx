@@ -31,7 +31,7 @@ const story = create({
   mod,
   args: {
     label: "Label",
-    placeholder: "Type here...",
+    default_value: "Type here...",
     defaultValue: "Hello",
   },
 })
@@ -55,8 +55,8 @@ export const Basic = story.Basic
 export const Variants = {
   render: () => (
     <div style={{ display: "grid", gap: "12px", width: "320px" }}>
-      <mod.TextField label="Normal" placeholder="Type here..." defaultValue="Value" />
-      <mod.TextField label="Ghost" variant="ghost" placeholder="Type here..." defaultValue="Value" />
+      <mod.TextField label="Normal" defaultValue="Type here..." defaultValue="Value" />
+      <mod.TextField label="Ghost" variant="ghost" defaultValue="Type here..." defaultValue="Value" />
     </div>
   ),
 }
@@ -106,6 +106,6 @@ export const HiddenLabel = {
   args: {
     label: "Hidden label",
     hideLabel: true,
-    placeholder: "Hidden label",
+    default_value: "Hidden label",
   },
 }

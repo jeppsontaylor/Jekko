@@ -42,7 +42,7 @@ describe("createScopedCache", () => {
     expect(disposed).toEqual(["a", "b"])
   })
 
-  test("expires stale entries with ttl and recreates on get", () => {
+  test("expires outdated entries with ttl and recreates on get", () => {
     let clock = 0
     let count = 0
     const disposed: string[] = []

@@ -156,7 +156,6 @@ export function ReloadSection() {
                 step="1"
                 value={store.reloadAmount}
                 onInput={(e) => setStore("reloadAmount", e.currentTarget.value)}
-                placeholder={String(billingInfo()?.reloadAmount ?? "")}
                 disabled={!store.reload}
               />
             </div>
@@ -170,7 +169,6 @@ export function ReloadSection() {
                 step="1"
                 value={store.reloadTrigger}
                 onInput={(e) => setStore("reloadTrigger", e.currentTarget.value)}
-                placeholder={String(billingInfo()?.reloadTrigger ?? "")}
                 disabled={!store.reload}
               />
             </div>

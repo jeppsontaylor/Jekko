@@ -34,7 +34,7 @@ import { SessionRevert } from "@/session/revert"
 import { SessionRunState } from "@/session/run-state"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
-import { Todo } from "@/session/todo"
+import { Todo as Pending } from "@/session/pending"
 import { SessionShare } from "@/share/session"
 import { ShareNext } from "@/share/share-next"
 import { Skill } from "@/skill"
@@ -181,7 +181,7 @@ export function createRoutes(corsOptions?: CorsOptions) {
       Snapshot.defaultLayer,
       SyncEvent.defaultLayer,
       Skill.defaultLayer,
-      Todo.defaultLayer,
+      Pending.defaultLayer,
       ToolRegistry.defaultLayer,
       Vcs.defaultLayer,
       Workspace.defaultLayer,

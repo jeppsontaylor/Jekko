@@ -42,10 +42,10 @@ import { ModelID, ProviderID } from "../provider/schema"
 import { Agent as AgentModule } from "../agent/agent"
 import { AppRuntime } from "@/effect/app-runtime"
 import { Installation } from "@/installation"
-import { MessageV2 } from "@/session/message-v2"
+import { MessageV2 } from "@/session/message"
 import { Config } from "@/config/config"
 import { ConfigMCP } from "@/config/mcp"
-import { Todo } from "@/session/todo"
+import { Todo } from "@/session/pending"
 import { Result, Schema } from "effect"
 import { LoadAPIKeyError } from "ai"
 import type { AssistantMessage, Event, OpencodeClient, SessionMessageResponse, ToolPart } from "@opencode-ai/sdk/v2"
@@ -381,22 +381,22 @@ export class Agent implements ACPAgent {
                       sessionId,
                       update: {
                         sessionUpdate: "plan",
-                        entries: parsedTodos.success.map((todo) => {
+                        entries: parsedTodos.success.map((pending) => {
                           const status: PlanEntry["status"] =
-                            todo.status === "cancelled" ? "completed" : (todo.status as PlanEntry["status"])
+                            pending.status === "cancelled" ? "completed" : (pending.status as PlanEntry["status"])
                           return {
                             priority: "medium",
                             status,
-                            content: todo.content,
+                            content: pending.content,
                           }
                         }),
                       },
                     })
                     .catch((error) => {
-                      log.error("failed to send session update for todo", { error })
+                      log.error("failed to send session update for pending", { error })
                     })
                 } else {
-                  log.error("failed to parse todo output", { error: parsedTodos.failure })
+                  log.error("failed to parse pending output", { error: parsedTodos.failure })
                 }
               }
 
@@ -910,22 +910,22 @@ export class Agent implements ACPAgent {
                     sessionId,
                     update: {
                       sessionUpdate: "plan",
-                      entries: parsedTodos.success.map((todo) => {
+                      entries: parsedTodos.success.map((pending) => {
                         const status: PlanEntry["status"] =
-                          todo.status === "cancelled" ? "completed" : (todo.status as PlanEntry["status"])
+                          pending.status === "cancelled" ? "completed" : (pending.status as PlanEntry["status"])
                         return {
                           priority: "medium",
                           status,
-                          content: todo.content,
+                          content: pending.content,
                         }
                       }),
                     },
                   })
                   .catch((err) => {
-                    log.error("failed to send session update for todo", { error: err })
+                    log.error("failed to send session update for pending", { error: err })
                   })
               } else {
-                log.error("failed to parse todo output", { error: parsedTodos.failure })
+                log.error("failed to parse pending output", { error: parsedTodos.failure })
               }
             }
 

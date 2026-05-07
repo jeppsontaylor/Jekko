@@ -198,7 +198,6 @@ jobs:
             "${{ github.workspace }}\packages\opencode\dist\opencode-windows-arm64.zip" `
             "${{ github.workspace }}\packages\opencode\dist\opencode-windows-x64.zip" `
             "${{ github.workspace }}\packages\opencode\dist\opencode-windows-x64-baseline.zip" `
-            --clobber `
             --repo "${{ needs.version.outputs.repo }}"
 
       - uses: actions/upload-artifact@v4
@@ -370,7 +369,7 @@ jobs:
             exit 1
           fi
           tar -czf "$OUT_NAME" -C "$(dirname "$APP_PATH")" "$(basename "$APP_PATH")"
-          gh release upload "v${{ needs.version.outputs.version }}" "$OUT_NAME" --clobber --repo "${{ needs.version.outputs.repo }}"
+          gh release upload "v${{ needs.version.outputs.version }}" "$OUT_NAME" --repo "${{ needs.version.outputs.repo }}"
 
       - name: Verify signed Windows Electron artifacts
         if: runner.os == 'Windows'

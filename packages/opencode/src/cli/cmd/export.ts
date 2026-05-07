@@ -1,5 +1,5 @@
 import { Session } from "@/session/session"
-import { MessageV2 } from "../../session/message-v2"
+import { MessageV2 } from "../../session/message"
 import { SessionID } from "../../session/schema"
 import { effectCmd, fail } from "../effect-cmd"
 import { UI } from "../ui"
@@ -277,7 +277,7 @@ const run = Effect.fn("Cli.export.body")(function* (args: { sessionID?: string; 
     prompts.outro("Exporting session...", { output: process.stderr })
   }
 
-  // Match legacy try/catch — catches both typed failures and defects
+  // Match historical try/catch — catches both typed failures and defects
   // (Session.Service.get throws NotFoundError as a defect, not a typed E).
   return yield* Effect.gen(function* () {
     const sessionInfo = yield* svc.get(sessionID!)

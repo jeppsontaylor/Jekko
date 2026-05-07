@@ -30,7 +30,7 @@ const AgentSchema = Schema.StructWithRest(
     top_p: Schema.optional(Schema.Finite),
     prompt: Schema.optional(Schema.String),
     tools: Schema.optional(Schema.Record(Schema.String, Schema.Boolean)).annotate({
-      description: "@deprecated Use 'permission' field instead",
+      description: "@discouraged Use 'permission' field instead",
     }),
     disable: Schema.optional(Schema.Boolean),
     description: Schema.optional(Schema.String).annotate({ description: "Description of when to use the agent" }),
@@ -45,7 +45,7 @@ const AgentSchema = Schema.StructWithRest(
     steps: Schema.optional(PositiveInt).annotate({
       description: "Maximum number of agentic iterations before forcing text-only response",
     }),
-    maxSteps: Schema.optional(PositiveInt).annotate({ description: "@deprecated Use 'steps' field instead." }),
+    maxSteps: Schema.optional(PositiveInt).annotate({ description: "@discouraged Use 'steps' field instead." }),
     permission: Schema.optional(ConfigPermission.Info),
   }),
   [Schema.Record(Schema.String, Schema.Any)],
@@ -73,9 +73,9 @@ const KNOWN_KEYS = new Set([
 // Post-parse normalisation:
 //  - Promote any unknown-but-present keys into `options` so they survive the
 //    round-trip in a well-known field.
-//  - Translate the deprecated `tools: { name: boolean }` map into the new
+//  - Translate the discouraged `tools: { name: boolean }` map into the new
 //    `permission` shape (write-adjacent tools collapse into `permission.edit`).
-//  - Coalesce `steps ?? maxSteps` so downstream can ignore the deprecated alias.
+//  - Coalesce `steps ?? maxSteps` so downstream can ignore the discouraged alias.
 const normalize = (agent: Schema.Schema.Type<typeof AgentSchema>): Schema.Schema.Type<typeof AgentSchema> => {
   const options: Record<string, unknown> = { ...agent.options }
   for (const [key, value] of Object.entries(agent)) {

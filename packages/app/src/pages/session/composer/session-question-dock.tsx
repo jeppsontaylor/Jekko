@@ -94,7 +94,7 @@ export const SessionQuestionDock: Component<{ request: QuestionRequest; onSubmit
   })
 
   const customLabel = () => language.t("ui.messagePart.option.typeOwnAnswer")
-  const customPlaceholder = () => language.t("ui.question.custom.placeholder")
+  const customPlaceholder = () => language.t("ui.question.custom.default_value")
 
   const last = createMemo(() => store.tab >= total() - 1)
 

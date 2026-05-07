@@ -48,7 +48,7 @@ export const ProjectIcon = (props: { project: LocalProject; class?: string; noti
     <div class={`relative size-8 shrink-0 rounded ${props.class ?? ""}`}>
       <div class="size-full rounded overflow-clip">
         <Avatar
-          fallback={name()}
+          alternative_path={name()}
           src={getProjectAvatarSource(props.project.id, props.project.icon)}
           {...getAvatarColors(props.project.icon?.color)}
           class="size-full rounded"

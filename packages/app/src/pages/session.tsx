@@ -463,7 +463,13 @@ export default function Page() {
     return sync.session.history.loading(id)
   })
   const userMessages = createMemo(
-    () => messages().filter((m) => m.role === "user") as UserMessage[],
+    () => {
+      const userMessages: UserMessage[] = []
+      for (const message of messages()) {
+        if (message.role === "user") userMessages.push(message)
+      }
+      return userMessages
+    },
     emptyUserMessages,
     { equals: same },
   )
@@ -765,7 +771,7 @@ export default function Page() {
       if (!id) return
 
       const cached = untrack(() => sync.data.message[id] !== undefined)
-      const stale = !cached
+      const outdated = !cached
         ? false
         : (() => {
             const info = getSessionPrefetch(directory, id)
@@ -779,7 +785,7 @@ export default function Page() {
           refreshTimer = undefined
           if (params.id !== id) return
           untrack(() => {
-            if (stale) void sync.session.sync(id, { force: true })
+            if (outdated) void sync.session.sync(id, { force: true })
           })
         }, 0)
       })
@@ -806,7 +812,7 @@ export default function Page() {
         todoTimer = undefined
         if (!id) return
         if (status === "idle" && !blocked) return
-        const cached = untrack(() => sync.data.todo[id] !== undefined || globalSync.data.session_todo[id] !== undefined)
+        const cached = untrack(() => sync.data.pending[id] !== undefined || globalSync.data.session_todo[id] !== undefined)
 
         todoFrame = requestAnimationFrame(() => {
           todoFrame = undefined
@@ -814,7 +820,7 @@ export default function Page() {
             todoTimer = undefined
             if (sdk.directory !== dir || params.id !== id) return
             untrack(() => {
-              void sync.session.todo(id, cached ? { force: true } : undefined)
+              void sync.session.pending(id, cached ? { force: true } : undefined)
             })
           }, 0)
         })
@@ -849,11 +855,10 @@ export default function Page() {
 
   const stopVcs = sdk.event.listen((evt) => {
     if (evt.details.type !== "file.watcher.updated") return
-    const props =
+    const file =
       typeof evt.details.properties === "object" && evt.details.properties
-        ? (evt.details.properties as Record<string, unknown>)
+        ? Reflect.get(evt.details.properties, "file")
         : undefined
-    const file = typeof props?.file === "string" ? props.file : undefined
     if (!file || file.startsWith(".git/")) return
     refreshVcs()
   })

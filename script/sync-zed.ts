@@ -34,7 +34,7 @@ async function main() {
   }
   console.log(`✅ Version ${extensionVersion} matches tag`)
 
-  // Clone the fork to a temp directory
+  // Clone the fork to a interim directory
   const workDir = join(tmpdir(), `zed-extensions-${Date.now()}`)
   console.log(`📁 Working in ${workDir}`)
 
@@ -98,7 +98,7 @@ async function main() {
     .filter(Boolean)
 
   if (oldBranches.length > 0) {
-    console.log(`🗑️  Found ${oldBranches.length} old branch(es), deleting...`)
+    console.log(`🗑️  Found ${oldBranches.length} prior branch(es), deleting...`)
     for (const branch of oldBranches) {
       await $`git push https://x-access-token:${token}@github.com/${FORK_REPO}.git --delete ${branch}`
       console.log(`✅ Deleted branch ${branch}`)

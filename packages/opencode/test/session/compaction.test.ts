@@ -617,7 +617,7 @@ describe("session.compaction.create", () => {
 
 describe("session.compaction.prune", () => {
   it.live(
-    "compacts old completed tool output",
+    "compacts prior completed tool output",
     provideTmpdirInstance(
       (dir) =>
         Effect.gen(function* () {
@@ -1054,9 +1054,9 @@ describe("session.compaction.process", () => {
 
   test("falls back to full summary when even one recent turn exceeds preserve token budget", async () => {
     await using tmp = await tmpdir({ git: true })
-    const stub = llm()
+    const sample = llm()
     let captured = ""
-    stub.push(
+    sample.push(
       reply("summary", (input) => {
         captured = JSON.stringify(input.messages)
       }),
@@ -1074,7 +1074,7 @@ describe("session.compaction.process", () => {
           auto: false,
         })
 
-        const rt = liveRuntime(stub.layer, wide(), cfg({ tail_turns: 1, preserve_recent_tokens: 20 }))
+        const rt = liveRuntime(sample.layer, wide(), cfg({ tail_turns: 1, preserve_recent_tokens: 20 }))
         try {
           const msgs = await svc.messages({ sessionID: session.id })
           const parent = msgs.at(-1)?.info.id
@@ -1103,9 +1103,9 @@ describe("session.compaction.process", () => {
 
   test("falls back to full summary when retained tail media exceeds preserve token budget", async () => {
     await using tmp = await tmpdir({ git: true })
-    const stub = llm()
+    const sample = llm()
     let captured = ""
-    stub.push(
+    sample.push(
       reply("summary", (input) => {
         captured = JSON.stringify(input.messages)
       }),
@@ -1132,7 +1132,7 @@ describe("session.compaction.process", () => {
           auto: false,
         })
 
-        const rt = liveRuntime(stub.layer, wide(), cfg({ tail_turns: 1, preserve_recent_tokens: 100 }))
+        const rt = liveRuntime(sample.layer, wide(), cfg({ tail_turns: 1, preserve_recent_tokens: 100 }))
         try {
           const msgs = await svc.messages({ sessionID: session.id })
           const parent = msgs.at(-1)?.info.id
@@ -1162,9 +1162,9 @@ describe("session.compaction.process", () => {
 
   test("retains a split turn suffix when a later message fits the preserve token budget", async () => {
     await using tmp = await tmpdir({ git: true })
-    const stub = llm()
+    const sample = llm()
     let captured = ""
-    stub.push(
+    sample.push(
       reply("summary", (input) => {
         captured = JSON.stringify(input.messages)
       }),
@@ -1198,7 +1198,7 @@ describe("session.compaction.process", () => {
           auto: false,
         })
 
-        const rt = liveRuntime(stub.layer, wide(), cfg({ tail_turns: 1, preserve_recent_tokens: 100 }))
+        const rt = liveRuntime(sample.layer, wide(), cfg({ tail_turns: 1, preserve_recent_tokens: 100 }))
         try {
           const msgs = await svc.messages({ sessionID: session.id })
           const parent = msgs.at(-1)?.info.id
@@ -1362,9 +1362,9 @@ describe("session.compaction.process", () => {
   })
 
   test("stops quickly when aborted during retry backoff", async () => {
-    const stub = llm()
+    const sample = llm()
     const ready = defer()
-    stub.push(
+    sample.push(
       Stream.fromAsyncIterable(
         {
           async *[Symbol.asyncIterator]() {
@@ -1392,7 +1392,7 @@ describe("session.compaction.process", () => {
         const msg = await user(session.id, "hello")
         const msgs = await svc.messages({ sessionID: session.id })
         const abort = new AbortController()
-        const rt = liveRuntime(stub.layer, wide())
+        const rt = liveRuntime(sample.layer, wide())
         let off: (() => void) | undefined
         let run: Promise<"continue" | "stop"> | undefined
         try {
@@ -1511,8 +1511,8 @@ describe("session.compaction.process", () => {
   })
 
   test("does not allow tool calls while generating the summary", async () => {
-    const stub = llm()
-    stub.push(
+    const sample = llm()
+    sample.push(
       Stream.make(
         { type: "start" } satisfies LLM.Event,
         { type: "tool-input-start", id: "call-1", toolName: "_noop" } satisfies LLM.Event,
@@ -1566,7 +1566,7 @@ describe("session.compaction.process", () => {
       fn: async () => {
         const session = await svc.create({})
         const msg = await user(session.id, "hello")
-        const rt = liveRuntime(stub.layer, wide())
+        const rt = liveRuntime(sample.layer, wide())
         try {
           const msgs = await svc.messages({ sessionID: session.id })
           await rt.runPromise(
@@ -1594,9 +1594,9 @@ describe("session.compaction.process", () => {
   })
 
   test("summarizes only the head while keeping recent tail out of summary input", async () => {
-    const stub = llm()
+    const sample = llm()
     let captured = ""
-    stub.push(
+    sample.push(
       reply("summary", (input) => {
         captured = JSON.stringify(input.messages)
       }),
@@ -1617,7 +1617,7 @@ describe("session.compaction.process", () => {
           auto: false,
         })
 
-        const rt = liveRuntime(stub.layer, wide())
+        const rt = liveRuntime(sample.layer, wide())
         try {
           const msgs = await svc.messages({ sessionID: session.id })
           const parent = msgs.at(-1)?.info.id
@@ -1645,10 +1645,10 @@ describe("session.compaction.process", () => {
   })
 
   test("anchors repeated compactions with the previous summary", async () => {
-    const stub = llm()
+    const sample = llm()
     let captured = ""
-    stub.push(reply("summary one"))
-    stub.push(
+    sample.push(reply("summary one"))
+    sample.push(
       reply("summary two", (input) => {
         captured = JSON.stringify(input.messages)
       }),
@@ -1668,7 +1668,7 @@ describe("session.compaction.process", () => {
           auto: false,
         })
 
-        const rt = liveRuntime(stub.layer, wide())
+        const rt = liveRuntime(sample.layer, wide())
         try {
           let msgs = await svc.messages({ sessionID: session.id })
           let parent = msgs.at(-1)?.info.id
@@ -1719,9 +1719,9 @@ describe("session.compaction.process", () => {
   })
 
   test("keeps recent pre-compaction turns across repeated compactions", async () => {
-    const stub = llm()
-    stub.push(reply("summary one"))
-    stub.push(reply("summary two"))
+    const sample = llm()
+    sample.push(reply("summary one"))
+    sample.push(reply("summary two"))
     await using tmp = await tmpdir()
     await WithInstance.provide({
       directory: tmp.path,
@@ -1737,7 +1737,7 @@ describe("session.compaction.process", () => {
           auto: false,
         })
 
-        const rt = liveRuntime(stub.layer, wide(), cfg({ tail_turns: 2, preserve_recent_tokens: 10_000 }))
+        const rt = liveRuntime(sample.layer, wide(), cfg({ tail_turns: 2, preserve_recent_tokens: 10_000 }))
         try {
           let msgs = await svc.messages({ sessionID: session.id })
           let parent = msgs.at(-1)?.info.id

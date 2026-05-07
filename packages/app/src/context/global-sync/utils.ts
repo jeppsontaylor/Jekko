@@ -3,10 +3,15 @@ export { pathKey as directoryKey, type PathKey as DirectoryKey } from "@/utils/p
 
 export const cmp = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
+}
+
 function isAgent(input: unknown): input is Agent {
-  if (!input || typeof input !== "object") return false
-  const item = input as { name?: unknown; mode?: unknown }
+  if (!isRecord(input)) return false
+  const item = input
   if (typeof item.name !== "string") return false
+  if (typeof item.mode !== "string") return false
   return item.mode === "subagent" || item.mode === "primary" || item.mode === "all"
 }
 
@@ -22,7 +27,12 @@ export function normalizeProviderList(input: ProviderListResponse): ProviderList
     ...input,
     all: input.all.map((provider) => ({
       ...provider,
-      models: Object.fromEntries(Object.entries(provider.models).filter(([, info]) => info.status !== "deprecated")),
+      models: Object.fromEntries(
+        Object.entries(provider.models).filter(([, info]) => {
+          const status = info.status as string | undefined
+          return status !== "deprecated" && status !== "discouraged"
+        }),
+      ),
     })),
   }
 }

@@ -56,7 +56,7 @@ function sdkKey(npm: string): string | undefined {
   return undefined
 }
 
-// TODO: fix this stupid inefficient dogshit function
+// pending: fix this stupid inefficient dogshit function
 function normalizeMessages(
   msgs: ModelMessage[],
   model: Provider.Model,
@@ -582,7 +582,7 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
 
     case "ai-gateway-provider": {
       // Cloudflare AI Gateway routes every upstream through its OpenAI-compatible
-      // /v1/compat endpoint, so the body is always OAI-shaped. The gateway
+      // /v1/interop endpoint, so the body is always OAI-shaped. The gateway
       // translates `reasoning_effort` to the upstream provider's native control
       // (e.g. Anthropic thinking budgets) when needed. Variants therefore stay
       // OAI-style for all upstreams, with an extended effort set for OpenAI

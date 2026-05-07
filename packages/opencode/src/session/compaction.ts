@@ -3,7 +3,7 @@ import { Bus } from "@/bus"
 import * as Session from "./session"
 import { SessionID, MessageID, PartID } from "./schema"
 import { Provider } from "@/provider/provider"
-import { MessageV2 } from "./message-v2"
+import { MessageV2 } from "./message"
 import z from "zod"
 import { Token } from "@/util/token"
 import * as Log from "@opencode-ai/core/util/log"
@@ -125,7 +125,7 @@ function buildPrompt(input: { previousSummary?: string; context: string[] }) {
   const anchor = input.previousSummary
     ? [
         "Update the anchored summary below using the conversation history above.",
-        "Preserve still-true details, remove stale details, and merge in the new facts.",
+        "Preserve still-true details, remove outdated details, and merge in the new facts.",
         "<previous-summary>",
         input.previousSummary,
         "</previous-summary>",
@@ -284,7 +284,7 @@ export const layer: Layer.Layer<
           estimate,
         })
         if (split) keep = split
-        else if (!keep) log.info("tail fallback", { budget, size, total })
+        else if (!keep) log.info("tail alternative_path", { budget, size, total })
         break
       }
 

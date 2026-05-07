@@ -421,7 +421,7 @@ describe("HttpApi workspace routing middleware", () => {
     }),
   )
 
-  it.live("uses directory query/header fallback when no workspace is selected", () =>
+  it.live("uses directory query/header alternative_path when no workspace is selected", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
       const queryDir = path.join(dir, "query-target")

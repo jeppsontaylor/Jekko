@@ -528,7 +528,7 @@ export const SettingsGeneral: Component = () => {
               type="text"
               value={sans()}
               onChange={(value) => settings.appearance.setUIFont(value)}
-              placeholder={sansDefault}
+              defaultValue={sansDefault}
               spellcheck={false}
               autocorrect="off"
               autocomplete="off"
@@ -551,7 +551,7 @@ export const SettingsGeneral: Component = () => {
               type="text"
               value={mono()}
               onChange={(value) => settings.appearance.setFont(value)}
-              placeholder={monoDefault}
+              defaultValue={monoDefault}
               spellcheck={false}
               autocorrect="off"
               autocomplete="off"
@@ -574,7 +574,7 @@ export const SettingsGeneral: Component = () => {
               type="text"
               value={terminal()}
               onChange={(value) => settings.appearance.setTerminalFont(value)}
-              placeholder={terminalDefault}
+              defaultValue={terminalDefault}
               spellcheck={false}
               autocorrect="off"
               autocomplete="off"
