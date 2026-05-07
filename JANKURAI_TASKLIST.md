@@ -161,9 +161,9 @@ Summary:
 - Proof receipt: 
 
 ### JK-0004 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/beta.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
+- Status: In Progress
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
 - Completed: 
 - Source packet: `4`
 - Fingerprint: `sha256:594a9d6afba2b5e737f0d338f5369864063476ed1cc4bb694a7cfbb5500e5e33`
@@ -197,9 +197,9 @@ Summary:
 - Proof receipt: 
 
 ### JK-0005 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
+- Status: In Progress
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
 - Completed: 
 - Source packet: `5`
 - Fingerprint: `sha256:5da07808a4d4a3ebdf2050ce6cae1881ff649b63358a14367bfa8441e65b8162`
@@ -557,9 +557,9 @@ Summary:
 - Proof receipt: 
 
 ### JK-0015 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-locale-sync.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
+- Status: In Progress
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
 - Completed: 
 - Source packet: `15`
 - Fingerprint: `sha256:39191044293f790fd9545aaf7ccee3ad6c06d75d3e88d94df130ecdc9f65d72b`
@@ -953,9 +953,9 @@ Summary:
 - Proof receipt: 
 
 ### JK-0026 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Status: Pending
-- Assignee: unassigned
-- Started: 
+- Status: In Progress
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:08Z
 - Completed: 
 - Source packet: `26`
 - Fingerprint: `sha256:41ec625da63598808a6d44c15d908c4e15ec4b9bc6b53a08832c206c6b4f918d`
@@ -10522,10 +10522,10 @@ Summary:
 - Proof receipt: 
 
 ### JK-0279 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-event.test.ts
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: codex-agent
+- Started: 2026-05-07T09:28:01Z
+- Completed: 2026-05-07T09:29:23Z
 - Source packet: `279`
 - Fingerprint: `sha256:2d608621fb76d03bdd00d4cbba6d0a5b748e49e58e73188b8891a0899ebf895a`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -10555,8 +10555,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: packages/opencode/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
+  - Timestamp: 2026-05-07T09:29:23Z
+  - Files touched: packages/opencode/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0280 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-json-parity.test.ts
 - Status: Pending

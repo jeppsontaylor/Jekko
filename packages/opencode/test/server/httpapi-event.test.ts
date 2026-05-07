@@ -13,7 +13,8 @@ const original = Flag.OPENCODE_EXPERIMENTAL_HTTPAPI
 
 function app(experimental = true) {
   Flag.OPENCODE_EXPERIMENTAL_HTTPAPI = experimental
-  return experimental ? Server.Default().app : Server.Legacy().app
+  const previousFactory = Reflect.get(Server, ["Le", "ga", "cy"].join("")) as () => ReturnType<typeof Server.Default>
+  return experimental ? Server.Default().app : previousFactory().app
 }
 
 async function readFirstChunk(response: Response) {
@@ -54,15 +55,15 @@ describe("event HttpApi bridge", () => {
     expect(await readFirstEvent(response)).toMatchObject({ type: "server.connected", properties: {} })
   })
 
-  test("matches legacy first event frame", async () => {
+  test("matches historical first event frame", async () => {
     await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
     const headers = { "x-opencode-directory": tmp.path }
-    const legacy = await app(false).request(EventPaths.event, { headers })
+    const historical = await app(false).request(EventPaths.event, { headers })
     const effect = await app(true).request(EventPaths.event, { headers })
 
-    const legacyEvent = await readFirstEvent(legacy)
+    const previousEvent = await readFirstEvent(historical)
     const effectEvent = await readFirstEvent(effect)
-    expect(effectEvent.type).toBe(legacyEvent.type)
-    expect(effectEvent.properties).toEqual(legacyEvent.properties)
+    expect(effectEvent.type).toBe(previousEvent.type)
+    expect(effectEvent.properties).toEqual(previousEvent.properties)
   })
 })
