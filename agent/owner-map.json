@@ -1,0 +1,19 @@
+{
+  "workspace": "jankurai",
+  "owners": {
+    "AGENTS.md": "agent",
+    "README.md": "workspace",
+    "apps/": "apps",
+    ".github/": "ops",
+    "agent/": "agent",
+    "contracts/": "contracts",
+    "crates/": "tools",
+    "db/": "data",
+    "docs/": "standard",
+    "tools/": "ops",
+    "packages/": "tools",
+    "python/ai-service/": "ai",
+    "ops/": "ops",
+    "tools/": "tools"
+  }
+}

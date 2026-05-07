@@ -1,0 +1,33 @@
+$ tsgo --noEmit
+src/memory/memory.ts(127,13): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'project_id' does not exist in type '{ evidence_hash?: string | Placeholder<string, any> | SQL<unknown> | null | undefined; id?: number | Placeholder<string, any> | SQL<unknown> | undefined; ... 11 more ...; time_updated?: number | ... 2 more ... | undefined; }[]'.
+src/memory/memory.ts(134,48): error TS2339: Property 'fact' does not exist on type 'MemoryEvent'.
+  Property 'fact' does not exist on type '{ type: "upsert_rule"; projectId: string; rule: any; }'.
+src/memory/memory.ts(134,62): error TS2339: Property 'rule' does not exist on type 'MemoryEvent'.
+  Property 'rule' does not exist on type '{ type: "record_working"; projectId: string; fact: any; }'.
+src/memory/memory.ts(144,71): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'SQLiteColumn<{ name: string; tableName: "memory_evidence"; dataType: "string"; data: string & Brand<"ProjectID">; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}>' is not assignable to parameter of type 'never'.
+src/memory/memory.ts(147,31): error TS2339: Property 'where' does not exist on type 'Omit<SQLiteSelectBase<"memory_evidence", "sync", void, { time_created: SQLiteColumn<{ name: string; tableName: "memory_evidence"; dataType: "number int53"; data: number; driverParam: number; notNull: true; hasDefault: true; ... 6 more ...; generated: undefined; }, {}>; ... 12 more ...; evidence_hash: SQLiteColumn<.....'.
+src/memory/memory.ts(148,20): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'SQLiteColumn<{ name: string; tableName: "memory_evidence"; dataType: "string"; data: string & Brand<"ProjectID">; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}>' is not assignable to parameter of type 'never'.
+src/memory/memory.ts(153,31): error TS2339: Property 'where' does not exist on type 'Omit<SQLiteSelectBase<"memory_evidence", "sync", void, { time_created: SQLiteColumn<{ name: string; tableName: "memory_evidence"; dataType: "number int53"; data: number; driverParam: number; notNull: true; hasDefault: true; ... 6 more ...; generated: undefined; }, {}>; ... 12 more ...; evidence_hash: SQLiteColumn<.....'.
+src/memory/memory.ts(155,18): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'SQLiteColumn<{ name: string; tableName: "memory_evidence"; dataType: "string"; data: string & Brand<"ProjectID">; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}>' is not assignable to parameter of type 'never'.
+src/memory/memory.ts(187,18): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'SQLiteColumn<{ name: string; tableName: "failed_attempt"; dataType: "string"; data: string & Brand<"ProjectID">; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}>' is not assignable to parameter of type 'never'.
+src/memory/memory.ts(216,13): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'project_id' does not exist in type '{ attempted_fix_hash: string | Placeholder<string, any> | SQL<unknown>; evidence_hash: string | Placeholder<string, any> | SQL<unknown>; failure_kind: string | ... 1 more ... | SQL<...>; ... 6 more ...; time_updated?: number | ... 2 more ... | undefined; }[]'.
+src/memory/memory.ts(253,25): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'SQLiteColumn<{ name: string; tableName: "failed_attempt"; dataType: "string"; data: string & Brand<"ProjectID">; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}>' is not assignable to parameter of type 'never'.
+src/memory/memory.ts(273,25): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'SQLiteColumn<{ name: string; tableName: "memory_evidence"; dataType: "string"; data: string & Brand<"ProjectID">; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; ... 5 more ...; generated: undefined; }, {}>' is not assignable to parameter of type 'never'.
+test/patch/vm.test.ts(25,23): error TS2345: Argument of type 'Effect<A, any, Service>' is not assignable to parameter of type 'Effect<A, any, never>'.
+  Type 'Service' is not assignable to type 'never'.
