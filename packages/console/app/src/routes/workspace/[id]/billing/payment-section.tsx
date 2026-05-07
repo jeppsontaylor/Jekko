@@ -32,7 +32,7 @@ export function PaymentSection() {
   const payments = createAsync(() => getPaymentsInfo(params.id!))
   const downloadReceiptAction = useAction(downloadReceipt)
 
-  // DUMMY DATA FOR TESTING
+  // Sample payment rows for local UI verification
   // const payments = () => [
   //   {
   //     id: "pi_3QK1x2FT9vXn4A6r1234567890",

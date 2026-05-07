@@ -5725,10 +5725,10 @@ Summary:
 - Proof receipt: 
 
 ### JK-0141 - [high] HLT-001-DEAD-MARKER - packages/console/app/src/routes/workspace/[id]/billing/payment-section.tsx
-- Status: Pending
-- Assignee: unassigned
-- Started: 
-- Completed: 
+- Status: Complete
+- Assignee: Codex
+- Started: 2026-05-07T15:03:56.580Z
+- Completed: 2026-05-07T15:03:56.580Z
 - Source packet: `141`
 - Fingerprint: `sha256:45ff127aa1e1f452c9f1435d2e931af12973e304532d0e89e30b1de51cc7b729`
 - Check: `HLT-001-DEAD-MARKER:vibe`
@@ -5758,8 +5758,8 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: 
-- Proof receipt: 
+- Touched files: `packages/console/app/src/routes/workspace/[id]/billing/payment-section.tsx`, `JANKURAI_TASKLIST.md`
+- Proof receipt: `just fast` passed at 2026-05-07T15:03:56.580Z; target file no longer contains `dummy` marker.
 
 ### JK-0142 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/console/app/src/routes/zen/util/provider/anthropic.ts
 - Status: Pending
