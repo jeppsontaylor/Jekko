@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const port = process.env.JNOCCIO_DASHBOARD_PORT ?? '5173';
+const baseURL = process.env.JNOCCIO_DASHBOARD_URL ?? `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -8,8 +11,14 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL,
     trace: 'on-first-retry',
+  },
+  webServer: {
+    command: `npm run dev -- --port ${port}`,
+    url: `${baseURL}/dashboard/`,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
   },
   projects: [
     {
