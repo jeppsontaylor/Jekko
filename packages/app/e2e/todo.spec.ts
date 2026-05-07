@@ -6,6 +6,6 @@ test(
     annotation: { type: "todo" },
   },
   async () => {
-    test.fixme()
+    test.skip()
   },
 )

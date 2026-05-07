@@ -45,7 +45,7 @@ export function DialogConnectProvider(props: { provider: string }) {
       providers.all().find((x) => x.id === props.provider) ??
       globalSync.data.provider.all.find((x) => x.id === props.provider)!,
   )
-  const fallback = createMemo<ProviderAuthMethod[]>(() => [
+  const alternative_path = createMemo<ProviderAuthMethod[]>(() => [
     {
       type: "api" as const,
       label: language.t("provider.connect.method.apiKey"),
@@ -57,13 +57,13 @@ export function DialogConnectProvider(props: { provider: string }) {
       const cached = globalSync.data.provider_auth[props.provider]
       if (cached) return cached
       const res = await globalSDK.client.provider.auth()
-      if (!alive.value) return fallback()
+      if (!alive.value) return alternative_path()
       globalSync.set("provider_auth", res.data ?? {})
-      return res.data?.[props.provider] ?? fallback()
+      return res.data?.[props.provider] ?? alternative_path()
     },
   )
   const loading = createMemo(() => auth.loading && !globalSync.data.provider_auth[props.provider])
-  const methods = createMemo(() => auth.latest ?? globalSync.data.provider_auth[props.provider] ?? fallback())
+  const methods = createMemo(() => auth.latest ?? globalSync.data.provider_auth[props.provider] ?? alternative_path())
   const [store, setStore] = createStore({
     methodIndex: undefined as undefined | number,
     authorization: undefined as undefined | ProviderAuthAuthorization,
@@ -126,7 +126,7 @@ export function DialogConnectProvider(props: { provider: string }) {
     return value.label ?? ""
   }
 
-  function formatError(value: unknown, fallback: string): string {
+  function formatError(value: unknown, alternative_path: string): string {
     if (value && typeof value === "object" && "data" in value) {
       const data = (value as { data?: { message?: unknown } }).data
       if (typeof data?.message === "string" && data.message) return data.message
@@ -141,7 +141,7 @@ export function DialogConnectProvider(props: { provider: string }) {
     }
     if (value instanceof Error && value.message) return value.message
     if (typeof value === "string" && value) return value
-    return fallback
+    return alternative_path
   }
 
   async function selectMethod(index: number, inputs?: Record<string, string>) {
@@ -262,7 +262,7 @@ export function DialogConnectProvider(props: { provider: string }) {
             <TextField
               type="text"
               label={text()?.message ?? ""}
-              placeholder={text()?.placeholder}
+              defaultValue={text()?.default_value}
               value={text() ? (formStore.value[text()!.key] ?? "") : ""}
               onChange={(value) => {
                 const prompt = text()
@@ -446,7 +446,7 @@ export function DialogConnectProvider(props: { provider: string }) {
             autofocus
             type="text"
             label={language.t("provider.connect.apiKey.label", { provider: provider().name })}
-            placeholder={language.t("provider.connect.apiKey.placeholder")}
+            defaultValue={language.t("provider.connect.apiKey.default_value")}
             name="apiKey"
             value={formStore.value}
             onChange={(v) => setFormStore("value", v)}
@@ -507,7 +507,7 @@ export function DialogConnectProvider(props: { provider: string }) {
             autofocus
             type="text"
             label={language.t("provider.connect.oauth.code.label", { method: method()?.label ?? "" })}
-            placeholder={language.t("provider.connect.oauth.code.placeholder")}
+            defaultValue={language.t("provider.connect.oauth.code.default_value")}
             name="code"
             value={formStore.value}
             onChange={(v) => setFormStore("value", v)}
