@@ -7,7 +7,27 @@ set -euo pipefail
 #
 # This script does NOT need the decryption key.
 # It runs in CI as a required status check and can be run locally.
+#
+# When git-crypt is unlocked locally, files appear as plaintext in
+# the working tree — that is expected. Use --force to check anyway.
 # ─────────────────────────────────────────────────────────────────
+
+# If git-crypt is installed and unlocked locally, files are decrypted
+# in the working tree. This is normal for keyholders. Skip unless --force.
+if command -v git-crypt &>/dev/null && [[ "${1:-}" != "--force" ]]; then
+  # Check if any encrypted file is currently decrypted (unlocked state)
+  sample_file=$(git ls-files 'jnoccio-fusion/' | head -1)
+  if [[ -n "$sample_file" && -f "$sample_file" ]]; then
+    sample_hex=$(head -c 10 "$sample_file" | od -An -tx1 -v | tr -d ' \n')
+    if [[ "$sample_hex" != "00474954435259505400" ]]; then
+      # git-crypt is unlocked — files are decrypted locally, which is correct
+      echo "ℹ️  git-crypt is unlocked locally. Files are decrypted in working tree (expected)."
+      echo "   Run with --force to check anyway, or lock first: git-crypt lock"
+      echo "   CI will verify encryption on the remote (where the key is absent)."
+      exit 0
+    fi
+  fi
+fi
 
 # Hex representation of the git-crypt magic header: \0GITCRYPT\0
 MAGIC_HEX="00474954435259505400"
