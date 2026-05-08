@@ -144,3 +144,10 @@
   - Old-brand scan excluding workflow and generated `models-snapshot.js` reports only external auth package names/imports: `opencode-gitlab-auth`, `opencode-poe-auth`, and `@gitlab/opencode-gitlab-auth`.
 - Remaining risk: `packages/jekko/package.json` was already dirty with package namespace/order changes and remains unstaged/untouched by this final plugin bridge except as existing worktree state; external auth package names remain because no Jekko-named replacement packages are present.
 - Signature: `codex`
+
+## 2026-05-08T22:19:44Z — Commit receipt — codex — control-plane taint sync
+- Re-read workflow before append. Parser/docs sync fix after final review: added a safe preview-only top-level `taint` block to `docs/ZYAL/examples/09-control-plane-preview.zyal.yml`, mirrored it in bundled `packages/jekko/src/agent-script/examples.ts`, added `taint` to the fail-closed supported feature set, and updated the parser test expectations.
+- Verification rerun: `rtk bun test src/agent-script/parser.test.ts` in `packages/jekko` → 87 pass, 0 fail, 188 expectations.
+- Commit: `a658d8a9a chore: stage latest ZYAL updates and cleanup`.
+- Left out: untracked `jekko-branch-ruleset.json`.
+- Signature: `codex`
