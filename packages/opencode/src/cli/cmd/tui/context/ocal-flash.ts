@@ -76,7 +76,22 @@ export type OcalFleetMetrics = {
   readonly runId: string | null
   readonly status: string | null
   readonly jankuraiFindings: number | null
+  // Jnoccio direct-WS shadow — populated by jnoccio-ws.ts when connected.
+  // `null` for "no data yet"; `0` is a real value.
+  readonly jnoccioConnected: boolean
   readonly jnoccioInstances: number | null
+  readonly jnoccioMaxInstances: number | null
+  readonly jnoccioActiveAgents: number | null
+  readonly jnoccioPromptTokens: number | null
+  readonly jnoccioCompletionTokens: number | null
+  readonly jnoccioTotalTokens: number | null
+  readonly jnoccioCalls: number | null
+  readonly jnoccioWins: number | null
+  readonly jnoccioFailures: number | null
+  readonly jnoccioAvgLatencyMs: number | null
+  readonly jnoccioWorkerThreads: number | null
+  readonly jnoccioInstanceRole: string | null
+  readonly jnoccioLastHeartbeat: number | null
 }
 
 const DEFAULT_METRICS: OcalFleetMetrics = {
@@ -94,7 +109,20 @@ const DEFAULT_METRICS: OcalFleetMetrics = {
   runId: null,
   status: null,
   jankuraiFindings: null,
+  jnoccioConnected: false,
   jnoccioInstances: null,
+  jnoccioMaxInstances: null,
+  jnoccioActiveAgents: null,
+  jnoccioPromptTokens: null,
+  jnoccioCompletionTokens: null,
+  jnoccioTotalTokens: null,
+  jnoccioCalls: null,
+  jnoccioWins: null,
+  jnoccioFailures: null,
+  jnoccioAvgLatencyMs: null,
+  jnoccioWorkerThreads: null,
+  jnoccioInstanceRole: null,
+  jnoccioLastHeartbeat: null,
 }
 
 const [metrics, setMetrics] = createSignal<OcalFleetMetrics>(DEFAULT_METRICS)

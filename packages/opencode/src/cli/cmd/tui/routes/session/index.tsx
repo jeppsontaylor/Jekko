@@ -23,6 +23,7 @@ import { SplitBorder } from "@tui/component/border"
 import { Spinner } from "@tui/component/spinner"
 import { selectedForeground, useTheme } from "@tui/context/theme"
 import { setOcalFlashSource, textHasOcalSentinel, updateOcalMetrics, resetOcalMetrics } from "@tui/context/ocal-flash"
+import { connectJnoccio, disconnectJnoccio } from "@tui/context/jnoccio-ws"
 import { BoxRenderable, ScrollBoxRenderable, addDefaultParsers, TextAttributes, RGBA } from "@opentui/core"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
 import type {
@@ -261,7 +262,8 @@ export function Session() {
         const run = runs.find((item) => item.active_session_id === sessionID || item.root_session_id === sessionID)
         if (!alive) return
         setDaemonRun(run)
-        if (run && !["satisfied", "aborted", "failed"].includes(String(run.status))) {
+        const isLiveRun = !!run && !["satisfied", "aborted", "failed"].includes(String(run.status))
+        if (isLiveRun) {
           setOverlay("opencode-gold")
           // Push live fleet metrics from the daemon run into the OCAL panel.
           const tokens = run.token_usage ?? run.tokens ?? {}
@@ -282,9 +284,25 @@ export function Session() {
             tasksCompleted: Number(run.tasks_completed ?? 0),
             tasksIncubated: Number(run.tasks_incubated ?? 0),
           })
+          // Open a direct WebSocket to jnoccio-fusion if the run declares it.
+          // Idempotent — connectJnoccio reuses an open socket on the same key.
+          const jn = fleet?.jnoccio
+          const baseUrl = typeof jn?.base_url === "string" ? jn.base_url : null
+          if (jn?.enabled !== false && baseUrl) {
+            connectJnoccio({
+              baseUrl,
+              metricsWsPath: typeof jn?.metrics_ws === "string" ? jn.metrics_ws : undefined,
+              runId: String(run.id ?? run.run_id ?? sessionID),
+            })
+          } else {
+            disconnectJnoccio()
+          }
         } else {
           setOverlay(undefined)
-          if (!run) resetOcalMetrics()
+          if (!run) {
+            resetOcalMetrics()
+            disconnectJnoccio()
+          }
         }
       } catch {
         if (!alive) return
@@ -299,6 +317,7 @@ export function Session() {
       clearInterval(timer)
       setOverlay(undefined)
       resetOcalMetrics()
+      disconnectJnoccio()
     })
   })
 
