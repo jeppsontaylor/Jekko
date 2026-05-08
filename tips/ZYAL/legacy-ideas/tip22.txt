@@ -17,7 +17,7 @@ ZYAL already has several ideas that many agent systems either lack or leave as a
 5. **Incubator passes.** The incubator is the most differentiated part of the spec. It moves ZYAL beyond “loop until tests pass” into structured maturation.
 6. **Promotion gates.** The idea that readiness requires host evidence, not model confidence, is exactly right.
 7. **Guardrails and constraints.** These are framed as runtime-enforced, not prompt-enforced, which is the right safety boundary.
-8. **Sentinel-based portability.** The fact that an ZYAL block can live inside any chat prompt is strategically important. It makes ZYAL embeddable in Jekko, Codex, Claude, OpenHands, and custom hosts.
+8. **Sentinel-based portability.** The fact that a ZYAL block can live inside any chat prompt is strategically important. It makes ZYAL embeddable in Jekko, Codex, Claude, OpenHands, and custom hosts.
 
 The core design is already better than a generic “agent loop.” Anthropic’s public guidance on effective agents emphasizes simple, composable workflow patterns such as chaining, routing, parallelization, orchestrator-workers, and evaluator-optimizer loops; ZYAL already encodes several of these declaratively instead of relying on ad hoc prompt instructions. ([Anthropic][1])
 
@@ -2816,4 +2816,3 @@ If implemented this way, ZYAL is not “another agent framework.” It becomes t
 [29]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/?utm_source=chatgpt.com "Announcing the Agent2Agent Protocol (A2A)"
 [30]: https://learn.microsoft.com/en-us/agent-framework/overview/?utm_source=chatgpt.com "Microsoft Agent Framework Overview"
 [31]: https://docs.crewai.com/en/concepts/flows?utm_source=chatgpt.com "Flows"
-

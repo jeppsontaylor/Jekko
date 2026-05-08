@@ -90,7 +90,7 @@ interfaces:
     quarantine_new: true
 ```
 
-This would make ZYAL more significant because it becomes the **policy and lifecycle layer for the agent ecosystem**, not merely an OpenCode-specific runbook. MCP handles tools, A2A handles agent delegation, AG-UI handles frontend state/events, ACP handles IDE integration, and AgentSkills/AGENTS.md handle portable instructions. ZYAL governs them. ([Model Context Protocol][1])
+This would make ZYAL more significant because it becomes the **policy and lifecycle layer for the agent ecosystem**, not merely a Jekko-specific runbook. MCP handles tools, A2A handles agent delegation, AG-UI handles frontend state/events, ACP handles IDE integration, and AgentSkills/AGENTS.md handle portable instructions. ZYAL governs them. ([Model Context Protocol][1])
 
 ---
 
@@ -383,7 +383,7 @@ federation:
 
 A2A already provides agent cards, task lifecycle, streaming updates, artifacts, and long-running task support. ZYAL should add the safety and governance layer: leases, budgets, memory scopes, evidence schemas, and revocation. ([A2A Protocol][2])
 
-This would make ZYAL useful not only for OpenCode, but also for mixed fleets: local agents, SaaS agents, CI agents, security agents, code review agents, and human-in-the-loop reviewers.
+This would make ZYAL useful not only for Jekko, but also for mixed fleets: local agents, SaaS agents, CI agents, security agents, code review agents, and human-in-the-loop reviewers.
 
 ---
 
@@ -518,4 +518,3 @@ Those four turn ZYAL from “a very powerful autonomous coding runbook” into a
 [12]: https://slsa.dev/blog/2023/05/in-toto-and-slsa?utm_source=chatgpt.com "in-toto and SLSA"
 [13]: https://opentelemetry.io/docs/specs/semconv/gen-ai/?utm_source=chatgpt.com "Semantic conventions for generative AI systems"
 [14]: https://docs.openclaw.ai/tools/skills "Skills - OpenClaw"
-

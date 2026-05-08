@@ -26,7 +26,7 @@ The fourth strength is **explicit cost sovereignty**. Nested budgets at run, tas
 
 ## Biggest gaps and issues to address
 
-The largest gap is **interoperability as a first-class design goal**. ZYAL mentions MCP, agents, skills, and observability, but it should explicitly define how an ZYAL run maps to MCP servers, A2A/ACP tasks, AG-UI events, AGENTS.md instructions, and external workflow engines. OpenClaw already uses ACP sessions to run external coding harnesses such as Claude Code, Codex, Cursor, Copilot, Jekko, and Gemini CLI as background tasks, which is a useful precedent. ([OpenClaw][4])
+The largest gap is **interoperability as a first-class design goal**. ZYAL mentions MCP, agents, skills, and observability, but it should explicitly define how a ZYAL run maps to MCP servers, A2A/ACP tasks, AG-UI events, AGENTS.md instructions, and external workflow engines. OpenClaw already uses ACP sessions to run external coding harnesses such as Claude Code, Codex, Cursor, Copilot, Jekko, and Gemini CLI as background tasks, which is a useful precedent. ([OpenClaw][4])
 
 The second gap is **memory precision**. ZYAL has governed memory stores, context capsules, negative memory, compression, and provenance, but the spec should go further: every memory item should have type, scope, provenance, confidence, freshness, privacy class, invalidation rules, retrieval score, and evidence links. OpenClaw’s memory design is useful here because it uses plain Markdown memory, deterministic memory-wiki pages, claims/evidence tracking, contradiction/freshness checks, hybrid search, and background “dreaming” consolidation. ([OpenClaw][5]) Hermes is also relevant because it uses bounded curated memory injected at session start, session search over prior interactions, memory editing tools, duplicate prevention, consolidation thresholds, and security scanning for prompt injection or exfiltration. ([Hermes Agent][6])
 
@@ -42,7 +42,7 @@ The fifth gap is **human interaction protocol design**. ZYAL’s TUI is great, b
 
 ## 1. Make ZYAL a protocol compiler, not just a YAML format
 
-Add an explicit `interop` block that declares how an ZYAL run exports and imports standard protocol surfaces.
+Add an explicit `interop` block that declares how a ZYAL run exports and imports standard protocol surfaces.
 
 ```yaml
 interop:
@@ -60,7 +60,7 @@ interop:
       expose_live_state: true
     agents_md:
       ingest_repo_instructions: true
-      precedence: repo_then_ocal
+      precedence: repo_then_zyal
   imports:
     mcp_servers: ["github", "filesystem", "ci", "linear"]
     acp_harnesses: ["jekko", "codex", "claude-code"]
@@ -433,4 +433,3 @@ That is the path to making ZYAL dramatically more powerful without reinventing t
 [16]: https://www.swebench.com/verified.html?utm_source=chatgpt.com "SWE-bench Verified"
 [17]: https://a2a-protocol.org/latest/topics/life-of-a-task/ "Life of a Task - A2A Protocol"
 [18]: https://code.claude.com/docs/en/hooks "Hooks reference - Claude Code Docs"
-

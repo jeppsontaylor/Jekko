@@ -1892,7 +1892,7 @@ Then enforce:
 instruction_policy:
   precedence:
     - host_policy
-    - armed_ocal
+    - armed_zyal
     - approval_records
     - repo_agents_md
     - skills
@@ -2165,4 +2165,3 @@ That is the path to making ZYAL the default language for ambitious coding projec
 [32]: https://arxiv.org/abs/2602.09185 "[2602.09185] AIDev: Studying AI Coding Agents on GitHub"
 [33]: https://cuelang.org/docs/?utm_source=chatgpt.com "Documentation - CUE"
 [34]: https://docs.openhands.dev/sdk/guides/observability "Observability & Tracing - OpenHands Docs"
-

@@ -52,18 +52,18 @@ ZYAL's endgame is not "a better copilot." It is the **operating system for auton
 
 ---
 
-## Implemented Runtime
+## Runtime and Preview Implementation
 
-The ZYAL runtime is fully implemented across **30+ modules** in the Jekko codebase:
+The ZYAL implementation spans **30+ modules** in the Jekko codebase. Core daemon execution, parsing, preview, durable state, checkpointing, stop checks, task routing, and TUI observability are shipped. Higher-risk v2.1/v2.2 blocks are strict parser/preview contracts until every corresponding runtime enforcement path is wired.
 
 ### Parser & Schema (`agent-script/`)
 
 | Module | Lines | Purpose |
 |--------|-------|---------|
-| `schema.ts` | 65K | Complete type definitions for all 40+ top-level blocks |
-| `parser.ts` | 48K | Strict YAML parser with sentinel validation, hash computation, semantic checks |
-| `activation.ts` | 748 | Real-time ZYAL detection with instant valid/invalid/preview classification |
-| `parser.test.ts` | 25K | Comprehensive test suite covering all block types |
+| `schema.ts` | ~85 KB | Type definitions for all 40+ top-level blocks |
+| `parser.ts` | ~72 KB | Strict YAML parser with sentinel validation, hash computation, semantic checks |
+| `activation.ts` | ~1 KB | Real-time ZYAL detection with instant valid/invalid/preview classification |
+| `parser.test.ts` | ~35 KB | Parser and example coverage, including docs runbooks |
 
 ### Daemon Engine (`session/`)
 
@@ -440,7 +440,7 @@ repo_intelligence:
   blast_radius: { compute_on: [edit, checkpoint], pause_when_score_gte: 0.75 }
 ```
 
-#### Additional Blocks: `sandbox`, `security`, `skills`, `observability`, `memory`, `agents`, `mcp`, `permissions`, `tasks`, `fan_out`, `assertions`, `retry`, `hooks`, `ui` — all fully defined in `schema.ts` with runtime engines.
+#### Additional Blocks: `sandbox`, `security`, `skills`, `observability`, `memory`, `agents`, `mcp`, `permissions`, `tasks`, `fan_out`, `assertions`, `retry`, `hooks`, `ui` — defined in `schema.ts`; enforcement ranges from shipped runtime engines to preview contracts as described in the runtime coverage note.
 
 ---
 

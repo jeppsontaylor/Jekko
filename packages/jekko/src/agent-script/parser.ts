@@ -61,6 +61,7 @@ const SUPPORTED_FEATURE_KEYS = new Set([
   "memory_kernel",
   "evidence_graph",
   "trust",
+  "taint",
   "requirements",
   "evaluation",
   "release",

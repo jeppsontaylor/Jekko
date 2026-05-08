@@ -18,7 +18,7 @@ That is the wedge that makes ZYAL bigger than “yet another agent config file.�
 
 OpenHands is very close to ZYAL’s world, but from the other direction. It provides a composable SDK, GUI, CLI, cloud/enterprise deployment, sandboxes, tools, event streams, REST/WebSocket services, and model-agnostic execution. The OpenHands SDK paper emphasizes extensible agents, custom tools, memory management, local-to-remote portability, sandboxed execution, lifecycle control, model routing, and security analysis. Its architecture also includes an event-sourced state model with deterministic replay, typed tool contracts, workspace abstractions, and context condensation. ([arXiv][1])
 
-**ZYAL lesson:** ZYAL should not try to replace OpenHands. ZYAL should be able to **drive** OpenHands. Add explicit event-sourcing, replay, workspace, sandbox, typed tool, and condensation semantics so an ZYAL run can be implemented by OpenHands or by Jekko’s own runtime.
+**ZYAL lesson:** ZYAL should not try to replace OpenHands. ZYAL should be able to **drive** OpenHands. Add explicit event-sourcing, replay, workspace, sandbox, typed tool, and condensation semantics so a ZYAL run can be implemented by OpenHands or by Jekko’s own runtime.
 
 ---
 
@@ -1644,7 +1644,7 @@ security:
       - repository_files_outside_policy
     rules:
       - tainted_content_cannot:
-          - arm_ocal
+          - arm_zyal
           - change_permissions
           - request_secrets
           - approve_plan
@@ -2003,4 +2003,3 @@ If ZYAL takes that path, it can plausibly become the default runbook language fo
 [16]: https://snyk.io/blog/toxicskills-malicious-ai-agent-skills-clawhub/ "Snyk Finds Prompt Injection in 36%, 1467 Malicious Payloads in a ToxicSkills Study of Agent Skills Supply Chain Compromise | Snyk"
 [17]: https://www.linkedin.com/posts/jepsontaylor_%F0%9D%90%89%F0%9D%90%9A%F0%9D%90%A7%F0%9D%90%A4%F0%9D%90%AE%F0%9D%90%AB%F0%9D%90%9A%F0%9D%90%A2-%F0%9D%90%AF080-was-just-released-activity-7457606147789705216-P7xk?utm_source=chatgpt.com "Jepson Taylor's Post"
 [18]: https://arxiv.org/abs/2512.03262 "[2512.03262] Is Vibe Coding Safe? Benchmarking Vulnerability of Agent-Generated Code in Real-World Tasks"
-

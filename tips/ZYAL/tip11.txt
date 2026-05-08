@@ -201,7 +201,7 @@ approvals:
 
 This prevents “the human clicked OK somewhere” from becoming an unverifiable claim.
 
-### 8. Create an ZYAL Flight Recorder using OpenTelemetry conventions
+### 8. Create a ZYAL Flight Recorder using OpenTelemetry conventions
 
 ZYAL already has observability, but it should standardize telemetry so traces can flow into existing systems. OpenTelemetry semantic conventions give shared names for traces, metrics, logs, profiles, and resources; OpenAI Agents SDK has built-in tracing for LLM generations, tool calls, handoffs, guardrails, and custom events. ([OpenTelemetry][13])
 
@@ -326,4 +326,3 @@ That framing keeps ZYAL from reinventing LangGraph, OpenClaw, Hermes, MCP, A2A, 
 [13]: https://opentelemetry.io/docs/concepts/semantic-conventions/ "Semantic Conventions | OpenTelemetry"
 [14]: https://docs.langchain.com/oss/python/langgraph/overview "LangGraph overview - Docs by LangChain"
 [15]: https://slsa.dev/ "SLSA • Supply-chain Levels for Software Artifacts"
-

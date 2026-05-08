@@ -1773,7 +1773,7 @@ interop:
 
 This is how ZYAL becomes available inside **any chat prompt**:
 
-1. Chat assistant emits an ZYAL block.
+1. Chat assistant emits a ZYAL block.
 2. Host parses but does not execute.
 3. Host previews an executable Run Card.
 4. Human arms it through a separate host action.
@@ -2848,4 +2848,3 @@ That is how ZYAL becomes the default language for ambitious autonomous coding.
 [16]: https://github.com/openai/openai-agents-python/blob/main/docs/tracing.md?utm_source=chatgpt.com "openai-agents-python/docs/tracing.md at main"
 [17]: https://github.com/goldmar/openclaw-code-agent "GitHub - goldmar/openclaw-code-agent · GitHub"
 [18]: https://hermes-agent.nousresearch.com/docs/user-guide/features/cron "Scheduled Tasks (Cron) | Hermes Agent"
-

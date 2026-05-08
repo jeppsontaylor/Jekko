@@ -2242,7 +2242,7 @@ This lets ZYAL be a lingua franca instead of another silo.
 
 # 34. Make ZYAL compile to an intermediate representation
 
-Add an ZYAL IR:
+Add a ZYAL IR:
 
 ```yaml
 ir:
@@ -3478,4 +3478,3 @@ That is how ZYAL becomes more than a daemon language. It becomes the default con
 [36]: https://docs.crewai.com/ "https://docs.crewai.com/"
 [37]: https://agentskills.io/home "https://agentskills.io/home"
 [38]: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview"
-

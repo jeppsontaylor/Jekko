@@ -226,33 +226,33 @@ trust:
   sources:
     user_prompt:
       label: user_instruction
-      may_define_ocal: true
-      may_arm_ocal: true
+      may_define_zyal: true
+      may_arm_zyal: true
 
     assistant_output:
       label: model_output
-      may_define_ocal: false
-      may_arm_ocal: false
+      may_define_zyal: false
+      may_arm_zyal: false
 
     repo_files:
       label: project_content
-      may_define_ocal: false
+      may_define_zyal: false
       may_override_policy: false
 
     agentry_files:
       paths: ["AGENTS.md", ".cursorrules", ".claude/**", "jekko.json"]
       label: project_guidance
-      may_define_ocal: false
+      may_define_zyal: false
       may_override_policy: false
 
     issue_comments:
       label: external_untrusted
-      may_define_ocal: false
+      may_define_zyal: false
       may_request_tasks: true
 
     tool_output:
       label: tool_untrusted
-      may_define_ocal: false
+      may_define_zyal: false
       may_request_permissions: false
 
   context_firewall:
@@ -284,7 +284,7 @@ ZYAL_ARM RUN_FOREVER id=my-script
 
 But for a prompt-portable language, this is not enough.
 
-A malicious web page, issue comment, repo file, or assistant output could include an ZYAL block plus an arm sentinel. If the host parser is naive, that becomes catastrophic.
+A malicious web page, issue comment, repo file, or assistant output could include a ZYAL block plus an arm sentinel. If the host parser is naive, that becomes catastrophic.
 
 ## Required upgrade: detached arming ceremony
 
@@ -2003,19 +2003,19 @@ trust:
   sources:
     user_prompt:
       label: user_instruction
-      may_define_ocal: true
-      may_arm_ocal: true
+      may_define_zyal: true
+      may_arm_zyal: true
     assistant_output:
       label: model_output
-      may_define_ocal: false
-      may_arm_ocal: false
+      may_define_zyal: false
+      may_arm_zyal: false
     repo_files:
       label: project_content
-      may_define_ocal: false
+      may_define_zyal: false
       may_override_policy: false
     tool_output:
       label: tool_untrusted
-      may_define_ocal: false
+      may_define_zyal: false
       may_request_permissions: false
   context_firewall:
     strip_zyal_sentinels_from_untrusted_sources: true
@@ -2407,8 +2407,8 @@ trust:
   sources:
     slack_message:
       label: external_untrusted
-      may_define_ocal: false
-      may_arm_ocal: false
+      may_define_zyal: false
+      may_arm_zyal: false
       may_request_tasks: true
 
 approvals:
@@ -2903,4 +2903,3 @@ The current ZYAL is a strong seed. The upgraded ZYAL should be the thing that pr
 [18]: https://arxiv.org/abs/2303.11366 "[2303.11366] Reflexion: Language Agents with Verbal Reinforcement Learning"
 [19]: https://arxiv.org/abs/2407.16741 "[2407.16741] OpenHands: An Open Platform for AI Software Developers as Generalist Agents"
 [20]: https://jekko.ai/docs/permissions/ "Permissions | Jekko"
-

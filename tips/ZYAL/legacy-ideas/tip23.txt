@@ -110,7 +110,7 @@ runtime:
     include_required_human_approvals: true
 ```
 
-Why this matters: a chat surface can display an ZYAL block, but only the host can say, “I can enforce `git_push: deny`; I cannot enforce browser isolation; this run is rejected.” Without this, ZYAL becomes a prompt convention rather than a control language.
+Why this matters: a chat surface can display a ZYAL block, but only the host can say, “I can enforce `git_push: deny`; I cannot enforce browser isolation; this run is rejected.” Without this, ZYAL becomes a prompt convention rather than a control language.
 
 ## 3.2 A formal intermediate representation
 
@@ -2051,4 +2051,3 @@ That is a real gap. The ecosystem has many powerful agent frameworks, but the wo
 [20]: https://open-code.ai/en/docs/agents "AI Agents - Autonomous Coding - Jekko Docs"
 [21]: https://dspy.ai/ "DSPy"
 [22]: https://microsoft.github.io/autogen/stable//index.html "AutoGen — AutoGen"
-

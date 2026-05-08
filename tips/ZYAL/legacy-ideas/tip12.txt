@@ -1474,7 +1474,7 @@ adapters:
         - incubator.passes
     event_bridge:
       zyal_events_to_openhands: true
-      openhands_observations_to_ocal: true
+      openhands_observations_to_zyal: true
 ```
 
 **Concern:** OpenHands already has an SDK and runtime.
@@ -2146,7 +2146,7 @@ In ZYAL terms:
 authority:
   assistant_output:
     can:
-      - propose_ocal
+      - propose_zyal
       - propose_memory
       - propose_skill
       - propose_patch
@@ -2284,7 +2284,7 @@ This makes ZYAL portable.
 
 The language should optimize for this sentence:
 
-> “A human can paste an ZYAL block into any capable coding-agent host, preview exactly what will happen, arm it with an explicit gesture, walk away for hours, and later audit every decision, permission, memory update, skill used, experiment attempted, test run, checkpoint, and promotion.”
+> “A human can paste a ZYAL block into any capable coding-agent host, preview exactly what will happen, arm it with an explicit gesture, walk away for hours, and later audit every decision, permission, memory update, skill used, experiment attempted, test run, checkpoint, and promotion.”
 
 That is the category-defining version.
 
@@ -2319,4 +2319,3 @@ The most powerful ZYAL is not a bigger prompt. It is a **portable constitution f
 [12]: https://modelcontextprotocol.io/specification/2025-11-25 "Specification - Model Context Protocol"
 [13]: https://docs.openhands.dev/sdk/arch/overview "Overview - OpenHands Docs"
 [14]: https://code.claude.com/docs/en/hooks "Hooks reference - Claude Code Docs"
-

@@ -120,6 +120,29 @@ trust:
   on_taint: pause
   notes: "Preview contracts do not inherit trust from assistant output."
 
+taint:
+  default_label: external
+  labels:
+    trusted_user:
+      rank: high
+      notes: "Direct human operator input."
+    external:
+      rank: untrusted
+      notes: "Web, issue, tool, MCP, or remote-agent content."
+    hostile_instruction:
+      rank: hostile
+      notes: "Detected prompt-injection or delegated-authority text."
+  forbid:
+    - from: [external, hostile_instruction]
+      cannot: [arm, approve, grant_capability, exec_shell, expose_secret]
+      unless: [human_review, signed_sanitizer]
+  prompt_injection:
+    detect_patterns:
+      - "[Ii]gnore (all )?previous instructions"
+      - "[Rr]eveal (the )?(secret|token|key)"
+    on_detect: pause
+    scan_sources: [web_content, issue_comment, mcp_resource, tool_output]
+
 requirements:
   must:
     - parse_successfully
@@ -186,7 +209,7 @@ reasoning_privacy:
   summaries_only: true
 
 unsupported_feature_policy:
-  required: [interop, runtime, capability_negotiation, memory_kernel, evidence_graph, trust, requirements, evaluation, release, roles, channels, imports, reasoning_privacy]
+  required: [interop, runtime, capability_negotiation, memory_kernel, evidence_graph, trust, taint, requirements, evaluation, release, roles, channels, imports, reasoning_privacy]
   optional: [unsupported_preview_hooks]
   fail_closed: true
   on_missing: reject

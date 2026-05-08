@@ -4,19 +4,21 @@
 
 **Authors:** Jekko Contributors
 **Version:** 1.0 — May 2026
-**Status:** Reference Implementation Shipped
+**Status:** Reference implementation shipped; preview control-plane blocks under active validation
 
 ---
 
 ## Abstract
 
-We present **ZYAL** (Zero-trust YAML Agent Language), a declarative, host-enforced control language for governing long-running autonomous AI coding agents. ZYAL addresses the fundamental unsolved problem in agentic software engineering: how to let a language model work autonomously for hours — editing files, running tests, committing code, managing tasks — without losing safety, observability, or human control.
+We present **ZYAL** (Zero-trust YAML Agent Language), a declarative, host-enforced control language for governing long-running autonomous AI coding agents. ZYAL addresses a practical systems problem in agentic software engineering: how to let a language model work autonomously for hours, editing files, running tests, managing tasks, and checkpointing progress, without surrendering safety, observability, or human control.
 
 ZYAL is not a prompt framework, an agent SDK, or a model fine-tuning strategy. It is a **typed contract between a human operator and an autonomous agent runtime**, expressed as a strict YAML runbook with 40+ declarative blocks covering iteration policy, stop conditions, evidence requirements, capability leases, anti-vibe engineering gates, hypothesis tournaments, multi-scope budgets, human approval chains, and zero-trust arming.
 
-The key insight is structural: safety properties that matter — bounded execution, evidence-gated promotion, secret protection, anti-vibe discipline, cost caps — cannot be reliably enforced by instructing the model. They must be enforced by the host runtime where the model has no ability to circumvent them.
+The key insight is structural: safety properties that matter, including bounded execution, evidence-gated promotion, secret protection, anti-vibe discipline, and cost caps, cannot be reliably enforced by instructing the model. They must be enforced by the host runtime where the model has no ability to circumvent them.
 
-ZYAL is fully implemented in the Jekko TUI and daemon runtime, with 30+ runtime modules, 9 SQLite tables, a 48K-line parser, and a 65K-line schema. This paper describes the language design, runtime architecture, safety model, and comparison to prior work.
+The Jekko reference implementation includes a typed parser and schema, daemon runtime modules, SQLite-backed state, HTTP preview/start APIs, and a TUI Run Card. Core daemon control, parsing, preview, checkpointing, stop checks, task state, and observability are shipped; several higher-risk v2.1+ blocks are intentionally preview-first contracts until the corresponding runtime enforcement paths are wired. This paper describes the language design, threat model, implementation boundary, evaluation plan, and remaining validity threats.
+
+**Index Terms:** autonomous software engineering, agent safety, policy-as-code, YAML, zero trust, human-in-the-loop systems, software agents.
 
 ---
 
@@ -52,12 +54,18 @@ This is a zero-trust architecture applied to AI agents: the model is treated as 
 
 ### 1.3 Contributions
 
-1. **A complete declarative language** (40+ typed blocks) for specifying agent behavior, safety constraints, and promotion criteria
-2. **A zero-trust safety model** with capability leases, command floors, anti-vibe gates, and model confidence caps
-3. **An incubation system** for hard tasks with 8 maturation passes, readiness scoring, and evidence-gated promotion
-4. **A hypothesis tournament model** for competing implementation strategies with blind cross-provider judging
-5. **A durable runtime** backed by SQLite with full event sourcing, context rotation, and checkpoint management
-6. **A reference implementation** with 30+ runtime modules, comprehensive test coverage, and a gold-themed TUI with live observability
+1. **A declarative agent contract** with 40+ typed blocks for behavior, safety constraints, preview metadata, and promotion criteria.
+2. **A zero-trust safety model** that separates trusted host control from untrusted model output, including structural arming, capability leases, command floors, anti-vibe gates, and model confidence caps.
+3. **A durable daemon architecture** backed by SQLite state, event logging, task ledgers, context rotation, checkpointing, and a human-readable filesystem mirror.
+4. **A hard-task incubation model** with 8 maturation passes, risk/readiness scoring, negative memory, and evidence-gated promotion.
+5. **A hypothesis tournament abstraction** for competing implementation strategies, isolated worktrees, and cross-provider review.
+6. **A reference implementation and artifact plan** that distinguishes host-enforced core behavior from preview-only control-plane blocks, making the implementation auditable rather than aspirational.
+
+### 1.4 Threat Model
+
+ZYAL assumes the model is useful but untrusted. It may hallucinate, omit evidence, follow hostile instructions embedded in web pages or tool output, overstate completion, request excessive permissions, or generate syntactically valid but unsafe commands. ZYAL also assumes that external content, MCP resources, issue comments, and assistant output are not trusted origins for arming a daemon.
+
+The trusted computing base is the host runtime: parser, schema decoder, daemon state machine, tool permission layer, durable store, and TUI/API control surface. The host is expected to run on a machine whose operating-system account, filesystem permissions, and secret store are already trusted by the human operator. ZYAL does not claim to defend against a compromised host process, malicious kernel, tampered binary, or provider-side model logging. Its claim is narrower and testable: model output cannot bypass host-owned control-flow checks that are actually wired into the runtime.
 
 ---
 
@@ -77,6 +85,7 @@ This is a zero-trust architecture applied to AI agents: the model is treated as 
 | Aider [8] | 2024 | Pair-programming CLI with git integration | Single-turn. No daemon mode, no incubation, no multi-agent orchestration. |
 | Claude Code [9] | 2025 | Agentic coding with permission system | Permission prompts only. No declarative runbooks, no evidence-gated promotion, no anti-vibe gates. |
 | Codex CLI [10] | 2025 | Terminal agent with sandboxing | Network/filesystem sandbox. No declarative contracts, no durable state, no tournament model. |
+| SWE-agent [16] | 2024 | Agent-computer interface for software engineering | Improves tool ergonomics; ZYAL focuses on host-owned governance and durable contracts. |
 
 ### 2.2 Agent Safety Research
 
@@ -95,6 +104,10 @@ This is a zero-trust architecture applied to AI agents: the model is treated as 
 | GitHub Actions YAML | CI/CD pipelines | Workflow definitions. ZYAL extends this with evidence gates, budgets, and safety invariants. |
 | Terraform HCL | Infrastructure-as-code | Declarative infrastructure. ZYAL is declarative agent governance. |
 | Rego (OPA) [15] | Policy-as-code | Policy evaluation. ZYAL embeds policy evaluation into the agent lifecycle. |
+
+### 2.4 Benchmarks and Evaluation Context
+
+SWE-bench [17] and related agent benchmarks measure whether agents can resolve real repository issues. ZYAL is complementary: it is not a model benchmark, but a governance layer for running agents against such tasks with bounded autonomy, durable evidence, and reproducible stop conditions. A mature ZYAL evaluation should therefore report both task success rates and governance outcomes: prevented unsafe actions, false-positive gates, budget exhaustion behavior, rollback success, and human approval latency.
 
 ---
 
@@ -150,18 +163,23 @@ The full autonomous engineering contract: zero-trust arming, capability leases, 
 
 `arming` · `capabilities` · `quality` · `experiments` · `models` · `budgets` · `triggers` · `rollback` · `done` · `repo_intelligence`
 
+#### Layer 6: Control Plane Preview (v2.2+) — preview blocks
+Interoperability and release metadata that should parse, preview, and fail closed before it becomes runtime-enforced policy.
+
+`interop` · `runtime` · `capability_negotiation` · `memory_kernel` · `evidence_graph` · `trust` · `taint` · `requirements` · `evaluation` · `release` · `roles` · `channels` · `imports` · `reasoning_privacy` · `unsupported_feature_policy`
+
 ### 3.3 Schema and Parsing
 
-The ZYAL schema is defined in TypeScript (`schema.ts`, 65K lines) with:
+The ZYAL schema is defined in TypeScript (`schema.ts`, approximately 2.1K lines / 85 KB at the time of this paper) with:
 - Exhaustive type definitions for every block, sub-block, and enum
 - Normalized canonical form for hash computation
 - Semantic validation rules (e.g., workflow terminal states, evidence type uniqueness, approval gate cross-references)
 
-The parser (`parser.ts`, 48K lines) implements:
+The parser (`parser.ts`, approximately 1.7K lines / 72 KB at the time of this paper) implements:
 - Sentinel extraction with code-fence rejection
 - YAML parsing with strict key validation
 - SHA-256 hash computation of the canonical normalized YAML
-- ARM sentinel matching with hash and nonce verification
+- ARM sentinel matching for the shipped simple arming path, with hash/nonce fields represented as preview contracts until the start API carries host-issued arm tokens
 - Preview mode (parse without arming) for validation
 
 ---
@@ -173,10 +191,12 @@ The parser (`parser.ts`, 48K lines) implements:
 The most dangerous attack surface in any agent system is unauthorized execution. ZYAL's `arming` block makes model-initiated execution structurally impossible:
 
 1. **Origin rejection**: ARM sentinels from `assistant_output`, `tool_output`, `web_content`, or `mcp_resource` are rejected by the parser
-2. **Hash binding**: The ARM token includes `sha256=<hash>` of the canonical script — any modification invalidates the arm
-3. **Nonce binding**: The host generates a single-use nonce; replay attacks are impossible
+2. **Hash binding**: The ARM token can include `sha256=<hash>` of the canonical script so modification invalidates the arm
+3. **Nonce binding**: The host can generate a single-use nonce, preventing replay once the start API accepts host-issued tokens
 4. **Context binding**: ARM can be bound to `user_id`, `repo`, `branch` — a script armed for staging cannot run in production
 5. **Expiration**: Preview hashes expire after a configurable duration (default: 10 minutes)
+
+The current shipped start path accepts the simple trailing `ZYAL_ARM RUN_FOREVER id=<run-id>` sentinel. Hash-bound, nonce-bound, and context-bound arming are parsed and previewed, but are not yet claimed as end-to-end runtime enforcement.
 
 ### 4.2 Capability Leases
 
@@ -199,7 +219,7 @@ capabilities:
     always_block: ["git push --force", "rm -rf /", "sudo ", "DROP DATABASE"]
 ```
 
-The `command_floor` is absolute — no `allow` rule can override it. There is no "YOLO mode."
+The `command_floor` is specified as absolute — no `allow` rule may override it. Full tool-gate wiring is a runtime-enforcement requirement; until every tool path is covered, the block is treated as a preview contract rather than a completed security boundary.
 
 ### 4.3 Anti-Vibe Engineering
 
@@ -214,7 +234,7 @@ ZYAL's `quality` block structurally prevents the canonical vibe-coding failure m
 | `block_ts_ignore` | `@ts-ignore` / `@ts-expect-error` additions |
 | `require_failing_test_first_for_bugfix` | Bug fixes require a reproduction first |
 
-All gates are **fail-closed** when enabled — the model cannot override them.
+The gates are designed to fail closed when enabled. Diff/promotion integration is the enforcement boundary; preview-only deployments must display the policy without claiming complete host blocking.
 
 ### 4.4 Model Confidence Capping
 
@@ -338,19 +358,21 @@ All state is mirrored to `.jekko/daemon/<runID>/` for human inspection:
 
 ### 7.1 Safety Properties
 
-| Property | Enforcement | Circumventable by Model? |
+| Property | Current Enforcement Boundary | Status |
 |---|---|---|
-| Bounded execution | Circuit breaker + budgets | No — runtime enforced |
-| Evidence-gated promotion | Readiness evidence fields | No — host evaluates |
-| Secret protection | Capability leases + redaction | No — command floor absolute |
-| Anti-vibe discipline | Quality gates (fail-closed) | No — diff analysis in host |
-| Cost control | Nested budgets with on_exhaust | No — runtime enforced |
-| Arming security | Hash + nonce + origin rejection | No — parser enforced |
-| Model confidence | confidence_cap | No — host caps score |
+| Sentinel extraction, code-fence rejection, duplicate-block rejection | Parser | Shipped |
+| Basic arming sentinel and ID matching | Parser / start path | Shipped |
+| Hash/nonce/context-bound arming | Parser preview metadata; start API token path pending | Preview |
+| Bounded execution | Loop policy, circuit breaker, stop checks | Shipped for core daemon loop |
+| Evidence-gated promotion | Task readiness and promotion helpers | Partially wired |
+| Secret protection | Security/redaction helpers and capability preview | Partial / preview depending on tool path |
+| Anti-vibe discipline | Quality block schema and preview | Preview until diff gates are wired everywhere |
+| Cost control | Observability and budget helpers | Partial; nested v2.1 budgets are advisory in the start loop |
+| Model confidence | Readiness cap in task scoring | Shipped where promotion helpers are used |
 
 ### 7.2 Expressiveness
 
-The 8 flagship example runbooks in `docs/ZYAL/examples/` demonstrate that ZYAL can express:
+The 9 flagship example runbooks in `docs/ZYAL/examples/` demonstrate that ZYAL can express:
 
 1. Simple fix-until-green loops
 2. Multi-worker parallel audits with guardrails
@@ -360,6 +382,25 @@ The 8 flagship example runbooks in `docs/ZYAL/examples/` demonstrate that ZYAL c
 6. Billion-LOC monorepo scope control
 7. Fleet portfolio management with external triggers
 8. Full end-to-end autonomous engineering contracts
+9. Preview-only control-plane metadata with fail-closed unsupported-feature policy
+
+### 7.3 Reproducibility and Artifact Checks
+
+The implementation is evaluated as an artifact-backed systems paper rather than a benchmark-only paper. A reviewer should be able to reproduce the claims with local source inspection and tests:
+
+| Claim | Artifact / Command | Expected Result |
+|---|---|---|
+| All docs examples parse as ZYAL | `rtk bun test src/agent-script/parser.test.ts` from `packages/jekko` | Passes and includes all 9 `*.zyal.yml` examples plus `wow.yml` |
+| Forbidden legacy language markers are absent | exact-token `rtk rg` scan from repository root | No source/docs hits except intentional workflow history |
+| TUI ZYAL metrics and Jnoccio WebSocket behavior are covered | `rtk bun test test/cli/tui/zyal-flash.test.ts test/cli/tui/jnoccio-ws.test.ts` | Passes |
+| Daemon APIs and session behavior still compile/test | daemon/session/API test group | Passes |
+| Type safety | `rtk bun run typecheck` from `packages/jekko` | Passes |
+
+### 7.4 Limitations and Threats to Validity
+
+ZYAL is a runtime contract, not a proof that arbitrary autonomous code editing is safe. Its guarantees are only as strong as the enforcement points that are actually wired into the host. Preview-only blocks must not be represented as production security boundaries. The paper's evaluation is also implementation-centric: it demonstrates parser coverage, runtime surface tests, and architectural safety properties, but does not yet report large-scale SWE-bench outcomes, human-subject productivity studies, or red-team exploit rates across heterogeneous repositories.
+
+The largest validity risks are incomplete tool-gate coverage, stale documentation drift, provider-specific behavior, race conditions in live observability channels, and accidental trust expansion when ZYAL is embedded into external chat or MCP surfaces. The `taint`, `trust`, and `unsupported_feature_policy` blocks are therefore important: they make unsafe assumptions explicit and fail closed for required preview capabilities.
 
 ---
 
@@ -367,9 +408,11 @@ The 8 flagship example runbooks in `docs/ZYAL/examples/` demonstrate that ZYAL c
 
 1. **Distributed daemon fleets** — multiple ZYAL daemons coordinating across repositories
 2. **Learning from negative memory** — cross-run skill transfer from failed experiments
-3. **Formal verification** — proving safety properties of ZYAL scripts statically
-4. **IDE integration** — ZYAL validation and authoring in VS Code, Zed, JetBrains
-5. **Benchmark suite** — standardized evaluation of ZYAL daemons on SWE-bench tasks
+3. **Complete enforcement wiring for preview blocks** — hash/nonce arming tokens, capability gates on every tool path, diff-level anti-vibe checks, and nested budget exhaustion
+4. **Formal verification** — proving safety properties of ZYAL scripts statically
+5. **IDE integration** — ZYAL validation and authoring in VS Code, Zed, JetBrains
+6. **Benchmark suite** — standardized evaluation of ZYAL daemons on SWE-bench tasks
+7. **Security red-team suite** — adversarial prompts, malicious tool output, hostile MCP resources, and supply-chain skill attacks
 
 ---
 
@@ -385,35 +428,39 @@ That is the zero-trust contract for autonomous software engineering.
 
 ## References
 
-[1] T. Richards et al., "Auto-GPT: An Autonomous GPT-4 Experiment," GitHub, 2023.
+[1] T. Richards et al., "Auto-GPT: An Autonomous GPT-4 Experiment," GitHub, 2023. [Online]. Available: https://github.com/Significant-Gravitas/AutoGPT
 
-[2] Y. Nakajima, "BabyAGI: Task-Driven Autonomous Agent," GitHub, 2023.
+[2] Y. Nakajima, "BabyAGI: Task-Driven Autonomous Agent," GitHub, 2023. [Online]. Available: https://github.com/yoheinakajima/babyagi
 
-[3] S. Hong et al., "MetaGPT: Meta Programming for Multi-Agent Collaborative Framework," arXiv:2308.00352, 2023.
+[3] S. Hong et al., "MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework," arXiv:2308.00352, 2023. [Online]. Available: https://arxiv.org/abs/2308.00352
 
-[4] J. Moura, "CrewAI: Framework for orchestrating role-playing autonomous AI agents," GitHub, 2024.
+[4] J. Moura, "CrewAI: Framework for orchestrating role-playing autonomous AI agents," GitHub, 2024. [Online]. Available: https://github.com/crewAIInc/crewAI
 
-[5] LangChain Inc., "LangGraph: Building language agents as graphs," 2024.
+[5] LangChain Inc., "LangGraph: Building language agents as graphs," 2024. [Online]. Available: https://github.com/langchain-ai/langgraph
 
-[6] Cognition Labs, "Devin: The first AI software engineer," 2024.
+[6] Cognition Labs, "Devin: The first AI software engineer," 2024. [Online]. Available: https://www.cognition.ai/blog/introducing-devin
 
-[7] X. Wang et al., "OpenHands: An Open Platform for AI Software Developers as Generalist Agents," arXiv:2407.16741, 2024.
+[7] X. Wang et al., "OpenHands: An Open Platform for AI Software Developers as Generalist Agents," arXiv:2407.16741, 2024. [Online]. Available: https://arxiv.org/abs/2407.16741
 
-[8] P. Gauthier, "Aider: AI pair programming in your terminal," GitHub, 2024.
+[8] P. Gauthier, "Aider: AI pair programming in your terminal," GitHub, 2024. [Online]. Available: https://github.com/Aider-AI/aider
 
-[9] Anthropic, "Claude Code: Agentic coding tool," 2025.
+[9] Anthropic, "Claude Code: Agentic coding tool," 2025. [Online]. Available: https://docs.anthropic.com/en/docs/claude-code
 
-[10] OpenAI, "Codex CLI: Lightweight coding agent," GitHub, 2025.
+[10] OpenAI, "Codex CLI: Lightweight coding agent," GitHub, 2025. [Online]. Available: https://github.com/openai/codex
 
-[11] Y. Bai et al., "Constitutional AI: Harmlessness from AI Feedback," arXiv:2212.08073, 2022.
+[11] Y. Bai et al., "Constitutional AI: Harmlessness from AI Feedback," arXiv:2212.08073, 2022. [Online]. Available: https://arxiv.org/abs/2212.08073
 
-[12] L. Ouyang et al., "Training language models to follow instructions with human feedback," NeurIPS, 2022.
+[12] L. Ouyang et al., "Training language models to follow instructions with human feedback," in *Advances in Neural Information Processing Systems*, 2022. [Online]. Available: https://proceedings.neurips.cc/paper_files/paper/2022/hash/b1efde53be364a73914f58805a001731-Abstract.html
 
-[13] M. Chen et al., "Evaluating Large Language Models Trained on Code," arXiv:2107.03374, 2021.
+[13] M. Chen et al., "Evaluating Large Language Models Trained on Code," arXiv:2107.03374, 2021. [Online]. Available: https://arxiv.org/abs/2107.03374
 
-[14] Guardrails AI, "guardrails: Adding guardrails to large language models," GitHub, 2023.
+[14] Guardrails AI, "guardrails: Adding guardrails to large language models," GitHub, 2023. [Online]. Available: https://github.com/guardrails-ai/guardrails
 
-[15] Open Policy Agent, "Rego: Policy Language," openpolicyagent.org, 2024.
+[15] Open Policy Agent, "Policy Language," 2026. [Online]. Available: https://www.openpolicyagent.org/docs/latest/policy-language/
+
+[16] J. Yang et al., "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering," arXiv:2405.15793, 2024. [Online]. Available: https://arxiv.org/abs/2405.15793
+
+[17] C. Jimenez et al., "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?," arXiv:2310.06770, 2023. [Online]. Available: https://arxiv.org/abs/2310.06770
 
 ---
 
@@ -423,7 +470,7 @@ See [`docs/ZYAL_MISSION.md`](../docs/ZYAL_MISSION.md) for the complete syntax re
 
 ## Appendix B: Example Runbooks
 
-See [`docs/ZYAL/examples/`](../docs/ZYAL/examples/) for 8 production-ready runbooks:
+See [`docs/ZYAL/examples/`](../docs/ZYAL/examples/) for 9 runbooks. Examples 1-8 exercise daemon patterns; example 9 is intentionally preview-only control-plane metadata:
 
 | # | File | Blocks Demonstrated |
 |---|---|---|
@@ -435,36 +482,37 @@ See [`docs/ZYAL/examples/`](../docs/ZYAL/examples/) for 8 production-ready runbo
 | 6 | `06-evidence-graph-merge.zyal.yml` | `evidence`, `workflow`, `approvals`, `rollback` |
 | 7 | `07-self-improving-skills.zyal.yml` | `skills`, `quarantine`, `promotion`, `memory` |
 | 8 | `08-full-power-runbook.zyal.yml` | All 40+ blocks end-to-end |
+| 9 | `09-control-plane-preview.zyal.yml` | `interop`, `runtime`, `capability_negotiation`, `memory_kernel`, `evidence_graph`, `trust`, `taint`, `unsupported_feature_policy` |
 
 ## Appendix C: Runtime Module Inventory
 
-| Module | Lines | Purpose |
+| Module | Size at review | Purpose |
 |---|---|---|
-| `schema.ts` | 65K | Type definitions for all blocks |
-| `parser.ts` | 48K | Sentinel extraction, YAML parsing, hash computation |
-| `parser.test.ts` | 25K | Comprehensive test suite |
-| `activation.ts` | 748 | Real-time ZYAL detection |
-| `daemon.ts` | 29K | Core daemon loop |
-| `daemon-store.ts` | 37K | SQLite-backed durable state (9 tables) |
-| `daemon-incubator.ts` | 15K | 8-pass task maturation |
-| `daemon-task-router.ts` | 7.6K | Risk/readiness scoring, lane routing |
-| `daemon-observability.ts` | 6.7K | Spans, metrics, cost tracking |
-| `daemon-sandbox.ts` | 6.5K | Execution isolation |
-| `daemon-workflow.ts` | 6K | Durable state machine |
-| `daemon-security.ts` | 5.5K | Secrets brokering, audit logging |
-| `daemon-memory.ts` | 5.4K | Governed memory stores |
-| `daemon-evidence.ts` | 4.9K | Proof bundles with SHA-256 signing |
-| `daemon-assertions.ts` | 5K | Structured output contracts |
-| `daemon-approvals.ts` | 4.5K | Human approval gates |
-| `daemon-reduce.ts` | 4.1K | Result reduction strategies |
-| `daemon-skills.ts` | 3.9K | Skill governance |
-| `daemon-constraints.ts` | 3.2K | Runtime invariants |
-| `daemon-guardrails.ts` | 2.9K | Input/output validation |
-| `daemon-retry.ts` | 2.7K | Backoff policies |
-| `daemon-on-handler.ts` | 2.4K | Signal-driven event handlers |
-| `daemon-fanout.ts` | 2.1K | Parallel execution |
-| `daemon-hooks.ts` | 1.7K | Lifecycle hook resolution |
-| `daemon-context.ts` | 1.5K | Iteration prompt builder |
-| `daemon-event.ts` | 1.7K | Typed event system |
-| `zyal-flash.ts` | 4.4K | Multi-source gold overlay + fleet metrics |
+| `schema.ts` | ~2.1K lines / 85 KB | Type definitions for all blocks |
+| `parser.ts` | ~1.7K lines / 72 KB | Sentinel extraction, YAML parsing, hash computation |
+| `parser.test.ts` | ~1.2K lines / 35 KB | Parser and example coverage |
+| `activation.ts` | 27 lines / 1 KB | Real-time ZYAL detection |
+| `daemon.ts` | ~809 lines / 31 KB | Core daemon loop |
+| `daemon-store.ts` | ~991 lines / 37 KB | SQLite-backed durable state |
+| `daemon-incubator.ts` | ~438 lines / 15 KB | 8-pass task maturation |
+| `daemon-task-router.ts` | ~220 lines / 7.6 KB | Risk/readiness scoring, lane routing |
+| `daemon-observability.ts` | ~260 lines / 6.7 KB | Spans, metrics, cost tracking |
+| `daemon-sandbox.ts` | ~203 lines / 6.5 KB | Execution isolation helpers |
+| `daemon-workflow.ts` | ~191 lines / 6 KB | Durable state machine |
+| `daemon-security.ts` | ~196 lines / 5.5 KB | Secrets brokering, audit logging helpers |
+| `daemon-memory.ts` | ~180 lines / 5.4 KB | Governed memory stores |
+| `daemon-evidence.ts` | ~141 lines / 4.9 KB | Proof bundles with SHA-256 signing |
+| `daemon-assertions.ts` | ~151 lines / 5 KB | Structured output contracts |
+| `daemon-approvals.ts` | ~132 lines / 4.5 KB | Human approval gates |
+| `daemon-reduce.ts` | ~158 lines / 4.1 KB | Result reduction strategies |
+| `daemon-skills.ts` | ~136 lines / 3.9 KB | Skill governance helpers |
+| `daemon-constraints.ts` | ~112 lines / 3.2 KB | Runtime invariants |
+| `daemon-guardrails.ts` | ~98 lines / 2.9 KB | Input/output validation |
+| `daemon-retry.ts` | ~99 lines / 2.7 KB | Backoff policies |
+| `daemon-on-handler.ts` | ~60 lines / 2.4 KB | Signal-driven event handlers |
+| `daemon-fanout.ts` | ~84 lines / 2.1 KB | Parallel execution |
+| `daemon-hooks.ts` | ~54 lines / 1.7 KB | Lifecycle hook resolution |
+| `daemon-context.ts` | ~59 lines / 1.5 KB | Iteration prompt builder |
+| `daemon-event.ts` | ~54 lines / 1.7 KB | Typed event system |
+| `zyal-flash.ts` | ~294 lines / 11 KB | Multi-source gold overlay + fleet metrics |
 | `zyal-sidebar.tsx` | — | Live ∞ ZYAL MODE sidebar |

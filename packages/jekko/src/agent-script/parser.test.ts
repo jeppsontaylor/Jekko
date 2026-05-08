@@ -16,7 +16,7 @@ describe("ZYAL parser", () => {
     expect(parsed.preview.armed).toBe(true)
   })
 
-  test("detects draft ocals without arm", () => {
+  test("detects draft ZYAL blocks without arm", () => {
     const example = getZyalExample("fix-until-tests-pass")!
     const draft = example.text.replace(/ZYAL_ARM RUN_FOREVER id=.*\n?$/, "")
     const detected = detectZyal(draft)
@@ -195,6 +195,8 @@ ZYAL_ARM RUN_FOREVER id=one`
     expect(parsed.preview.memory_kernel_enabled).toBe(true)
     expect(parsed.preview.evidence_graph_enabled).toBe(true)
     expect(parsed.preview.trust_enabled).toBe(true)
+    expect(parsed.preview.taint_enabled).toBe(true)
+    expect(parsed.preview.taint_label_count).toBe(3)
     expect(parsed.preview.requirements_enabled).toBe(true)
     expect(parsed.preview.evaluation_enabled).toBe(true)
     expect(parsed.preview.release_enabled).toBe(true)
@@ -203,7 +205,7 @@ ZYAL_ARM RUN_FOREVER id=one`
     expect(parsed.preview.imports_count).toBe(2)
     expect(parsed.preview.reasoning_privacy_enabled).toBe(true)
     expect(parsed.preview.unsupported_feature_policy_enabled).toBe(true)
-    expect(parsed.preview.unsupported_feature_policy_summary).toContain("required:13")
+    expect(parsed.preview.unsupported_feature_policy_summary).toContain("required:14")
   })
 
   test("rejects unsupported required features in fail-closed preview policy", async () => {

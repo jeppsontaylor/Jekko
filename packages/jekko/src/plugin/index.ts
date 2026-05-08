@@ -55,12 +55,17 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@jekko/Plugin") {}
 
+// These bundled auth plugins are still published against the pre-Jekko plugin
+// package name. Their runtime shape matches `PluginInstance`; only the branded
+// TypeScript import path differs during the namespace migration.
+const compatiblePlugin = (plugin: unknown): PluginInstance => plugin as PluginInstance
+
 // Built-in plugins that are directly imported (not installed from npm)
 const INTERNAL_PLUGINS: PluginInstance[] = [
   CodexAuthPlugin,
   CopilotAuthPlugin,
-  GitlabAuthPlugin,
-  PoeAuthPlugin,
+  compatiblePlugin(GitlabAuthPlugin),
+  compatiblePlugin(PoeAuthPlugin),
   CloudflareWorkersAuthPlugin,
   CloudflareAIGatewayAuthPlugin,
   AzureAuthPlugin,

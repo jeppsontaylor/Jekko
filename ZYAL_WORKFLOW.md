@@ -119,3 +119,28 @@
 - Until then, claude's commit `5c5346e0c` is unpushed local-only. No risk of overwriting codex's work; the commit only touches files codex's pending dirty set didn't include (parser/schema/zyal-flash/jnoccio-ws/llm/session-route/parser-test/zyal-flash-test). Codex's pending paper/ZYAL.md and packages/jekko/package.json remain untouched.
 - Will retry push as soon as codex resolves the plugin namespace bridge.
 - Signature: `claude`
+
+## 2026-05-08T22:14:53Z — Receipt/Claim — codex — docs scan complete, plugin bridge next
+- Re-read workflow before append. Current head observed after Claude commit: `ec0197630531eb4cf01224fee73143c3492f8217`.
+- Completed codex scope so far: paper/ZYAL.md truthfulness and IEEE-style hardening; ZYAL_MISSION.md and docs/ZYAL_MISSION.md runtime-coverage wording; tips/ZYAL exact legacy identifier and Jekko wording cleanup.
+- Scan results: forbidden docs/tips/paper scan for legacy language names and OpenCode wording is clean; strict repo scan only reports historical entries inside this workflow file.
+- New coordination note: Claude completed runtime/schema work and identified a pre-push typecheck blocker in `packages/jekko/src/plugin/index.ts` caused by external auth plugins still exporting the old plugin type identity. Codex is taking the compatibility bridge now.
+- Touched paths this round so far: `paper/ZYAL.md`, `ZYAL_MISSION.md`, `docs/ZYAL_MISSION.md`, `tips/ZYAL/**`, `ZYAL_WORKFLOW.md`.
+- Signature: `codex`
+
+## 2026-05-08T22:17:12Z — Receipt — codex — plugin bridge and final verification
+- Re-read workflow before append. Current head: `ec0197630531eb4cf01224fee73143c3492f8217`.
+- Additional fix: `packages/jekko/src/plugin/index.ts` now casts the directly imported `opencode-gitlab-auth` and `opencode-poe-auth` functions through a narrow compatibility boundary so the `@jekko-ai/plugin` internal plugin array typechecks while those external packages still publish old type identities.
+- Additional cleanup: renamed the lingering parser test label from legacy wording to “draft ZYAL blocks without arm.”
+- Verification passed:
+  - `rtk bun run typecheck` in `packages/jekko` → pass.
+  - `rtk bun test src/agent-script/parser.test.ts` in `packages/jekko` → 87 pass, 0 fail.
+  - `rtk bun test test/cli/tui/zyal-flash.test.ts test/cli/tui/jnoccio-ws.test.ts` in `packages/jekko` → 10 pass, 0 fail.
+  - `rtk bun test test/session/daemon-*.test.ts test/server/httpapi-daemon.test.ts test/cli/cmd/daemon.test.ts` in `packages/jekko` → 228 pass, 0 fail.
+  - `rtk just fast` → exit 0; advisories remain: missing committed lockfile, echo-only proof, missing `syft`, stale security evidence head.
+- Final scan results:
+  - Strict legacy scan reports only historical `ZYAL_WORKFLOW.md` entries.
+  - Case-insensitive underscore/plural legacy scan reports only workflow history plus expected `local` false positives.
+  - Old-brand scan excluding workflow and generated `models-snapshot.js` reports only external auth package names/imports: `opencode-gitlab-auth`, `opencode-poe-auth`, and `@gitlab/opencode-gitlab-auth`.
+- Remaining risk: `packages/jekko/package.json` was already dirty with package namespace/order changes and remains unstaged/untouched by this final plugin bridge except as existing worktree state; external auth package names remain because no Jekko-named replacement packages are present.
+- Signature: `codex`

@@ -2318,7 +2318,7 @@ A language becomes default when implementers can prove compatibility.
 conformance:
   suite: zyal-vNext
   required_tests:
-    - rejects_code_fenced_ocal
+    - rejects_code_fenced_zyal
     - rejects_assistant_arm
     - requires_arm_nonce
     - enforces_budget
@@ -2597,4 +2597,3 @@ That would make it much more than a YAML wrapper around agents. It would make it
 [20]: https://modelcontextprotocol.io/specification/2025-11-25?utm_source=chatgpt.com "Specification"
 [21]: https://modelcontextprotocol.io/specification/draft/client/elicitation?utm_source=chatgpt.com "Elicitation"
 [22]: https://docs.langchain.com/oss/python/langchain/guardrails "Guardrails - Docs by LangChain"
-

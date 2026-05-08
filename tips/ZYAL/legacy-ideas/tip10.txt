@@ -3156,7 +3156,7 @@ Hermes is closer to a long-lived agent product: persistent memory, skills, sched
 
 **ZYAL gap exposed by Hermes:** ZYAL needs stronger fleet operations: heartbeats, reclaim, zombie detection, goal locking, durable task board, skill lifecycle, and automatic recovery. Hermes v0.13.0’s durable multi-agent board and checkpointing improvements are a very strong signal. ([GitHub][6])
 
-**Recommended stance:** Hermes can be an ZYAL runtime. ZYAL should describe policy and lifecycle; Hermes can execute it.
+**Recommended stance:** Hermes can be a ZYAL runtime. ZYAL should describe policy and lifecycle; Hermes can execute it.
 
 ## ZYAL vs OpenHands
 
@@ -3279,4 +3279,3 @@ ZYAL is already pointed in the right direction. The path to making it the most p
 [24]: https://code.claude.com/docs/en/best-practices "https://code.claude.com/docs/en/best-practices"
 [25]: https://developers.openai.com/codex/learn/best-practices "https://developers.openai.com/codex/learn/best-practices"
 [26]: https://docs.langchain.com/oss/python/langgraph/overview "LangGraph overview - Docs by LangChain"
-

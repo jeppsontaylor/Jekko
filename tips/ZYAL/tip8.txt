@@ -12,7 +12,7 @@ MCP already standardizes agent access to tools/data over JSON-RPC; A2A standardi
 
 ## Key gaps / risks I see
 
-The draft’s biggest risk is **schema sprawl**: 40+ top-level blocks can become powerful, but also hard to standardize, implement, test, and compare across runtimes. The spec should distinguish **normative protocol**, **OpenCode implementation**, **optional profiles**, and **experimental extensions**. MCP’s spec explicitly uses normative requirements language and schema authority; ZYAL needs the same style if it wants ecosystem adoption rather than being only an OpenCode feature. ([Model Context Protocol][1])
+The draft’s biggest risk is **schema sprawl**: 40+ top-level blocks can become powerful, but also hard to standardize, implement, test, and compare across runtimes. The spec should distinguish **normative protocol**, **Jekko implementation**, **optional profiles**, and **experimental extensions**. MCP’s spec explicitly uses normative requirements language and schema authority; ZYAL needs the same style if it wants ecosystem adoption rather than being only a Jekko feature. ([Model Context Protocol][1])
 
 The second major risk is **memory poisoning**. Long loops make memory valuable, but persistent memory becomes an attack surface. OpenClaw’s memory docs show how useful plain-file, searchable, hybrid memory, memory-wiki provenance, and “dreaming” consolidation can be; Hermes similarly emphasizes persistent memory, self-generated skills, scheduled automations, isolated subagents, and cross-platform continuity. But recent security work on OpenClaw argues that poisoning capability, identity, or knowledge state sharply increases attack success, which is directly relevant to any ZYAL-style long-run agent. ([OpenClaw][2])
 
@@ -128,7 +128,7 @@ memory:
 
 This may be the most important security upgrade.
 
-NCSC’s practical advice is essentially: if an LLM processes content from an untrusted party, do not let it use privileges that party should not have. That principle should become an ZYAL invariant. If the agent is reading a random email, GitHub issue, web page, package README, external A2A message, or MCP tool result, any subsequent action should inherit that source’s trust constraints unless a host policy or human approval re-elevates it. ([National Cyber Security Centre][3])
+NCSC’s practical advice is essentially: if an LLM processes content from an untrusted party, do not let it use privileges that party should not have. That principle should become a ZYAL invariant. If the agent is reading a random email, GitHub issue, web page, package README, external A2A message, or MCP tool result, any subsequent action should inherit that source’s trust constraints unless a host policy or human approval re-elevates it. ([National Cyber Security Centre][3])
 
 Add:
 
@@ -272,7 +272,7 @@ mesh:
 
 A2A defines tasks, task status, artifacts, messages, and versioning; it also warns that messages are not reliable delivery for critical information and that results should be artifacts, not just messages. A2A sample guidance says external agent cards, messages, artifacts, and statuses should be treated as untrusted input to avoid prompt injection. ZYAL should encode those lessons directly. ([A2A Protocol][8])
 
-This lets ZYAL safely orchestrate external agents instead of only local OpenCode workers.
+This lets ZYAL safely orchestrate external agents instead of only local Jekko workers.
 
 ### 9. Add continuous adversarial evaluation, simulation, and “red-team before arming”
 
@@ -372,4 +372,3 @@ That framing avoids reinventing the wheel and makes ZYAL the missing safety, mem
 [9]: https://owasp.org/www-project-top-10-for-large-language-model-applications/ "OWASP Top 10 for Large Language Model Applications | OWASP Foundation"
 [10]: https://opentelemetry.io/docs/ "Documentation | OpenTelemetry"
 [11]: https://openpolicyagent.org/docs "Open Policy Agent (OPA) | Open Policy Agent"
-

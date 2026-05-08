@@ -1296,7 +1296,7 @@ Claude Agent SDK already exposes cost tracking and OpenTelemetry as first-class 
 The user’s requirement is that ZYAL be available inside any chat prompt: Jekko, Codex, Claude, etc. The right architecture is:
 
 1. **ZYAL block is prompt-embeddable.**
-2. **Only an ZYAL-aware host can execute it.**
+2. **Only a ZYAL-aware host can execute it.**
 3. **All other systems treat it as inert text.**
 4. **The host parses, previews, validates, and asks for arming.**
 5. **The host can dispatch workers to Jekko, Codex, Claude Code, OpenHands, Hermes, LangGraph, etc.**
@@ -2040,4 +2040,3 @@ That is how ZYAL becomes bigger than Jekko. It becomes the portable control surf
 [31]: https://owasp.org/www-project-top-10-for-large-language-model-applications/ "OWASP Top 10 for Large Language Model Applications | OWASP Foundation"
 [32]: https://genai.owasp.org/llmrisk/llm06-sensitive-information-disclosure/ "LLM06:2025 Excessive Agency - OWASP Gen AI Security Project"
 [33]: https://arxiv.org/abs/2305.10601?utm_source=chatgpt.com "Tree of Thoughts: Deliberate Problem Solving with Large Language Models"
-

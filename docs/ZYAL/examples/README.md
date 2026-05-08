@@ -12,7 +12,7 @@ Nine flagship runbooks that show what ZYAL v2.1 makes possible. Each is a comple
 | [`06-evidence-graph-merge.zyal.yml`](06-evidence-graph-merge.zyal.yml) | Proof lanes + merge witness + rollback verify + workflow-driven approvals | `workflow`, `evidence`, `approvals`, `rollback`, `done` |
 | [`07-self-improving-skills.zyal.yml`](07-self-improving-skills.zyal.yml) | Governed skill quarantine → human review → repo registry promotion | `skills`, `memory`, `approvals`, `quality`, `observability` |
 | [`08-full-power-runbook.zyal.yml`](08-full-power-runbook.zyal.yml) | Every v2.1 power block in one runbook | All |
-| [`09-control-plane-preview.zyal.yml`](09-control-plane-preview.zyal.yml) | Preview-only control-plane contract with interop, runtime, trust, and release metadata | `interop`, `runtime`, `capability_negotiation`, `memory_kernel`, `evidence_graph`, `trust`, `requirements`, `evaluation`, `release`, `roles`, `channels`, `imports`, `reasoning_privacy`, `unsupported_feature_policy` |
+| [`09-control-plane-preview.zyal.yml`](09-control-plane-preview.zyal.yml) | Preview-only control-plane contract with interop, runtime, trust, taint, and release metadata | `interop`, `runtime`, `capability_negotiation`, `memory_kernel`, `evidence_graph`, `trust`, `taint`, `requirements`, `evaluation`, `release`, `roles`, `channels`, `imports`, `reasoning_privacy`, `unsupported_feature_policy` |
 
 ## Running an example
 

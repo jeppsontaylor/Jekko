@@ -1,6 +1,6 @@
 I’m reading “LangChane” as **LangChain/LangGraph** and “Hermis” as **Hermes Agent**. My high-level judgment: **ZYAL is directionally excellent and unusually ambitious, but it should become the governance/operating-contract layer that composes existing standards—not a replacement for MCP, A2A, ACP, AGENTS.md, LangGraph-style runtimes, or Hermes/OpenClaw-style memory/skill systems.**
 
-The strongest part of ZYAL is that it makes the **host** own autonomy: preview/arming, loop lifecycle, budgets, evidence, approvals, checkpointing, guardrails, sandboxing, and memory are enforced outside the model. That is exactly the right philosophy for multi-hour agent work. The current document positions ZYAL as a strict YAML runbook embedded in OpenCode, with SQLite as source of truth, durable daemon state, evidence-gated promotion, anti-vibe engineering gates, multi-agent orchestration, skills, security, observability, and repo intelligence. 
+The strongest part of ZYAL is that it makes the **host** own autonomy: preview/arming, loop lifecycle, budgets, evidence, approvals, checkpointing, guardrails, sandboxing, and memory are enforced outside the model. That is exactly the right philosophy for multi-hour agent work. The current document positions ZYAL as a strict YAML runbook embedded in Jekko, with SQLite as source of truth, durable daemon state, evidence-gated promotion, anti-vibe engineering gates, multi-agent orchestration, skills, security, observability, and repo intelligence. 
 
 ## The reference landscape ZYAL should align with
 
@@ -26,7 +26,7 @@ The strongest part of ZYAL is that it makes the **host** own autonomy: preview/a
 
 ## Capability gaps and potential issues I see
 
-The biggest issue is that ZYAL is described as a **runbook format**, but the ambition is a **protocol**. To become protocol-grade, it needs canonical IR, schemas, conformance tests, version negotiation, extension registries, compatibility profiles, and reference adapters. Otherwise it risks becoming a powerful OpenCode feature rather than an ecosystem standard.
+The biggest issue is that ZYAL is described as a **runbook format**, but the ambition is a **protocol**. To become protocol-grade, it needs canonical IR, schemas, conformance tests, version negotiation, extension registries, compatibility profiles, and reference adapters. Otherwise it risks becoming a powerful Jekko feature rather than an ecosystem standard.
 
 There is also a small but telling internal consistency issue: the document says state persists in **9 SQLite tables**, but the list shown includes only **8** names: `daemon_run`, `daemon_iteration`, `daemon_event`, `daemon_task`, `daemon_task_pass`, `daemon_task_memory`, `daemon_worker`, and `daemon_artifact`. That should be fixed because trust in an operating contract depends on spec precision. 
 
@@ -56,7 +56,7 @@ interop:
     stream_diffs: true
   repo_guidance:
     import: AGENTS.md
-    conflict_policy: nearest_file_wins_then_user_then_ocal
+    conflict_policy: nearest_file_wins_then_user_then_zyal
   observability:
     emit: opentelemetry_genai
   provenance:
@@ -80,7 +80,7 @@ Add conformance levels:
 | ZYAL-L4 | Multi-agent, A2A/ACP/MCP interop, replayable provenance |
 | ZYAL-L5 | Fleet, distributed leases, benchmarked reliability      |
 
-This makes adoption easier: a small tool can support L0/L1, while OpenCode can support L4/L5.
+This makes adoption easier: a small tool can support L0/L1, while Jekko can support L4/L5.
 
 ### 3. Upgrade `memory` into a governed **Memory OS**
 
@@ -339,4 +339,3 @@ The immediate priorities should be: **canonical IR + conformance suite**, **inte
 [12]: https://arxiv.org/abs/2307.03172 "[2307.03172] Lost in the Middle: How Language Models Use Long Contexts"
 [13]: https://www.w3.org/TR/prov-dm/ "PROV-DM: The PROV Data Model"
 [14]: https://www.swebench.com/?utm_source=chatgpt.com "SWE-bench Leaderboards"
-

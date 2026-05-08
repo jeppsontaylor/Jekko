@@ -48,7 +48,7 @@ That means ZYAL should be able to run inside Jekko natively, compile into LangGr
 | System                             | What it already does well                                                                                                                                                                                                                                                                                                 | Where ZYAL overlaps                                                      | What ZYAL should add instead of duplicating                                                                                                                    |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **OpenHands**                      | Docker sandboxing, repo customization, hooks, dangerous-command blocking, verification before finish. OpenHands documents Docker sandboxing as the default/recommended execution isolation, and its hooks can block tool calls, inject context, audit use, and run finish-time checks. ([docs.all-hands.dev][3])          | ZYAL guardrails, hooks, permissions, verification.                       | Add an **OpenHands adapter** that emits `.openhands` hooks/setup/check scripts from ZYAL. ZYAL should define policy; OpenHands can enforce it in that runtime. |
-| **LangGraph / LangChain**          | Durable execution, checkpointing, interrupts, persistence, thread IDs, replay/time-travel style execution. LangGraph’s persistence saves checkpoints at steps and supports human-in-loop, fault tolerance, and resumption through thread IDs. ([LangChain Docs][4])                                                       | ZYAL loop, context, retry, daemon state.                                 | Add an ZYAL **workflow graph** that can compile to LangGraph state graphs. Do not reinvent graph execution when LangGraph is used.                             |
+| **LangGraph / LangChain**          | Durable execution, checkpointing, interrupts, persistence, thread IDs, replay/time-travel style execution. LangGraph’s persistence saves checkpoints at steps and supports human-in-loop, fault tolerance, and resumption through thread IDs. ([LangChain Docs][4])                                                       | ZYAL loop, context, retry, daemon state.                                 | Add a ZYAL **workflow graph** that can compile to LangGraph state graphs. Do not reinvent graph execution when LangGraph is used.                             |
 | **Hermes Agent**                   | Persistent memory, session search, skills, scheduled automations, subagents, self-improvement, multiple terminal backends, and security layers. Hermes describes curated memory files, session-search over SQLite/FTS5, memory security scanning, skills, cron, subagents, and multiple execution backends. ([GitHub][5]) | ZYAL tasks, memory-adjacent incubator, permissions, long-running daemon. | Add **host-reviewed memory and skill promotion**. Hermes’s self-improvement is powerful, but ZYAL should gate learned skills with evidence and approvals.      |
 | **OpenClaw**                       | Gateway architecture, multi-channel routing, device trust, scheduled tasks, multi-agent identity, sandbox options, explicit pairing. Its docs emphasize local-first gateway design, channel integrations, trust defaults, and multi-agent routing. ([GitHub][6])                                                          | ZYAL daemon lifecycle and multi-agent orchestration.                     | Add **activation triggers, trust zones, user/channel identity, and inbound-message tainting**. ZYAL should be safe when embedded into any chat surface.        |
 | **Codex**                          | Subagents, skills, repository instructions, compaction, long-horizon coding loops, mid-flight steering. Codex subagents can run specialized work in parallel and inherit sandbox policy; Codex skills package instructions/resources/scripts with progressive disclosure. ([OpenAI Developers][7])                        | ZYAL fan-out, agents, context, hooks.                                    | Add a **Codex adapter** mapping ZYAL workers to Codex subagents, ZYAL skills to Codex skills, and ZYAL context policies to compaction rules.                   |
@@ -65,7 +65,7 @@ The conclusion is sharp: **ZYAL is redundant if it becomes another agent framewo
 
 Right now ZYAL is a syntax. To become universal, it needs to be a **compiled contract**.
 
-An ZYAL host should parse, validate, lint, preview, lower, execute, observe, and record. Different runtimes will support different capabilities. So ZYAL needs explicit capability negotiation.
+A ZYAL host should parse, validate, lint, preview, lower, execute, observe, and record. Different runtimes will support different capabilities. So ZYAL needs explicit capability negotiation.
 
 ### Proposed addition: `capabilities`, `adapters`, and `lowering`
 
@@ -597,7 +597,7 @@ trust:
   zones:
     human_direct:
       trust: high
-      may_arm_ocal: true
+      may_arm_zyal: true
 
     repo_tracked:
       trust: medium
@@ -607,12 +607,12 @@ trust:
     issue_tracker:
       trust: low
       taint: untrusted_text
-      may_arm_ocal: false
+      may_arm_zyal: false
 
     web:
       trust: low
       taint: untrusted_text
-      may_arm_ocal: false
+      may_arm_zyal: false
 
     tool_output:
       trust: contextual
@@ -2024,11 +2024,11 @@ trust:
   zones:
     human_direct:
       trust: high
-      may_arm_ocal: true
+      may_arm_zyal: true
     issue_tracker:
       trust: low
       taint: untrusted_text
-      may_arm_ocal: false
+      may_arm_zyal: false
     tool_output:
       trust: contextual
     model_summary:
@@ -2852,4 +2852,3 @@ That is how ZYAL can become the default language for ambitious coding projects.
 [12]: https://hermes-agent.nousresearch.com/docs/user-guide/features/memory "https://hermes-agent.nousresearch.com/docs/user-guide/features/memory"
 [13]: https://docs.langchain.com/oss/python/deepagents/overview "https://docs.langchain.com/oss/python/deepagents/overview"
 [14]: https://developers.openai.com/codex/skills "https://developers.openai.com/codex/skills"
-
