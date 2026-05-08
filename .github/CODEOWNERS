@@ -1,3 +1,9 @@
+# ── Protected encrypted source (git-crypt) ──────────────────────
+/jnoccio-fusion/              @jeppsontaylor
+/.gitattributes               @jeppsontaylor
+/.git-crypt/                  @jeppsontaylor
+/tools/check-encrypted-paths* @jeppsontaylor
+
 # web + desktop packages
 packages/app/      @adamdotdevin
 packages/tauri/    @adamdotdevin

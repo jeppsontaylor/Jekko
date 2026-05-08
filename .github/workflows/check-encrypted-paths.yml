@@ -1,0 +1,27 @@
+name: check-encrypted-paths
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  verify-encryption:
+    name: Verify jnoccio-fusion encryption
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Verify encrypted paths
+        run: |
+          chmod +x tools/check-encrypted-paths.sh
+          tools/check-encrypted-paths.sh
