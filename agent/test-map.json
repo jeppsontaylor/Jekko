@@ -129,51 +129,51 @@
       "command": "just fast",
       "purpose": "verify husky hook proof route stays visible"
     },
-    ".opencode/agent/duplicate-pr.md": {
+    ".jekko/agent/duplicate-pr.md": {
       "command": "just fast",
       "purpose": "verify duplicate PR guidance proof route stays visible"
     },
-    ".opencode/agent/generated-zones.toml": {
+    ".jekko/agent/generated-zones.toml": {
       "command": "just fast",
       "purpose": "verify generated zones config proof route stays visible"
     },
-    ".opencode/agent/": {
+    ".jekko/agent/": {
       "command": "just fast",
       "purpose": "verify agent proof routes stay visible"
     },
-    ".opencode/env.d.ts": {
+    ".jekko/env.d.ts": {
       "command": "just fast",
       "purpose": "verify env proof route stays visible"
     },
-    ".opencode/glossary/": {
+    ".jekko/glossary/": {
       "command": "just fast",
       "purpose": "verify glossary proof route stays visible"
     },
-    ".opencode/opencode.jsonc": {
+    ".jekko/jekko.jsonc": {
       "command": "just fast",
-      "purpose": "verify opencode config proof route stays visible"
+      "purpose": "verify jekko config proof route stays visible"
     },
-    ".opencode/plugins/": {
+    ".jekko/plugins/": {
       "command": "just fast",
       "purpose": "verify plugin proof route stays visible"
     },
-    ".opencode/skills/": {
+    ".jekko/skills/": {
       "command": "just fast",
       "purpose": "verify skill proof route stays visible"
     },
-    ".opencode/themes/": {
+    ".jekko/themes/": {
       "command": "just fast",
       "purpose": "verify theme proof route stays visible"
     },
-    ".opencode/tool/": {
+    ".jekko/tool/": {
       "command": "just fast",
       "purpose": "verify tool proof route stays visible"
     },
-    ".opencode/tui.json": {
+    ".jekko/tui.json": {
       "command": "just fast",
       "purpose": "verify tui proof route stays visible"
     },
-    ".opencode/command/": {
+    ".jekko/command/": {
       "command": "just fast",
       "purpose": "verify command proof routes stay visible"
     },
@@ -285,9 +285,9 @@
       "command": "just fast",
       "purpose": "verify identity proof routes stay visible"
     },
-    "packages/opencode/": {
+    "packages/jekko/": {
       "command": "just fast",
-      "purpose": "verify opencode package proof routes stay visible"
+      "purpose": "verify jekko package proof routes stay visible"
     },
     "packages/plugin/": {
       "command": "just fast",

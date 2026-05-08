@@ -1,9 +1,9 @@
 import fs from "fs/promises"
 import os from "os"
 import { Effect, Layer } from "effect"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
-import { EffectFlock } from "@opencode-ai/core/util/effect-flock"
-import { Global } from "@opencode-ai/core/global"
+import { AppFileSystem } from "@jekko-ai/core/filesystem"
+import { EffectFlock } from "@jekko-ai/core/util/effect-flock"
+import { Global } from "@jekko-ai/core/global"
 
 type Msg = {
   key: string

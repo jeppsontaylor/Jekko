@@ -19,7 +19,7 @@ The biggest missing pieces are:
 7. First-class **model routing, failover, verifier models, and cost/quality budgets**.
 8. A serious **anti-vibe-coding quality system** based on executable evidence, not model confidence.
 9. Rich **observability, evals, failure taxonomy, and conformance tests**.
-10. A reusable **template/package ecosystem** so ZYAL becomes a standard, not just an OpenCode feature.
+10. A reusable **template/package ecosystem** so ZYAL becomes a standard, not just an Jekko feature.
 
 I surveyed representative public docs, papers, repos, and community material. I would not claim every X, LinkedIn, Quora, or forum post has been exhaustively reviewed; those sources are too ephemeral and often anecdotal. The engineering-relevant pattern is clear enough from primary docs, open-source repos, and research: the durable-agent frontier is converging around sandboxed execution, event streams, persistent memory, tool governance, human gates, eval traces, and skill/procedure reuse.
 
@@ -39,7 +39,7 @@ Fourth, **incubator passes** are the most original part of the draft. Scout, ide
 
 Fifth, **guardrails, constraints, permissions, and circuit breakers** are in the right place: the runtime, not the prompt.
 
-The current spec is already a credible v1. The upgrades below are about making it a world-class agent control language rather than just a very good OpenCode daemon format.
+The current spec is already a credible v1. The upgrades below are about making it a world-class agent control language rather than just a very good Jekko daemon format.
 
 ---
 
@@ -59,7 +59,7 @@ The outside systems are powerful, but they occupy different layers.
 
 So ZYAL’s niche should be:
 
-> A **declarative run contract** that any host can parse, preview, enforce, observe, pause, resume, replay, and audit, regardless of whether the underlying executor is OpenCode, OpenHands, Claude Code, Codex, LangGraph, Hermes, a local CLI, or a future IDE agent.
+> A **declarative run contract** that any host can parse, preview, enforce, observe, pause, resume, replay, and audit, regardless of whether the underlying executor is Jekko, OpenHands, Claude Code, Codex, LangGraph, Hermes, a local CLI, or a future IDE agent.
 
 ---
 
@@ -93,7 +93,7 @@ metadata:
     owner: platform
     risk: high
   annotations:
-    zyal.opencodesource/version: "1.1"
+    zyal.jekkosource/version: "1.1"
 
 spec:
   job:
@@ -397,8 +397,8 @@ memory:
     repo:
       sources:
         - "AGENTS.md"
-        - ".opencode/memory/*.md"
-        - ".opencode/decisions/*.md"
+        - ".jekko/memory/*.md"
+        - ".jekko/decisions/*.md"
       scope: repository
       writable_by: [host]
       model_can_propose_patches: true
@@ -416,11 +416,11 @@ memory:
 
     skills:
       registry:
-        - ".opencode/skills"
+        - ".jekko/skills"
         - ".agents/skills"
       progressive_disclosure: true
       writable_by: [host]
-      model_can_create_in: ".opencode/daemon/{{run_id}}/proposed-skills"
+      model_can_create_in: ".jekko/daemon/{{run_id}}/proposed-skills"
 
     session_search:
       sqlite_fts: true
@@ -512,10 +512,10 @@ skills:
   format: agentskills
 
   registries:
-    - path: ".opencode/skills"
+    - path: ".jekko/skills"
       scope: repo
       mutable: gated
-    - path: "~/.opencode/skills"
+    - path: "~/.jekko/skills"
       scope: user
       mutable: gated
     - uri: "org://platform/skills"
@@ -540,14 +540,14 @@ skills:
         - workflow_steps_gte: 6
         - human_correction: true
         - successful_task_with_reusable_pattern: true
-    write_to: ".opencode/daemon/{{run_id}}/proposed-skills"
+    write_to: ".jekko/daemon/{{run_id}}/proposed-skills"
     promote:
       require:
         - successful_reuse_gte: 2
         - no_secret_leak
         - human_approved
         - verification_command_passed
-      destination: ".opencode/skills"
+      destination: ".jekko/skills"
 
   curator:
     enabled: true
@@ -617,7 +617,7 @@ repo_graph:
     - depends_on
   output:
     sqlite: true
-    mirror: ".opencode/daemon/{{run_id}}/repo_graph.json"
+    mirror: ".jekko/daemon/{{run_id}}/repo_graph.json"
 ```
 
 Then constraints can become semantic:
@@ -1448,7 +1448,7 @@ Important detail: verifier models should not rubber-stamp main-model claims. The
 
 # 20. Add observability and explainability
 
-The current `.opencode/daemon` mirror is good, but serious long-running agents need metrics and traces.
+The current `.jekko/daemon` mirror is good, but serious long-running agents need metrics and traces.
 
 OpenClaw mentions diagnostics/OpenTelemetry in its gateway architecture. LangGraph/LangSmith emphasize observability, tracing, evals, and debugging for long-running stateful agents. Research on explaining coding-agent failures found that structured failure explanations helped users identify root causes faster and improved fixing outcomes compared with raw traces. ([DeepWiki][19])
 
@@ -1461,7 +1461,7 @@ observability:
     format: opentelemetry
     export:
       - sqlite
-      - file: ".opencode/daemon/{{run_id}}/trace.jsonl"
+      - file: ".jekko/daemon/{{run_id}}/trace.jsonl"
       - otlp:
           endpoint: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
           on_fail: warn
@@ -1629,7 +1629,7 @@ OpenHands emphasizes sandboxed environments and runtime isolation. Hermes suppor
 ```yaml
 environment:
   provider: docker
-  image: "ghcr.io/company/opencode-dev:2026-05-01"
+  image: "ghcr.io/company/jekko-dev:2026-05-01"
   image_hash: "sha256:..."
   workspace:
     mount: repo
@@ -1678,7 +1678,7 @@ Argo-style workflow systems treat artifacts as first-class inputs/outputs betwee
 ```yaml
 artifacts:
   storage: sqlite_plus_filesystem
-  root: ".opencode/daemon/{{run_id}}/artifacts"
+  root: ".jekko/daemon/{{run_id}}/artifacts"
 
   types:
     - test_log
@@ -1721,7 +1721,7 @@ No more “the agent vaguely remembers what happened.”
 
 # 25. Add portable host adapters
 
-The user specifically wants ZYAL available inside **any chat prompt**: OpenCode, Codex, Claude, OpenHands, etc.
+The user specifically wants ZYAL available inside **any chat prompt**: Jekko, Codex, Claude, OpenHands, etc.
 
 ZYAL should define **Core** plus host adapters.
 
@@ -1739,11 +1739,11 @@ portability:
       - expose_pause_abort
 
   adapters:
-    opencode:
+    jekko:
       tool_map:
-        shell: opencode.shell
-        edit: opencode.edit
-        git_commit: opencode.git.commit
+        shell: jekko.shell
+        edit: jekko.edit
+        git_commit: jekko.git.commit
 
     openhands:
       tool_map:
@@ -1804,7 +1804,7 @@ profiles:
       - evals
 ```
 
-This is how ZYAL becomes a standard rather than an OpenCode-only feature.
+This is how ZYAL becomes a standard rather than an Jekko-only feature.
 
 ---
 
@@ -1817,7 +1817,7 @@ policy:
   engine: declarative # future: rego | cedar | custom
   bundles:
     - "org://policies/agent-security"
-    - ".opencode/policies/*.yaml"
+    - ".jekko/policies/*.yaml"
 
   rules:
     - id: no-prod-deploy-from-daemon
@@ -2049,8 +2049,8 @@ spec:
       repo:
         sources:
           - "AGENTS.md"
-          - ".opencode/memory/*.md"
-          - ".opencode/decisions/*.md"
+          - ".jekko/memory/*.md"
+          - ".jekko/decisions/*.md"
         writable_by: [host]
         model_can_propose_patches: true
       task_scratch:
@@ -2511,8 +2511,8 @@ spec:
       default: ask
       allow:
         - paths:
-            - ".opencode/skills/**"
-            - ".opencode/memory/**"
+            - ".jekko/skills/**"
+            - ".jekko/memory/**"
     git_commit: ask
 
   memory:
@@ -2522,12 +2522,12 @@ spec:
         sqlite_fts: true
       repo:
         sources:
-          - ".opencode/memory/*.md"
+          - ".jekko/memory/*.md"
         writable_by: [host]
         model_can_propose_patches: true
       skills:
         registry:
-          - ".opencode/skills"
+          - ".jekko/skills"
         progressive_disclosure: true
 
     curator:
@@ -2546,7 +2546,7 @@ spec:
     enabled: true
     format: agentskills
     registries:
-      - path: ".opencode/skills"
+      - path: ".jekko/skills"
         scope: repo
         mutable: gated
     agent_created:
@@ -2556,7 +2556,7 @@ spec:
           - repeated_error_signature_gte: 3
           - successful_task_with_reusable_pattern: true
           - human_correction: true
-      write_to: ".opencode/daemon/{{run_id}}/proposed-skills"
+      write_to: ".jekko/daemon/{{run_id}}/proposed-skills"
       promote:
         require:
           - successful_reuse_gte: 2
@@ -2574,23 +2574,23 @@ spec:
   checkpoint:
     when: after_verified_change
     verify:
-      - command: "zyal skills lint .opencode/skills"
+      - command: "zyal skills lint .jekko/skills"
         timeout: 1m
         assert: { exit_code: 0 }
-      - command: "zyal memory audit .opencode/memory"
+      - command: "zyal memory audit .jekko/memory"
         timeout: 1m
         assert: { exit_code: 0 }
     git:
       add:
-        - ".opencode/skills/**"
-        - ".opencode/memory/**"
+        - ".jekko/skills/**"
+        - ".jekko/memory/**"
       commit_message: "daemon: curate repo skills and memory"
       push: ask
 
   stop:
     all:
       - shell:
-          command: "zyal skills lint .opencode/skills && zyal memory audit .opencode/memory"
+          command: "zyal skills lint .jekko/skills && zyal memory audit .jekko/memory"
           timeout: 2m
           assert: { exit_code: 0 }
 ```
@@ -2749,7 +2749,7 @@ This distinction is existential for ZYAL. The model can propose. The host verifi
 Current mirror:
 
 ```text
-.opencode/daemon/<runID>/
+.jekko/daemon/<runID>/
 ├── ledger.jsonl
 ├── STATE.md
 └── tasks/<taskID>/
@@ -2758,7 +2758,7 @@ Current mirror:
 Upgrade:
 
 ```text
-.opencode/daemon/<runID>/
+.jekko/daemon/<runID>/
 ├── SPEC.yaml                 # original authored spec
 ├── EFFECTIVE_SPEC.yaml       # normalized host-resolved spec
 ├── STATUS.json               # generated current status
@@ -2914,7 +2914,7 @@ Important properties:
 ## Phase 5 — Portability and ecosystem
 
 * Host adapter interface.
-* OpenCode adapter.
+* Jekko adapter.
 * OpenHands adapter.
 * LangGraph adapter.
 * Generic chat preview mode.
@@ -2957,7 +2957,7 @@ The most important upgrades are:
 12. **Anti-vibe quality audits.**
 13. **Observability, evals, and conformance.**
 
-If implemented this way, ZYAL becomes more than an OpenCode feature. It becomes a portable language for saying:
+If implemented this way, ZYAL becomes more than an Jekko feature. It becomes a portable language for saying:
 
 > “Here is the ambitious engineering objective. Here are the tools, budgets, memories, experiments, gates, risks, evidence requirements, and human approvals. The model may propose and execute inside these bounds, but the host owns truth.”
 

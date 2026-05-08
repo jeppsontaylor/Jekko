@@ -8,10 +8,10 @@ import type {
   ProviderListResponse,
   QuestionRequest,
   Session,
-} from "@opencode-ai/sdk/v2/client"
-import { showToast } from "@opencode-ai/ui/toast"
-import { getFilename } from "@opencode-ai/core/util/path"
-import { retry } from "@opencode-ai/core/util/retry"
+} from "@jekko-ai/sdk/v2/client"
+import { showToast } from "@jekko-ai/ui/toast"
+import { getFilename } from "@jekko-ai/core/util/path"
+import { retry } from "@jekko-ai/core/util/retry"
 import { batch } from "solid-js"
 import { reconcile, type SetStoreFunction, type Store } from "solid-js/store"
 import type { State, VcsCache } from "./types"
@@ -93,7 +93,7 @@ export const loadProjectsQuery = (sdk: OpencodeClient) =>
         sdk.project.list().then((x) => {
           return (x.data ?? [])
             .filter((p) => !!p?.id)
-            .filter((p) => !!p.worktree && !p.worktree.includes("opencode-test"))
+            .filter((p) => !!p.worktree && !p.worktree.includes("jekko-test"))
             .slice()
             .sort((a, b) => cmp(a.id, b.id))
         }),

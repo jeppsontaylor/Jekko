@@ -198,7 +198,7 @@ ZYAL should add:
 skills:
   format: agent-skills
   discover:
-    - ".opencode/skills"
+    - ".jekko/skills"
     - ".claude/skills"
     - ".agent-skills"
   generate:
@@ -399,7 +399,7 @@ This is the single most important upgrade.
 
 ZYAL should treat repo rules like executable policy, not context.
 
-Today, tools like Claude Code and OpenCode rely partly on memory/rules files such as `CLAUDE.md`, `AGENTS.md`, or project instructions. Those are valuable, but they are still easy for an agent to forget, misprioritize, or misinterpret. Claude’s docs explicitly frame hooks as deterministic lifecycle controls that can enforce behavior rather than relying only on model memory. ([Claude][13]) OpenCode also has permission/rule surfaces, including permission controls and AGENTS.md-style repository instructions. ([OpenCode][31])
+Today, tools like Claude Code and Jekko rely partly on memory/rules files such as `CLAUDE.md`, `AGENTS.md`, or project instructions. Those are valuable, but they are still easy for an agent to forget, misprioritize, or misinterpret. Claude’s docs explicitly frame hooks as deterministic lifecycle controls that can enforce behavior rather than relying only on model memory. ([Claude][13]) Jekko also has permission/rule surfaces, including permission controls and AGENTS.md-style repository instructions. ([Jekko][31])
 
 ZYAL should add `active_rules`:
 
@@ -452,7 +452,7 @@ This is how ZYAL can directly attack “vibe coding.” It forces the agent to c
 
 # 4. Add anti-vibe / anti-jank gates
 
-“Vibe coding” is often described as using natural-language intent and letting AI produce executable code; criticism centers on insufficient review, hidden security issues, and maintainability risk. Public discussion around tools such as Jankurai claims value in realtime auditing for known AI-coding failure modes across tools like Claude, Codex, Cursor, and OpenCode, but those public claims should be treated as weak signals unless backed by reproducible evaluations. ([IBM][32])
+“Vibe coding” is often described as using natural-language intent and letting AI produce executable code; criticism centers on insufficient review, hidden security issues, and maintainability risk. Public discussion around tools such as Jankurai claims value in realtime auditing for known AI-coding failure modes across tools like Claude, Codex, Cursor, and Jekko, but those public claims should be treated as weak signals unless backed by reproducible evaluations. ([IBM][32])
 
 ZYAL should not depend on any one anti-vibe tool. Instead, it should define a general `quality_gates` interface:
 
@@ -1015,7 +1015,7 @@ capabilities:
     read:
       allow:
         - "repo/**"
-        - ".opencode/daemon/**"
+        - ".jekko/daemon/**"
       deny:
         - "**/.env*"
         - "**/secrets/**"
@@ -1025,7 +1025,7 @@ capabilities:
         - "repo/src/**"
         - "repo/tests/**"
         - "repo/docs/**"
-        - ".opencode/daemon/**"
+        - ".jekko/daemon/**"
       deny:
         - "repo/.git/**"
         - "repo/package-lock.json"
@@ -1308,7 +1308,7 @@ This can be enforced by the runtime. For example, a model should not “guess”
 
 # 15. Add code intelligence
 
-OpenCode’s product surface emphasizes terminal/IDE/desktop usage and LSP-enabled coding assistance. ([OpenCode][35]) For ambitious projects, ZYAL needs explicit code-intelligence providers.
+Jekko’s product surface emphasizes terminal/IDE/desktop usage and LSP-enabled coding assistance. ([Jekko][35]) For ambitious projects, ZYAL needs explicit code-intelligence providers.
 
 Add:
 
@@ -1677,10 +1677,10 @@ skills:
 
   registries:
     repo:
-      path: ".opencode/skills"
+      path: ".jekko/skills"
       write: ask
     user:
-      path: "~/.config/opencode/skills"
+      path: "~/.config/jekko/skills"
       write: deny
     org:
       path: "org://skills"
@@ -2160,11 +2160,11 @@ schema:
       integrity: "sha256:..."
     - uri: "zyal://schemas/evidence@1.0.0"
       integrity: "sha256:..."
-  lockfile: ".opencode/zyal.lock"
+  lockfile: ".jekko/zyal.lock"
   compatibility:
     min_runtime: "0.9.0"
     platforms:
-      - opencode
+      - jekko
       - codex_app_server
       - claude_code
       - openhands
@@ -2190,9 +2190,9 @@ ZYAL’s biggest market advantage could be portability across chat surfaces.
 
 ```yaml
 runtime:
-  preferred: opencode
+  preferred: jekko
   adapters:
-    opencode:
+    jekko:
       map:
         agents: native_agents
         permissions: native_permissions
@@ -2856,7 +2856,7 @@ This is how ZYAL becomes trusted by maintainers.
 
 # 50. Add compatibility with any chat prompt
 
-To make ZYAL available inside OpenCode, Codex, Claude, and other chats, define a **host detection protocol**.
+To make ZYAL available inside Jekko, Codex, Claude, and other chats, define a **host detection protocol**.
 
 ```yaml
 portable_prompt:
@@ -2898,7 +2898,7 @@ schema:
   strict: true
   unknown_keys: reject
   compatibility:
-    platforms: [opencode, codex_app_server, claude_code, openhands, langgraph]
+    platforms: [jekko, codex_app_server, claude_code, openhands, langgraph]
 
 job:
   name: Ambitious project implementation
@@ -2944,10 +2944,10 @@ capabilities:
   default: deny
   filesystem:
     read:
-      allow: ["repo/**", ".opencode/daemon/**"]
+      allow: ["repo/**", ".jekko/daemon/**"]
       deny: ["**/.env*", "**/secrets/**", "~/.ssh/**"]
     write:
-      allow: ["repo/src/**", "repo/tests/**", "repo/docs/**", ".opencode/daemon/**"]
+      allow: ["repo/src/**", "repo/tests/**", "repo/docs/**", ".jekko/daemon/**"]
       require_approval_for: ["repo/migrations/**", "repo/infra/**", "repo/package.json"]
   shell:
     mode: structured_allowlist
@@ -3470,11 +3470,11 @@ That is how ZYAL becomes more than a daemon language. It becomes the default con
 [28]: https://openreview.net/forum?id=9R2iUHhVfr "https://openreview.net/forum?id=9R2iUHhVfr"
 [29]: https://arxiv.org/abs/2509.22237 "https://arxiv.org/abs/2509.22237"
 [30]: https://arxiv.org/abs/2604.15625 "https://arxiv.org/abs/2604.15625"
-[31]: https://opencode.ai/docs/agents/?utm_source=chatgpt.com "Agents"
+[31]: https://jekko.ai/docs/agents/?utm_source=chatgpt.com "Agents"
 [32]: https://www.ibm.com/think/topics/vibe-coding "https://www.ibm.com/think/topics/vibe-coding"
 [33]: https://openhands.dev/blog/openhands-context-condensensation-for-more-efficient-ai-agents "OpenHands Context Condensensation for More Efficient AI Agents | Nov 12, 2025"
 [34]: https://modelcontextprotocol.io/specification/draft/basic/authorization "https://modelcontextprotocol.io/specification/draft/basic/authorization"
-[35]: https://opencode.ai/?utm_source=chatgpt.com "OpenCode | The open source AI coding agent"
+[35]: https://jekko.ai/?utm_source=chatgpt.com "Jekko | The open source AI coding agent"
 [36]: https://docs.crewai.com/ "https://docs.crewai.com/"
 [37]: https://agentskills.io/home "https://agentskills.io/home"
 [38]: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview"

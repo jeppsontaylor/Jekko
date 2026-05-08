@@ -5,7 +5,7 @@ import type {
   QuestionRequest,
   SessionStatus,
   SnapshotFileDiff,
-} from "@opencode-ai/sdk/v2/client"
+} from "@jekko-ai/sdk/v2/client"
 import type { PendingItem } from "./types"
 
 export const SESSION_CACHE_LIMIT = 40

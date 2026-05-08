@@ -1,6 +1,6 @@
 # ZYAL expansion study: make it the portable control plane for ambitious coding agents
 
-ZYAL is **not redundant** if it stays focused on what most agent frameworks do not own: a **host-enforced, prompt-embeddable, durable runbook language** for long-running coding work. LangChain/LangGraph, OpenHands, Hermes, OpenClaw, AutoGen, CrewAI, Codex, Claude Code, and OpenCode all expose pieces of the problem: agents, tools, sandboxes, memory, skills, graphs, approvals, event logs, and evaluation. ZYAL’s opportunity is to become the **portable safety-and-control layer** above them.
+ZYAL is **not redundant** if it stays focused on what most agent frameworks do not own: a **host-enforced, prompt-embeddable, durable runbook language** for long-running coding work. LangChain/LangGraph, OpenHands, Hermes, OpenClaw, AutoGen, CrewAI, Codex, Claude Code, and Jekko all expose pieces of the problem: agents, tools, sandboxes, memory, skills, graphs, approvals, event logs, and evaluation. ZYAL’s opportunity is to become the **portable safety-and-control layer** above them.
 
 The strongest version of ZYAL is not “YAML for agents.” It is closer to **Kubernetes + GitHub Actions + safety policy + experimental design + memory protocol for coding agents**.
 
@@ -255,7 +255,7 @@ Hermes’ skill self-improvement is powerful, but ZYAL should govern it with pro
 skills:
   registries:
     - id: repo
-      path: .opencode/skills
+      path: .jekko/skills
       trust: local_reviewed
     - id: org
       source: zyal-skill-registry://engineering
@@ -561,10 +561,10 @@ spec:
 
   artifacts:
     requirements:
-      path: .opencode/spec/requirements.yaml
+      path: .jekko/spec/requirements.yaml
       schema: zyal.requirements.v1
     acceptance_tests:
-      path: .opencode/spec/acceptance-tests.yaml
+      path: .jekko/spec/acceptance-tests.yaml
     adr:
       path: docs/adr/{{task_id}}.md
       required_if:
@@ -889,7 +889,7 @@ permissions:
 
 This is too coarse for long-running autonomy.
 
-OpenCode already has agent-specific permissions and command-level allow/deny examples, including denying `git push`. ([OpenCode][19]) OpenCode also distinguishes Plan agents with restricted editing/bash behavior and subagents such as read-only exploration agents. ([OpenCode][20])
+Jekko already has agent-specific permissions and command-level allow/deny examples, including denying `git push`. ([Jekko][19]) Jekko also distinguishes Plan agents with restricted editing/bash behavior and subagents such as read-only exploration agents. ([Jekko][20])
 
 ZYAL should support **permission scopes by agent, pass, path, command, risk, and state**:
 
@@ -958,7 +958,7 @@ This becomes much more powerful than a simple `ask | allow | deny`.
 
 # 9. MCP: add context admission, budgets, and tool trust
 
-ZYAL already has `mcp.profiles`, but it should be stricter. MCP is an open protocol for connecting LLM apps to tools and context, and it supports hosts, clients, servers, tools, resources, prompts, and composable workflows. ([Model Context Protocol][21]) But MCP servers can also dump huge context or expose dangerous tools. OpenCode’s MCP docs explicitly warn that MCP servers add to context and that a GitHub MCP server can add enough tokens to exceed context limits. ([OpenCode][22])
+ZYAL already has `mcp.profiles`, but it should be stricter. MCP is an open protocol for connecting LLM apps to tools and context, and it supports hosts, clients, servers, tools, resources, prompts, and composable workflows. ([Model Context Protocol][21]) But MCP servers can also dump huge context or expose dangerous tools. Jekko’s MCP docs explicitly warn that MCP servers add to context and that a GitHub MCP server can add enough tokens to exceed context limits. ([Jekko][22])
 
 Add:
 
@@ -1008,9 +1008,9 @@ This lets ZYAL benefit from MCP without becoming vulnerable to context flooding 
 
 Google’s Agent2Agent protocol is designed for agents to communicate, exchange information, and coordinate across platforms, complementing MCP. ([Google Developers Blog][23])
 
-ZYAL should not hard-code only OpenCode workers. It should define a worker abstraction that can target:
+ZYAL should not hard-code only Jekko workers. It should define a worker abstraction that can target:
 
-* OpenCode agent
+* Jekko agent
 * Codex
 * Claude Code
 * OpenHands runtime
@@ -1023,8 +1023,8 @@ ZYAL should not hard-code only OpenCode workers. It should define a worker abstr
 interop:
   agents:
     providers:
-      - id: opencode
-        type: local_opencode
+      - id: jekko
+        type: local_jekko
       - id: openhands
         type: openhands_runtime
       - id: codex
@@ -1162,13 +1162,13 @@ evals:
         - requirements
         - diff_summary
         - test_evidence
-      rubric: .opencode/rubrics/spec-faithfulness.md
+      rubric: .jekko/rubrics/spec-faithfulness.md
       require_score_gte: 0.85
       max_model_confidence_weight: 0.2
 
     - id: maintainability_review
       type: code_reviewer
-      rubric: .opencode/rubrics/maintainability.md
+      rubric: .jekko/rubrics/maintainability.md
       require_no_critical: true
 
   online:
@@ -1198,12 +1198,12 @@ rollback:
 
   artifacts:
     - id: rollback_plan
-      path: .opencode/daemon/{{run_id}}/rollback/{{task_id}}.md
+      path: .jekko/daemon/{{run_id}}/rollback/{{task_id}}.md
     - id: inverse_patch
-      command: "git diff --binary > .opencode/daemon/{{run_id}}/rollback/{{task_id}}.patch"
+      command: "git diff --binary > .jekko/daemon/{{run_id}}/rollback/{{task_id}}.patch"
 
   verify:
-    - command: "git apply --check .opencode/daemon/{{run_id}}/rollback/{{task_id}}.patch"
+    - command: "git apply --check .jekko/daemon/{{run_id}}/rollback/{{task_id}}.patch"
       assert: { exit_code: 0 }
 
   on_failed_checkpoint:
@@ -1715,7 +1715,7 @@ patch_stack:
   pull_request:
     create: ask
     title: "{{job.name}}"
-    body_template: .opencode/templates/pr.md
+    body_template: .jekko/templates/pr.md
     include:
       - objective
       - requirements
@@ -1756,9 +1756,9 @@ policy_packs:
   trust:
     require_signature: true
     allowed_publishers:
-      - opencode
+      - jekko
       - org-platform-team
-  lockfile: .opencode/zyal-policy.lock
+  lockfile: .jekko/zyal-policy.lock
 ```
 
 This helps ZYAL become a default language rather than a per-project YAML monster.
@@ -1792,11 +1792,11 @@ This helps ZYAL become a default language rather than a per-project YAML monster
 **Risk:** marketplace/skill ecosystems create serious attack surfaces.
 **Recommendation:** support trusted triggers and channels, but reject ZYAL arming from untrusted markdown, tool output, or retrieved content. ([GitHub][8])
 
-## OpenCode
+## Jekko
 
 **Overlap:** terminal/IDE coding agent, Plan/Build agents, subagents, permissions, MCP.
 **ZYAL gap:** persistent daemon lifecycle, durable runs, promotion gates, incubator, fleet execution.
-**Recommendation:** ZYAL should be native to OpenCode but portable. It should map directly to OpenCode agents, permission rules, and MCP profiles. OpenCode already supports agents, subagents, granular permission overrides, and MCP; ZYAL can become the durable orchestration layer above those features. ([OpenCode][30])
+**Recommendation:** ZYAL should be native to Jekko but portable. It should map directly to Jekko agents, permission rules, and MCP profiles. Jekko already supports agents, subagents, granular permission overrides, and MCP; ZYAL can become the durable orchestration layer above those features. ([Jekko][30])
 
 ## Codex / Claude Code
 
@@ -2394,20 +2394,20 @@ Current CLI/API surface is good but not enough for replayable fleet autonomy.
 Add CLI:
 
 ```sh
-opencode daemon preview <file>
-opencode daemon arm <id> --hash <sha256>
-opencode daemon timeline <runID>
-opencode daemon replay <runID> --from-event <eventID>
-opencode daemon fork <runID> --from-checkpoint <checkpointID>
-opencode daemon evidence <runID> <taskID>
-opencode daemon experiments <runID> <taskID>
-opencode daemon memory <runID> inspect
-opencode daemon skills list
-opencode daemon policy explain <runID>
-opencode daemon approvals <runID>
-opencode daemon rollback <runID> <checkpointID>
-opencode daemon fleet status
-opencode daemon trace <runID>
+jekko daemon preview <file>
+jekko daemon arm <id> --hash <sha256>
+jekko daemon timeline <runID>
+jekko daemon replay <runID> --from-event <eventID>
+jekko daemon fork <runID> --from-checkpoint <checkpointID>
+jekko daemon evidence <runID> <taskID>
+jekko daemon experiments <runID> <taskID>
+jekko daemon memory <runID> inspect
+jekko daemon skills list
+jekko daemon policy explain <runID>
+jekko daemon approvals <runID>
+jekko daemon rollback <runID> <checkpointID>
+jekko daemon fleet status
+jekko daemon trace <runID>
 ```
 
 Add API:
@@ -2433,7 +2433,7 @@ The `policy explain` endpoint is especially important. Humans should be able to 
 
 # 31. The “ZYAL compiler” architecture
 
-To make ZYAL portable across OpenCode, Codex, Claude, OpenHands, and others, implement ZYAL as a compiler plus runtime adapter system.
+To make ZYAL portable across Jekko, Codex, Claude, OpenHands, and others, implement ZYAL as a compiler plus runtime adapter system.
 
 ```text
 ZYAL source
@@ -2445,7 +2445,7 @@ Policy-expanded ZYAL IR
 Execution graph/state machine
    ↓ bind
 Runtime adapter:
-  - OpenCode
+  - Jekko
   - OpenHands
   - LangGraph
   - Codex CLI
@@ -2482,7 +2482,7 @@ ir:
     - checkpoints
 ```
 
-This gives ZYAL a future beyond OpenCode. Any host can parse ZYAL and decide how much it supports.
+This gives ZYAL a future beyond Jekko. Any host can parse ZYAL and decide how much it supports.
 
 ---
 
@@ -2534,7 +2534,7 @@ This gives ZYAL a future beyond OpenCode. Any host can parse ZYAL and decide how
 
 # 33. The central design principle
 
-ZYAL should not try to be LangChain, OpenHands, Hermes, OpenClaw, Codex, Claude Code, or OpenCode.
+ZYAL should not try to be LangChain, OpenHands, Hermes, OpenClaw, Codex, Claude Code, or Jekko.
 
 It should be the language that says:
 
@@ -2573,10 +2573,10 @@ If built this way, ZYAL can become the default control language for ambitious co
 [16]: https://www.linkedin.com/posts/jepsontaylor_%F0%9D%90%89%F0%9D%90%9A%F0%9D%90%A7%F0%9D%90%A4%F0%9D%90%AE%F0%9D%90%AB%F0%9D%90%9A%F0%9D%90%A2-%F0%9D%90%AF0810-was-just-released-activity-7457606147789705216-7y-Q?utm_source=chatgpt.com "Jepson Taylor's Post"
 [17]: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents "Effective context engineering for AI agents \ Anthropic"
 [18]: https://docs.langchain.com/oss/python/langgraph/use-time-travel "Use time-travel - Docs by LangChain"
-[19]: https://opencode.ai/docs/permissions/ "Permissions | OpenCode"
-[20]: https://opencode.ai/docs/agents/ "Agents | OpenCode"
+[19]: https://jekko.ai/docs/permissions/ "Permissions | Jekko"
+[20]: https://jekko.ai/docs/agents/ "Agents | Jekko"
 [21]: https://modelcontextprotocol.io/specification/2025-06-18 "Specification - Model Context Protocol"
-[22]: https://opencode.ai/docs/mcp-servers/ "MCP servers | OpenCode"
+[22]: https://jekko.ai/docs/mcp-servers/ "MCP servers | Jekko"
 [23]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ "
             
             Announcing the Agent2Agent Protocol (A2A)
@@ -2591,6 +2591,6 @@ If built this way, ZYAL can become the default control language for ambitious co
 [27]: https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/ "Copilot coding agent now supports AGENTS.md custom instructions - GitHub Changelog"
 [28]: https://github.com/github/spec-kit "GitHub - github/spec-kit:  Toolkit to help you get started with Spec-Driven Development · GitHub"
 [29]: https://openai.com/codex/ "Codex | AI Coding Partner from OpenAI | OpenAI"
-[30]: https://opencode.ai/ "OpenCode | The open source AI coding agent"
+[30]: https://jekko.ai/ "Jekko | The open source AI coding agent"
 [31]: https://www.microsoft.com/en-us/research/publication/autogen-enabling-next-gen-llm-applications-via-multi-agent-conversation-framework/ "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation - Microsoft Research"
 

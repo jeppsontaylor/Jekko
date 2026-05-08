@@ -1,4 +1,4 @@
-Yes. The missing layer is a **bounded hard-task incubation system** inside OCAL.
+Yes. The missing layer is a **bounded hard-task incubation system** inside ZYAL.
 
 The parent daemon can still be **FOREVER**, but an individual hard task should not spin forever. It should enter a **bounded “incubator” lane** where multiple passes, fresh agents, refiner agents, critics, prototypes, and scratchpads compound knowledge until either:
 
@@ -7,13 +7,13 @@ The parent daemon can still be **FOREVER**, but an individual hard task should n
 3. it is escalated to a human/reviewer, or
 4. it exhausts a bounded pass/budget limit and returns to the task queue as blocked/incubated.
 
-This is the main update I would make to the current OCAL plan. The uploaded plan already correctly says OCAL should be host-enforced, SQLite-backed, preview/armed, and not prompt-only; this addition should live inside that same durable runtime, not as a loose Markdown tracker or another prompt convention. 
+This is the main update I would make to the current ZYAL plan. The uploaded plan already correctly says ZYAL should be host-enforced, SQLite-backed, preview/armed, and not prompt-only; this addition should live inside that same durable runtime, not as a loose Markdown tracker or another prompt convention. 
 
 ---
 
 # Executive recommendation
 
-Add a new OCAL subsystem:
+Add a new ZYAL subsystem:
 
 ```yaml
 hard_tasks:
@@ -23,11 +23,11 @@ hard_tasks:
 Public name ideas:
 
 ```text
-OCAL Hard Task Incubator
-OCAL Forge
-OCAL Quest Mode
-OCAL Research Lane
-OCAL Deepening Passes
+ZYAL Hard Task Incubator
+ZYAL Forge
+ZYAL Quest Mode
+ZYAL Research Lane
+ZYAL Deepening Passes
 ```
 
 I would choose **Hard Task Incubator** for docs and schema because it is descriptive and not too magical. In the TUI, it can be branded as **FORGE** or **QUEST** if you want it to feel powerful.
@@ -54,13 +54,13 @@ The key lesson from all of those systems is: **do not let model self-confidence 
 
 ---
 
-# What this adds to the existing OCAL plan
+# What this adds to the existing ZYAL plan
 
 The current plan already has:
 
 ```text
 daemon runtime
-OCAL parser
+ZYAL parser
 durable store
 task ledger
 workers
@@ -262,7 +262,7 @@ confidence/evidence threshold reached?
 
 ---
 
-# The new OCAL syntax block
+# The new ZYAL syntax block
 
 Add this top-level block:
 
@@ -298,10 +298,10 @@ hard_tasks:
         - stuck_detector: true
         - sensitive_paths_touched:
             any:
-              - "packages/opencode/src/session/**"
-              - "packages/opencode/migration/**"
-              - "packages/opencode/src/server/**"
-              - "packages/opencode/src/cli/cmd/tui/**"
+              - "packages/jekko/src/session/**"
+              - "packages/jekko/migration/**"
+              - "packages/jekko/src/server/**"
+              - "packages/jekko/src/cli/cmd/tui/**"
 
     stay_fast_path_when:
       all:
@@ -319,7 +319,7 @@ hard_tasks:
 
     workbench:
       source: sqlite
-      mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/"
+      mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/"
       preserve:
         - problem_statement
         - constraints
@@ -627,7 +627,7 @@ This makes the scratchpad structured and queryable. Markdown mirrors are for hum
 SQLite remains source of truth, but mirror a readable task workbench:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/
+.jekko/daemon/<runID>/tasks/<taskID>/
   WORKBENCH.md
   STATE.json
   BEST_PLAN.md
@@ -655,7 +655,7 @@ SQLite remains source of truth, but mirror a readable task workbench:
 Generated files should be clearly marked:
 
 ```markdown
-<!-- GENERATED FROM OCAL SQLITE STATE. DO NOT HAND EDIT. -->
+<!-- GENERATED FROM ZYAL SQLITE STATE. DO NOT HAND EDIT. -->
 ```
 
 If users hand-edit, either reject changes or import them through a specific command:
@@ -774,12 +774,12 @@ This is similar in spirit to OpenHands’ refactor/critique loop, where a primar
 
 ---
 
-# Example: updated OCAL for your dirty-worktree scenario
+# Example: updated ZYAL for your dirty-worktree scenario
 
 This extends the original Jankurai daemon.
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -822,11 +822,11 @@ hard_tasks:
         - confidence_lte: 0.45
         - touches_sensitive_area:
             any:
-              - "packages/opencode/src/session/prompt.ts"
-              - "packages/opencode/src/session/compaction.ts"
-              - "packages/opencode/src/session/run-state.ts"
-              - "packages/opencode/src/server/**"
-              - "packages/opencode/migration/**"
+              - "packages/jekko/src/session/prompt.ts"
+              - "packages/jekko/src/session/compaction.ts"
+              - "packages/jekko/src/session/run-state.ts"
+              - "packages/jekko/src/server/**"
+              - "packages/jekko/migration/**"
 
     stay_fast_path_when:
       all:
@@ -842,7 +842,7 @@ hard_tasks:
 
     workbench:
       source: sqlite
-      mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/"
+      mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/"
       preserve:
         - problem_statement
         - constraints
@@ -965,11 +965,11 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   hard_task_badge: forge
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 ---
@@ -989,7 +989,7 @@ incubate:
 Example:
 
 ```yaml
-<<<OCAL v1:incubate id=daemon-hard-clear-design>>>
+<<<ZYAL v1:incubate id=daemon-hard-clear-design>>>
 intent: incubate
 confirm: RUN_BOUNDED
 
@@ -1004,7 +1004,7 @@ incubate:
   max_runtime: 30m
   workbench:
     source: sqlite
-    mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/"
+    mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/"
 
   passes:
     - type: fresh_plan
@@ -1014,15 +1014,15 @@ incubate:
     - type: source_grounded_plan
       id: repo_grounded_plan
       read_files:
-        - "packages/opencode/src/session/prompt.ts"
-        - "packages/opencode/src/session/compaction.ts"
-        - "packages/opencode/src/session/session.sql.ts"
+        - "packages/jekko/src/session/prompt.ts"
+        - "packages/jekko/src/session/compaction.ts"
+        - "packages/jekko/src/session/session.sql.ts"
 
     - type: adversarial_review
       id: regression_review
       focus:
         - "normal sessions unchanged"
-        - "plain opencode run exits on idle"
+        - "plain jekko run exits on idle"
         - "compaction auto-continue not globally changed"
 
     - type: converge
@@ -1039,8 +1039,8 @@ promote_when:
 
 on_exhausted:
   action: block_with_handoff
-<<<END_OCAL id=daemon-hard-clear-design>>>
-OCAL_ARM RUN_BOUNDED id=daemon-hard-clear-design
+<<<END_ZYAL id=daemon-hard-clear-design>>>
+ZYAL_ARM RUN_BOUNDED id=daemon-hard-clear-design
 ```
 
 This is useful when you want the agent to **think hard, store memory, and prepare**, but not touch production code until the promotion criteria pass.
@@ -1051,7 +1051,7 @@ This is useful when you want the agent to **think hard, store memory, and prepar
 
 I would support one canonical syntax and two convenience syntaxes.
 
-## 1. Canonical YAML OCAL
+## 1. Canonical YAML ZYAL
 
 Best for serious work.
 
@@ -1080,7 +1080,7 @@ Best for humans in TUI.
 /forever harden-worktree --hard-tasks --easy-first --max-hard-passes 6
 ```
 
-Expands into canonical OCAL preview.
+Expands into canonical ZYAL preview.
 
 Why it works:
 
@@ -1110,23 +1110,23 @@ templates can be audited
 dangerous defaults can be avoided
 ```
 
-Do **not** add XML tags or loose inline commands. The OpenCode community is already experimenting with auto-continue plugins and stop hooks; one Reddit plugin describes nudging the agent when it emits `TASK_STATUS: INCOMPLETE`, capped at 20 nudges, and an OpenCode issue proposes a `session.stopping` hook but warns unconditional `stop=false` can run forever. ([Reddit][9]) This reinforces the OCAL design: continuation should be explicit, armed, bounded where appropriate, and host-controlled.
+Do **not** add XML tags or loose inline commands. The Jekko community is already experimenting with auto-continue plugins and stop hooks; one Reddit plugin describes nudging the agent when it emits `TASK_STATUS: INCOMPLETE`, capped at 20 nudges, and an Jekko issue proposes a `session.stopping` hook but warns unconditional `stop=false` can run forever. ([Reddit][9]) This reinforces the ZYAL design: continuation should be explicit, armed, bounded where appropriate, and host-controlled.
 
 ---
 
 # Syntax highlighting and TUI preview
 
-The TUI should treat OCAL as a special language mode only when the opening sentinel is valid.
+The TUI should treat ZYAL as a special language mode only when the opening sentinel is valid.
 
 ## Highlight states
 
-### Inert OCAL-looking text
+### Inert ZYAL-looking text
 
 If the block is not first non-whitespace content, or it appears in a code fence, or it is missing the arming line:
 
 ```text
 gray / dim
-label: INERT OCAL TEXT
+label: INERT ZYAL TEXT
 ```
 
 This prevents accidental execution.
@@ -1135,7 +1135,7 @@ This prevents accidental execution.
 
 ```text
 gold border
-label: VALID OCAL DRAFT · NOT ARMED
+label: VALID ZYAL DRAFT · NOT ARMED
 ```
 
 ### Valid and armed
@@ -1160,7 +1160,7 @@ unknown keys    red underline
 
 ```text
 ╔════════════════════════════════════════════════════════════╗
-║  ∞ OCAL FOREVER PREVIEW · NOT STARTED                     ║
+║  ∞ ZYAL FOREVER PREVIEW · NOT STARTED                     ║
 ╠════════════════════════════════════════════════════════════╣
 ║ Name: Jankurai dirty worktree hardening                   ║
 ║ Mode: FOREVER                                             ║
@@ -1184,7 +1184,7 @@ Type RUN_BOUNDED to start this bounded incubator.
 For hard-task incubators, never use `RUN_FOREVER`. Use:
 
 ```text
-OCAL_ARM RUN_BOUNDED id=<id>
+ZYAL_ARM RUN_BOUNDED id=<id>
 ```
 
 This communicates that the task-level loop is bounded even if the parent daemon is forever.
@@ -1201,7 +1201,7 @@ column 1
 matching close id
 intent required
 confirm required
-trailing OCAL_ARM required
+trailing ZYAL_ARM required
 reject code fences
 reject block quotes
 reject duplicate blocks
@@ -1256,7 +1256,7 @@ Add this as **Phase 2.5** after the durable daemon store and before swarms/MCP.
 The order should be:
 
 ```text
-Phase 1: OCAL parser/schema/examples
+Phase 1: ZYAL parser/schema/examples
 Phase 2: daemon DB/store/runtime/checks
 Phase 2.5: hard-task router + incubator + workbench
 Phase 3: checkpoint/context clearing
@@ -1275,10 +1275,10 @@ Why before swarms? Because multi-agent collaboration without task memory, leases
 Add to:
 
 ```text
-packages/opencode/src/agent-script/schema.ts
-packages/opencode/src/agent-script/parser.ts
-packages/opencode/src/agent-script/examples.ts
-packages/opencode/specs/daemon-ocal.md
+packages/jekko/src/agent-script/schema.ts
+packages/jekko/src/agent-script/parser.ts
+packages/jekko/src/agent-script/examples.ts
+packages/jekko/specs/daemon-zyal.md
 ```
 
 New schema classes:
@@ -1309,12 +1309,12 @@ jankurai-hardening-with-incubator
 Add:
 
 ```text
-packages/opencode/src/session/daemon-router.ts
-packages/opencode/src/session/daemon-incubator.ts
-packages/opencode/src/session/daemon-workbench.ts
-packages/opencode/src/session/daemon-confidence.ts
-packages/opencode/src/session/daemon-review.ts
-packages/opencode/src/session/daemon-cleanup.ts
+packages/jekko/src/session/daemon-router.ts
+packages/jekko/src/session/daemon-incubator.ts
+packages/jekko/src/session/daemon-workbench.ts
+packages/jekko/src/session/daemon-confidence.ts
+packages/jekko/src/session/daemon-review.ts
+packages/jekko/src/session/daemon-cleanup.ts
 ```
 
 Responsibilities:
@@ -1344,8 +1344,8 @@ daemon-cleanup.ts
 Modify:
 
 ```text
-packages/opencode/src/session/daemon.sql.ts
-packages/opencode/src/session/daemon-store.ts
+packages/jekko/src/session/daemon.sql.ts
+packages/jekko/src/session/daemon-store.ts
 ```
 
 Add:
@@ -1379,13 +1379,13 @@ POST /daemon/:runID/tasks/:taskID/cleanup
 Add:
 
 ```text
-opencode daemon task list
-opencode daemon task show <taskID>
-opencode daemon task incubate <taskID>
-opencode daemon task workbench <taskID>
-opencode daemon task promote <taskID>
-opencode daemon task block <taskID>
-opencode daemon task cleanup <taskID>
+jekko daemon task list
+jekko daemon task show <taskID>
+jekko daemon task incubate <taskID>
+jekko daemon task workbench <taskID>
+jekko daemon task promote <taskID>
+jekko daemon task block <taskID>
+jekko daemon task cleanup <taskID>
 ```
 
 ## TUI
@@ -1448,7 +1448,7 @@ classify:
 
 # Pass types for the syntax library
 
-Add these to the OCAL function catalog.
+Add these to the ZYAL function catalog.
 
 ## Planning passes
 
@@ -1573,7 +1573,7 @@ Implement hard context clearing for daemon sessions without deleting DB history.
 - Old DB messages remain readable.
 
 ## Known Risks
-- Breaking `opencode run` plain idle exit.
+- Breaking `jekko run` plain idle exit.
 - Duplicating session status semantics.
 - Losing pinned stop criteria during epoch rotation.
 
@@ -1588,7 +1588,7 @@ Implement hard context clearing for daemon sessions without deleting DB history.
 4. Inject pinned daemon capsule into child session.
 
 ## Acceptance Tests
-- Plain `opencode run` exits on idle.
+- Plain `jekko run` exits on idle.
 - Daemon continues after assistant stop when stop checks fail.
 - Hard clear creates epoch=2 and preserves run state.
 - Old messages remain readable.
@@ -1684,7 +1684,7 @@ context:
 
 This lets you control anchoring versus continuity.
 
-OpenHands’ condenser and persistence docs are relevant here: its condenser summarizes long histories when size limits are exceeded, and its persisted conversation state includes message history, execution status, iteration count, tool outputs, statistics, workspace context, activated skills, secrets, and custom agent state. ([OpenHands Docs][10]) OCAL should follow that architecture but make the task workbench a first-class, queryable store rather than an accidental side effect of chat history.
+OpenHands’ condenser and persistence docs are relevant here: its condenser summarizes long histories when size limits are exceeded, and its persisted conversation state includes message history, execution status, iteration count, tool outputs, statistics, workspace context, activated skills, secrets, and custom agent state. ([OpenHands Docs][10]) ZYAL should follow that architecture but make the task workbench a first-class, queryable store rather than an accidental side effect of chat history.
 
 ---
 
@@ -1737,16 +1737,16 @@ or:
 ```yaml
 locks:
   paths:
-    - "packages/opencode/src/session/**"
+    - "packages/jekko/src/session/**"
 ```
 
-Claude Code’s subagent docs show a mature UI model where running subagents can be viewed/stopped and library/project/plugin subagents can be managed; that is the kind of UX OpenCode should eventually mirror for OCAL workers. ([Claude][11]) OpenAI’s Agents SDK docs also frame agents as applications that plan, call tools, collaborate across specialists, and keep enough state for multi-step work, with the application owning orchestration, tool execution, approvals, and state; that is exactly the separation OCAL should preserve. ([OpenAI Developers][12])
+Claude Code’s subagent docs show a mature UI model where running subagents can be viewed/stopped and library/project/plugin subagents can be managed; that is the kind of UX Jekko should eventually mirror for ZYAL workers. ([Claude][11]) OpenAI’s Agents SDK docs also frame agents as applications that plan, call tools, collaborate across specialists, and keep enough state for multi-step work, with the application owning orchestration, tool execution, approvals, and state; that is exactly the separation ZYAL should preserve. ([OpenAI Developers][12])
 
 ---
 
 # How this relates to existing standards
 
-Do **not** market OCAL as replacing existing standards.
+Do **not** market ZYAL as replacing existing standards.
 
 Position it like this:
 
@@ -1755,15 +1755,15 @@ AGENTS.md: repo instructions for agents
 MCP: tool/resource/prompt protocol
 POML/PDL: prompt composition languages
 LangGraph/ADK/AutoGen/CrewAI: code-first orchestration frameworks
-OCAL: OpenCode-native runbook syntax for host-enforced coding-agent loops
+ZYAL: Jekko-native runbook syntax for host-enforced coding-agent loops
 ```
 
-AGENTS.md is a simple open format for guiding coding agents and is used by many open-source projects; it is instruction context, not a daemon workflow language. ([Agents][13]) MCP is the tool/resource/prompt interoperability protocol; it standardizes connections to external tools and context, but it is not itself a task-incubation loop language. ([Model Context Protocol][14]) POML and PDL are prompt-organization/composition systems, useful references for structure and validation, but they do not solve OpenCode-specific git checkpointing, worktree isolation, TUI arming, or forever daemon semantics. ([Microsoft GitHub][15])
+AGENTS.md is a simple open format for guiding coding agents and is used by many open-source projects; it is instruction context, not a daemon workflow language. ([Agents][13]) MCP is the tool/resource/prompt interoperability protocol; it standardizes connections to external tools and context, but it is not itself a task-incubation loop language. ([Model Context Protocol][14]) POML and PDL are prompt-organization/composition systems, useful references for structure and validation, but they do not solve Jekko-specific git checkpointing, worktree isolation, TUI arming, or forever daemon semantics. ([Microsoft GitHub][15])
 
-OCAL’s unique value is:
+ZYAL’s unique value is:
 
 ```text
-host-enforced agentic coding runbooks inside OpenCode
+host-enforced agentic coding runbooks inside Jekko
 with explicit arming, stop checks, git policy, context clearing,
 task ledger, hard-task incubation, and TUI visibility
 ```
@@ -1772,7 +1772,7 @@ task ledger, hard-task incubation, and TUI visibility
 
 # The cleanest updated plan statement
 
-I would add this to the OCAL plan:
+I would add this to the ZYAL plan:
 
 > **Phase 2.5: Hard Task Incubator.** Add host-routed, bounded incubation for high-risk or low-confidence tasks. The daemon remains forever, but individual hard-task passes are bounded. Each hard task gets a durable SQLite-backed workbench with generated human-readable mirrors. The runtime can run fresh planners, plan refiners, prototype attempts in isolated worktrees, and adversarial reviewers. Promotion to implementation is controlled by evidence confidence, validators, and reviewer results, not model self-confidence alone. Completed task workbenches are summarized and cleaned; blocked task workbenches are preserved for human handoff.
 
@@ -1834,7 +1834,7 @@ incubation:
 
 workbench:
   source: sqlite
-  mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/"
+  mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/"
 
 passes:
   - type: fresh_plan
@@ -1861,7 +1861,7 @@ LoopAgent / iterative refinement       → incubation passes
 critic / reviewer                      → adversarial_review
 LangGraph persistence/checkpointing    → workbench + durable state
 AutoGen termination conditions         → promote/block/stop predicates
-Claude hooks / OpenCode stopping hook  → host-enforced continuation gates
+Claude hooks / Jekko stopping hook  → host-enforced continuation gates
 MCP                                    → tool/resource layer, not loop authority
 ```
 
@@ -1875,7 +1875,7 @@ The highest-leverage idea is the **task workbench**. Once every hard task has a 
 [6]: https://docs.openhands.dev/sdk/guides/convo-fork "Fork a Conversation - OpenHands Docs"
 [7]: https://docs.openhands.dev/sdk/guides/iterative-refinement "Iterative Refinement - OpenHands Docs"
 [8]: https://microsoft.github.io/autogen/stable//user-guide/core-user-guide/design-patterns/group-chat.html "Group Chat — AutoGen"
-[9]: https://www.reddit.com/r/opencode/comments/1svw0yi/made_a_tiny_opencode_plugin_that_autocontinues/ "Made a tiny OpenCode plugin that auto-continues the agent when it gets cut off mid-task : r/opencode"
+[9]: https://www.reddit.com/r/jekko/comments/1svw0yi/made_a_tiny_jekko_plugin_that_autocontinues/ "Made a tiny Jekko plugin that auto-continues the agent when it gets cut off mid-task : r/jekko"
 [10]: https://docs.openhands.dev/sdk/guides/context-condenser "Context Condenser - OpenHands Docs"
 [11]: https://code.claude.com/docs/en/sub-agents "Create custom subagents - Claude Code Docs"
 [12]: https://developers.openai.com/api/docs/guides/agents "Agents SDK | OpenAI API"

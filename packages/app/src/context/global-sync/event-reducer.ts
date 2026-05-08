@@ -1,4 +1,4 @@
-import { Binary } from "@opencode-ai/core/util/binary"
+import { Binary } from "@jekko-ai/core/util/binary"
 import { produce, reconcile, type SetStoreFunction, type Store } from "solid-js/store"
 import type {
   Message,
@@ -9,7 +9,7 @@ import type {
   Session,
   SessionStatus,
   SnapshotFileDiff,
-} from "@opencode-ai/sdk/v2/client"
+} from "@jekko-ai/sdk/v2/client"
 import type { PendingItem, State, VcsCache } from "./types"
 import { trimSessions } from "./session-trim"
 import { dropSessionCaches } from "./session-cache"

@@ -5,9 +5,9 @@ import type {
   Project,
   ProviderAuthResponse,
   ProviderListResponse,
-} from "@opencode-ai/sdk/v2/client"
-import { showToast } from "@opencode-ai/ui/toast"
-import { getFilename } from "@opencode-ai/core/util/path"
+} from "@jekko-ai/sdk/v2/client"
+import { showToast } from "@jekko-ai/ui/toast"
+import { getFilename } from "@jekko-ai/core/util/path"
 import { batch, createContext, getOwner, onCleanup, onMount, type ParentProps, untrack, useContext } from "solid-js"
 import { createStore, produce, reconcile } from "solid-js/store"
 import { useLanguage } from "@/context/language"

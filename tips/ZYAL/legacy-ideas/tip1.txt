@@ -34,10 +34,10 @@ But v1 still looks like a strong daemon YAML, not yet a complete operating model
 
 # 2. The largest missing concept: ZYAL needs to be a portable control contract
 
-Right now ZYAL assumes OpenCode as the runtime. That is fine for implementation, but the user-facing ambition is “available inside any chat prompt,” including OpenCode, Codex, Claude, OpenHands, and similar systems. That means ZYAL needs a formal split:
+Right now ZYAL assumes Jekko as the runtime. That is fine for implementation, but the user-facing ambition is “available inside any chat prompt,” including Jekko, Codex, Claude, OpenHands, and similar systems. That means ZYAL needs a formal split:
 
 1. **ZYAL Core** — syntax, safety invariants, arming, validation, state model, permissions, evidence, gates.
-2. **ZYAL Runtime Adapters** — OpenCode, OpenHands, Codex CLI, Claude Code, LangGraph, Temporal, GitHub Actions, local shell, cloud worker.
+2. **ZYAL Runtime Adapters** — Jekko, OpenHands, Codex CLI, Claude Code, LangGraph, Temporal, GitHub Actions, local shell, cloud worker.
 3. **ZYAL Standard Library** — reusable guardrail bundles, monorepo profiles, security profiles, anti-slop profiles, CI-fixer profiles.
 4. **ZYAL Registry** — signed skills, templates, policies, and adapters.
 5. **ZYAL Capability Negotiation** — before arming, the host reports what it can actually enforce.
@@ -52,7 +52,7 @@ OpenHands already provides a coding-agent SDK/runtime with local, Docker, and Ku
 runtime:
   adapter: auto
   allowed_adapters:
-    - opencode
+    - jekko
     - openhands
     - codex_cli
     - claude_code
@@ -204,7 +204,7 @@ Durable workflow systems such as Temporal emphasize that long-running workflows 
 durability:
   backend:
     type: sqlite
-    path: .opencode/daemon/state.sqlite
+    path: .jekko/daemon/state.sqlite
 
   checkpoint_every: tool_call
 
@@ -293,7 +293,7 @@ This preserves “available inside any chat prompt” while stopping the model f
 
 # 6. ZYAL needs instruction-source compatibility, not replacement
 
-AGENTS.md is becoming the cross-agent repo-instruction convention. GitHub, Codex-related tooling, OpenCode, Aider, Jules, Zed, Warp, Devin, and others already support or reference AGENTS.md-style instructions; GitHub Copilot also supports repo custom instructions, path-specific instructions, AGENTS.md, CLAUDE.md, and GEMINI.md. ([Agents][4])
+AGENTS.md is becoming the cross-agent repo-instruction convention. GitHub, Codex-related tooling, Jekko, Aider, Jules, Zed, Warp, Devin, and others already support or reference AGENTS.md-style instructions; GitHub Copilot also supports repo custom instructions, path-specific instructions, AGENTS.md, CLAUDE.md, and GEMINI.md. ([Agents][4])
 
 ZYAL should not compete with these files. It should import them under a typed precedence model.
 
@@ -368,7 +368,7 @@ memory:
 
     repo:
       type: sqlite_vector
-      path: .opencode/daemon/repo_memory.sqlite
+      path: .jekko/daemon/repo_memory.sqlite
       retention: 180d
       writable_by: gated_agent
 
@@ -449,12 +449,12 @@ project_state:
   enabled: true
 
   artifacts:
-    requirements: .opencode/project/REQUIREMENTS.ledger.yaml
-    architecture_decisions: .opencode/project/ADR.ledger.md
-    public_api_contracts: .opencode/project/API.contracts.json
-    dependency_map: .opencode/project/DEPENDENCIES.graph.json
-    failure_memory: .opencode/project/FAILURES.md
-    rollback_playbooks: .opencode/project/ROLLBACK.md
+    requirements: .jekko/project/REQUIREMENTS.ledger.yaml
+    architecture_decisions: .jekko/project/ADR.ledger.md
+    public_api_contracts: .jekko/project/API.contracts.json
+    dependency_map: .jekko/project/DEPENDENCIES.graph.json
+    failure_memory: .jekko/project/FAILURES.md
+    rollback_playbooks: .jekko/project/ROLLBACK.md
 
   update_on:
     - new_user_requirement
@@ -507,7 +507,7 @@ quality:
       on_violation: block_promotion
 
     - name: duplication
-      command: "npx jscpd --reporters json --output .opencode/metrics || true"
+      command: "npx jscpd --reporters json --output .jekko/metrics || true"
       assert:
         json:
           "$.statistics.total.percentage": { lte: 3 }
@@ -788,7 +788,7 @@ ZYAL should not merely “load skills.” It should govern their lifecycle.
 skills:
   registries:
     - name: repo
-      path: .opencode/skills
+      path: .jekko/skills
       trust: repo
 
     - name: org
@@ -1542,7 +1542,7 @@ channels:
     - slack:#agent-runs
     - github_issue
   accept_human_input:
-    - opencode_tui
+    - jekko_tui
     - github_comment
 ```
 
@@ -1615,7 +1615,7 @@ budget:
 
 runtime:
   adapter: auto
-  allowed_adapters: [opencode, openhands, claude_code, codex_cli, langgraph]
+  allowed_adapters: [jekko, openhands, claude_code, codex_cli, langgraph]
   unsupported_capability_policy: block_arm
   capabilities:
     required:
@@ -1697,7 +1697,7 @@ memory:
     task: { type: sqlite, retention: until_task_closed }
     repo:
       type: sqlite_vector
-      path: .opencode/daemon/repo_memory.sqlite
+      path: .jekko/daemon/repo_memory.sqlite
       retention: 180d
   write_policy:
     require_evidence: true
@@ -1715,11 +1715,11 @@ memory:
 project_state:
   enabled: true
   artifacts:
-    requirements: .opencode/project/REQUIREMENTS.ledger.yaml
-    architecture_decisions: .opencode/project/ADR.ledger.md
-    public_api_contracts: .opencode/project/API.contracts.json
-    failure_memory: .opencode/project/FAILURES.md
-    rollback_playbooks: .opencode/project/ROLLBACK.md
+    requirements: .jekko/project/REQUIREMENTS.ledger.yaml
+    architecture_decisions: .jekko/project/ADR.ledger.md
+    public_api_contracts: .jekko/project/API.contracts.json
+    failure_memory: .jekko/project/FAILURES.md
+    rollback_playbooks: .jekko/project/ROLLBACK.md
   enforce:
     - no_unexplained_public_api_break
     - migrations_have_rollback
@@ -2098,7 +2098,7 @@ That is the winning lane.
 
 The most important upgrades are:
 
-1. **Portable runtime adapters** so ZYAL works across OpenCode, OpenHands, Codex, Claude, LangGraph, and future agents.
+1. **Portable runtime adapters** so ZYAL works across Jekko, OpenHands, Codex, Claude, LangGraph, and future agents.
 2. **Formal flow/graph semantics** so complex work is not squeezed into a loop.
 3. **Durable execution semantics** with replay, idempotency, side-effect boundaries, and time travel.
 4. **Typed memory and project-state ledgers** to prevent spec drift and janky long-horizon coding.
@@ -2109,7 +2109,7 @@ The most important upgrades are:
 9. **Signed imports and standard library profiles** so ZYAL stays usable without copy-paste YAML bloat.
 10. **Observability and evaluation** so autonomous coding becomes measurable engineering, not vibes.
 
-My strongest recommendation: evolve ZYAL from **“OpenCode daemon YAML”** into **“the open, host-enforced AgentOps specification for coding agents.”** That framing lets ZYAL coexist with every major agent runtime while becoming the default safety, lifecycle, memory, and verification layer for ambitious autonomous software work.
+My strongest recommendation: evolve ZYAL from **“Jekko daemon YAML”** into **“the open, host-enforced AgentOps specification for coding agents.”** That framing lets ZYAL coexist with every major agent runtime while becoming the default safety, lifecycle, memory, and verification layer for ambitious autonomous software work.
 
 [1]: https://github.com/OpenHands/software-agent-sdk/ "GitHub - OpenHands/software-agent-sdk: A clean, modular SDK for building AI agents with OpenHands V1. · GitHub"
 [2]: https://docs.langchain.com/oss/python/langgraph/persistence "Persistence - Docs by LangChain"

@@ -20,8 +20,8 @@ function rewrite(request: Request, values: { directory?: string; workspace?: str
   let changed = false
 
   for (const [name, key] of [
-    ["x-opencode-directory", "directory"],
-    ["x-opencode-workspace", "workspace"],
+    ["x-jekko-directory", "directory"],
+    ["x-jekko-workspace", "workspace"],
   ] as const) {
     const value = pick(
       request.headers.get(name),
@@ -38,8 +38,8 @@ function rewrite(request: Request, values: { directory?: string; workspace?: str
   if (!changed) return request
 
   const next = new Request(url, request)
-  next.headers.delete("x-opencode-directory")
-  next.headers.delete("x-opencode-workspace")
+  next.headers.delete("x-jekko-directory")
+  next.headers.delete("x-jekko-workspace")
   return next
 }
 
@@ -59,14 +59,14 @@ export function createOpencodeClient(config?: Config & { directory?: string; exp
   if (config?.directory) {
     config.headers = {
       ...config.headers,
-      "x-opencode-directory": encodeURIComponent(config.directory),
+      "x-jekko-directory": encodeURIComponent(config.directory),
     }
   }
 
   if (config?.experimental_workspaceID) {
     config.headers = {
       ...config.headers,
-      "x-opencode-workspace": config.experimental_workspaceID,
+      "x-jekko-workspace": config.experimental_workspaceID,
     }
   }
 
@@ -80,7 +80,7 @@ export function createOpencodeClient(config?: Config & { directory?: string; exp
   client.interceptors.response.use((response) => {
     const contentType = response.headers.get("content-type")
     if (contentType === "text/html")
-      throw new Error("Request is not supported by this version of OpenCode Server (Server responded with text/html)")
+      throw new Error("Request is not supported by this version of Jekko Server (Server responded with text/html)")
 
     return response
   })
@@ -98,10 +98,10 @@ export function createOpencodeClient(config?: Config & { directory?: string; exp
     if (!isEmpty) return error
     const method = request?.method ?? "?"
     const url = request?.url ?? "?"
-    if (!response) return new Error(`opencode server ${method} ${url}: network error (no response)`)
+    if (!response) return new Error(`jekko server ${method} ${url}: network error (no response)`)
     const status = response.status
     const statusText = response.statusText ? " " + response.statusText : ""
-    return new Error(`opencode server ${method} ${url} → ${status}${statusText}: (empty response body)`)
+    return new Error(`jekko server ${method} ${url} → ${status}${statusText}: (empty response body)`)
   })
   return new OpencodeClient({ client })
 }

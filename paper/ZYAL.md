@@ -2,7 +2,7 @@
 
 ## A Host-Enforced Operating Contract for Autonomous Software Engineering
 
-**Authors:** OpenCode Contributors
+**Authors:** Jekko Contributors
 **Version:** 1.0 — May 2026
 **Status:** Reference Implementation Shipped
 
@@ -16,7 +16,7 @@ ZYAL is not a prompt framework, an agent SDK, or a model fine-tuning strategy. I
 
 The key insight is structural: safety properties that matter — bounded execution, evidence-gated promotion, secret protection, anti-vibe discipline, cost caps — cannot be reliably enforced by instructing the model. They must be enforced by the host runtime where the model has no ability to circumvent them.
 
-ZYAL is fully implemented in the OpenCode TUI and daemon runtime, with 30+ runtime modules, 9 SQLite tables, a 48K-line parser, and a 65K-line schema. This paper describes the language design, runtime architecture, safety model, and comparison to prior work.
+ZYAL is fully implemented in the Jekko TUI and daemon runtime, with 30+ runtime modules, 9 SQLite tables, a 48K-line parser, and a 65K-line schema. This paper describes the language design, runtime architecture, safety model, and comparison to prior work.
 
 ---
 
@@ -293,7 +293,7 @@ The `experiments` block runs competing implementation strategies in parallel:
 
 ### 6.1 TUI Gold Mode
 
-When ZYAL is active, the OpenCode TUI transforms:
+When ZYAL is active, the Jekko TUI transforms:
 
 - **Gold theme overlay**: 44-property custom theme (noir backgrounds, gold primaries, amber accents)
 - **∞ ZYAL MODE sidebar**: Live iteration count, total tokens, total cost, uptime, daemon phase, job name
@@ -318,7 +318,7 @@ The daemon exposes a complete HTTP API for programmatic observability and contro
 
 ### 6.3 Filesystem Mirror
 
-All state is mirrored to `.opencode/daemon/<runID>/` for human inspection:
+All state is mirrored to `.jekko/daemon/<runID>/` for human inspection:
 
 ```
 ├── ledger.jsonl          # Append-only event log

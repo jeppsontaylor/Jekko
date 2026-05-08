@@ -1,4 +1,4 @@
-Here’s the answer I would take into an OpenCode design review: **do not solve this as prompt engineering alone**. Build it as a first-class **Run Control Plane** plus a deliberately gated **OpenCode RunScript DSL**. The model can read the script, but the runtime must own loops, stop conditions, permissions, compaction, checkpoints, worker orchestration, and the gold “FOREVER” UX.
+Here’s the answer I would take into an Jekko design review: **do not solve this as prompt engineering alone**. Build it as a first-class **Run Control Plane** plus a deliberately gated **Jekko RunScript DSL**. The model can read the script, but the runtime must own loops, stop conditions, permissions, compaction, checkpoints, worker orchestration, and the gold “FOREVER” UX.
 
 A real “forever” mode must mean: **assistant `stop` is not completion**. It is only the end of one iteration. The run ends only when the declared exit condition passes, the operator aborts it, or a non-overridable safety/permission/system failure requires a pause.
 
@@ -12,29 +12,29 @@ There is **no mature universal in-prompt executable agent scripting standard** t
 
 **MCP** is the standard tool/context connector layer, not a workflow language. MCP defines ways for servers to expose tools, resources, and prompts to models and clients. That makes it ideal as the tool substrate for this system, but MCP does not define “run forever until audit passes.” ([Model Context Protocol][2])
 
-**A2A, ACP, and AG-UI** cover agent-to-agent, agent-to-editor, and agent-to-UI interoperability. They matter because OpenCode should not invent isolated semantics for worker agents and UI telemetry. A2A is intended for secure agent collaboration, ACP standardizes editor/IDE-to-agent communication, and AG-UI standardizes event-based connections between agents and user-facing apps. ([A2A Protocol][3])
+**A2A, ACP, and AG-UI** cover agent-to-agent, agent-to-editor, and agent-to-UI interoperability. They matter because Jekko should not invent isolated semantics for worker agents and UI telemetry. A2A is intended for secure agent collaboration, ACP standardizes editor/IDE-to-agent communication, and AG-UI standardizes event-based connections between agents and user-facing apps. ([A2A Protocol][3])
 
-**POML, LMQL, Guidance, DSPy, and BAML** are useful adjacent DSLs, but none is the right direct answer for OpenCode daemon coding. POML gives semantic prompt markup with components, data tags, CSS-like presentation, variables, loops, and conditionals; LMQL and Guidance provide programming-style control over LLM calls; DSPy treats prompting as declarative programming; BAML gives typed prompt functions and structured outputs. These are excellent inspiration for schema, constraints, and composability, but they are not an OpenCode-native run controller. ([Microsoft GitHub][4])
+**POML, LMQL, Guidance, DSPy, and BAML** are useful adjacent DSLs, but none is the right direct answer for Jekko daemon coding. POML gives semantic prompt markup with components, data tags, CSS-like presentation, variables, loops, and conditionals; LMQL and Guidance provide programming-style control over LLM calls; DSPy treats prompting as declarative programming; BAML gives typed prompt functions and structured outputs. These are excellent inspiration for schema, constraints, and composability, but they are not an Jekko-native run controller. ([Microsoft GitHub][4])
 
 The most relevant research direction is **agent workflow architecture**, not just syntax. Anthropic’s agent guidance distinguishes deterministic workflows from open-ended agents and emphasizes simple composable patterns: prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer, and agent loops with environmental feedback and stopping conditions. ([Anthropic][5]) Anthropic’s later context-engineering guidance frames context as a finite resource that must be actively curated as an agent loop generates more data. ([Anthropic][6]) LangGraph’s durable execution model is also relevant because “forever” agents need persistent checkpoints, pause/resume, and crash recovery, not just a while-loop in memory. ([LangChain Docs][7])
 
-For OpenCode specifically, the community is already circling this need. There are issues and discussions around configurable compaction thresholds, plugin hooks that can inject AI-visible continuation/context messages, scheduler/daemon-like execution, detached/background agents, subagent context loss, team orchestration, and `/loop`-style workflows. ([GitHub][8])
+For Jekko specifically, the community is already circling this need. There are issues and discussions around configurable compaction thresholds, plugin hooks that can inject AI-visible continuation/context messages, scheduler/daemon-like execution, detached/background agents, subagent context loss, team orchestration, and `/loop`-style workflows. ([GitHub][8])
 
-The strongest community-adjacent implementation pattern I found is `joelhooks/opencode-config`, which turns OpenCode into a multi-agent setup using coordinator/worker roles, swarm tools, agent mail, task tracking, file reservations, verification gates, and commands such as `/swarm`, `/parallel`, `/fix-all`, and `/iterate`. That is not a core OpenCode standard, but it validates the direction: **central coordination, disposable worker context, persistent shared state, and verification contracts beat tracker-file-only workflows**. ([GitHub][9])
+The strongest community-adjacent implementation pattern I found is `joelhooks/jekko-config`, which turns Jekko into a multi-agent setup using coordinator/worker roles, swarm tools, agent mail, task tracking, file reservations, verification gates, and commands such as `/swarm`, `/parallel`, `/fix-all`, and `/iterate`. That is not a core Jekko standard, but it validates the direction: **central coordination, disposable worker context, persistent shared state, and verification contracts beat tracker-file-only workflows**. ([GitHub][9])
 
 ---
 
-## 2. What OpenCode already has that matters
+## 2. What Jekko already has that matters
 
-OpenCode’s architecture is favorable for this because it is already a client/server coding agent with the TUI as one client, not a monolithic terminal loop. ([GitHub][10]) It already supports agents, commands, permissions, MCP servers, plugins, LSP diagnostics, custom config, and a server API. ([OpenCode][11])
+Jekko’s architecture is favorable for this because it is already a client/server coding agent with the TUI as one client, not a monolithic terminal loop. ([GitHub][10]) It already supports agents, commands, permissions, MCP servers, plugins, LSP diagnostics, custom config, and a server API. ([Jekko][11])
 
-The current core problem is in the session loop. In `packages/opencode/src/session/prompt.ts`, `runLoop` exits when the latest assistant message has a finish reason other than tool calls, there are no remaining tool calls, and the latest user message is older than that assistant message. That is normal interactive behavior, but it is exactly why agents “decide they are done.” ([GitHub][12])
+The current core problem is in the session loop. In `packages/jekko/src/session/prompt.ts`, `runLoop` exits when the latest assistant message has a finish reason other than tool calls, there are no remaining tool calls, and the latest user message is older than that assistant message. That is normal interactive behavior, but it is exactly why agents “decide they are done.” ([GitHub][12])
 
 The headless CLI has a similar assumption. `run.ts` subscribes to session status events and exits when the session becomes idle; it also has permission behavior around rejecting permissions unless `dangerously-skip-permissions` is used. ([GitHub][13])
 
 Session status currently has `idle`, `busy`, and `retry`, but no first-class `daemon`, `checking`, `paused`, `team`, or `forever` state. ([GitHub][14])
 
-OpenCode already has compaction machinery. The compaction service can create compaction messages and process them, and `prompt.ts` already triggers compaction when context overflow is detected. ([GitHub][15]) That is a major advantage, but daemon mode needs more than overflow compaction: it needs **planned compaction**, **preserved run contracts**, **external memory**, and sometimes **fresh-session reset**.
+Jekko already has compaction machinery. The compaction service can create compaction messages and process them, and `prompt.ts` already triggers compaction when context overflow is detected. ([GitHub][15]) That is a major advantage, but daemon mode needs more than overflow compaction: it needs **planned compaction**, **preserved run contracts**, **external memory**, and sometimes **fresh-session reset**.
 
 ---
 
@@ -114,7 +114,7 @@ The strongest systems use filesystem/database memory plus short context, not inf
 
 ### Multi-agent needs shared state, not just “read tracker.md”
 
-Tracker files are okay as human-readable artifacts. They are bad as the only coordination primitive. OpenCode community proposals already identify the missing pieces: parallel/background workers, lead coordination, agent memory, task boards, file reservations, cross-session communication, and subagent context inheritance. ([GitHub][16])
+Tracker files are okay as human-readable artifacts. They are bad as the only coordination primitive. Jekko community proposals already identify the missing pieces: parallel/background workers, lead coordination, agent memory, task boards, file reservations, cross-session communication, and subagent context inheritance. ([GitHub][16])
 
 ---
 
@@ -123,7 +123,7 @@ Tracker files are okay as human-readable artifacts. They are bad as the only coo
 I would build this as:
 
 ```text
-OpenCode Run Control Plane
+Jekko Run Control Plane
   ├─ RunScript parser
   ├─ RunScript schema / IR
   ├─ Daemon runner
@@ -172,7 +172,7 @@ Set status: daemon / forever / iteration 0
 │ OUTER RUNNER LOOP                                         │
 │                                                           │
 │  1. Build iteration prompt                                │
-│  2. Call existing OpenCode prompt/runLoop                 │
+│  2. Call existing Jekko prompt/runLoop                 │
 │  3. Existing model/tool loop runs normally                │
 │  4. Assistant stops or errors or compacts                 │
 │  5. Runner captures reason                               │
@@ -208,7 +208,7 @@ That is the difference between aspiration and control.
 
 ---
 
-## 5. Detailed OpenCode implementation plan
+## 5. Detailed Jekko implementation plan
 
 This is a plan only, not a patch.
 
@@ -217,9 +217,9 @@ This is a plan only, not a patch.
 Add:
 
 ```text
-packages/opencode/src/session/runscript/schema.ts
-packages/opencode/src/session/runscript/parser.ts
-packages/opencode/src/session/runscript/ir.ts
+packages/jekko/src/session/runscript/schema.ts
+packages/jekko/src/session/runscript/parser.ts
+packages/jekko/src/session/runscript/ir.ts
 ```
 
 Responsibilities:
@@ -227,7 +227,7 @@ Responsibilities:
 * Detect exact activation gates.
 * Parse YAML or JSON-like body.
 * Reject unknown keys by default.
-* Validate with Effect Schema, matching OpenCode’s existing typed style.
+* Validate with Effect Schema, matching Jekko’s existing typed style.
 * Produce a normalized intermediate representation, not raw prompt text.
 * Distinguish between:
 
@@ -307,11 +307,11 @@ Why durable state matters:
 Add:
 
 ```text
-packages/opencode/src/session/runscript/runner.ts
-packages/opencode/src/session/runscript/checks.ts
-packages/opencode/src/session/runscript/context.ts
-packages/opencode/src/session/runscript/checkpoint.ts
-packages/opencode/src/session/runscript/control-message.ts
+packages/jekko/src/session/runscript/runner.ts
+packages/jekko/src/session/runscript/checks.ts
+packages/jekko/src/session/runscript/context.ts
+packages/jekko/src/session/runscript/checkpoint.ts
+packages/jekko/src/session/runscript/control-message.ts
 ```
 
 The runner owns the outer loop.
@@ -436,15 +436,15 @@ The headless CLI currently exits when status becomes idle. ([GitHub][13]) In dae
 Add CLI flags as shortcuts, but do not make flags the only interface:
 
 ```text
-opencode run --runscript <file>
-opencode run --daemon ...
-opencode run --forever ...
-opencode run --exit-when ...
-opencode run --checkpoint ...
-opencode run --compact-every ...
-opencode run --max-iterations unlimited
-opencode run --gold
-opencode run --pause-on-permission
+jekko run --runscript <file>
+jekko run --daemon ...
+jekko run --forever ...
+jekko run --exit-when ...
+jekko run --checkpoint ...
+jekko run --compact-every ...
+jekko run --max-iterations unlimited
+jekko run --gold
+jekko run --pause-on-permission
 ```
 
 CLI shortcut flags should compile into the same RunScript IR as the prompt syntax.
@@ -477,7 +477,7 @@ Suggested exit codes:
 
 Extend compaction rather than replacing it.
 
-OpenCode already has compaction creation and processing. ([GitHub][15]) Add daemon-aware policies:
+Jekko already has compaction creation and processing. ([GitHub][15]) Add daemon-aware policies:
 
 ```text
 context:
@@ -491,7 +491,7 @@ context:
     - task board summary
     - files changed this iteration
   external_memory:
-    file: ".opencode/runs/<run_id>/memory.md"
+    file: ".jekko/runs/<run_id>/memory.md"
     update: every_iteration
   reset_session_every:
     iterations: 5
@@ -513,7 +513,7 @@ The runner should preserve the RunScript contract across all compactions. A comp
 
 ### Phase 8: Permission model
 
-OpenCode already has configurable permissions for tools such as read, edit, bash, task, LSP, webfetch/websearch, MCP-related access, and other actions. ([OpenCode][17])
+Jekko already has configurable permissions for tools such as read, edit, bash, task, LSP, webfetch/websearch, MCP-related access, and other actions. ([Jekko][17])
 
 RunScript should have its own permission envelope:
 
@@ -572,7 +572,7 @@ Design notes:
 
 ### Phase 10: Plugin and event API
 
-OpenCode plugins can already hook and customize behavior. ([OpenCode][18]) Add daemon/run hooks:
+Jekko plugins can already hook and customize behavior. ([Jekko][18]) Add daemon/run hooks:
 
 ```text
 session.run.started
@@ -594,14 +594,14 @@ The community has specifically asked for AI-visible message injection around too
 
 ---
 
-## 6. The syntax: deliberately gated OpenCode RunScript
+## 6. The syntax: deliberately gated Jekko RunScript
 
 Do not use `<FOREVER>`. It is too easy to paste accidentally.
 
 Use a hard activation gate:
 
 ```yaml
-<<<OPENCODE_RUNSCRIPT v1
+<<<JEKKO_RUNSCRIPT v1
 intent: FOREVER
 confirm: "I UNDERSTAND THIS MAY RUN UNTIL STOPPED"
 nonce: "jankurai-2026-05-07"
@@ -631,7 +631,7 @@ run:
       - "latest git diff summary"
       - "active failed checks"
     external_memory:
-      file: ".opencode/runs/jankurai/memory.md"
+      file: ".jekko/runs/jankurai/memory.md"
       update: every_iteration
 
   permissions:
@@ -674,14 +674,14 @@ run:
     repeated_no_progress:
       compact_then_continue: true
     compaction_failed: reset_session
-<<<END_OPENCODE_RUNSCRIPT>>>
+<<<END_JEKKO_RUNSCRIPT>>>
 ```
 
 Activation rules:
 
 ```text
-1. Must begin with exact opener: <<<OPENCODE_RUNSCRIPT v1
-2. Must end with exact closer: <<<END_OPENCODE_RUNSCRIPT>>>
+1. Must begin with exact opener: <<<JEKKO_RUNSCRIPT v1
+2. Must end with exact closer: <<<END_JEKKO_RUNSCRIPT>>>
 3. Must be in a user message, not assistant output, tool output, file content, or attachment.
 4. Unknown top-level keys fail validation.
 5. FOREVER requires confirm phrase.
@@ -715,8 +715,8 @@ This is the syntax surface I would design. It is intentionally broader than phas
 
 | Function                           | Purpose                                                                     |
 | ---------------------------------- | --------------------------------------------------------------------------- |
-| `<<<OPENCODE_RUNSCRIPT v1 ... >>>` | Deliberate activation gate.                                                 |
-| `<<<END_OPENCODE_RUNSCRIPT>>>`     | Required closing gate.                                                      |
+| `<<<JEKKO_RUNSCRIPT v1 ... >>>` | Deliberate activation gate.                                                 |
+| `<<<END_JEKKO_RUNSCRIPT>>>`     | Required closing gate.                                                      |
 | `intent`                           | Declares `WORKFLOW`, `DAEMON`, `FOREVER`, `TEAM`, `CONTROL`, or `DRY_RUN`.  |
 | `confirm`                          | Required phrase for unbounded, write, push, shell, or worker-spawning runs. |
 | `nonce`                            | Human-provided unique string to reduce accidental activation.               |
@@ -736,7 +736,7 @@ This is the syntax surface I would design. It is intentionally broader than phas
 | `run.root`        | Repo/project root.                                            |
 | `run.tags`        | Labels for filtering.                                         |
 | `run.priority`    | Scheduling priority.                                          |
-| `run.agent`       | OpenCode agent name.                                          |
+| `run.agent`       | Jekko agent name.                                          |
 | `run.model`       | Model/provider override.                                      |
 | `run.variant`     | TUI/headless/server variant.                                  |
 | `run.resume`      | Resume behavior after restart.                                |
@@ -807,8 +807,8 @@ This is the syntax surface I would design. It is intentionally broader than phas
 | Action                       | Purpose                                   |
 | ---------------------------- | ----------------------------------------- |
 | `action.prompt`              | Send an instruction to the current agent. |
-| `action.command`             | Invoke OpenCode custom command.           |
-| `action.tool`                | Call OpenCode tool by name.               |
+| `action.command`             | Invoke Jekko custom command.           |
+| `action.tool`                | Call Jekko tool by name.               |
 | `action.shell`               | Run allowed shell command.                |
 | `action.mcp.tool`            | Call MCP tool.                            |
 | `action.mcp.prompt`          | Load MCP prompt.                          |
@@ -835,7 +835,7 @@ This is the syntax surface I would design. It is intentionally broader than phas
 
 | Context function        | Purpose                                        |
 | ----------------------- | ---------------------------------------------- |
-| `context.compact`       | Trigger OpenCode compaction.                   |
+| `context.compact`       | Trigger Jekko compaction.                   |
 | `context.compact_every` | Planned compaction cadence.                    |
 | `context.compress`      | Future compression strategy.                   |
 | `context.prune`         | Drop low-value tool output.                    |
@@ -943,13 +943,13 @@ This is the syntax surface I would design. It is intentionally broader than phas
 For live changes, use a separate gate:
 
 ```yaml
-<<<OPENCODE_RUNSCRIPT_CONTROL v1
+<<<JEKKO_RUNSCRIPT_CONTROL v1
 run_id: "run_abc123"
 confirm: "CONTROL THIS RUN"
 >>>
 control:
   action: pause
-<<<END_OPENCODE_RUNSCRIPT_CONTROL>>>
+<<<END_JEKKO_RUNSCRIPT_CONTROL>>>
 ```
 
 Supported controls:
@@ -1038,7 +1038,7 @@ Worker responsibilities:
 * produce artifact-backed results
 * never directly declare global completion unless assigned that role
 
-OpenCode community proposals already point toward this: task-tool limitations, lack of parallel communication, DB-backed teams, detached background subtasks, and plugin orchestration via SDK/event primitives. ([GitHub][16])
+Jekko community proposals already point toward this: task-tool limitations, lack of parallel communication, DB-backed teams, detached background subtasks, and plugin orchestration via SDK/event primitives. ([GitHub][16])
 
 ---
 
@@ -1104,60 +1104,60 @@ This avoids both bad outcomes:
 
 ---
 
-## 10. OpenCode-specific file-by-file plan
+## 10. Jekko-specific file-by-file plan
 
 ### New files
 
 ```text
-packages/opencode/src/session/runscript/schema.ts
+packages/jekko/src/session/runscript/schema.ts
 ```
 
 Strict schema for RunScript v1.
 
 ```text
-packages/opencode/src/session/runscript/parser.ts
+packages/jekko/src/session/runscript/parser.ts
 ```
 
 Gate detection, parsing, validation, checksum/confirm handling.
 
 ```text
-packages/opencode/src/session/runscript/runner.ts
+packages/jekko/src/session/runscript/runner.ts
 ```
 
 Outer daemon/workflow/team loop.
 
 ```text
-packages/opencode/src/session/runscript/checks.ts
+packages/jekko/src/session/runscript/checks.ts
 ```
 
 Shell/git/LSP/test/MCP/check engine.
 
 ```text
-packages/opencode/src/session/runscript/context.ts
+packages/jekko/src/session/runscript/context.ts
 ```
 
 Compaction/reset/preserve/rehydrate policies.
 
 ```text
-packages/opencode/src/session/runscript/checkpoint.ts
+packages/jekko/src/session/runscript/checkpoint.ts
 ```
 
 Git/file/memory/artifact checkpoints.
 
 ```text
-packages/opencode/src/session/runscript/team.ts
+packages/jekko/src/session/runscript/team.ts
 ```
 
 Team coordination facade.
 
 ```text
-packages/opencode/src/session/runscript/events.ts
+packages/jekko/src/session/runscript/events.ts
 ```
 
 Typed run events.
 
 ```text
-packages/opencode/src/session/runscript/control.ts
+packages/jekko/src/session/runscript/control.ts
 ```
 
 Pause/resume/abort/live mutation.
@@ -1165,55 +1165,55 @@ Pause/resume/abort/live mutation.
 ### Modified files
 
 ```text
-packages/opencode/src/session/prompt.ts
+packages/jekko/src/session/prompt.ts
 ```
 
 Add RunScript dispatch and richer loop stop reasons.
 
 ```text
-packages/opencode/src/session/status.ts
+packages/jekko/src/session/status.ts
 ```
 
 Add daemon/team/paused/checking/checkpointing statuses.
 
 ```text
-packages/opencode/src/session/compaction.ts
+packages/jekko/src/session/compaction.ts
 ```
 
 Add daemon-aware forced compaction with preserved contract metadata.
 
 ```text
-packages/opencode/src/session/processor.ts
+packages/jekko/src/session/processor.ts
 ```
 
 Expose structured stop reasons; do not collapse permission denial into generic stop.
 
 ```text
-packages/opencode/src/cli/cmd/run.ts
+packages/jekko/src/cli/cmd/run.ts
 ```
 
 Add RunScript/daemon flags and change headless exit behavior for daemon runs.
 
 ```text
-packages/opencode/src/server/routes/session.ts
+packages/jekko/src/server/routes/session.ts
 ```
 
 Add run-control endpoints.
 
 ```text
-packages/opencode/src/plugin/*
+packages/jekko/src/plugin/*
 ```
 
 Add run lifecycle hooks.
 
 ```text
-packages/opencode/src/tui/*
+packages/jekko/src/tui/*
 ```
 
 Gold banner, run detail panel, controls, team status, worker tree.
 
 ```text
-packages/opencode/src/tool/task.ts
+packages/jekko/src/tool/task.ts
 ```
 
 Later phase: add detached/team/inherit-context/worktree options.
@@ -1365,7 +1365,7 @@ That gives the real promised behavior:
 
 ```text
 The model can stop.
-OpenCode will not.
+Jekko will not.
 ```
 
 Then add team orchestration after the core run loop is durable.
@@ -1375,7 +1375,7 @@ The final design principle is simple:
 ```text
 Prompts describe work.
 RunScript controls execution.
-OpenCode enforces the loop.
+Jekko enforces the loop.
 Checks decide completion.
 Context policy prevents amnesia.
 Team state replaces tracker chaos.
@@ -1389,16 +1389,16 @@ Gold UX makes danger visible.
 [5]: https://www.anthropic.com/research/building-effective-agents "Building Effective AI Agents \ Anthropic"
 [6]: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents "Effective context engineering for AI agents \ Anthropic"
 [7]: https://docs.langchain.com/oss/python/langgraph/durable-execution "Durable execution - Docs by LangChain"
-[8]: https://github.com/anomalyco/opencode/issues/9018 "feat(tui): Compact Mode Phase 2 - Compression Engine Integration · Issue #9018 · anomalyco/opencode · GitHub"
-[9]: https://github.com/joelhooks/opencode-config "GitHub - joelhooks/opencode-config: Personal OpenCode configuration - commands, tools, agents, knowledge · GitHub"
-[10]: https://github.com/anomalyco/opencode "GitHub - anomalyco/opencode: The open source coding agent. · GitHub"
-[11]: https://opencode.ai/docs/agents/?utm_source=chatgpt.com "Agents"
-[12]: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/opencode/src/session/prompt.ts "raw.githubusercontent.com"
-[13]: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/opencode/src/cli/cmd/run.ts "raw.githubusercontent.com"
-[14]: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/opencode/src/session/status.ts "raw.githubusercontent.com"
-[15]: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/opencode/src/session/compaction.ts "raw.githubusercontent.com"
-[16]: https://github.com/anomalyco/opencode/issues/19999 "[FEATURE]: Ephemeral Sub-Agent Teams (parallel multi-agent orchestration) · Issue #19999 · anomalyco/opencode · GitHub"
-[17]: https://opencode.ai/docs/permissions/?utm_source=chatgpt.com "Permissions"
-[18]: https://opencode.ai/docs/plugins/?utm_source=chatgpt.com "Plugins"
-[19]: https://github.com/anomalyco/opencode/issues/17412 "[FEATURE]: Plugin hooks should be able to inject AI-visible messages into conversation context · Issue #17412 · anomalyco/opencode · GitHub"
+[8]: https://github.com/anomalyco/jekko/issues/9018 "feat(tui): Compact Mode Phase 2 - Compression Engine Integration · Issue #9018 · anomalyco/jekko · GitHub"
+[9]: https://github.com/joelhooks/jekko-config "GitHub - joelhooks/jekko-config: Personal Jekko configuration - commands, tools, agents, knowledge · GitHub"
+[10]: https://github.com/anomalyco/jekko "GitHub - anomalyco/jekko: The open source coding agent. · GitHub"
+[11]: https://jekko.ai/docs/agents/?utm_source=chatgpt.com "Agents"
+[12]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/prompt.ts "raw.githubusercontent.com"
+[13]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/cli/cmd/run.ts "raw.githubusercontent.com"
+[14]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/status.ts "raw.githubusercontent.com"
+[15]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/compaction.ts "raw.githubusercontent.com"
+[16]: https://github.com/anomalyco/jekko/issues/19999 "[FEATURE]: Ephemeral Sub-Agent Teams (parallel multi-agent orchestration) · Issue #19999 · anomalyco/jekko · GitHub"
+[17]: https://jekko.ai/docs/permissions/?utm_source=chatgpt.com "Permissions"
+[18]: https://jekko.ai/docs/plugins/?utm_source=chatgpt.com "Plugins"
+[19]: https://github.com/anomalyco/jekko/issues/17412 "[FEATURE]: Plugin hooks should be able to inject AI-visible messages into conversation context · Issue #17412 · anomalyco/jekko · GitHub"
 

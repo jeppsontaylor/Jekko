@@ -14,7 +14,7 @@ import type {
   SessionStatus,
   SnapshotFileDiff,
   VcsInfo,
-} from "@opencode-ai/sdk/v2/client"
+} from "@jekko-ai/sdk/v2/client"
 import type { Accessor } from "solid-js"
 import type { SetStoreFunction, Store } from "solid-js/store"
 

@@ -2,7 +2,7 @@
 
 My conclusion: **ZYAL is not redundant.** It is targeting a real missing layer. OpenHands, LangGraph, Hermes, OpenClaw, Claude Code, Codex, Kiro, SWE-agent, Magentic-One, Aider, and MCP each solve important parts of long-running agentic work, but none of them are exactly a **prompt-portable, host-enforced, declarative daemon runbook language**. ZYAL’s opportunity is to become the neutral control plane that any chat surface can preview, validate, arm, monitor, pause, fork, replay, and promote.
 
-The most important upgrade is to define ZYAL as a **policy-and-orchestration DSL**, not another agent framework. It should compile down to OpenCode, OpenHands, LangGraph, Claude Code, Codex, OpenClaw, or custom runtimes. ZYAL should describe what is allowed, how work is decomposed, what evidence is required, how memory is written, how experiments are scored, how tasks are promoted, and when humans must intervene.
+The most important upgrade is to define ZYAL as a **policy-and-orchestration DSL**, not another agent framework. It should compile down to Jekko, OpenHands, LangGraph, Claude Code, Codex, OpenClaw, or custom runtimes. ZYAL should describe what is allowed, how work is decomposed, what evidence is required, how memory is written, how experiments are scored, how tasks are promoted, and when humans must intervene.
 
 The core architecture should become:
 
@@ -18,7 +18,7 @@ That is the wedge that makes ZYAL bigger than “yet another agent config file.�
 
 OpenHands is very close to ZYAL’s world, but from the other direction. It provides a composable SDK, GUI, CLI, cloud/enterprise deployment, sandboxes, tools, event streams, REST/WebSocket services, and model-agnostic execution. The OpenHands SDK paper emphasizes extensible agents, custom tools, memory management, local-to-remote portability, sandboxed execution, lifecycle control, model routing, and security analysis. Its architecture also includes an event-sourced state model with deterministic replay, typed tool contracts, workspace abstractions, and context condensation. ([arXiv][1])
 
-**ZYAL lesson:** ZYAL should not try to replace OpenHands. ZYAL should be able to **drive** OpenHands. Add explicit event-sourcing, replay, workspace, sandbox, typed tool, and condensation semantics so an ZYAL run can be implemented by OpenHands or by OpenCode’s own runtime.
+**ZYAL lesson:** ZYAL should not try to replace OpenHands. ZYAL should be able to **drive** OpenHands. Add explicit event-sourcing, replay, workspace, sandbox, typed tool, and condensation semantics so an ZYAL run can be implemented by OpenHands or by Jekko’s own runtime.
 
 ---
 
@@ -343,7 +343,7 @@ skills:
   sources:
     local:
       paths:
-        - ".opencode/skills"
+        - ".jekko/skills"
         - ".claude/skills"
         - ".hermes/skills"
       trust: project
@@ -361,7 +361,7 @@ skills:
 
   creation:
     allow_agent_created: true
-    write_to: ".opencode/skills/generated"
+    write_to: ".jekko/skills/generated"
     triggers:
       - completed_task_with_reusable_workflow
       - human_correction_repeated
@@ -411,14 +411,14 @@ spec:
   mode: required_before_edit
   artifacts:
     requirements:
-      file: ".opencode/specs/{{run_id}}/requirements.md"
+      file: ".jekko/specs/{{run_id}}/requirements.md"
       require:
         - user_stories
         - acceptance_criteria
         - non_goals
         - unchanged_behaviors
     design:
-      file: ".opencode/specs/{{run_id}}/design.md"
+      file: ".jekko/specs/{{run_id}}/design.md"
       require:
         - architecture
         - affected_components
@@ -427,7 +427,7 @@ spec:
         - security_considerations
         - rollback_plan
     tasks:
-      file: ".opencode/specs/{{run_id}}/tasks.md"
+      file: ".jekko/specs/{{run_id}}/tasks.md"
       require:
         - task_dag
         - estimated_risk
@@ -456,7 +456,7 @@ task_graph:
         provider: github
         query: "label:zyal-migration state:open"
     - shell:
-        command: "opencode repo-graph affected --json"
+        command: "jekko repo-graph affected --json"
   decomposition:
     strategy: architecture_dag
     max_depth: 5
@@ -551,7 +551,7 @@ experiments:
         command: "npx tsc --noEmit"
         assert: { exit_code: 0 }
       - id: security
-        command: "opencode audit --format json"
+        command: "jekko audit --format json"
         assert:
           json:
             path: "$.critical"
@@ -632,7 +632,7 @@ quality:
     threshold:
       promote_max: 0.15
       warn_max: 0.30
-    evidence_path: ".opencode/daemon/{{run_id}}/jank.json"
+    evidence_path: ".jekko/daemon/{{run_id}}/jank.json"
 ```
 
 A recent arXiv paper on vibe-coding safety reports a gap between functional correctness and secure solutions in agent-generated code, including an example where 61% of solutions from one evaluated setup were functionally correct but only 10.5% were secure. This supports making security and quality gates promotion requirements, not advisory suggestions. ([arXiv][18])
@@ -674,7 +674,7 @@ verification:
             - "src/api/**"
             - "src/db/**"
     security:
-      - command: "opencode audit --critical-only --json"
+      - command: "jekko audit --critical-only --json"
         assert:
           json: { path: "$.critical", equals: 0 }
     performance:
@@ -690,7 +690,7 @@ verification:
     detection: rerun_failed
     max_reruns: 2
     classify:
-      command: "opencode test classify-flaky --json"
+      command: "jekko test classify-flaky --json"
     do_not_ignore_without_human: true
 
   evidence:
@@ -794,8 +794,8 @@ arming:
 
 policy:
   layers:
-    - org: ".opencode/policy/org.yaml"
-    - repo: ".opencode/policy/repo.yaml"
+    - org: ".jekko/policy/org.yaml"
+    - repo: ".jekko/policy/repo.yaml"
     - run: inline
   precedence: org_over_repo_over_run
   on_conflict: most_restrictive
@@ -850,7 +850,7 @@ knowledge:
       - AGENTS.md
       - CLAUDE.md
       - .kiro/steering/**/*.md
-      - .opencode/architecture/**/*.md
+      - .jekko/architecture/**/*.md
     precedence:
       - user_prompt
       - ZYAL
@@ -953,7 +953,7 @@ verification:
     unit:
       - command: "bun test --timeout 30000"
     security:
-      - command: "opencode audit --critical-only --json"
+      - command: "jekko audit --critical-only --json"
         assert: { json: { path: "$.critical", equals: 0 } }
   evidence:
     require_for_checkpoint:
@@ -1153,19 +1153,19 @@ patch_contract:
 quality:
   metrics:
     duplication:
-      command: "opencode quality duplication --json"
+      command: "jekko quality duplication --json"
       max_increase_pct: 2
     complexity:
-      command: "opencode quality complexity --json"
+      command: "jekko quality complexity --json"
       max_new_hotspots: 0
     dead_code:
-      command: "opencode quality dead-code --json"
+      command: "jekko quality dead-code --json"
       max_new: 0
     dependency_sprawl:
-      command: "opencode deps diff --json"
+      command: "jekko deps diff --json"
       require_approval_for_new_deps: true
     maintainability:
-      command: "opencode quality maintainability --json"
+      command: "jekko quality maintainability --json"
       min_score: 0.82
 ```
 
@@ -1329,7 +1329,7 @@ codebase:
       - api_contracts
       - security_taint
   bootstrap:
-    - command: "opencode repo-graph build --incremental --json"
+    - command: "jekko repo-graph build --incremental --json"
       timeout: 30m
       assert: { exit_code: 0 }
 
@@ -1356,7 +1356,7 @@ spec:
 
 task_graph:
   source:
-    - command: "opencode repo-graph usages AuthContext --json"
+    - command: "jekko repo-graph usages AuthContext --json"
       timeout: 10m
   decomposition:
     strategy: by_service_then_package
@@ -1424,7 +1424,7 @@ capabilities:
             - "bazel build *"
             - "git diff*"
             - "git status*"
-            - "opencode repo-graph *"
+            - "jekko repo-graph *"
           deny:
             - "git push*"
             - "rm -rf *"
@@ -1459,13 +1459,13 @@ verification:
     static:
       - command: "bazel build //services/{{task.service}}/..."
     unit:
-      - command: "bazel test $(opencode repo-graph tests-for-task {{task.id}})"
+      - command: "bazel test $(jekko repo-graph tests-for-task {{task.id}})"
     integration:
       - command: "bazel test //services/{{task.service}}/... --test_tag_filters=integration"
         run_when:
           task_risk_score_gte: 0.5
     security:
-      - command: "opencode audit auth-migration --task {{task.id}} --json"
+      - command: "jekko audit auth-migration --task {{task.id}} --json"
         assert:
           json: { path: "$.critical", equals: 0 }
   evidence:
@@ -1491,7 +1491,7 @@ quality:
         on_violation: require_plan_revision
       - id: no_new_auth_bypass
         type: command
-        command: "opencode audit auth-bypass --json"
+        command: "jekko audit auth-bypass --json"
         assert:
           json: { path: "$.critical", equals: 0 }
 
@@ -1515,7 +1515,7 @@ delivery:
 stop:
   all:
     - shell:
-        command: "opencode migration status auth-context --assert complete"
+        command: "jekko migration status auth-context --assert complete"
         timeout: 10m
         assert: { exit_code: 0 }
     - shell:
@@ -1547,7 +1547,7 @@ No. Hermes is an always-on agent with persistent memory, skills, messaging, cron
 
 ### “Is ZYAL redundant with OpenClaw / OpenClaw Code Agent?”
 
-No. OpenClaw Code Agent is a chat-to-coding-session orchestrator with plan approval, lifecycle, worktrees, PR follow-through, and goal loops. ZYAL should absorb those concepts into syntax so OpenClaw, OpenCode, Codex, and Claude Code can all understand the same runbook. ZYAL should be the neutral language; OpenClaw can be one surface/runtime.
+No. OpenClaw Code Agent is a chat-to-coding-session orchestrator with plan approval, lifecycle, worktrees, PR follow-through, and goal loops. ZYAL should absorb those concepts into syntax so OpenClaw, Jekko, Codex, and Claude Code can all understand the same runbook. ZYAL should be the neutral language; OpenClaw can be one surface/runtime.
 
 ### “Is ZYAL redundant with MCP?”
 
@@ -1559,7 +1559,7 @@ No. AGENTS.md is project guidance. ZYAL is executable daemon policy. ZYAL should
 
 ### “Is ZYAL redundant with Claude Code / Codex config?”
 
-No. Claude Code and Codex configs are product/runtime-specific. ZYAL should compile into those configs where possible, but retain a higher-level, portable lifecycle model. The same ZYAL should run in OpenCode, Codex, Claude Code, OpenHands, or a LangGraph backend.
+No. Claude Code and Codex configs are product/runtime-specific. ZYAL should compile into those configs where possible, but retain a higher-level, portable lifecycle model. The same ZYAL should run in Jekko, Codex, Claude Code, OpenHands, or a LangGraph backend.
 
 ---
 
@@ -1747,18 +1747,18 @@ Current API is good but too run/task/pass-oriented. Add traces, approvals, memor
 ### CLI additions
 
 ```sh
-opencode daemon preview <file>
-opencode daemon arm <previewID>
-opencode daemon fork <runID> --from-checkpoint <checkpointID>
-opencode daemon replay <runID> --dry-run
-opencode daemon trace <runID>
-opencode daemon evidence <runID> <taskID>
-opencode daemon approvals <runID>
-opencode daemon memory <runID> search "auth migration"
-opencode daemon skills <runID> list
-opencode daemon worktrees <runID>
-opencode daemon costs <runID>
-opencode daemon policy explain <runID> <actionID>
+jekko daemon preview <file>
+jekko daemon arm <previewID>
+jekko daemon fork <runID> --from-checkpoint <checkpointID>
+jekko daemon replay <runID> --dry-run
+jekko daemon trace <runID>
+jekko daemon evidence <runID> <taskID>
+jekko daemon approvals <runID>
+jekko daemon memory <runID> search "auth migration"
+jekko daemon skills <runID> list
+jekko daemon worktrees <runID>
+jekko daemon costs <runID>
+jekko daemon policy explain <runID> <actionID>
 ```
 
 ### API additions
@@ -1812,7 +1812,7 @@ observability:
         - test_count_delta
         - flaky_test_rate
   dashboards:
-    mirror_to: ".opencode/daemon/{{run_id}}/DASHBOARD.md"
+    mirror_to: ".jekko/daemon/{{run_id}}/DASHBOARD.md"
 ```
 
 ---
@@ -1926,7 +1926,7 @@ This makes ZYAL competitive with Hermes/OpenClaw/Kiro/Claude Code workflows.
 Add:
 
 * formal typed IR
-* compiler/adapters for OpenCode, OpenHands, LangGraph, Codex, Claude Code, OpenClaw
+* compiler/adapters for Jekko, OpenHands, LangGraph, Codex, Claude Code, OpenClaw
 * repository intelligence graph
 * N-version experiments
 * merge trains
@@ -1975,7 +1975,7 @@ The winning ZYAL design is not “YAML for agents.” It is:
 
 * **Kubernetes job control** for coding agents,
 * **Temporal/LangGraph durability** without forcing users to write graphs,
-* **OpenHands/OpenCode execution** with a portable control plane,
+* **OpenHands/Jekko execution** with a portable control plane,
 * **Hermes-style compounding memory** with security gates,
 * **OpenClaw-style chat orchestration** with worktree lifecycle,
 * **Kiro-style specs** with acceptance criteria,

@@ -222,7 +222,7 @@ type Model = { id: string; products: Product[]; triggers: Trigger[] }
 const httpErrors: Trigger = ({ model, product }) => ({
   id: "increased-http-errors",
   title: `Increased HTTP Errors for ${displayName(model)} on ${displayName(product)}`,
-  description: `Detected increased rate of HTTP errors for ${displayName(model)} on OpenCode ${displayName(product)}`,
+  description: `Detected increased rate of HTTP errors for ${displayName(model)} on Jekko ${displayName(product)}`,
   json: {
     calculations: [
       {
@@ -232,7 +232,7 @@ const httpErrors: Trigger = ({ model, product }) => ({
         filters: [
           { column: "model", op: "=", value: model },
           { column: "event_type", op: "=", value: "completions" },
-          { column: "user_agent", op: "contains", value: "opencode" },
+          { column: "user_agent", op: "contains", value: "jekko" },
           { column: "isGoTier", op: "=", value: product === "go" ? "true" : "false" },
         ],
       },
@@ -243,7 +243,7 @@ const httpErrors: Trigger = ({ model, product }) => ({
         filters: [
           { column: "model", op: "=", value: model },
           { column: "event_type", op: "=", value: "completions" },
-          { column: "user_agent", op: "contains", value: "opencode" },
+          { column: "user_agent", op: "contains", value: "jekko" },
           { column: "isGoTier", op: "=", value: product === "go" ? "true" : "false" },
           { column: "status", op: ">=", value: "400" },
           { column: "status", op: "!=", value: "401" },

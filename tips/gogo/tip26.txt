@@ -1,10 +1,10 @@
 ## Executive conclusion
 
-The best version of this is **not** XML-like tags that the model “tries to obey.” The best version is an **OpenCode-host-enforced orchestration language**: a deliberately gated block in the prompt or a script file that OpenCode parses into a durable runtime plan. The model sees a readable task capsule, but the **loop, exit checks, context clearing, commits, worker spawning, MCP/tool policy, and stop/continue decisions are enforced by OpenCode itself**.
+The best version of this is **not** XML-like tags that the model “tries to obey.” The best version is an **Jekko-host-enforced orchestration language**: a deliberately gated block in the prompt or a script file that Jekko parses into a durable runtime plan. The model sees a readable task capsule, but the **loop, exit checks, context clearing, commits, worker spawning, MCP/tool policy, and stop/continue decisions are enforced by Jekko itself**.
 
 That distinction is the whole game. A prompt-only `<FOREVER>` instruction can still be ignored, summarized away, or ended by provider finish reasons. A host-enforced daemon plan makes `finish_reason=stop` mean only “the current agent turn ended,” not “the orchestration is complete.” The orchestration runtime then evaluates exit criteria and either exits or injects the next turn.
 
-I would build this as **OpenCode Orchestration v1**, with three layers:
+I would build this as **Jekko Orchestration v1**, with three layers:
 
 ```text
 ┌────────────────────────────────────────────────────────────────┐
@@ -21,13 +21,13 @@ I would build this as **OpenCode Orchestration v1**, with three layers:
                                │
                                ▼
 ┌────────────────────────────────────────────────────────────────┐
-│ Normal OpenCode agent loop                                      │
+│ Normal Jekko agent loop                                      │
 │ SessionPrompt.prompt/loop, tools, MCP tools, subagents, shell,   │
 │ compaction, permissions, TUI/server events                      │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-OpenCode is unusually well positioned for this because it already has a client/server architecture, a headless server, SDK, TUI, agents/subagents, MCP servers, custom commands, plugins, skills, slash commands, `/compact`, and ACP/editor integration. The missing piece is a **first-class deterministic governor above the agent loop**. OpenCode’s own docs describe the client/server architecture and programmatic server interface, plus agents, subagents, commands, MCP, plugins, and skills. ([GitHub][1])
+Jekko is unusually well positioned for this because it already has a client/server architecture, a headless server, SDK, TUI, agents/subagents, MCP servers, custom commands, plugins, skills, slash commands, `/compact`, and ACP/editor integration. The missing piece is a **first-class deterministic governor above the agent loop**. Jekko’s own docs describe the client/server architecture and programmatic server interface, plus agents, subagents, commands, MCP, plugins, and skills. ([GitHub][1])
 
 One caveat: public X/LinkedIn visibility is partial and search-index dependent, so I’m treating GitHub issues, official docs, protocol specs, and papers/framework docs as the primary evidence. The public signal is still clear: people are converging on durable agent loops, stop hooks, context compaction, task boards, multi-agent workers, and protocolized tool/agent/UI channels.
 
@@ -46,7 +46,7 @@ Host-enforced workflow    LangGraph, Pydantic AI, OpenAI Agents SDK, Guidance,
                            LMQL, BAML, SGLang, CrewAI, AutoGen, etc.
 ```
 
-`AGENTS.md` is the closest thing to a cross-agent project-instruction standard. It is intentionally just Markdown: a predictable place for build steps, tests, conventions, and security notes, not an execution language. The official site calls it a “README for agents,” says it is used by over 60k open-source projects, and lists OpenCode among compatible tools. ([Agents][2])
+`AGENTS.md` is the closest thing to a cross-agent project-instruction standard. It is intentionally just Markdown: a predictable place for build steps, tests, conventions, and security notes, not an execution language. The official site calls it a “README for agents,” says it is used by over 60k open-source projects, and lists Jekko among compatible tools. ([Agents][2])
 
 MCP is not an agent scripting language either. It is the tool/resource/prompt connectivity standard: an open protocol that lets LLM applications connect to external data sources and tools, using hosts, clients, and servers. This matters because your “spawn multiple MCPs” desire should be treated as **tool-server lifecycle and capability management**, while “spawn multiple agents” is a separate worker/session/team problem. ([Model Context Protocol][3])
 
@@ -54,35 +54,35 @@ A2A is the closest emerging standard for agent-to-agent work sharing. Its docs d
 
 AG-UI and MCP Apps are relevant to the gold TUI/daemon UX and future interactive orchestration panels. AG-UI describes itself as an open, lightweight, event-based protocol for connecting agents to user-facing apps, and its docs place AG-UI, MCP, and A2A into a three-layer protocol stack. MCP Apps, meanwhile, is an official MCP extension that lets tools return interactive UI components inside conversations, with sandboxing and auditable messages. ([AG-UI][5])
 
-The older “LLM programming language” projects are highly relevant, but they are not general-purpose prompt blocks for OpenCode. LMQL is a programming language for LLMs using templates, types, constraints, and an optimizing runtime. Guidance explicitly supports interleaving control flow such as conditionals, loops, tool use, and generation. BAML treats prompts as typed functions and says an agent can be modeled as a loop calling a BAML function with state. SGLang is a structured language/runtime for complex LM programs with generation and parallelism primitives. ([LMQL][6])
+The older “LLM programming language” projects are highly relevant, but they are not general-purpose prompt blocks for Jekko. LMQL is a programming language for LLMs using templates, types, constraints, and an optimizing runtime. Guidance explicitly supports interleaving control flow such as conditionals, loops, tool use, and generation. BAML treats prompts as typed functions and says an agent can be modeled as a loop calling a BAML function with state. SGLang is a structured language/runtime for complex LM programs with generation and parallelism primitives. ([LMQL][6])
 
 The mature production-agent answer is **durable orchestration**, not “please keep going” prompts. LangGraph’s core benefits include durable execution, streaming, human-in-the-loop, and memory; its durable execution docs emphasize saving progress at key points and resuming without reprocessing completed work. Pydantic AI also highlights durable execution and human-in-the-loop tool approval. OpenAI’s Agents SDK docs describe agents as applications that plan, call tools, collaborate across specialists, and keep enough state to complete multi-step work, while the application owns orchestration, approvals, and state. ([LangChain Docs][7])
 
-Claude Code’s hooks are the closest direct precedent for “do not stop until criteria pass.” Its official hooks reference says `Stop` and `SubagentStop` hooks can block stopping, and exit code 2 on `Stop` prevents Claude from stopping and continues the conversation. The same docs explicitly warn that stop hooks receive `stop_hook_active` and that implementers should prevent indefinite uncontrolled loops. This is exactly the pattern OpenCode should learn from, but implemented as a first-class daemon governor rather than ad hoc shell hooks. ([Claude][8])
+Claude Code’s hooks are the closest direct precedent for “do not stop until criteria pass.” Its official hooks reference says `Stop` and `SubagentStop` hooks can block stopping, and exit code 2 on `Stop` prevents Claude from stopping and continues the conversation. The same docs explicitly warn that stop hooks receive `stop_hook_active` and that implementers should prevent indefinite uncontrolled loops. This is exactly the pattern Jekko should learn from, but implemented as a first-class daemon governor rather than ad hoc shell hooks. ([Claude][8])
 
 ---
 
-## 2. OpenCode-specific findings
+## 2. Jekko-specific findings
 
-OpenCode already has many of the primitives needed. Its docs define primary agents and subagents; subagents can be invoked by primary agents or via `@` mentions. The TUI supports `/compact`, `/new`/`/clear`, `/init`, `/sessions`, themes, and shell-command messages starting with `!`. Custom commands are Markdown or config templates with frontmatter, and MCP servers can be configured under `mcp` with unique names. ([OpenCode][9])
+Jekko already has many of the primitives needed. Its docs define primary agents and subagents; subagents can be invoked by primary agents or via `@` mentions. The TUI supports `/compact`, `/new`/`/clear`, `/init`, `/sessions`, themes, and shell-command messages starting with `!`. Custom commands are Markdown or config templates with frontmatter, and MCP servers can be configured under `mcp` with unique names. ([Jekko][9])
 
-OpenCode’s server architecture is a major advantage: `opencode serve` exposes a headless HTTP server and OpenAPI endpoint, and the docs say the TUI is a client talking to the server. That means orchestration can become a server/runtime feature, not a TUI-only hack. ([OpenCode][10])
+Jekko’s server architecture is a major advantage: `jekko serve` exposes a headless HTTP server and OpenAPI endpoint, and the docs say the TUI is a client talking to the server. That means orchestration can become a server/runtime feature, not a TUI-only hack. ([Jekko][10])
 
 The current `SessionPrompt` interface already exposes `prompt`, `loop`, `shell`, `command`, `cancel`, and `resolvePromptParts`, and it imports/uses SessionStatus, SessionCompaction, Plugin, MCP, ToolRegistry, permissions, shell, events, database, and run-state services. That is the seam where a higher-level orchestration runtime should call into the existing session loop rather than replacing it. ([GitHub][11])
 
-OpenCode already wraps normal tools and MCP tools during prompt execution. In `prompt.ts`, normal registry tools trigger plugin hooks before/after execution, and MCP tools are iterated from `mcp.tools()`, wrapped with schema transforms, permission asks, plugin hooks, output truncation, and attachment conversion. That means daemon mode does not need a separate “MCP execution path”; it needs policy, lifecycle, and coordination around the existing MCP tool path. ([GitHub][11])
+Jekko already wraps normal tools and MCP tools during prompt execution. In `prompt.ts`, normal registry tools trigger plugin hooks before/after execution, and MCP tools are iterated from `mcp.tools()`, wrapped with schema transforms, permission asks, plugin hooks, output truncation, and attachment conversion. That means daemon mode does not need a separate “MCP execution path”; it needs policy, lifecycle, and coordination around the existing MCP tool path. ([GitHub][11])
 
-OpenCode also already injects synthetic system reminders into messages. Plan mode inserts a synthetic `<system-reminder>` telling the model not to edit, explaining a plan workflow, and explicitly instructing it to launch up to three explore agents in parallel in a single message with multiple tool calls. That is strong evidence that OpenCode can add daemon reminders and worker-capsules without inventing a new prompt path. ([GitHub][11])
+Jekko also already injects synthetic system reminders into messages. Plan mode inserts a synthetic `<system-reminder>` telling the model not to edit, explaining a plan workflow, and explicitly instructing it to launch up to three explore agents in parallel in a single message with multiple tool calls. That is strong evidence that Jekko can add daemon reminders and worker-capsules without inventing a new prompt path. ([GitHub][11])
 
 Compaction is already a rich subsystem. The code excludes prior completed compactions from the next compaction input, carries a previous summary, allows plugins to inject extra context or replace the compaction prompt, strips media, limits tool-output chars, and creates a compaction assistant message with `mode: "compaction"` and `summary: true`. This is exactly where daemon state, queue state, git checkpoints, and exit criteria should be preserved during context clearing. ([GitHub][12])
 
-Headless `opencode run` currently breaks its event loop when it sees `session.status` become `idle`, and it has a `--dangerously-skip-permissions` mode that auto-approves permission prompts; otherwise it auto-rejects them. That is not compatible with a robust daemon unless `run` delegates to an orchestration runtime that treats “idle” as “turn ended, evaluate governor,” not “process done.” ([GitHub][13])
+Headless `jekko run` currently breaks its event loop when it sees `session.status` become `idle`, and it has a `--dangerously-skip-permissions` mode that auto-approves permission prompts; otherwise it auto-rejects them. That is not compatible with a robust daemon unless `run` delegates to an orchestration runtime that treats “idle” as “turn ended, evaluate governor,” not “process done.” ([GitHub][13])
 
 Session status is currently a small union of `idle`, `retry`, and `busy`. That is too little state for a visible forever loop; daemon/orchestration needs status with iteration, phase, exit condition, heartbeat, worker counts, last checkpoint, cost, and cancellation controls. ([GitHub][14])
 
-The OpenCode community is already circling this. There is an open issue explicitly asking for “moltbook-ready features” such as daemon, heartbeat, memory, hooks, and plugin/extension systems. There is also an open feature proposal for DB-backed agent team coordination because TaskTool is described there as only supporting synchronous subagent execution, with no parallel agent communication or shared task coordination. A previous “council/swarm” multi-agent proposal was closed as not planned, but it clearly enumerated parallel execution, consensus, roles, and conflict resolution as desired capabilities. ([GitHub][15])
+The Jekko community is already circling this. There is an open issue explicitly asking for “moltbook-ready features” such as daemon, heartbeat, memory, hooks, and plugin/extension systems. There is also an open feature proposal for DB-backed agent team coordination because TaskTool is described there as only supporting synchronous subagent execution, with no parallel agent communication or shared task coordination. A previous “council/swarm” multi-agent proposal was closed as not planned, but it clearly enumerated parallel execution, consensus, roles, and conflict resolution as desired capabilities. ([GitHub][15])
 
-OpenCode also has active memory/loop pain. A Memory Megathread was opened to centralize memory-growth reports, including heap-snapshot workflows when memory grows into the 1–2GB range. Recent issues also show both sides of the loop problem: sometimes the agent exits too early after compaction or provider finish-reason weirdness, and sometimes it loops infinitely after tool calls complete. ([GitHub][16])
+Jekko also has active memory/loop pain. A Memory Megathread was opened to centralize memory-growth reports, including heap-snapshot workflows when memory grows into the 1–2GB range. Recent issues also show both sides of the loop problem: sometimes the agent exits too early after compaction or provider finish-reason weirdness, and sometimes it loops infinitely after tool calls complete. ([GitHub][16])
 
 ---
 
@@ -92,35 +92,35 @@ The proposed “Daemon Mode” plan has the right instinct, but it is too small 
 
 ### What is good
 
-It correctly identifies that normal agent loops end when the model produces a final non-tool response. The broader issue is visible in current OpenCode issues: model finish reasons, empty stop turns, and provider-specific behavior can prematurely stop or accidentally continue loops. A daemon must not rely on the model’s final answer as the source of truth. ([GitHub][17])
+It correctly identifies that normal agent loops end when the model produces a final non-tool response. The broader issue is visible in current Jekko issues: model finish reasons, empty stop turns, and provider-specific behavior can prematurely stop or accidentally continue loops. A daemon must not rely on the model’s final answer as the source of truth. ([GitHub][17])
 
-It is right to leverage existing compaction, status, headless run, TUI theming, and MCP/tool machinery. OpenCode already has these pieces; adding a new isolated daemon engine that bypasses them would duplicate the product. ([GitHub][12])
+It is right to leverage existing compaction, status, headless run, TUI theming, and MCP/tool machinery. Jekko already has these pieces; adding a new isolated daemon engine that bypasses them would duplicate the product. ([GitHub][12])
 
-It is also right that “gold forever mode” should be obvious. Accidental infinite loops are a known failure mode in coding agents, and current OpenCode issues show both hangs and infinite loops. A deliberate, visually distinct state is a safety feature, not just aesthetic polish. ([GitHub][18])
+It is also right that “gold forever mode” should be obvious. Accidental infinite loops are a known failure mode in coding agents, and current Jekko issues show both hangs and infinite loops. A deliberate, visually distinct state is a safety feature, not just aesthetic polish. ([GitHub][18])
 
 ### What must change
 
-The plan says daemon state could be stored as session metadata or KV. That is not enough. A forever loop needs **durable, queryable, resumable state**: orchestration rows, iteration rows, checkpoint rows, work-item rows, agent-worker rows, and events. The DB-backed team proposal in OpenCode’s issue tracker makes the same architectural argument: OpenCode’s sessions/messages/parts are DB-backed, and DB transactions plus Bus events fit the rest of the system better than files. ([GitHub][19])
+The plan says daemon state could be stored as session metadata or KV. That is not enough. A forever loop needs **durable, queryable, resumable state**: orchestration rows, iteration rows, checkpoint rows, work-item rows, agent-worker rows, and events. The DB-backed team proposal in Jekko’s issue tracker makes the same architectural argument: Jekko’s sessions/messages/parts are DB-backed, and DB transactions plus Bus events fit the rest of the system better than files. ([GitHub][19])
 
 The plan treats a shell `exitCondition` as the central stop mechanism. That is too narrow and unsafe. Exit conditions should be typed: shell, JSON output, git state, task-queue empty, file assertion, tool/MCP result, test result, review-agent consensus, human approval, and no-progress/stall detector. Shell is only one evaluator.
 
 The plan suggests overriding permission-denied stops by continuing. That is dangerous. In daemon mode, a denied permission should become a **policy event**: pause, ask, retry with safer action, continue without that action, or fail the iteration. Blind continuation can create loops where the agent repeatedly tries forbidden actions.
 
-The plan proposes YAML frontmatter in a prompt. That is too easy to paste accidentally. OpenCode already supports frontmatter for command files, so YAML frontmatter is natural for `.opencode/commands`, but **not sufficient as an in-prompt execution gate**. The syntax must require a deliberate launch channel, nonce, exact acknowledgment phrase, and body hash.
+The plan proposes YAML frontmatter in a prompt. That is too easy to paste accidentally. Jekko already supports frontmatter for command files, so YAML frontmatter is natural for `.jekko/commands`, but **not sufficient as an in-prompt execution gate**. The syntax must require a deliberate launch channel, nonce, exact acknowledgment phrase, and body hash.
 
 The plan proposes re-injecting the original prompt each time. That risks context bloat and repeated ambiguity. The runtime should inject a **structured continuation capsule** that contains the original goal, current iteration, exit state, work queue state, recent checkpoints, blockers, and the next work item. The original task is preserved in durable state and summarized into the capsule, not naively pasted forever.
 
-The plan does not handle multiple agents robustly. “Use `jnoccio_spawn_parallel`” is not a design. OpenCode needs a durable team/work queue: claims, leases, heartbeats, path locks, child sessions, isolated worktrees, merge/commit broker, reviewer/arbiter agents, conflict resolution, and a human-readable mirror.
+The plan does not handle multiple agents robustly. “Use `jnoccio_spawn_parallel`” is not a design. Jekko needs a durable team/work queue: claims, leases, heartbeats, path locks, child sessions, isolated worktrees, merge/commit broker, reviewer/arbiter agents, conflict resolution, and a human-readable mirror.
 
-The plan does not include budgets, kill switches, memory/disk monitoring, or loop-stall policies. “Forever” can still be truly unbounded, but it must be **deliberately unbounded** and instrumented. OpenCode has current memory-growth reports; a daemon design has to assume long-running processes will hit resource edges. ([GitHub][16])
+The plan does not include budgets, kill switches, memory/disk monitoring, or loop-stall policies. “Forever” can still be truly unbounded, but it must be **deliberately unbounded** and instrumented. Jekko has current memory-growth reports; a daemon design has to assume long-running processes will hit resource edges. ([GitHub][16])
 
 ---
 
-## 4. The design I would implement: OpenCode Orchestration v1
+## 4. The design I would implement: Jekko Orchestration v1
 
 ### Core principle
 
-**A model may propose actions. The OpenCode orchestration runtime decides whether the work continues, exits, pauses, checkpoints, compacts, clears context, spawns workers, or escalates.**
+**A model may propose actions. The Jekko orchestration runtime decides whether the work continues, exits, pauses, checkpoints, compacts, clears context, spawns workers, or escalates.**
 
 In daemon mode, the model’s “I’m done” is just a turn-completion signal. The only real stops are:
 
@@ -225,14 +225,14 @@ Prompt / file / CLI ──►│ Orchestration parser         │
 
 ---
 
-## 5. Implementation plan in OpenCode
+## 5. Implementation plan in Jekko
 
 ### Phase 1 — Add an orchestration module
 
 Add a new module:
 
 ```text
-packages/opencode/src/orchestration/
+packages/jekko/src/orchestration/
   schema.ts
   parser.ts
   runtime.ts
@@ -249,7 +249,7 @@ packages/opencode/src/orchestration/
   errors.ts
 ```
 
-`schema.ts` defines the IR with Effect Schema, matching OpenCode’s existing schema style. The runtime should not execute raw YAML directly; it should execute a validated internal plan.
+`schema.ts` defines the IR with Effect Schema, matching Jekko’s existing schema style. The runtime should not execute raw YAML directly; it should execute a validated internal plan.
 
 Core plan shape:
 
@@ -403,7 +403,7 @@ Crash/restart           -> runtime resumes from DB if resume_policy allows
 Do not dump daemon logic into `prompt.ts`. Keep the inner loop focused on one agent turn. Modify it only to support orchestration cleanly:
 
 ```text
-packages/opencode/src/session/prompt.ts
+packages/jekko/src/session/prompt.ts
   - Add optional orchestration metadata to PromptInput/LoopInput.
   - Expose a result/outcome that says why the turn ended.
   - Allow synthetic orchestration context capsules.
@@ -412,14 +412,14 @@ packages/opencode/src/session/prompt.ts
   - Publish orchestration-aware events when a turn starts/ends.
 ```
 
-OpenCode already has the right seams: `SessionPrompt` exposes `prompt`, `loop`, `shell`, and `command`; it already uses SessionStatus, SessionCompaction, Plugin, MCP, ToolRegistry, shell, permissions, database, and EventV2. ([GitHub][11])
+Jekko already has the right seams: `SessionPrompt` exposes `prompt`, `loop`, `shell`, and `command`; it already uses SessionStatus, SessionCompaction, Plugin, MCP, ToolRegistry, shell, permissions, database, and EventV2. ([GitHub][11])
 
 ### Phase 5 — Add a real orchestration status
 
 Modify:
 
 ```text
-packages/opencode/src/session/status.ts
+packages/jekko/src/session/status.ts
 ```
 
 Current status is `idle | retry | busy`; add either a new variant or a parallel orchestration status stream. I would add a new variant but keep backward compatibility by letting old clients treat it as busy.
@@ -444,12 +444,12 @@ unbounded: boolean
 
 Headless clients should no longer exit merely because the session is idle when the session is attached to an active orchestration. `idle` means the inner turn ended; `orchestration.completed` means the daemon ended.
 
-### Phase 6 — Modify `opencode run`
+### Phase 6 — Modify `jekko run`
 
 Modify:
 
 ```text
-packages/opencode/src/cli/cmd/run.ts
+packages/jekko/src/cli/cmd/run.ts
 ```
 
 Add:
@@ -470,7 +470,7 @@ Add:
 --ack-forever
 ```
 
-But the CLI flags should compile to the same plan IR as the prompt syntax. `opencode run --daemon` should not implement a second loop in `run.ts`; it should call `OrchestrationRuntime.start(plan)`.
+But the CLI flags should compile to the same plan IR as the prompt syntax. `jekko run --daemon` should not implement a second loop in `run.ts`; it should call `OrchestrationRuntime.start(plan)`.
 
 Current `run.ts` listens to events and breaks on `session.status.type === "idle"`, so this has to change for orchestration-attached sessions. ([GitHub][13])
 
@@ -479,8 +479,8 @@ Current `run.ts` listens to events and breaks on `session.status.type === "idle"
 Modify:
 
 ```text
-packages/opencode/src/session/compaction.ts
-packages/opencode/src/orchestration/context.ts
+packages/jekko/src/session/compaction.ts
+packages/jekko/src/orchestration/context.ts
 ```
 
 Use existing compaction hooks, but add a structured daemon capsule that is always preserved:
@@ -522,8 +522,8 @@ context:
 Add:
 
 ```text
-packages/opencode/src/orchestration/team.ts
-packages/opencode/src/tool/team.ts
+packages/jekko/src/orchestration/team.ts
+packages/jekko/src/tool/team.ts
 ```
 
 Expose a controlled `team` tool to agents:
@@ -543,18 +543,18 @@ team.spawn
 team.stop
 ```
 
-This gives agents a proper coordination API instead of “edit THIS_TRACKER.md.” The DB-backed OpenCode team proposal already argues for teams, members, tasks, agent memory, background execution, Bus events, and a TUI sidebar. ([GitHub][19])
+This gives agents a proper coordination API instead of “edit THIS_TRACKER.md.” The DB-backed Jekko team proposal already argues for teams, members, tasks, agent memory, background execution, Bus events, and a TUI sidebar. ([GitHub][19])
 
 ### Phase 9 — Clarify MCP versus agents
 
-OpenCode should support both:
+Jekko should support both:
 
 ```text
 mcp:
   ensure tool servers exist, are healthy, and are scoped
 
 agents:
-  spawn OpenCode worker sessions/subagents that use tools, including MCP tools
+  spawn Jekko worker sessions/subagents that use tools, including MCP tools
 ```
 
 MCP servers are tool/context providers, not worker agents. “Spin up multiple MCPs” should mean:
@@ -581,7 +581,7 @@ worker.review
 worker.merge
 ```
 
-OpenCode already integrates MCP tools into the prompt tool map, so the missing part is lifecycle, health, scoping, and UI around MCP servers. ([GitHub][11])
+Jekko already integrates MCP tools into the prompt tool map, so the missing part is lifecycle, health, scoping, and UI around MCP servers. ([GitHub][11])
 
 ### Phase 10 — Add server APIs and SDK support
 
@@ -600,7 +600,7 @@ GET    /orchestration/:id/work
 POST   /orchestration/:id/work
 ```
 
-Because OpenCode already exposes an OpenAPI spec and SDK from its server, this becomes scriptable and usable from the TUI, CLI, IDEs, desktop, and external controllers. ([OpenCode][10])
+Because Jekko already exposes an OpenAPI spec and SDK from its server, this becomes scriptable and usable from the TUI, CLI, IDEs, desktop, and external controllers. ([Jekko][10])
 
 ### Phase 11 — Add plugin hooks
 
@@ -626,11 +626,11 @@ orchestration.complete
 orchestration.cancel
 ```
 
-OpenCode’s plugin docs already describe plugins as event hooks for customizing behavior, and the code already triggers plugin hooks for tool execution and compaction. ([OpenCode][20])
+Jekko’s plugin docs already describe plugins as event hooks for customizing behavior, and the code already triggers plugin hooks for tool execution and compaction. ([Jekko][20])
 
 ### Phase 12 — Gold TUI forever UX
 
-Modify the TUI session header/status components under the TUI command area. The exact component names should be verified in the repo, but current search points to TUI code under `packages/opencode/src/cli/cmd/tui/`. ([GitHub][21])
+Modify the TUI session header/status components under the TUI command area. The exact component names should be verified in the repo, but current search points to TUI code under `packages/jekko/src/cli/cmd/tui/`. ([GitHub][21])
 
 Gold should be an **orchestration overlay**, not a permanent theme mutation. The user’s theme remains active; daemon UI elements get gold treatment.
 
@@ -664,7 +664,7 @@ permission_denied: pause
 destructive_shell: ask
 push: allowed only if checkpoint policy explicitly allows it
 secrets: never expose to model unless scoped
-network: inherit existing OpenCode policy unless plan overrides
+network: inherit existing Jekko policy unless plan overrides
 path_scope: default git worktree
 worker_worktrees: enabled for parallel writes
 max_parallel_workers: default 3
@@ -704,7 +704,7 @@ The syntax must be impossible to trigger by accidentally pasting a README, issue
 3. The block declares version and format.
 4. The block includes an exact acknowledgment string.
 5. Forever mode includes a second forever-specific acknowledgment.
-6. The block includes a nonce generated by OpenCode or passed by CLI.
+6. The block includes a nonce generated by Jekko or passed by CLI.
 7. The body hash matches.
 8. The schema validates with no unknown keys.
 9. The runtime shows a preview before starting in interactive TUI mode.
@@ -713,12 +713,12 @@ The syntax must be impossible to trigger by accidentally pasting a README, issue
 ### Recommended prompt-embeddable envelope
 
 ```yaml
------BEGIN OPENCODE ORCHESTRATION v1-----
+-----BEGIN JEKKO ORCHESTRATION v1-----
 format: yaml
 launch: deliberate
-nonce: "oc_nonce_generated_by_opencode"
+nonce: "oc_nonce_generated_by_jekko"
 workspace: "git-root:sha256-or-path-fingerprint"
-ack: "I_INTENTIONALLY_AUTHORIZE_OPENCODE_TO_EXECUTE_THIS_ORCHESTRATION"
+ack: "I_INTENTIONALLY_AUTHORIZE_JEKKO_TO_EXECUTE_THIS_ORCHESTRATION"
 ack_forever: "I_UNDERSTAND_THIS_CAN_RUN_UNTIL_EXIT_CRITERIA_OR_MANUAL_CANCEL"
 sha256: "sha256-of-plan-body"
 -----PLAN-----
@@ -818,14 +818,14 @@ limits:
   stall:
     after_iterations_without_progress: 3
     action: change_strategy
------END OPENCODE ORCHESTRATION v1-----
+-----END JEKKO ORCHESTRATION v1-----
 ```
 
-A normal prompt containing that block should not run it unless the user invoked `/orchestrate` or `--orchestrate`. In normal chat, OpenCode should display: “This looks like an orchestration block. It was not executed because orchestration was not deliberately launched.”
+A normal prompt containing that block should not run it unless the user invoked `/orchestrate` or `--orchestrate`. In normal chat, Jekko should display: “This looks like an orchestration block. It was not executed because orchestration was not deliberately launched.”
 
 ---
 
-## 7. Syntax library: OpenCode Orchestration v1
+## 7. Syntax library: Jekko Orchestration v1
 
 This is the “God mode” library I would support, but with deterministic host enforcement.
 
@@ -935,7 +935,7 @@ This is the “God mode” library I would support, but with deterministic host 
 | `context.artifacts`       | Externalize large output         | Save file, include path      |
 | `context.memory.write`    | Long-term memory                 | Scoped memory store          |
 | `context.memory.read`     | Retrieve memory                  | Inject selected memory       |
-| `context.skill.load`      | Load reusable skill              | Uses OpenCode skills         |
+| `context.skill.load`      | Load reusable skill              | Uses Jekko skills         |
 
 ### 7.6 Work discovery and task board
 
@@ -1137,14 +1137,14 @@ This is the “God mode” library I would support, but with deterministic host 
 This is how I would express your original intent with the new syntax:
 
 ```yaml
------BEGIN OPENCODE ORCHESTRATION v1-----
+-----BEGIN JEKKO ORCHESTRATION v1-----
 format: yaml
 launch: deliberate
-nonce: "GENERATED_BY_OPENCODE"
+nonce: "GENERATED_BY_JEKKO"
 workspace: "git-root:fingerprint"
-ack: "I_INTENTIONALLY_AUTHORIZE_OPENCODE_TO_EXECUTE_THIS_ORCHESTRATION"
+ack: "I_INTENTIONALLY_AUTHORIZE_JEKKO_TO_EXECUTE_THIS_ORCHESTRATION"
 ack_forever: "I_UNDERSTAND_THIS_CAN_RUN_UNTIL_EXIT_CRITERIA_OR_MANUAL_CANCEL"
-sha256: "COMPUTED_BY_OPENCODE"
+sha256: "COMPUTED_BY_JEKKO"
 -----PLAN-----
 name: jankurai-standard-cleanup
 mode:
@@ -1334,7 +1334,7 @@ limits:
   memory:
     warn_rss_mb: 1500
     pause_rss_mb: 2500
------END OPENCODE ORCHESTRATION v1-----
+-----END JEKKO ORCHESTRATION v1-----
 ```
 
 This does what your XML intended, but it is enforceable, resumable, visible, and hard to trigger accidentally.
@@ -1369,7 +1369,7 @@ The board should be the source of truth. Markdown files should be generated mirr
 team.claim({ strategy: "random_unclaimed" })
 team.lock_paths({ paths: ["packages/foo/**"] })
 team.update({ status: "running", summary: "Investigating diff in X" })
-team.artifact({ kind: "test_output", path: ".opencode/artifacts/..." })
+team.artifact({ kind: "test_output", path: ".jekko/artifacts/..." })
 team.request_review({ reviewer: "reviewer", diff: "current" })
 team.complete({ evidence: ["test:passed", "review:pass", "commit:abc123"] })
 ```
@@ -1506,7 +1506,7 @@ Run a compaction stress test:
 Run headless JSON test:
 
 ```text
-opencode run --orchestrate plan.yaml --format json
+jekko run --orchestrate plan.yaml --format json
 ```
 
 Expected events:
@@ -1548,10 +1548,10 @@ The strongest path is:
 ```text
 Do not build “prompt tags.”
 Build a strict, deliberate orchestration language that compiles to a durable runtime plan.
-Let the OpenCode host enforce forever, context clearing, checkpoints, agents, MCP, and exits.
+Let the Jekko host enforce forever, context clearing, checkpoints, agents, MCP, and exits.
 ```
 
-The proposed plan should evolve from “override prompt loop exits” into a real **orchestration governor**. Keep the current OpenCode agent loop mostly intact; wrap it with durable state, typed conditions, visible status, and strict syntax gates.
+The proposed plan should evolve from “override prompt loop exits” into a real **orchestration governor**. Keep the current Jekko agent loop mostly intact; wrap it with durable state, typed conditions, visible status, and strict syntax gates.
 
 The immediate MVP I would build first:
 
@@ -1582,7 +1582,7 @@ Then expand into:
 
 That gives you the thing you actually want: **a coding agent that can run forever on purpose, clear or compress context on schedule, coordinate multiple workers, checkpoint verified progress, and only stop when the runtime—not the model—proves the stopping criteria are satisfied.**
 
-[1]: https://github.com/anomalyco/opencode "GitHub - anomalyco/opencode: The open source coding agent. · GitHub"
+[1]: https://github.com/anomalyco/jekko "GitHub - anomalyco/jekko: The open source coding agent. · GitHub"
 [2]: https://agents.md/ "AGENTS.md"
 [3]: https://modelcontextprotocol.io/specification/2025-11-25 "Specification - Model Context Protocol"
 [4]: https://a2a-protocol.org/latest/ "A2A Protocol"
@@ -1590,17 +1590,17 @@ That gives you the thing you actually want: **a coding agent that can run foreve
 [6]: https://lmql.ai/ "LMQL is a programming language for LLM interaction. | LMQL"
 [7]: https://docs.langchain.com/oss/python/langgraph/overview "LangGraph overview - Docs by LangChain"
 [8]: https://code.claude.com/docs/en/hooks "Hooks reference - Claude Code Docs"
-[9]: https://opencode.ai/docs/agents/ "Agents | OpenCode"
-[10]: https://opencode.ai/docs/server/ "Server | OpenCode"
-[11]: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/session/prompt.ts "opencode/packages/opencode/src/session/prompt.ts at dev · anomalyco/opencode · GitHub"
-[12]: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/session/compaction.ts "opencode/packages/opencode/src/session/compaction.ts at dev · anomalyco/opencode · GitHub"
-[13]: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/opencode/src/cli/cmd/run.ts "raw.githubusercontent.com"
-[14]: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/opencode/src/session/status.ts "raw.githubusercontent.com"
-[15]: https://github.com/anomalyco/opencode/issues/11570 "Idea: Support moltbook-ready features (daemon, heartbeat, memory) · Issue #11570 · anomalyco/opencode · GitHub"
-[16]: https://github.com/anomalyco/opencode/issues/20695 "Memory Megathread · Issue #20695 · anomalyco/opencode · GitHub"
-[17]: https://github.com/anomalyco/opencode/issues/19208?utm_source=chatgpt.com "opencode run adds empty stop-turn after tool-calls ..."
-[18]: https://github.com/anomalyco/opencode/issues/26220 "Bug: OpenCode enters infinite loop after tool calls complete (Zen/big-pickle) · Issue #26220 · anomalyco/opencode · GitHub"
-[19]: https://github.com/anomalyco/opencode/issues/19215 "[FEATURE]: DB-backed agent team coordination (parallel sub-agents, messaging, memory) · Issue #19215 · anomalyco/opencode · GitHub"
-[20]: https://opencode.ai/docs/plugins/ "Plugins | OpenCode"
-[21]: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/cli/cmd/tui/app.tsx?utm_source=chatgpt.com "opencode/packages/opencode/src/cli/cmd/tui/app.tsx at dev"
+[9]: https://jekko.ai/docs/agents/ "Agents | Jekko"
+[10]: https://jekko.ai/docs/server/ "Server | Jekko"
+[11]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/session/prompt.ts "jekko/packages/jekko/src/session/prompt.ts at dev · anomalyco/jekko · GitHub"
+[12]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/session/compaction.ts "jekko/packages/jekko/src/session/compaction.ts at dev · anomalyco/jekko · GitHub"
+[13]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/cli/cmd/run.ts "raw.githubusercontent.com"
+[14]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/status.ts "raw.githubusercontent.com"
+[15]: https://github.com/anomalyco/jekko/issues/11570 "Idea: Support moltbook-ready features (daemon, heartbeat, memory) · Issue #11570 · anomalyco/jekko · GitHub"
+[16]: https://github.com/anomalyco/jekko/issues/20695 "Memory Megathread · Issue #20695 · anomalyco/jekko · GitHub"
+[17]: https://github.com/anomalyco/jekko/issues/19208?utm_source=chatgpt.com "jekko run adds empty stop-turn after tool-calls ..."
+[18]: https://github.com/anomalyco/jekko/issues/26220 "Bug: Jekko enters infinite loop after tool calls complete (Zen/big-pickle) · Issue #26220 · anomalyco/jekko · GitHub"
+[19]: https://github.com/anomalyco/jekko/issues/19215 "[FEATURE]: DB-backed agent team coordination (parallel sub-agents, messaging, memory) · Issue #19215 · anomalyco/jekko · GitHub"
+[20]: https://jekko.ai/docs/plugins/ "Plugins | Jekko"
+[21]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/cli/cmd/tui/app.tsx?utm_source=chatgpt.com "jekko/packages/jekko/src/cli/cmd/tui/app.tsx at dev"
 

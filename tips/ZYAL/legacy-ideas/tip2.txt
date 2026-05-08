@@ -1,10 +1,10 @@
-Absolutely. My strongest recommendation: **do not make ZYAL “another agent framework.”** Make it the **portable host-control specification** that can command *any* agent runtime: OpenCode, Codex, Claude Code, OpenHands, Hermes, OpenClaw, LangGraph, Aider, SWE-agent, local shells, cloud sandboxes, CI systems, and MCP tools.
+Absolutely. My strongest recommendation: **do not make ZYAL “another agent framework.”** Make it the **portable host-control specification** that can command *any* agent runtime: Jekko, Codex, Claude Code, OpenHands, Hermes, OpenClaw, LangGraph, Aider, SWE-agent, local shells, cloud sandboxes, CI systems, and MCP tools.
 
 That is the real opening. OpenHands, Hermes, OpenClaw, LangGraph, Codex, and Claude-style agents are converging on long-running agentic coding, but they still mostly expose **runtime behavior, prompt files, tool APIs, or workflow graphs**. ZYAL can become the missing layer: the **auditable, declarative, prompt-embeddable daemon contract** that says who may act, where, for how long, under what evidence gates, with which rollback path, and with what durable memory.
 
 I would evolve ZYAL from:
 
-> “A YAML daemon runbook for OpenCode”
+> “A YAML daemon runbook for Jekko”
 
 into:
 
@@ -68,13 +68,13 @@ OpenClaw Standing Orders are also directly relevant: permanent operating authori
 
 OpenClaw Code Agent’s plugin model already includes managed background coding sessions from chat, plan approval, worktree isolation, merge/PR follow-through, explicit goal loops, suspend/resume/fork/interrupt/recover, cost/duration tracking, and review-first defaults. ZYAL should make these capabilities portable instead of specific to one runtime. ([GitHub][21])
 
-### Codex, OpenCode, AGENTS.md, and Skills
+### Codex, Jekko, AGENTS.md, and Skills
 
 OpenAI’s Codex CLI is a local coding agent that can read, change, and run code in the selected directory, while Codex cloud can work on background tasks in parallel using cloud environments. ([OpenAI Developers][22])
 
 Codex also supports skills: reusable packages of instructions, resources, and optional scripts that build on the open agent-skills standard. ([OpenAI Developers][23])
 
-OpenCode itself already supports terminal, desktop, and IDE usage, multiple sessions, model-provider flexibility, and specialized agents/subagents. ([OpenCode][24])
+Jekko itself already supports terminal, desktop, and IDE usage, multiple sessions, model-provider flexibility, and specialized agents/subagents. ([Jekko][24])
 
 AGENTS.md is now a broadly recognized project-instruction file; the AGENTS.md site describes it as a predictable README-like place for coding agents, and Codex reads AGENTS.md before work to layer global and project-specific guidance. ([Agents][25])
 
@@ -145,7 +145,7 @@ The biggest gaps:
     ZYAL needs spans, traces, metrics, token/cost accounting, queue time, wall time, tool latency, failure clusters, run dashboards, and export to OpenTelemetry.
 
 13. **No compatibility story for other agents.**
-    The whole power move is to let ZYAL run OpenCode, OpenHands, Codex, Claude Code, Aider, SWE-agent, LangGraph graphs, or custom MCP backends. That means adapters and normalized events.
+    The whole power move is to let ZYAL run Jekko, OpenHands, Codex, Claude Code, Aider, SWE-agent, LangGraph graphs, or custom MCP backends. That means adapters and normalized events.
 
 14. **No anti-prompt-injection model.**
     Guardrails block patterns, but ZYAL needs a deeper distinction between trusted instructions, untrusted repo text, untrusted web pages, untrusted tool output, and privileged host policy.
@@ -162,7 +162,7 @@ Here is the cleanest mental model:
 
 | Layer                | Existing examples                                                 | ZYAL role                                                  |
 | -------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
-| Agent runtime        | OpenCode, Codex, Claude Code, OpenHands, Hermes, Aider, SWE-agent | ZYAL chooses, constrains, observes, and interrupts         |
+| Agent runtime        | Jekko, Codex, Claude Code, OpenHands, Hermes, Aider, SWE-agent | ZYAL chooses, constrains, observes, and interrupts         |
 | Workflow engine      | LangGraph, Temporal-like systems, OpenClaw Task Flow              | ZYAL declares durable agent workflow policy                |
 | Tool protocol        | MCP, shell, browser, GitHub, CI, DB tools                         | ZYAL grants capabilities and validates tool use            |
 | Project instructions | AGENTS.md, CLAUDE.md, repo docs                                   | ZYAL imports as untrusted or semi-trusted context          |
@@ -305,10 +305,10 @@ ZYAL should be backend-neutral.
 
 ```yaml
 backends:
-  default: opencode
+  default: jekko
   options:
-    opencode:
-      kind: opencode
+    jekko:
+      kind: jekko
       agents:
         plan: plan
         build: build
@@ -489,7 +489,7 @@ memory:
       skills:
         format: SKILL.md
         sources:
-          - ".opencode/skills"
+          - ".jekko/skills"
           - ".agent/skills"
         activation: progressive_disclosure
         promotion_requires:
@@ -509,7 +509,7 @@ memory:
       - rollback_plan
     verify:
       - name: no-critical-loss
-        command: "opencode memory diff-critical --before $BEFORE --after $AFTER"
+        command: "jekko memory diff-critical --before $BEFORE --after $AFTER"
         assert: { exit_code: 0 }
 
   writes:
@@ -526,9 +526,9 @@ This directly addresses the “vibe coding” problem. Memory becomes audited en
 ```yaml
 skills:
   sources:
-    - path: ".opencode/skills"
+    - path: ".jekko/skills"
       trust: repo
-    - path: "~/.config/opencode/skills"
+    - path: "~/.config/jekko/skills"
       trust: user
     - registry: "skills.sh"
       trust: remote
@@ -864,7 +864,7 @@ change_management:
   pull_request:
     create: ask
     title: "{{job.name}} — {{task.summary}}"
-    body_template: ".opencode/templates/pr.md"
+    body_template: ".jekko/templates/pr.md"
     labels: ["agentic", "zyal"]
     include:
       - evidence_summary
@@ -1146,7 +1146,7 @@ This gives ZYAL an explicit “research → experiment → synthesize → prove�
 
 **Upgrade:** add `gateway`, `task_flow`, `standing_orders`, `idempotency`, and `approval_identity`.
 
-### ZYAL vs Codex / Claude Code / OpenCode
+### ZYAL vs Codex / Claude Code / Jekko
 
 **Overlap:** code editing agents, worktrees, skills, AGENTS.md, model-specific execution.
 
@@ -1209,10 +1209,10 @@ schema:
       - no_secret_access_without_receipt
 
 backends:
-  default: opencode
+  default: jekko
   options:
-    opencode:
-      kind: opencode
+    jekko:
+      kind: jekko
       agents:
         plan: plan
         build: build
@@ -1362,7 +1362,7 @@ memory:
     procedural:
       skills:
         format: SKILL.md
-        sources: [".opencode/skills", ".agent/skills"]
+        sources: [".jekko/skills", ".agent/skills"]
         activation: progressive_disclosure
   compaction:
     strategy: hierarchical
@@ -1386,9 +1386,9 @@ memory:
 
 skills:
   sources:
-    - path: ".opencode/skills"
+    - path: ".jekko/skills"
       trust: repo
-    - path: "~/.config/opencode/skills"
+    - path: "~/.config/jekko/skills"
       trust: user
   activation:
     mode: host_selected
@@ -2041,7 +2041,7 @@ eval:
     kind: swe_bench
     split: verified
   matrix:
-    backends: [opencode, openhands, codex]
+    backends: [jekko, openhands, codex]
     models: [gpt-5.5, claude-sonnet, local-model]
     strategies:
       - single_pass
@@ -2056,7 +2056,7 @@ eval:
     - human_interventions
     - regression_rate
   output:
-    leaderboard: ".opencode/evals/leaderboard.json"
+    leaderboard: ".jekko/evals/leaderboard.json"
 ```
 
 This matters because skills, policies, and incubator passes can make agents better or worse. You need measurement, not anecdotes.
@@ -2154,7 +2154,7 @@ That is the path to making ZYAL the default language for ambitious coding projec
 [21]: https://github.com/goldmar/openclaw-code-agent "GitHub - goldmar/openclaw-code-agent · GitHub"
 [22]: https://developers.openai.com/codex/cli?utm_source=chatgpt.com "Codex CLI"
 [23]: https://developers.openai.com/codex/skills?utm_source=chatgpt.com "Agent Skills – Codex"
-[24]: https://opencode.ai/?utm_source=chatgpt.com "OpenCode | The open source AI coding agent"
+[24]: https://jekko.ai/?utm_source=chatgpt.com "Jekko | The open source AI coding agent"
 [25]: https://agents.md/?utm_source=chatgpt.com "AGENTS.md"
 [26]: https://arxiv.org/abs/2210.03629?utm_source=chatgpt.com "Synergizing Reasoning and Acting in Language Models"
 [27]: https://arxiv.org/abs/2305.10601?utm_source=chatgpt.com "Tree of Thoughts: Deliberate Problem Solving with Large Language Models"

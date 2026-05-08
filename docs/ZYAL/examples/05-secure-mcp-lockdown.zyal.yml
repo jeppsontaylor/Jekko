@@ -43,7 +43,7 @@ arming:
 stop:
   all:
     - shell:
-        command: "test -f .opencode/daemon/done.txt"
+        command: "test -f .jekko/daemon/done.txt"
         timeout: 5s
         assert: { exit_code: 0 }
 
@@ -227,7 +227,7 @@ budgets:
     on_exhaust: park
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

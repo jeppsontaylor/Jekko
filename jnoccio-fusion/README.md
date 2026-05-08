@@ -23,16 +23,16 @@ Jnoccio runs as a Rust `axum`/Tokio gateway. The main instance uses up to 10 Tok
 ## Setup
 
 ```bash
-cd /Users/bentaylor/Code/opencode/jnoccio-fusion
+cd /Users/bentaylor/Code/jekko/jnoccio-fusion
 cp .env.jnoccio.example .env.jnoccio
 $EDITOR .env.jnoccio
 rtk cargo run -- --config config/server.json --env-file .env.jnoccio
 ```
 
-Install the OpenCode config fragment when needed:
+Install the Jekko config fragment when needed:
 
 ```bash
-./scripts/install-opencode-config.sh
+./scripts/install-jekko-config.sh
 ```
 
 Agent MCP snippets live in:

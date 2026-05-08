@@ -40,9 +40,9 @@ fleet:
   telemetry:
     publish_to: jnoccio
     headers:
-      x-opencode-run-id: "${run.id}"
-      x-opencode-session: "${session.id}"
-      x-opencode-process-role: worker
+      x-jekko-run-id: "${run.id}"
+      x-jekko-session: "${session.id}"
+      x-jekko-process-role: worker
 
 loop:
   policy: forever
@@ -79,7 +79,7 @@ stop:
 hooks:
   on_start:
     - run: "git fetch -q origin"
-    - run: "mkdir -p .opencode/daemon && touch JANKURAI_TASKLIST.md JANKURAI_TASKLIST.md.completed"
+    - run: "mkdir -p .jekko/daemon && touch JANKURAI_TASKLIST.md JANKURAI_TASKLIST.md.completed"
     - run: |
         if grep -q '^- \[x\]' JANKURAI_TASKLIST.md 2>/dev/null; then
           { echo ""; echo "## Rotated $(date -u +%Y-%m-%dT%H:%M:%SZ)"; grep '^- \[x\]' JANKURAI_TASKLIST.md; } >> JANKURAI_TASKLIST.md.completed
@@ -90,10 +90,10 @@ hooks:
     - run: "git rebase origin/main --autostash"
       on_fail: warn
     - run: |
-        jankurai audit --json > .opencode/daemon/jankurai-latest.json 2>/dev/null || echo '{"findings":[]}' > .opencode/daemon/jankurai-latest.json
-        jq -r '.findings[] | "- [ ] " + .id + " — " + .title + " (" + (.severity // "med") + ", " + (.file // "?") + ")"' .opencode/daemon/jankurai-latest.json > .opencode/daemon/jankurai-new.txt || true
-        if [ -s .opencode/daemon/jankurai-new.txt ]; then
-          grep -F -v -f <(grep -oE '\b[A-Z]+-[0-9]+' JANKURAI_TASKLIST.md 2>/dev/null | sort -u || true) .opencode/daemon/jankurai-new.txt >> JANKURAI_TASKLIST.md || true
+        jankurai audit --json > .jekko/daemon/jankurai-latest.json 2>/dev/null || echo '{"findings":[]}' > .jekko/daemon/jankurai-latest.json
+        jq -r '.findings[] | "- [ ] " + .id + " — " + .title + " (" + (.severity // "med") + ", " + (.file // "?") + ")"' .jekko/daemon/jankurai-latest.json > .jekko/daemon/jankurai-new.txt || true
+        if [ -s .jekko/daemon/jankurai-new.txt ]; then
+          grep -F -v -f <(grep -oE '\b[A-Z]+-[0-9]+' JANKURAI_TASKLIST.md 2>/dev/null | sort -u || true) .jekko/daemon/jankurai-new.txt >> JANKURAI_TASKLIST.md || true
         fi
       on_fail: warn
     - run: |
@@ -142,11 +142,11 @@ incubator:
       - no_progress_iterations_gte: 2
       - risk_score_gte: 0.65
       - touches_paths:
-          - "packages/opencode/src/session/**"
-          - "packages/opencode/src/agent-script/**"
-          - "packages/opencode/migration/**"
-          - "packages/opencode/src/cli/cmd/tui/**"
-          - "packages/opencode/src/auth/**"
+          - "packages/jekko/src/session/**"
+          - "packages/jekko/src/agent-script/**"
+          - "packages/jekko/migration/**"
+          - "packages/jekko/src/cli/cmd/tui/**"
+          - "packages/jekko/src/auth/**"
   exclude_when:
     any:
       - readiness_score_lt: 0.20
@@ -326,7 +326,7 @@ rollback:
   required_when:
     risk_score_gte: 0.5
   plan_required: true
-  verify_command: "git apply --reverse --check < .opencode/daemon/rollback.patch"
+  verify_command: "git apply --reverse --check < .jekko/daemon/rollback.patch"
   on_failure_after_merge: revert_commit
 
 done:
@@ -393,7 +393,7 @@ observability:
     on_checkpoint: true
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

@@ -6,7 +6,7 @@ The main upgrade path is not “add more YAML.” It is: **turn ZYAL into the du
 
 ZYAL should treat **MCP** as the standard tool/data/context integration layer; MCP explicitly standardizes how LLM applications connect to external data sources and tools using client/server JSON-RPC concepts. ([Model Context Protocol][1]) It should treat **A2A** as the agent-to-agent interoperability layer; A2A’s spec focuses on discovery, modality negotiation, collaborative task management, and secure exchange between opaque independent agents. ([GitHub][2]) It should also account for **ACP / Agent Communication Protocol**, which is now part of A2A under Linux Foundation governance and is designed for RESTful, multimodal, synchronous/asynchronous, streaming, stateful/stateless, long-running agent interactions. ([Agent Communication Protocol][3])
 
-For coding harnesses specifically, ZYAL should understand **Agent Client Protocol**, because current ACP clients already list Codex CLI, Claude Agent, Cursor, Gemini CLI, Hermes Agent, OpenClaw, OpenCode, OpenHands, Goose, and others as compatible agents. ([Agent Client Protocol][4]) For user-facing streams, it should compose with **AG-UI**, which standardizes bidirectional event flow between agent backends and user-facing applications. ([AG-UI][5]) For procedural knowledge, it should adopt **Agent Skills / SKILL.md**, whose open format packages instructions, scripts, references, and resources with progressive disclosure. ([Agent Skills][6]) And for repository instructions, it should consume **AGENTS.md**, now presented as an open format for giving coding agents consistent project guidance. ([Agents][7])
+For coding harnesses specifically, ZYAL should understand **Agent Client Protocol**, because current ACP clients already list Codex CLI, Claude Agent, Cursor, Gemini CLI, Hermes Agent, OpenClaw, Jekko, OpenHands, Goose, and others as compatible agents. ([Agent Client Protocol][4]) For user-facing streams, it should compose with **AG-UI**, which standardizes bidirectional event flow between agent backends and user-facing applications. ([AG-UI][5]) For procedural knowledge, it should adopt **Agent Skills / SKILL.md**, whose open format packages instructions, scripts, references, and resources with progressive disclosure. ([Agent Skills][6]) And for repository instructions, it should consume **AGENTS.md**, now presented as an open format for giving coding agents consistent project guidance. ([Agents][7])
 
 ## The biggest gaps I see
 
@@ -44,7 +44,7 @@ interop:
       require_agent_card: true
     coding_harnesses:
       protocol: agent_client_protocol
-      allow: [codex, claude-code, opencode, openhands]
+      allow: [codex, claude-code, jekko, openhands]
     ui:
       protocol: ag-ui
       stream_events: true
@@ -126,7 +126,7 @@ Suggested block:
 evidence_graph:
   format: prov_jsonld
   persist: sqlite
-  mirror: ".opencode/daemon/{{run_id}}/EVIDENCE_GRAPH.json"
+  mirror: ".jekko/daemon/{{run_id}}/EVIDENCE_GRAPH.json"
 
   nodes:
     - requirement
@@ -254,8 +254,8 @@ sandbox_capsule:
   filesystem:
     default: readonly
     writable:
-      - ".opencode/work/**"
-      - ".opencode/daemon/**"
+      - ".jekko/work/**"
+      - ".jekko/daemon/**"
     deny:
       - "~/.ssh/**"
       - "~/.aws/**"

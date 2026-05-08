@@ -1,37 +1,37 @@
 {
   "$schema": "https://v2-8-13.turborepo.dev/schema.json",
-  "globalEnv": ["CI", "OPENCODE_DISABLE_SHARE"],
-  "globalPassThroughEnv": ["CI", "OPENCODE_DISABLE_SHARE"],
+  "globalEnv": ["CI", "JEKKO_DISABLE_SHARE"],
+  "globalPassThroughEnv": ["CI", "JEKKO_DISABLE_SHARE"],
   "tasks": {
     "typecheck": {},
     "build": {
       "dependsOn": [],
       "outputs": ["dist/**"]
     },
-    "opencode#test": {
+    "jekko#test": {
       "dependsOn": ["^build"],
       "outputs": [],
       "passThroughEnv": ["*"]
     },
-    "opencode#test:ci": {
+    "jekko#test:ci": {
       "dependsOn": ["^build"],
       "outputs": [".artifacts/unit/junit.xml"],
       "passThroughEnv": ["*"]
     },
-    "@opencode-ai/app#test": {
+    "@jekko-ai/app#test": {
       "dependsOn": ["^build"],
       "outputs": []
     },
-    "@opencode-ai/app#test:ci": {
+    "@jekko-ai/app#test:ci": {
       "dependsOn": ["^build"],
       "outputs": [".artifacts/unit/junit.xml"],
       "passThroughEnv": ["*"]
     },
-    "@opencode-ai/ui#test": {
+    "@jekko-ai/ui#test": {
       "dependsOn": ["^build"],
       "outputs": []
     },
-    "@opencode-ai/ui#test:ci": {
+    "@jekko-ai/ui#test:ci": {
       "dependsOn": ["^build"],
       "outputs": [".artifacts/unit/junit.xml"],
       "passThroughEnv": ["*"]

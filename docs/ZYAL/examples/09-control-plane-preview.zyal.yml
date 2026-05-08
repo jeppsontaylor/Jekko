@@ -57,7 +57,7 @@ runtime:
   mode: preview
   workspace: isolated_worktree
   network: deny
-  env: [OPENCODE_HOME, RUN_ID]
+  env: [JEKKO_HOME, RUN_ID]
   resources:
     cpu: "2"
     memory: "4Gi"
@@ -65,7 +65,7 @@ runtime:
     processes: 8
 
 capability_negotiation:
-  host: opencode-daemon
+  host: jekko-daemon
   required: [interop, runtime, memory_kernel, evidence_graph]
   optional: [release, roles, channels, unsupported_preview_hooks]
   fail_closed: true
@@ -135,10 +135,10 @@ requirements:
 evaluation:
   metrics:
     - name: parse_latency_ms
-      command: "bun test packages/opencode/src/agent-script/parser.test.ts"
+      command: "bun test packages/jekko/src/agent-script/parser.test.ts"
       threshold: 5000
     - name: preview_summary_complete
-      command: "bun run --filter @opencode-ai/opencode typecheck"
+      command: "bun run --filter @jekko-ai/jekko typecheck"
       threshold: 1
   compare: baseline
 

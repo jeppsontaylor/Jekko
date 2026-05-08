@@ -95,7 +95,7 @@ AutoGen is a multi-agent conversation framework where customizable agents combin
 
 ZYAL should embrace open standards rather than inventing every interface. MCP defines resources, prompts, and tools, with utilities for progress tracking, cancellation, error reporting, and logging. ([Model Context Protocol][25]) A2A is designed for agents from different vendors/frameworks to communicate, securely exchange information, and coordinate actions. ([Google Developers Blog][26]) ACP standardizes communication between editors/IDEs and coding agents, similar in spirit to how LSP standardized language-server/editor integration. ([Agent Client Protocol][27]) AGENTS.md is now a simple open format for giving coding agents predictable project guidance. ([GitHub][28])
 
-**ZYAL upgrade:** add explicit `interop` support for MCP, A2A, ACP, AGENTS.md, CLAUDE.md, Codex config, OpenHands workers, Hermes skills, and OpenCode sessions.
+**ZYAL upgrade:** add explicit `interop` support for MCP, A2A, ACP, AGENTS.md, CLAUDE.md, Codex config, OpenHands workers, Hermes skills, and Jekko sessions.
 
 ---
 
@@ -112,7 +112,7 @@ event_log:
   schema_version: v1
   storage:
     primary: sqlite
-    mirror: ".opencode/daemon/{{run_id}}/ledger.jsonl"
+    mirror: ".jekko/daemon/{{run_id}}/ledger.jsonl"
   append_only: true
   hash_chain: true
   event_types:
@@ -218,12 +218,12 @@ memory:
     task:
       type: sqlite
       namespace: "task/{{task_id}}"
-      mirror: ".opencode/daemon/{{run_id}}/tasks/{{task_id}}/MEMORY.md"
+      mirror: ".jekko/daemon/{{run_id}}/tasks/{{task_id}}/MEMORY.md"
 
     project:
       type: sqlite_fts5
       namespace: "repo/{{repo_fingerprint}}"
-      mirror: ".opencode/memory/PROJECT.md"
+      mirror: ".jekko/memory/PROJECT.md"
       max_hot_tokens: 1800
 
     semantic:
@@ -305,7 +305,7 @@ Add:
 plan:
   source: host
   storage: sqlite
-  mirror: ".opencode/daemon/{{run_id}}/PLAN.md"
+  mirror: ".jekko/daemon/{{run_id}}/PLAN.md"
 
   task_graph:
     type: dag
@@ -331,7 +331,7 @@ plan:
       require_smallest_shippable_slice: true
 
   feature_list:
-    path: ".opencode/daemon/{{run_id}}/FEATURES.json"
+    path: ".jekko/daemon/{{run_id}}/FEATURES.json"
     format: json
     rule:
       agent_may_update_status_only: true
@@ -807,10 +807,10 @@ skills:
 
   sources:
     project:
-      path: ".opencode/skills"
+      path: ".jekko/skills"
       trust: project
     org:
-      path: "oci://skills.company.com/opencode"
+      path: "oci://skills.company.com/jekko"
       trust: signed
     external:
       registries:
@@ -932,7 +932,7 @@ knowledge:
     build_on_start: true
     incremental: true
     storage: sqlite
-    mirror_summary: ".opencode/daemon/{{run_id}}/CODEBASE_MAP.md"
+    mirror_summary: ".jekko/daemon/{{run_id}}/CODEBASE_MAP.md"
 
     indexers:
       - type: tree_sitter
@@ -999,7 +999,7 @@ project:
 
   test_selection:
     strategy: affected_tests_first_then_full_suite
-    affected_test_command: "opencode test-impact --json"
+    affected_test_command: "jekko test-impact --json"
     full_suite_frequency: every_checkpoint
     nightly_full_suite: true
 
@@ -1264,7 +1264,7 @@ observability:
     - post_merge_regression_rate
 
   dashboards:
-    mirror: ".opencode/daemon/{{run_id}}/DASHBOARD.json"
+    mirror: ".jekko/daemon/{{run_id}}/DASHBOARD.json"
     api: true
 
 cost:
@@ -1293,13 +1293,13 @@ Claude Agent SDK already exposes cost tracking and OpenTelemetry as first-class 
 
 # 14. Upgrade: interop layer so ZYAL works inside any chat prompt
 
-The user’s requirement is that ZYAL be available inside any chat prompt: OpenCode, Codex, Claude, etc. The right architecture is:
+The user’s requirement is that ZYAL be available inside any chat prompt: Jekko, Codex, Claude, etc. The right architecture is:
 
 1. **ZYAL block is prompt-embeddable.**
 2. **Only an ZYAL-aware host can execute it.**
 3. **All other systems treat it as inert text.**
 4. **The host parses, previews, validates, and asks for arming.**
-5. **The host can dispatch workers to OpenCode, Codex, Claude Code, OpenHands, Hermes, LangGraph, etc.**
+5. **The host can dispatch workers to Jekko, Codex, Claude Code, OpenHands, Hermes, LangGraph, etc.**
 
 Add:
 
@@ -1319,7 +1319,7 @@ interop:
     claude_md:
       read: true
       mode: advisory
-    opencode_md:
+    jekko_md:
       read: true
       mode: advisory
 
@@ -1341,7 +1341,7 @@ interop:
       expose_diff_view: true
 
   adapters:
-    opencode:
+    jekko:
       mode: native
       session_policy: host_owned
 
@@ -1455,8 +1455,8 @@ ZYAL guardrails should support declarative policies beyond regex.
 policy:
   engine: rego
   files:
-    - ".opencode/policies/security.rego"
-    - ".opencode/policies/review.rego"
+    - ".jekko/policies/security.rego"
+    - ".jekko/policies/review.rego"
 
   decisions:
     tool_call:
@@ -1601,7 +1601,7 @@ workflow:
 event_log:
   storage:
     primary: sqlite
-    mirror: ".opencode/daemon/{{run_id}}/ledger.jsonl"
+    mirror: ".jekko/daemon/{{run_id}}/ledger.jsonl"
   append_only: true
   hash_chain: true
 
@@ -1658,7 +1658,7 @@ plan:
       max_active_tasks: 8
       require_smallest_shippable_slice: true
   feature_list:
-    path: ".opencode/daemon/{{run_id}}/FEATURES.json"
+    path: ".jekko/daemon/{{run_id}}/FEATURES.json"
     rule:
       agent_may_update_status_only: true
       forbid_delete_or_rewrite: true
@@ -1904,20 +1904,20 @@ Add:
 CLI:
 
 ```sh
-opencode daemon validate run.zyal.yaml
-opencode daemon preview run.zyal.yaml
-opencode daemon arm run.zyal.yaml
-opencode daemon events <runID> --since <cursor>
-opencode daemon evidence <runID> <taskID>
-opencode daemon memory <runID> inspect
-opencode daemon policy test run.zyal.yaml
+jekko daemon validate run.zyal.yaml
+jekko daemon preview run.zyal.yaml
+jekko daemon arm run.zyal.yaml
+jekko daemon events <runID> --since <cursor>
+jekko daemon evidence <runID> <taskID>
+jekko daemon memory <runID> inspect
+jekko daemon policy test run.zyal.yaml
 ```
 
 ## Phase 2: Make ZYAL multi-runtime
 
 Add adapters:
 
-* OpenCode native worker.
+* Jekko native worker.
 * Codex worker.
 * Claude Code SDK worker.
 * OpenHands SDK worker.
@@ -1989,7 +1989,7 @@ It should guarantee:
 * Every long-running session can be resumed, audited, or killed.
 * Every agent runtime is replaceable.
 
-That is how ZYAL becomes bigger than OpenCode. It becomes the portable control surface for all autonomous coding agents.
+That is how ZYAL becomes bigger than Jekko. It becomes the portable control surface for all autonomous coding agents.
 
 * [Business Insider](https://www.businessinsider.com/anthropic-dreaming-ai-agents-2026-5?utm_source=chatgpt.com)
 * [Business Insider](https://www.businessinsider.com/google-ai-agent-openclaw-remy-gemini-assistant-2026-5?utm_source=chatgpt.com)

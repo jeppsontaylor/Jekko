@@ -120,7 +120,7 @@ The current `capabilities` and `command_floor` idea is right, but the DSL should
 ```yaml
 policy:
   engine: opa
-  bundle: .opencode/policy/zyal.rego
+  bundle: .jekko/policy/zyal.rego
   decision_points:
     - tool_call
     - memory_write
@@ -239,9 +239,9 @@ Hypothesis tournaments are powerful, but ZYAL needs a repeatable eval system: go
 evals:
   suites:
     - id: repo_regression
-      tasks: .opencode/evals/repo/*.yml
+      tasks: .jekko/evals/repo/*.yml
     - id: skill_regression
-      tasks: .opencode/evals/skills/*.yml
+      tasks: .jekko/evals/skills/*.yml
   run_before:
     - skill_promote
     - model_route_change
@@ -275,11 +275,11 @@ Add a conformance CLI:
 
 ```bash
 zyal conformance test --level L3 ./runbook.zyal.yml
-zyal evidence verify .opencode/daemon/<runID>/evidence/
-zyal replay --from-ledger .opencode/daemon/<runID>/ledger.jsonl
+zyal evidence verify .jekko/daemon/<runID>/evidence/
+zyal replay --from-ledger .jekko/daemon/<runID>/ledger.jsonl
 ```
 
-This is how ZYAL stops being “a cool OpenCode feature” and becomes a credible protocol.
+This is how ZYAL stops being “a cool Jekko feature” and becomes a credible protocol.
 
 ## Specific fixes I would make immediately
 

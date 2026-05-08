@@ -1,12 +1,12 @@
-## Recommended plan update: add a **Hard-Task Incubator** to OCAL
+## Recommended plan update: add a **Hard-Task Incubator** to ZYAL
 
-The OCAL daemon plan you pasted already has the right foundation: strict gated syntax, host-owned forever loop, SQLite as source of truth, generated ledger mirrors, hard context clearing by creating new daemon epochs/child sessions, and a phased rollout from serial forever mode to checkpoint/context, gold UX, and later swarms/MCP. 
+The ZYAL daemon plan you pasted already has the right foundation: strict gated syntax, host-owned forever loop, SQLite as source of truth, generated ledger mirrors, hard context clearing by creating new daemon epochs/child sessions, and a phased rollout from serial forever mode to checkpoint/context, gold UX, and later swarms/MCP. 
 
 The missing layer is exactly what you are describing now:
 
 > When only hard tasks remain, the daemon should not keep blindly reselecting them and failing. It should route them into a bounded cross-loop incubation system where multiple passes, fresh agents, critics, scratch artifacts, and task memory gradually raise confidence until the task is safe to promote into implementation.
 
-I would add this as **OCAL Hard-Task Incubator**, probably as **Phase 2.5** between “serial daemon + checkpoint/context” and “full swarms/MCP.” It can start sequentially with fresh child sessions, then later use true parallel workers.
+I would add this as **ZYAL Hard-Task Incubator**, probably as **Phase 2.5** between “serial daemon + checkpoint/context” and “full swarms/MCP.” It can start sequentially with fresh child sessions, then later use true parallel workers.
 
 The key design principle:
 
@@ -18,35 +18,35 @@ The model can estimate confidence, but the runtime should compute routing from o
 
 # 1. What the current ecosystem teaches us
 
-There is still no universal “agent scripting language” standard that directly solves this. What exists are pieces that OCAL should borrow from without pretending to be them.
+There is still no universal “agent scripting language” standard that directly solves this. What exists are pieces that ZYAL should borrow from without pretending to be them.
 
 **AGENTS.md** is becoming the shared project-instructions layer, but it is not a runtime language. It is best used for repo rules, setup commands, conventions, and verification commands, not daemon loops or multi-agent state machines. The official AGENTS.md site describes it as a “README for agents,” not an execution engine. ([Agents][1])
 
-**MCP** should remain the tool/resource/prompt integration layer, not the daemon brain. MCP tools are model-controlled and the spec emphasizes clear UI, exposed-tool visibility, and human-in-the-loop confirmation for tool invocations. That strongly supports OCAL’s current plan to enforce permissions in the host runtime rather than in prompt text. ([Model Context Protocol][2])
+**MCP** should remain the tool/resource/prompt integration layer, not the daemon brain. MCP tools are model-controlled and the spec emphasizes clear UI, exposed-tool visibility, and human-in-the-loop confirmation for tool invocations. That strongly supports ZYAL’s current plan to enforce permissions in the host runtime rather than in prompt text. ([Model Context Protocol][2])
 
-**A2A** is more relevant to future remote-agent collaboration than MCP. Google’s A2A announcement frames A2A as agent collaboration even when agents do not share memory, tools, or context, whereas MCP is about connecting models to tools and data. OCAL should not implement A2A in v1, but the internal daemon worker/message/artifact model should be shaped so it can expose A2A-like semantics later. ([Google Developers Blog][3])
+**A2A** is more relevant to future remote-agent collaboration than MCP. Google’s A2A announcement frames A2A as agent collaboration even when agents do not share memory, tools, or context, whereas MCP is about connecting models to tools and data. ZYAL should not implement A2A in v1, but the internal daemon worker/message/artifact model should be shaped so it can expose A2A-like semantics later. ([Google Developers Blog][3])
 
-**ACP** is relevant for editor/TUI/API clients. It standardizes communication between code editors/IDEs and coding agents, so OCAL’s daemon state should be a first-class API resource rather than hidden inside prompt text. ([Agent Client Protocol][4])
+**ACP** is relevant for editor/TUI/API clients. It standardizes communication between code editors/IDEs and coding agents, so ZYAL’s daemon state should be a first-class API resource rather than hidden inside prompt text. ([Agent Client Protocol][4])
 
-**PDL** is relevant because it proves the value of YAML-like declarative prompt/program specs, validation, and composition. IBM describes PDL as a YAML-based declarative approach for prompt programming with model chaining, tool use, and type checking. OCAL should borrow the “declarative, validated, machine-consumable” idea, but OCAL’s semantics are more host-runtime and coding-daemon specific. ([IBM][5])
+**PDL** is relevant because it proves the value of YAML-like declarative prompt/program specs, validation, and composition. IBM describes PDL as a YAML-based declarative approach for prompt programming with model chaining, tool use, and type checking. ZYAL should borrow the “declarative, validated, machine-consumable” idea, but ZYAL’s semantics are more host-runtime and coding-daemon specific. ([IBM][5])
 
 **LangGraph** has the strongest production lesson for your hard-task problem: durable execution, checkpointing, short-term memory, long-term memory, interrupts, and state replay/forking. LangGraph’s docs emphasize saving each workflow step to durable storage and designing deterministic/idempotent workflows; its persistence docs explicitly call out checkpointing for human-in-the-loop, memory, time travel, and fault tolerance. ([LangChain Docs][6])
 
 **OpenHands** has directly relevant ideas: append-only event logs as memory, context condensation, stuck detection, sub-agent delegation, and parallel-tool warnings. Its event system treats events as an immutable log that drives execution and state management; its context condenser summarizes older conversation while preserving goals, critical files, and continuity; its stuck detector catches repeated action/observation cycles, repeated errors, monologues, alternating loops, and context-window errors. ([OpenHands Docs][7])
 
-**OpenHands sub-agent delegation** is especially close to the cross-loop collaboration you want: a main agent spawns sub-agents with independent context and later consolidates results. But OpenHands also warns that concurrent tools are unsafe when they modify shared state, write the same files, have order-dependent side effects, or risk resource exhaustion. That maps directly to OCAL’s need for worktrees, file locks, and task leases before write-capable swarms. ([OpenHands Docs][8])
+**OpenHands sub-agent delegation** is especially close to the cross-loop collaboration you want: a main agent spawns sub-agents with independent context and later consolidates results. But OpenHands also warns that concurrent tools are unsafe when they modify shared state, write the same files, have order-dependent side effects, or risk resource exhaustion. That maps directly to ZYAL’s need for worktrees, file locks, and task leases before write-capable swarms. ([OpenHands Docs][8])
 
 **Claude Code hooks/subagents** reinforce the same architectural lesson: deterministic host hooks for lifecycle guarantees, and subagents with independent context windows and specific tool access. Claude Code docs say hooks execute at lifecycle points and provide deterministic control instead of relying on the LLM to choose actions; subagents run with their own context window, custom system prompt, tool access, and permissions. ([Claude][9])
 
-**OpenCode community discussion is already pointing this way.** OpenCode issues ask for `/loop`, continuous execution until true completion, Ultra Mode with a hardcoded plan/build/verify state machine, DB-backed agent team coordination, ephemeral sub-agent teams, plugin-based parallel orchestration, true async/background sub-agents, and role-based subagent tool isolation. That means OCAL should not merely add a bigger prompt syntax; it should converge these community requests into one durable runtime model. ([GitHub][10])
+**Jekko community discussion is already pointing this way.** Jekko issues ask for `/loop`, continuous execution until true completion, Ultra Mode with a hardcoded plan/build/verify state machine, DB-backed agent team coordination, ephemeral sub-agent teams, plugin-based parallel orchestration, true async/background sub-agents, and role-based subagent tool isolation. That means ZYAL should not merely add a bigger prompt syntax; it should converge these community requests into one durable runtime model. ([GitHub][10])
 
-A particularly relevant OpenCode issue reports that multiple Task tool calls execute sequentially instead of in parallel because subtask parts bypass the regular parallel tool processing path. That means OCAL should not assume “spawn 3 workers” is already robust. Parallelism must be runtime-owned, not prompt-owned. ([GitHub][11])
+A particularly relevant Jekko issue reports that multiple Task tool calls execute sequentially instead of in parallel because subtask parts bypass the regular parallel tool processing path. That means ZYAL should not assume “spawn 3 workers” is already robust. Parallelism must be runtime-owned, not prompt-owned. ([GitHub][11])
 
-There is also an OpenCode community config, `joelhooks/opencode-config`, that explicitly explores swarms, outcome-based learning, cross-agent memory, pattern maturity, confidence decay, file reservation, message passing, and verification gates. It is not an OpenCode standard, but it is very strong prior art for your exact “hard tasks mature over time” idea. ([GitHub][12])
+There is also an Jekko community config, `joelhooks/jekko-config`, that explicitly explores swarms, outcome-based learning, cross-agent memory, pattern maturity, confidence decay, file reservation, message passing, and verification gates. It is not an Jekko standard, but it is very strong prior art for your exact “hard tasks mature over time” idea. ([GitHub][12])
 
 ---
 
-# 2. The new OCAL concept: **task maturity lanes**
+# 2. The new ZYAL concept: **task maturity lanes**
 
 The daemon should not treat every work item the same. It should classify each task into a lane.
 
@@ -170,9 +170,9 @@ This solves your “we don’t want ALL problems routed” concern. Most tasks g
 
 ---
 
-# 4. New OCAL syntax block: `difficulty`, `routing`, and `incubator`
+# 4. New ZYAL syntax block: `difficulty`, `routing`, and `incubator`
 
-I would add these top-level OCAL sections:
+I would add these top-level ZYAL sections:
 
 ```yaml
 difficulty:
@@ -212,10 +212,10 @@ only build when lane allows build
 
 ---
 
-# 5. Example: OCAL with hard-task incubation
+# 5. Example: ZYAL with hard-task incubation
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -261,11 +261,11 @@ difficulty:
     model_weight: 0.25
     signals:
       high_risk_paths:
-        - "packages/opencode/src/session/prompt.ts"
-        - "packages/opencode/src/session/compaction.ts"
-        - "packages/opencode/src/session/processor.ts"
-        - "packages/opencode/src/server/**"
-        - "packages/opencode/migration/**"
+        - "packages/jekko/src/session/prompt.ts"
+        - "packages/jekko/src/session/compaction.ts"
+        - "packages/jekko/src/session/processor.ts"
+        - "packages/jekko/src/server/**"
+        - "packages/jekko/migration/**"
       risky_categories:
         - migration
         - permissions
@@ -317,7 +317,7 @@ incubator:
     store: sqlite
     mirror:
       enabled: true
-      root: ".opencode/daemon/${run.id}/tasks/${task.id}"
+      root: ".jekko/daemon/${run.id}/tasks/${task.id}"
       gitignore: ensure_ignored
     slots:
       - constraints
@@ -333,7 +333,7 @@ incubator:
 
   scratch:
     mode: isolated_worktree
-    root: ".opencode/daemon/${run.id}/scratch/${task.id}"
+    root: ".jekko/daemon/${run.id}/scratch/${task.id}"
     allow_stub_files: true
     never_git_add: true
     cleanup: archive_summary_delete_worktree
@@ -414,7 +414,7 @@ checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - shell: "bun --cwd packages/opencode test --timeout 30000 packages/opencode/test/session/daemon-runtime.test.ts"
+    - shell: "bun --cwd packages/jekko test --timeout 30000 packages/jekko/test/session/daemon-runtime.test.ts"
   git:
     add: ["."]
     commit_message: "jankurai: daemon verified work item"
@@ -469,12 +469,12 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   show_lanes: true
   show_incubator: true
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 ---
@@ -609,13 +609,13 @@ daemon_promotion_record = host decision to build or not
 Add these modules to the workplan.
 
 ```text
-packages/opencode/src/session/daemon-router.ts
-packages/opencode/src/session/daemon-assessment.ts
-packages/opencode/src/session/daemon-incubator.ts
-packages/opencode/src/session/daemon-memory.ts
-packages/opencode/src/session/daemon-promotion.ts
-packages/opencode/src/session/daemon-scratch.ts
-packages/opencode/src/session/daemon-no-progress.ts
+packages/jekko/src/session/daemon-router.ts
+packages/jekko/src/session/daemon-assessment.ts
+packages/jekko/src/session/daemon-incubator.ts
+packages/jekko/src/session/daemon-memory.ts
+packages/jekko/src/session/daemon-promotion.ts
+packages/jekko/src/session/daemon-scratch.ts
+packages/jekko/src/session/daemon-no-progress.ts
 ```
 
 Responsibilities:
@@ -735,7 +735,7 @@ Do **not** add a model-owned `daemon_force_promote` or `daemon_force_stop`.
 
 # 10. The pass library
 
-OCAL should ship named pass templates so users do not have to write huge YAML every time.
+ZYAL should ship named pass templates so users do not have to write huge YAML every time.
 
 ## 10.1 `scout`
 
@@ -952,24 +952,24 @@ incubator:
     context: fresh_plus_retrieved_summaries
 ```
 
-This mirrors the cross-agent memory idea seen in OpenCode community swarm configs, but makes it host-owned and task-scoped. ([GitHub][12])
+This mirrors the cross-agent memory idea seen in Jekko community swarm configs, but makes it host-owned and task-scoped. ([GitHub][12])
 
 ---
 
 # 12. Syntax highlighting and UX
 
-OCAL should visually distinguish runtime-control syntax from normal prompt text.
+ZYAL should visually distinguish runtime-control syntax from normal prompt text.
 
 ## 12.1 Sentinel highlighting
 
 ```text
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 ```
 
 Render as:
 
 ```text
-gold bold: <<<OCAL
+gold bold: <<<ZYAL
 dim: v1:daemon
 cyan: id=
 white: jankurai-clean-worktree
@@ -1002,7 +1002,7 @@ Reason: danger and control-flow blocks should stand out. `permissions`, `checkpo
 The TUI preview should show:
 
 ```text
-∞ FOREVER OCAL PREVIEW
+∞ FOREVER ZYAL PREVIEW
 
 Run:        jankurai-clean-worktree
 Loop:       forever
@@ -1058,10 +1058,10 @@ daemon_promotion_record
 Generate readable mirrors:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/STATE.md
-.opencode/daemon/<runID>/tasks/<taskID>/memory.jsonl
-.opencode/daemon/<runID>/tasks/<taskID>/experiments/
-.opencode/daemon/<runID>/tasks/<taskID>/promotion.md
+.jekko/daemon/<runID>/tasks/<taskID>/STATE.md
+.jekko/daemon/<runID>/tasks/<taskID>/memory.jsonl
+.jekko/daemon/<runID>/tasks/<taskID>/experiments/
+.jekko/daemon/<runID>/tasks/<taskID>/promotion.md
 ```
 
 ## 13.2 Git safety
@@ -1070,12 +1070,12 @@ The scratch root should be ignored and excluded from checkpoint adds.
 
 ```yaml
 scratch:
-  root: ".opencode/daemon/${run.id}/scratch"
+  root: ".jekko/daemon/${run.id}/scratch"
   gitignore: ensure_ignored
   never_git_add: true
 ```
 
-`git.add: ["."]` must respect daemon-generated exclusions. The daemon should refuse to commit `.opencode/daemon/**` unless explicitly configured.
+`git.add: ["."]` must respect daemon-generated exclusions. The daemon should refuse to commit `.jekko/daemon/**` unless explicitly configured.
 
 ## 13.3 Scratch cleanup
 
@@ -1162,7 +1162,7 @@ algorithmic_promotion:
 
 # 15. Updated implementation phases
 
-## Phase 1: OCAL parser and serial forever loop
+## Phase 1: ZYAL parser and serial forever loop
 
 Keep the existing plan.
 
@@ -1208,7 +1208,7 @@ daemon-promotion.ts
 daemon-scratch.ts
 daemon-no-progress.ts
 
-OCAL syntax:
+ZYAL syntax:
   difficulty
   routing
   incubator
@@ -1261,7 +1261,7 @@ Expose daemon tasks, passes, artifacts, and worker messages through stable API r
 
 # 16. Concrete parser/schema additions
 
-Add to `packages/opencode/src/agent-script/schema.ts`:
+Add to `packages/jekko/src/agent-script/schema.ts`:
 
 ```ts
 OcalDifficulty
@@ -1288,7 +1288,7 @@ fresh_plan cannot read proposed_plans unless explicitly allowed
 promotion thresholds must be finite
 ```
 
-Important: hard-task incubation must **not** weaken the OCAL activation gate. It remains inert unless previewed and armed.
+Important: hard-task incubation must **not** weaken the ZYAL activation gate. It remains inert unless previewed and armed.
 
 ---
 
@@ -1333,7 +1333,7 @@ incubator repeat without confidence gain triggers block/split
 Add TUI tests:
 
 ```text
-OCAL preview shows routing/incubator risk
+ZYAL preview shows routing/incubator risk
 active task shows lane badge
 incubator banner shows pass and cycle
 completed task shows cleanup status
@@ -1344,7 +1344,7 @@ gold forever state remains visible during incubation
 
 # 18. The simple mental model
 
-OCAL should have three distinct loops:
+ZYAL should have three distinct loops:
 
 ```text
 Daemon loop:
@@ -1374,10 +1374,10 @@ That distinction is critical. You want the daemon to keep going forever, but you
 
 # 19. My strongest recommendation
 
-Add this to the OCAL plan as a formal section:
+Add this to the ZYAL plan as a formal section:
 
 ```text
-OCAL Hard-Task Incubator
+ZYAL Hard-Task Incubator
 
 Goal:
   Mature low-confidence/high-risk/repeated-failure tasks across bounded
@@ -1403,7 +1403,7 @@ incubator:     # bounded cross-loop hard-task maturation
 cleanup:       # distill memory and remove scratch
 ```
 
-That gives OCAL the thing ordinary agent prompts do not have: a way for knowledge to compound safely across loops without letting the agent either stop early or thrash forever.
+That gives ZYAL the thing ordinary agent prompts do not have: a way for knowledge to compound safely across loops without letting the agent either stop early or thrash forever.
 
 [1]: https://agents.md/ "https://agents.md/"
 [2]: https://modelcontextprotocol.io/specification/2025-11-25/server/tools "https://modelcontextprotocol.io/specification/2025-11-25/server/tools"
@@ -1414,7 +1414,7 @@ That gives OCAL the thing ordinary agent prompts do not have: a way for knowledg
 [7]: https://docs.openhands.dev/sdk/arch/events "Events - OpenHands Docs"
 [8]: https://docs.openhands.dev/sdk/guides/agent-delegation "Sub-Agent Delegation - OpenHands Docs"
 [9]: https://code.claude.com/docs/en/hooks-guide "https://code.claude.com/docs/en/hooks-guide"
-[10]: https://github.com/anomalyco/opencode/issues/18001 "https://github.com/anomalyco/opencode/issues/18001"
-[11]: https://github.com/anomalyco/opencode/issues/14195 "Multiple Task tool calls in a single LLM response execute sequentially instead of in parallel · Issue #14195 · anomalyco/opencode · GitHub"
-[12]: https://github.com/joelhooks/opencode-config "https://github.com/joelhooks/opencode-config"
+[10]: https://github.com/anomalyco/jekko/issues/18001 "https://github.com/anomalyco/jekko/issues/18001"
+[11]: https://github.com/anomalyco/jekko/issues/14195 "Multiple Task tool calls in a single LLM response execute sequentially instead of in parallel · Issue #14195 · anomalyco/jekko · GitHub"
+[12]: https://github.com/joelhooks/jekko-config "https://github.com/joelhooks/jekko-config"
 

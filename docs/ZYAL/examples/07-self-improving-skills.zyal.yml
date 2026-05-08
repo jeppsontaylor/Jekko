@@ -23,7 +23,7 @@ job:
 stop:
   all:
     - shell:
-        command: "test -f .opencode/daemon/done.txt"
+        command: "test -f .jekko/daemon/done.txt"
         timeout: 5s
         assert: { exit_code: 0 }
 
@@ -134,7 +134,7 @@ capabilities:
       decision: allow
     - id: write-quarantine
       tool: edit
-      paths: [".opencode/skills_quarantine/**"]
+      paths: [".jekko/skills_quarantine/**"]
       decision: allow
     - id: write-registry-blocked
       tool: edit
@@ -157,7 +157,7 @@ on:
     count_gte: 3
     do:
       - notify: "Repeated successful pattern detected — proposing skill candidate"
-      - run: "node scripts/extract-skill-candidate.mjs --to .opencode/skills_quarantine/"
+      - run: "node scripts/extract-skill-candidate.mjs --to .jekko/skills_quarantine/"
 
 models:
   profiles:
@@ -201,7 +201,7 @@ done:
     - quarantine_bypass
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

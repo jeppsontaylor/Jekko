@@ -2,7 +2,7 @@
 
 > **Moonshot**: Make autonomous multi-hour, multi-agent software engineering sessions as safe, observable, and reproducible as a CI pipeline — then make them better than any human team.
 
-ZYAL is the **host-enforced agent operating contract** embedded in OpenCode. It is a strict, declarative YAML runbook that gives the *host* — never the model — total control over the lifecycle of unbounded agentic work. Every daemon run is bounded, observable, durable, evidence-gated, and subject to human approval at critical gates.
+ZYAL is the **host-enforced agent operating contract** embedded in Jekko. It is a strict, declarative YAML runbook that gives the *host* — never the model — total control over the lifecycle of unbounded agentic work. Every daemon run is bounded, observable, durable, evidence-gated, and subject to human approval at critical gates.
 
 ## The Problem We're Solving
 
@@ -39,7 +39,7 @@ ZYAL's endgame is not "a better copilot." It is the **operating system for auton
 
 1. **Host owns the loop.** The model never decides when to start, stop, or promote. The host evaluates stop conditions, gates promotions with evidence, and enforces budgets.
 2. **Preview before arming.** Every ZYAL block can be previewed without execution. The `ZYAL_ARM RUN_FOREVER` sentinel is a deliberate, separate human action.
-3. **SQLite is truth.** All daemon state — runs, tasks, passes, iterations, events — lives in SQLite. The `.opencode/daemon/` mirror is generated output for human inspection.
+3. **SQLite is truth.** All daemon state — runs, tasks, passes, iterations, events — lives in SQLite. The `.jekko/daemon/` mirror is generated output for human inspection.
 4. **Bounded by design.** Every loop has a circuit breaker. Every incubator has a budget. Every pass has a write scope. There are no unbounded swarms.
 5. **Safety is structural.** Guardrails, constraints, capabilities, and permissions are enforced by the runtime, not by asking the model to remember rules.
 
@@ -54,7 +54,7 @@ ZYAL's endgame is not "a better copilot." It is the **operating system for auton
 
 ## Implemented Runtime
 
-The ZYAL runtime is fully implemented across **30+ modules** in the OpenCode codebase:
+The ZYAL runtime is fully implemented across **30+ modules** in the Jekko codebase:
 
 ### Parser & Schema (`agent-script/`)
 
@@ -107,7 +107,7 @@ The ZYAL runtime is fully implemented across **30+ modules** in the OpenCode cod
 | `zyal-flash.ts` | Multi-source gold overlay activation with fleet metrics aggregation |
 | `zyal-sidebar.tsx` | **∞ ZYAL MODE** sidebar: live loops, tokens, cost, uptime, phase, status |
 | `daemon-banner.tsx` | In-session daemon status banner |
-| `opencode-gold.json` | 44-property gold theme: noir backgrounds, gold/amber primaries, full syntax + diff + markdown coverage |
+| `jekko-gold.json` | 44-property gold theme: noir backgrounds, gold/amber primaries, full syntax + diff + markdown coverage |
 | Prompt validation | Instant `✓ ZYAL` / `✗ ZYAL: <error>` badge with gold/red border tinting |
 
 ### HTTP API
@@ -446,10 +446,10 @@ repo_intelligence:
 
 ## Durable State & Mirror
 
-All runtime state persists in **9 SQLite tables**: `daemon_run`, `daemon_iteration`, `daemon_event`, `daemon_task`, `daemon_task_pass`, `daemon_task_memory`, `daemon_worker`, `daemon_artifact`. The filesystem mirror at `.opencode/daemon/` is regenerated for human inspection:
+All runtime state persists in **9 SQLite tables**: `daemon_run`, `daemon_iteration`, `daemon_event`, `daemon_task`, `daemon_task_pass`, `daemon_task_memory`, `daemon_worker`, `daemon_artifact`. The filesystem mirror at `.jekko/daemon/` is regenerated for human inspection:
 
 ```
-.opencode/daemon/<runID>/
+.jekko/daemon/<runID>/
 ├── ledger.jsonl          # append-only event log
 ├── STATE.md              # human-readable run summary
 └── tasks/<taskID>/
@@ -485,9 +485,9 @@ These are enforced **structurally by the runtime** where wired into the daemon l
 
 ## TUI Experience
 
-When ZYAL is active, the OpenCode TUI transforms:
+When ZYAL is active, the Jekko TUI transforms:
 
-- **Gold theme overlay** — 44-property `opencode-gold` theme with noir backgrounds (#0d0b05), gold primaries (#ffd700), amber accents, and golden syntax highlighting
+- **Gold theme overlay** — 44-property `jekko-gold` theme with noir backgrounds (#0d0b05), gold primaries (#ffd700), amber accents, and golden syntax highlighting
 - **∞ ZYAL MODE sidebar** — live status, iteration count, total tokens, total cost, uptime, daemon phase
 - **Daemon banner** — persistent status bar showing job name, iteration, phase, task, pass type, readiness score
 - **Instant validation** — `✓ ZYAL` (gold) or `✗ ZYAL: <error>` (red) badge the moment you type or paste ZYAL syntax

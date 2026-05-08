@@ -94,13 +94,13 @@ Devin, Jules, and GitHub Agent HQ are all converging on autonomous cloud coding 
 
 **ZYAL gap:** ZYAL does not yet have a backend adapter model, PR lifecycle model, or “agent fleet” abstraction.
 
-**Upgrade:** make ZYAL portable across OpenCode, Codex, Claude Code, OpenHands, Hermes, Jules-like cloud workers, and future agents.
+**Upgrade:** make ZYAL portable across Jekko, Codex, Claude Code, OpenHands, Hermes, Jules-like cloud workers, and future agents.
 
 ---
 
 ## 2. The biggest missing thing: ZYAL needs a portable execution contract
 
-Right now ZYAL is excellent as an OpenCode daemon language. To become the default language for ambitious coding projects, it needs to be **host-portable**.
+Right now ZYAL is excellent as an Jekko daemon language. To become the default language for ambitious coding projects, it needs to be **host-portable**.
 
 That means any host should be able to parse:
 
@@ -133,10 +133,10 @@ capabilities:
     required: refuse_to_arm
     preferred: degrade_with_warning
   report:
-    write: ".opencode/daemon/{{runID}}/CAPABILITIES.json"
+    write: ".jekko/daemon/{{runID}}/CAPABILITIES.json"
 ```
 
-This is critical for “available inside ANY chat prompt.” If a user pastes ZYAL into Claude, Codex, OpenCode, OpenHands, or a custom IDE agent, the host should either:
+This is critical for “available inside ANY chat prompt.” If a user pastes ZYAL into Claude, Codex, Jekko, OpenHands, or a custom IDE agent, the host should either:
 
 1. enforce it,
 2. preview what it can enforce,
@@ -385,7 +385,7 @@ spec:
       - files_changed
       - tests
       - review_findings
-    write_manifest: ".opencode/daemon/{{runID}}/TRACEABILITY.json"
+    write_manifest: ".jekko/daemon/{{runID}}/TRACEABILITY.json"
 
   drift:
     compare:
@@ -448,7 +448,7 @@ state:
   backend: sqlite
   event_sourcing: true
   event_schema: zyal_event_v1
-  mirror: ".opencode/daemon/{{runID}}"
+  mirror: ".jekko/daemon/{{runID}}"
 
   replay:
     deterministic: best_effort
@@ -626,9 +626,9 @@ continuity:
 
   before_each_pass:
     require_read:
-      - ".opencode/daemon/{{runID}}/STATE.md"
-      - ".opencode/daemon/{{runID}}/CHANGE_MANIFEST.json"
-      - ".opencode/daemon/{{runID}}/open_decisions.json"
+      - ".jekko/daemon/{{runID}}/STATE.md"
+      - ".jekko/daemon/{{runID}}/CHANGE_MANIFEST.json"
+      - ".jekko/daemon/{{runID}}/open_decisions.json"
 
   pass_contract:
     must_reference_previous_decisions: true
@@ -724,7 +724,7 @@ memory:
       repeated_use_gte: 2
       evidence_count_gte: 2
       contradiction_check: pass
-    write_digest: ".opencode/daemon/{{runID}}/MEMORY_DIGEST.md"
+    write_digest: ".jekko/daemon/{{runID}}/MEMORY_DIGEST.md"
 
   privacy:
     secrets_to_memory: deny
@@ -771,7 +771,7 @@ skills:
       mode: read_write_with_review
 
     - id: shared
-      path: "~/.config/opencode/skills"
+      path: "~/.config/jekko/skills"
       trust: user
       mode: read_only
 
@@ -1168,7 +1168,7 @@ security:
         - "~/.config"
       allow_paths:
         - "{{repo}}"
-        - "/tmp/opencode/{{runID}}"
+        - "/tmp/jekko/{{runID}}"
     process:
       max_cpu: 4
       max_memory: 8GiB
@@ -1334,8 +1334,8 @@ observability:
       too_many_files_touched: pause
 
   dashboards:
-    write_summary: ".opencode/daemon/{{runID}}/DASHBOARD.json"
-    write_human: ".opencode/daemon/{{runID}}/STATE.md"
+    write_summary: ".jekko/daemon/{{runID}}/DASHBOARD.json"
+    write_human: ".jekko/daemon/{{runID}}/STATE.md"
 ```
 
 This helps reduce inefficient “wandering” and enables post-run learning.
@@ -1723,7 +1723,7 @@ Every major stage should emit typed artifacts, not just prose.
 
 ```yaml
 artifacts:
-  root: ".opencode/daemon/{{runID}}/artifacts"
+  root: ".jekko/daemon/{{runID}}/artifacts"
 
   required:
     - id: spec
@@ -1846,7 +1846,7 @@ Add:
 language:
   version: v2
   compatibility:
-    min_host: "opencode-daemon>=0.4.0"
+    min_host: "jekko-daemon>=0.4.0"
     feature_flags:
       - workflow_graph
       - memory_claims
@@ -1881,10 +1881,10 @@ zyal:
 
 ```yaml
 backends:
-  prefer: opencode
+  prefer: jekko
 
   adapters:
-    opencode:
+    jekko:
       type: native
 
     codex:
@@ -1933,7 +1933,7 @@ This prevents ZYAL from becoming host-specific.
 
 ### “Is ZYAL redundant with LangGraph?”
 
-No. LangGraph is a framework/runtime for building graph-based agents. ZYAL should be a **declarative policy and runbook language** that can compile to LangGraph-like durable workflows or run inside OpenCode. ZYAL should import LangGraph’s durable execution, interrupts, memory taxonomy, and time-travel concepts, but it should remain host-facing and pasteable.
+No. LangGraph is a framework/runtime for building graph-based agents. ZYAL should be a **declarative policy and runbook language** that can compile to LangGraph-like durable workflows or run inside Jekko. ZYAL should import LangGraph’s durable execution, interrupts, memory taxonomy, and time-travel concepts, but it should remain host-facing and pasteable.
 
 ### “Is ZYAL redundant with OpenHands?”
 
@@ -2366,7 +2366,7 @@ These are must-haves before ZYAL becomes widely portable:
 
 1. Backend adapters:
 
-   * OpenCode,
+   * Jekko,
    * Codex,
    * Claude Code,
    * OpenHands,

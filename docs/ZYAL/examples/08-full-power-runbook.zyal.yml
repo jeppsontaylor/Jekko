@@ -115,7 +115,7 @@ workflow:
 stop:
   all:
     - shell:
-        command: "test -f .opencode/daemon/promoted.txt"
+        command: "test -f .jekko/daemon/promoted.txt"
         timeout: 5s
         assert: { exit_code: 0 }
 
@@ -298,7 +298,7 @@ rollback:
     touches_paths: ["**/migrations/**", "packages/auth/**", "infra/**"]
     risk_score_gte: 0.5
   plan_required: true
-  verify_command: "git apply --reverse --check < .opencode/daemon/rollback.patch"
+  verify_command: "git apply --reverse --check < .jekko/daemon/rollback.patch"
   on_failure_after_merge: revert_commit
 
 # ─── Observability ─────────────────────────────────────────────────────────
@@ -468,7 +468,7 @@ checkpoint:
 
 # ─── UI ────────────────────────────────────────────────────────────────────
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

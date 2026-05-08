@@ -4,7 +4,7 @@ import { Octokit } from "@octokit/rest"
 import { graphql } from "@octokit/graphql"
 import * as core from "@actions/core"
 import * as github from "@actions/github"
-import { createOpencodeClient } from "@opencode-ai/sdk"
+import { createOpencodeClient } from "@jekko-ai/sdk"
 import { spawn } from "node:child_process"
 import { setTimeout as sleep } from "node:timers/promises"
 
@@ -187,7 +187,7 @@ try {
   const comment = await createComment()
   commentId = comment.data.id
 
-  // Setup opencode session
+  // Setup jekko session
   const repoData = await fetchRepo()
   session = await client.session.create<true>().then((r) => r.data)
   await subscribeSessionEvents()
@@ -197,7 +197,7 @@ try {
     await client.session.share<true>({ path: session })
     return session.id.slice(-8)
   })()
-  console.log("opencode session", session.id)
+  console.log("jekko session", session.id)
   if (shareId) {
     console.log("Share link:", `${useShareUrl()}/s/${shareId}`)
   }
@@ -277,7 +277,7 @@ function createOpencode() {
   const host = "127.0.0.1"
   const port = 4096
   const url = `http://${host}:${port}`
-  const proc = spawn(`opencode`, [`serve`, `--hostname=${host}`, `--port=${port}`])
+  const proc = spawn(`jekko`, [`serve`, `--hostname=${host}`, `--port=${port}`])
   const client = createOpencodeClient({ baseUrl: url })
 
   return {
@@ -289,8 +289,8 @@ function createOpencode() {
 function assertPayloadKeyword() {
   const payload = useContext().payload
   const body = payload.comment.body.trim()
-  if (!body.match(/(?:^|\s)(?:\/opencode|\/oc)(?=$|\s)/)) {
-    throw new Error("Comments must mention `/opencode` or `/oc`")
+  if (!body.match(/(?:^|\s)(?:\/jekko|\/oc)(?=$|\s)/)) {
+    throw new Error("Comments must mention `/jekko` or `/oc`")
   }
 }
 
@@ -331,7 +331,7 @@ async function assertOpencodeConnected() {
   } while (retry++ < 30)
 
   if (!connected) {
-    throw new Error("Failed to connect to opencode server")
+    throw new Error("Failed to connect to jekko server")
   }
 }
 
@@ -443,7 +443,7 @@ function useThreadTitle() {
 }
 
 function useShareUrl() {
-  return isMock() ? "https://dev.opencode.ai" : "https://opencode.ai"
+  return isMock() ? "https://dev.jekko.ai" : "https://jekko.ai"
 }
 
 async function getAccessToken() {
@@ -454,7 +454,7 @@ async function getAccessToken() {
 
   let response
   if (isMock()) {
-    response = await fetch("https://api.opencode.ai/exchange_github_app_token_with_pat", {
+    response = await fetch("https://api.jekko.ai/exchange_github_app_token_with_pat", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${useEnvMock().mockToken}`,
@@ -462,8 +462,8 @@ async function getAccessToken() {
       body: JSON.stringify({ owner: repo.owner, repo: repo.repo }),
     })
   } else {
-    const oidcToken = await core.getIDToken("opencode-github-action")
-    response = await fetch("https://api.opencode.ai/exchange_github_app_token", {
+    const oidcToken = await core.getIDToken("jekko-github-action")
+    response = await fetch("https://api.jekko.ai/exchange_github_app_token", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${oidcToken}`,
@@ -503,19 +503,19 @@ async function getUserPrompt() {
   // TRUSTED INPUT: payload.comment.body is validated by assertPayloadKeyword earlier
    let prompt = (() => {
      const body = payload.comment.body.trim()
-    if (body === "/opencode" || body === "/oc") {
+    if (body === "/jekko" || body === "/oc") {
       if (reviewContext) {
         return `Review this code change and suggest improvements for the commented lines:\n\nFile: ${reviewContext.file}\nLines: ${reviewContext.line}\n\n${reviewContext.diffHunk}`
       }
       return "Summarize this thread"
     }
-    if (body.includes("/opencode") || body.includes("/oc")) {
+    if (body.includes("/jekko") || body.includes("/oc")) {
       if (reviewContext) {
         return `${body}\n\nContext: You are reviewing a comment on file "${reviewContext.file}" at line ${reviewContext.line}.\n\nDiff context:\n${reviewContext.diffHunk}`
       }
       return body
     }
-    throw new Error("Comments must mention `/opencode` or `/oc`")
+    throw new Error("Comments must mention `/jekko` or `/oc`")
   })()
 
   // Handle images
@@ -703,7 +703,7 @@ async function resolveAgent(): Promise<string | undefined> {
 }
 
 async function chat(text: string, files: PromptFiles = []) {
-  console.log("Sending message to opencode...")
+  console.log("Sending message to jekko...")
   const { providerID, modelID } = useEnvModel()
   const agent = await resolveAgent()
 
@@ -759,8 +759,8 @@ async function configureGit(appToken: string) {
 
   await $`git config --local --unset-all ${config}`
   await $`git config --local ${config} "AUTHORIZATION: basic ${newCredentials}"`
-  await $`git config --global user.name "opencode-agent[bot]"`
-  await $`git config --global user.email "opencode-agent[bot]@users.noreply.github.com"`
+  await $`git config --global user.name "jekko-agent[bot]"`
+  await $`git config --global user.email "jekko-agent[bot]@users.noreply.github.com"`
 }
 
 async function restoreGitConfig() {
@@ -806,7 +806,7 @@ function generateBranchName(type: "issue" | "pr") {
     .replace(/\.\d{3}Z/, "")
     .split("T")
     .join("")
-  return `opencode/${type}${useIssueId()}-${timestamp}`
+  return `jekko/${type}${useIssueId()}-${timestamp}`
 }
 
 async function pushToNewBranch(summary: string, branch: string) {
@@ -917,9 +917,9 @@ function footer(opts?: { image?: boolean }) {
     const titleAlt = encodeURIComponent(session.title.substring(0, 50))
     const title64 = Buffer.from(session.title.substring(0, 700), "utf8").toString("base64")
 
-    return `<a href="${useShareUrl()}/s/${shareId}"><img width="200" alt="${titleAlt}" src="https://social-cards.sst.dev/opencode-share/${title64}.png?model=${providerID}/${modelID}&version=${session.version}&id=${shareId}" /></a>\n`
+    return `<a href="${useShareUrl()}/s/${shareId}"><img width="200" alt="${titleAlt}" src="https://social-cards.sst.dev/jekko-share/${title64}.png?model=${providerID}/${modelID}&version=${session.version}&id=${shareId}" /></a>\n`
   })()
-  const shareUrl = shareId ? `[opencode session](${useShareUrl()}/s/${shareId})&nbsp;&nbsp;|&nbsp;&nbsp;` : ""
+  const shareUrl = shareId ? `[jekko session](${useShareUrl()}/s/${shareId})&nbsp;&nbsp;|&nbsp;&nbsp;` : ""
   return `\n\n${image}${shareUrl}[github run](${useEnvRunUrl()})`
 }
 

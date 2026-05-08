@@ -20,7 +20,7 @@ job:
 stop:
   all:
     - shell:
-        command: "test -f .opencode/daemon/winner.commit"
+        command: "test -f .jekko/daemon/winner.commit"
         timeout: 5s
         assert: { exit_code: 0 }
 
@@ -158,7 +158,7 @@ permissions:
   git_push: deny
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 <<<END_ZYAL id=hypothesis-tournament>>>
 ZYAL_ARM RUN_FOREVER id=hypothesis-tournament

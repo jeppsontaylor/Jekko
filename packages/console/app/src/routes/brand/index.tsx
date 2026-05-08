@@ -5,48 +5,48 @@ import { Footer } from "~/component/footer"
 import { Legal } from "~/component/legal"
 import { useI18n } from "~/context/i18n"
 import { LocaleLinks } from "~/component/locale-links"
-import previewLogoLight from "../../asset/brand/preview-opencode-logo-light.png"
-import previewLogoDark from "../../asset/brand/preview-opencode-logo-dark.png"
-import previewLogoLightSquare from "../../asset/brand/preview-opencode-logo-light-square.png"
-import previewLogoDarkSquare from "../../asset/brand/preview-opencode-logo-dark-square.png"
-import previewWordmarkLight from "../../asset/brand/preview-opencode-wordmark-light.png"
-import previewWordmarkDark from "../../asset/brand/preview-opencode-wordmark-dark.png"
-import previewWordmarkSimpleLight from "../../asset/brand/preview-opencode-wordmark-simple-light.png"
-import previewWordmarkSimpleDark from "../../asset/brand/preview-opencode-wordmark-simple-dark.png"
-import logoLightPng from "../../asset/brand/opencode-logo-light.png"
-import logoDarkPng from "../../asset/brand/opencode-logo-dark.png"
-import logoLightSquarePng from "../../asset/brand/opencode-logo-light-square.png"
-import logoDarkSquarePng from "../../asset/brand/opencode-logo-dark-square.png"
-import wordmarkLightPng from "../../asset/brand/opencode-wordmark-light.png"
-import wordmarkDarkPng from "../../asset/brand/opencode-wordmark-dark.png"
-import wordmarkSimpleLightPng from "../../asset/brand/opencode-wordmark-simple-light.png"
-import wordmarkSimpleDarkPng from "../../asset/brand/opencode-wordmark-simple-dark.png"
-import logoLightSvg from "../../asset/brand/opencode-logo-light.svg"
-import logoDarkSvg from "../../asset/brand/opencode-logo-dark.svg"
-import logoLightSquareSvg from "../../asset/brand/opencode-logo-light-square.svg"
-import logoDarkSquareSvg from "../../asset/brand/opencode-logo-dark-square.svg"
-import wordmarkLightSvg from "../../asset/brand/opencode-wordmark-light.svg"
-import wordmarkDarkSvg from "../../asset/brand/opencode-wordmark-dark.svg"
-import wordmarkSimpleLightSvg from "../../asset/brand/opencode-wordmark-simple-light.svg"
-import wordmarkSimpleDarkSvg from "../../asset/brand/opencode-wordmark-simple-dark.svg"
+import previewLogoLight from "../../asset/brand/preview-jekko-logo-light.png"
+import previewLogoDark from "../../asset/brand/preview-jekko-logo-dark.png"
+import previewLogoLightSquare from "../../asset/brand/preview-jekko-logo-light-square.png"
+import previewLogoDarkSquare from "../../asset/brand/preview-jekko-logo-dark-square.png"
+import previewWordmarkLight from "../../asset/brand/preview-jekko-wordmark-light.png"
+import previewWordmarkDark from "../../asset/brand/preview-jekko-wordmark-dark.png"
+import previewWordmarkSimpleLight from "../../asset/brand/preview-jekko-wordmark-simple-light.png"
+import previewWordmarkSimpleDark from "../../asset/brand/preview-jekko-wordmark-simple-dark.png"
+import logoLightPng from "../../asset/brand/jekko-logo-light.png"
+import logoDarkPng from "../../asset/brand/jekko-logo-dark.png"
+import logoLightSquarePng from "../../asset/brand/jekko-logo-light-square.png"
+import logoDarkSquarePng from "../../asset/brand/jekko-logo-dark-square.png"
+import wordmarkLightPng from "../../asset/brand/jekko-wordmark-light.png"
+import wordmarkDarkPng from "../../asset/brand/jekko-wordmark-dark.png"
+import wordmarkSimpleLightPng from "../../asset/brand/jekko-wordmark-simple-light.png"
+import wordmarkSimpleDarkPng from "../../asset/brand/jekko-wordmark-simple-dark.png"
+import logoLightSvg from "../../asset/brand/jekko-logo-light.svg"
+import logoDarkSvg from "../../asset/brand/jekko-logo-dark.svg"
+import logoLightSquareSvg from "../../asset/brand/jekko-logo-light-square.svg"
+import logoDarkSquareSvg from "../../asset/brand/jekko-logo-dark-square.svg"
+import wordmarkLightSvg from "../../asset/brand/jekko-wordmark-light.svg"
+import wordmarkDarkSvg from "../../asset/brand/jekko-wordmark-dark.svg"
+import wordmarkSimpleLightSvg from "../../asset/brand/jekko-wordmark-simple-light.svg"
+import wordmarkSimpleDarkSvg from "../../asset/brand/jekko-wordmark-simple-dark.svg"
 
 const brandDownloads = [
-  { url: logoLightPng, filename: "opencode-logo-light.png" },
-  { url: logoDarkPng, filename: "opencode-logo-dark.png" },
-  { url: logoLightSquarePng, filename: "opencode-logo-light-square.png" },
-  { url: logoDarkSquarePng, filename: "opencode-logo-dark-square.png" },
-  { url: wordmarkLightPng, filename: "opencode-wordmark-light.png" },
-  { url: wordmarkDarkPng, filename: "opencode-wordmark-dark.png" },
-  { url: wordmarkSimpleLightPng, filename: "opencode-wordmark-simple-light.png" },
-  { url: wordmarkSimpleDarkPng, filename: "opencode-wordmark-simple-dark.png" },
-  { url: logoLightSvg, filename: "opencode-logo-light.svg" },
-  { url: logoDarkSvg, filename: "opencode-logo-dark.svg" },
-  { url: logoLightSquareSvg, filename: "opencode-logo-light-square.svg" },
-  { url: logoDarkSquareSvg, filename: "opencode-logo-dark-square.svg" },
-  { url: wordmarkLightSvg, filename: "opencode-wordmark-light.svg" },
-  { url: wordmarkDarkSvg, filename: "opencode-wordmark-dark.svg" },
-  { url: wordmarkSimpleLightSvg, filename: "opencode-wordmark-simple-light.svg" },
-  { url: wordmarkSimpleDarkSvg, filename: "opencode-wordmark-simple-dark.svg" },
+  { url: logoLightPng, filename: "jekko-logo-light.png" },
+  { url: logoDarkPng, filename: "jekko-logo-dark.png" },
+  { url: logoLightSquarePng, filename: "jekko-logo-light-square.png" },
+  { url: logoDarkSquarePng, filename: "jekko-logo-dark-square.png" },
+  { url: wordmarkLightPng, filename: "jekko-wordmark-light.png" },
+  { url: wordmarkDarkPng, filename: "jekko-wordmark-dark.png" },
+  { url: wordmarkSimpleLightPng, filename: "jekko-wordmark-simple-light.png" },
+  { url: wordmarkSimpleDarkPng, filename: "jekko-wordmark-simple-dark.png" },
+  { url: logoLightSvg, filename: "jekko-logo-light.svg" },
+  { url: logoDarkSvg, filename: "jekko-logo-dark.svg" },
+  { url: logoLightSquareSvg, filename: "jekko-logo-light-square.svg" },
+  { url: logoDarkSquareSvg, filename: "jekko-logo-dark-square.svg" },
+  { url: wordmarkLightSvg, filename: "jekko-wordmark-light.svg" },
+  { url: wordmarkDarkSvg, filename: "jekko-wordmark-dark.svg" },
+  { url: wordmarkSimpleLightSvg, filename: "jekko-wordmark-simple-light.svg" },
+  { url: wordmarkSimpleDarkSvg, filename: "jekko-wordmark-simple-dark.svg" },
 ] as const
 
 export default function Brand() {
@@ -115,7 +115,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoLight} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoLightPng, "opencode-logo-light.png")}>
+                  <button onClick={() => downloadFile(logoLightPng, "jekko-logo-light.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -126,7 +126,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(logoLightSvg, "opencode-logo-light.svg")}>
+                  <button onClick={() => downloadFile(logoLightSvg, "jekko-logo-light.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -142,7 +142,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoDark} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoDarkPng, "opencode-logo-dark.png")}>
+                  <button onClick={() => downloadFile(logoDarkPng, "jekko-logo-dark.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -153,7 +153,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(logoDarkSvg, "opencode-logo-dark.svg")}>
+                  <button onClick={() => downloadFile(logoDarkSvg, "jekko-logo-dark.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -169,7 +169,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoLightSquare} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoLightSquarePng, "opencode-logo-light-square.png")}>
+                  <button onClick={() => downloadFile(logoLightSquarePng, "jekko-logo-light-square.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -180,7 +180,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(logoLightSquareSvg, "opencode-logo-light-square.svg")}>
+                  <button onClick={() => downloadFile(logoLightSquareSvg, "jekko-logo-light-square.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -196,7 +196,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoDarkSquare} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoDarkSquarePng, "opencode-logo-dark-square.png")}>
+                  <button onClick={() => downloadFile(logoDarkSquarePng, "jekko-logo-dark-square.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -207,7 +207,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(logoDarkSquareSvg, "opencode-logo-dark-square.svg")}>
+                  <button onClick={() => downloadFile(logoDarkSquareSvg, "jekko-logo-dark-square.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -223,7 +223,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkLight} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkLightPng, "opencode-wordmark-light.png")}>
+                  <button onClick={() => downloadFile(wordmarkLightPng, "jekko-wordmark-light.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -234,7 +234,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(wordmarkLightSvg, "opencode-wordmark-light.svg")}>
+                  <button onClick={() => downloadFile(wordmarkLightSvg, "jekko-wordmark-light.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -250,7 +250,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkDark} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkDarkPng, "opencode-wordmark-dark.png")}>
+                  <button onClick={() => downloadFile(wordmarkDarkPng, "jekko-wordmark-dark.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -261,7 +261,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(wordmarkDarkSvg, "opencode-wordmark-dark.svg")}>
+                  <button onClick={() => downloadFile(wordmarkDarkSvg, "jekko-wordmark-dark.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -277,7 +277,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkSimpleLight} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkSimpleLightPng, "opencode-wordmark-simple-light.png")}>
+                  <button onClick={() => downloadFile(wordmarkSimpleLightPng, "jekko-wordmark-simple-light.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -288,7 +288,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(wordmarkSimpleLightSvg, "opencode-wordmark-simple-light.svg")}>
+                  <button onClick={() => downloadFile(wordmarkSimpleLightSvg, "jekko-wordmark-simple-light.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -304,7 +304,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkSimpleDark} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkSimpleDarkPng, "opencode-wordmark-simple-dark.png")}>
+                  <button onClick={() => downloadFile(wordmarkSimpleDarkPng, "jekko-wordmark-simple-dark.png")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -315,7 +315,7 @@ export default function Brand() {
                       />
                     </svg>
                   </button>
-                  <button onClick={() => downloadFile(wordmarkSimpleDarkSvg, "opencode-wordmark-simple-dark.svg")}>
+                  <button onClick={() => downloadFile(wordmarkSimpleDarkSvg, "jekko-wordmark-simple-dark.svg")}>
                     SVG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path

@@ -1,30 +1,30 @@
 ---
 title: CLI
-description: Opciones y comandos de la CLI de OpenCode.
+description: Opciones y comandos de la CLI de Jekko.
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 
-La CLI de OpenCode de forma predeterminada inicia el [TUI](/docs/tui) cuando se ejecuta sin ningún argumento.
+La CLI de Jekko de forma predeterminada inicia el [TUI](/docs/tui) cuando se ejecuta sin ningún argumento.
 
 ```bash
-opencode
+jekko
 ```
 
-Pero también acepta comandos como se documenta en esta página. Esto le permite interactuar con OpenCode mediante programación.
+Pero también acepta comandos como se documenta en esta página. Esto le permite interactuar con Jekko mediante programación.
 
 ```bash
-opencode run "Explain how closures work in JavaScript"
+jekko run "Explain how closures work in JavaScript"
 ```
 
 ---
 
 ### tui
 
-Inicie la interfaz de usuario del terminal OpenCode.
+Inicie la interfaz de usuario del terminal Jekko.
 
 ```bash
-opencode [project]
+jekko [project]
 ```
 
 #### Opciones
@@ -44,36 +44,36 @@ opencode [project]
 
 ## Comandos
 
-La CLI de OpenCode también tiene los siguientes comandos.
+La CLI de Jekko también tiene los siguientes comandos.
 
 ---
 
 ### agent
 
-Administrar agentes para OpenCode.
+Administrar agentes para Jekko.
 
 ```bash
-opencode agent [command]
+jekko agent [command]
 ```
 
 ---
 
 ### attach
 
-Conecte una terminal a un servidor backend OpenCode que ya se esté ejecutando y iniciado mediante los comandos `serve` o `web`.
+Conecte una terminal a un servidor backend Jekko que ya se esté ejecutando y iniciado mediante los comandos `serve` o `web`.
 
 ```bash
-opencode attach [url]
+jekko attach [url]
 ```
 
-Esto permite usar TUI con un backend remoto OpenCode. Por ejemplo:
+Esto permite usar TUI con un backend remoto Jekko. Por ejemplo:
 
 ```bash
 # Start the backend server for web/mobile access
-opencode web --port 4096 --hostname 0.0.0.0
+jekko web --port 4096 --hostname 0.0.0.0
 
 # In another terminal, attach the TUI to the running backend
-opencode attach http://10.20.30.40:4096
+jekko attach http://10.20.30.40:4096
 ```
 
 #### Opciones
@@ -84,8 +84,8 @@ opencode attach http://10.20.30.40:4096
 | <nobr><code>{"--continue"}</code></nobr> | `-c`  | Continuar la última sesión                                                                |
 | <nobr><code>{"--session"}</code></nobr>  | `-s`  | ID de sesión para continuar                                                               |
 | <nobr><code>{"--fork"}</code></nobr>     |       | Bifurcar la sesión al continuar (usar con `--continue` o `--session`)                     |
-| <nobr><code>{"--password"}</code></nobr> | `-p`  | Contraseña de autenticación básica (predeterminada: `OPENCODE_SERVER_PASSWORD`)           |
-| <nobr><code>{"--username"}</code></nobr> | `-u`  | Usuario de autenticación básica (predeterminado: `OPENCODE_SERVER_USERNAME` u `opencode`) |
+| <nobr><code>{"--password"}</code></nobr> | `-p`  | Contraseña de autenticación básica (predeterminada: `JEKKO_SERVER_PASSWORD`)           |
+| <nobr><code>{"--username"}</code></nobr> | `-u`  | Usuario de autenticación básica (predeterminado: `JEKKO_SERVER_USERNAME` u `jekko`) |
 
 ---
 
@@ -94,7 +94,7 @@ opencode attach http://10.20.30.40:4096
 Cree un nuevo agente con configuración personalizada.
 
 ```bash
-opencode agent create
+jekko agent create
 ```
 
 Este comando lo guiará en la creación de un nuevo agente con un mensaje del sistema personalizado y una configuración de herramientas.
@@ -106,7 +106,7 @@ Este comando lo guiará en la creación de un nuevo agente con un mensaje del si
 Enumere todos los agentes disponibles.
 
 ```bash
-opencode agent list
+jekko agent list
 ```
 
 ---
@@ -116,20 +116,20 @@ opencode agent list
 Comando para administrar credenciales e iniciar sesión para proveedores.
 
 ```bash
-opencode auth [command]
+jekko auth [command]
 ```
 
 ---
 
 #### login
 
-OpenCode funciona con la lista de proveedores en [Models.dev](https://models.dev), por lo que puede usar `opencode auth login` para configurar las claves API para cualquier proveedor que desee utilizar. Esto se almacena en `~/.local/share/opencode/auth.json`.
+Jekko funciona con la lista de proveedores en [Models.dev](https://models.dev), por lo que puede usar `jekko auth login` para configurar las claves API para cualquier proveedor que desee utilizar. Esto se almacena en `~/.local/share/jekko/auth.json`.
 
 ```bash
-opencode auth login
+jekko auth login
 ```
 
-Cuando se inicia OpenCode, carga los proveedores desde el archivo de credenciales. Y si hay claves definidas en sus entornos o un archivo `.env` en su proyecto.
+Cuando se inicia Jekko, carga los proveedores desde el archivo de credenciales. Y si hay claves definidas en sus entornos o un archivo `.env` en su proyecto.
 
 ---
 
@@ -138,13 +138,13 @@ Cuando se inicia OpenCode, carga los proveedores desde el archivo de credenciale
 Enumera todos los proveedores autenticados tal como están almacenados en el archivo de credenciales.
 
 ```bash
-opencode auth list
+jekko auth list
 ```
 
 O la versión corta.
 
 ```bash
-opencode auth ls
+jekko auth ls
 ```
 
 ---
@@ -154,7 +154,7 @@ opencode auth ls
 Cierra tu sesión de un proveedor eliminándolo del archivo de credenciales.
 
 ```bash
-opencode auth logout
+jekko auth logout
 ```
 
 ---
@@ -164,7 +164,7 @@ opencode auth logout
 Administre el agente GitHub para la automatización del repositorio.
 
 ```bash
-opencode github [command]
+jekko github [command]
 ```
 
 ---
@@ -174,7 +174,7 @@ opencode github [command]
 Instale el agente GitHub en su repositorio.
 
 ```bash
-opencode github install
+jekko github install
 ```
 
 Esto configura el flujo de trabajo de acciones GitHub necesario y lo guía a través del proceso de configuración. [Más información](/docs/github).
@@ -186,7 +186,7 @@ Esto configura el flujo de trabajo de acciones GitHub necesario y lo guía a tra
 Ejecute el agente GitHub. Esto se usa normalmente en acciones GitHub.
 
 ```bash
-opencode github run
+jekko github run
 ```
 
 ##### Opciones
@@ -203,7 +203,7 @@ opencode github run
 Administrar servidores de protocolo de contexto modelo.
 
 ```bash
-opencode mcp [command]
+jekko mcp [command]
 ```
 
 ---
@@ -213,7 +213,7 @@ opencode mcp [command]
 Agregue un servidor MCP a su configuración.
 
 ```bash
-opencode mcp add
+jekko mcp add
 ```
 
 Este comando lo guiará para agregar un servidor MCP local o remoto.
@@ -225,13 +225,13 @@ Este comando lo guiará para agregar un servidor MCP local o remoto.
 Enumere todos los servidores MCP configurados y su estado de conexión.
 
 ```bash
-opencode mcp list
+jekko mcp list
 ```
 
 O utilice la versión corta.
 
 ```bash
-opencode mcp ls
+jekko mcp ls
 ```
 
 ---
@@ -241,7 +241,7 @@ opencode mcp ls
 Autentíquese con un servidor MCP habilitado para OAuth.
 
 ```bash
-opencode mcp auth [name]
+jekko mcp auth [name]
 ```
 
 Si no proporciona un nombre de servidor, se le pedirá que seleccione entre los servidores compatibles con OAuth disponibles.
@@ -249,13 +249,13 @@ Si no proporciona un nombre de servidor, se le pedirá que seleccione entre los 
 También puede enumerar los servidores compatibles con OAuth y su estado de autenticación.
 
 ```bash
-opencode mcp auth list
+jekko mcp auth list
 ```
 
 O utilice la versión corta.
 
 ```bash
-opencode mcp auth ls
+jekko mcp auth ls
 ```
 
 ---
@@ -265,7 +265,7 @@ opencode mcp auth ls
 Elimine las credenciales OAuth para un servidor MCP.
 
 ```bash
-opencode mcp logout [name]
+jekko mcp logout [name]
 ```
 
 ---
@@ -275,7 +275,7 @@ opencode mcp logout [name]
 Depurar problemas de conexión OAuth para un servidor MCP.
 
 ```bash
-opencode mcp debug <name>
+jekko mcp debug <name>
 ```
 
 ---
@@ -285,7 +285,7 @@ opencode mcp debug <name>
 Enumere todos los modelos disponibles de los proveedores configurados.
 
 ```bash
-opencode models [provider]
+jekko models [provider]
 ```
 
 Este comando muestra todos los modelos disponibles en sus proveedores configurados en el formato `provider/model`.
@@ -295,7 +295,7 @@ Esto es útil para determinar el nombre exacto del modelo que se usará en [su c
 Opcionalmente, puede pasar un ID de proveedor para filtrar modelos por ese proveedor.
 
 ```bash
-opencode models anthropic
+jekko models anthropic
 ```
 
 #### Opciones
@@ -305,36 +305,36 @@ opencode models anthropic
 | <nobr><code>{"--refresh"}</code></nobr> | Actualizar la caché de modelos desde models.dev                             |
 | <nobr><code>{"--verbose"}</code></nobr> | Utilice una salida del modelo más detallada (incluye metadatos como costos) |
 
-Utilice el indicador `--refresh` para actualizar la lista de modelos almacenados en caché. Esto es útil cuando se han agregado nuevos modelos a un proveedor y desea verlos en OpenCode.
+Utilice el indicador `--refresh` para actualizar la lista de modelos almacenados en caché. Esto es útil cuando se han agregado nuevos modelos a un proveedor y desea verlos en Jekko.
 
 ```bash
-opencode models --refresh
+jekko models --refresh
 ```
 
 ---
 
 ### run
 
-Ejecute opencode en modo no interactivo pasando un mensaje directamente.
+Ejecute jekko en modo no interactivo pasando un mensaje directamente.
 
 ```bash
-opencode run [message..]
+jekko run [message..]
 ```
 
 Esto es útil para secuencias de comandos, automatización o cuando desea una respuesta rápida sin iniciar el TUI completo. Por ejemplo.
 
-```bash "opencode run"
-opencode run Explain the use of context in Go
+```bash "jekko run"
+jekko run Explain the use of context in Go
 ```
 
-También puede conectarse a una instancia `opencode serve` en ejecución para evitar tiempos de arranque en frío del servidor MCP en cada ejecución:
+También puede conectarse a una instancia `jekko serve` en ejecución para evitar tiempos de arranque en frío del servidor MCP en cada ejecución:
 
 ```bash
 # Start a headless server in one terminal
-opencode serve
+jekko serve
 
 # In another terminal, run commands that attach to it
-opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
+jekko run --attach http://localhost:4096 "Explain async/await in JavaScript"
 ```
 
 #### Opciones
@@ -351,9 +351,9 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 | <nobr><code>{"--file"}</code></nobr>     | `-f`  | Archivo(s) para adjuntar al mensaje                                                       |
 | <nobr><code>{"--format"}</code></nobr>   |       | Formato: predeterminado (formateado) o json (eventos JSON sin formato)                    |
 | <nobr><code>{"--title"}</code></nobr>    |       | Título de la sesión (utiliza un mensaje truncado si no se proporciona ningún valor)       |
-| <nobr><code>{"--attach"}</code></nobr>   |       | Adjuntar a un servidor opencode en ejecución (por ejemplo, http://localhost:4096)         |
-| <nobr><code>{"--password"}</code></nobr> | `-p`  | Contraseña de autenticación básica (predeterminada: `OPENCODE_SERVER_PASSWORD`)           |
-| <nobr><code>{"--username"}</code></nobr> | `-u`  | Usuario de autenticación básica (predeterminado: `OPENCODE_SERVER_USERNAME` u `opencode`) |
+| <nobr><code>{"--attach"}</code></nobr>   |       | Adjuntar a un servidor jekko en ejecución (por ejemplo, http://localhost:4096)         |
+| <nobr><code>{"--password"}</code></nobr> | `-p`  | Contraseña de autenticación básica (predeterminada: `JEKKO_SERVER_PASSWORD`)           |
+| <nobr><code>{"--username"}</code></nobr> | `-u`  | Usuario de autenticación básica (predeterminado: `JEKKO_SERVER_USERNAME` u `jekko`) |
 | <nobr><code>{"--dir"}</code></nobr>      |       | Directorio de ejecución, o ruta en el servidor remoto al adjuntar                         |
 | <nobr><code>{"--variant"}</code></nobr>  |       | Variante del modelo (esfuerzo de razonamiento específico del proveedor)                   |
 | <nobr><code>{"--thinking"}</code></nobr> |       | Mostrar bloques de pensamiento                                                            |
@@ -363,13 +363,13 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 
 ### serve
 
-Inicie un servidor OpenCode sin cabeza para acceso API. Consulte los [documentos del servidor](/docs/server) para conocer la interfaz HTTP completa.
+Inicie un servidor Jekko sin cabeza para acceso API. Consulte los [documentos del servidor](/docs/server) para conocer la interfaz HTTP completa.
 
 ```bash
-opencode serve
+jekko serve
 ```
 
-Esto inicia un servidor HTTP que proporciona acceso API a la funcionalidad opencode sin la interfaz TUI. Configure `OPENCODE_SERVER_PASSWORD` para habilitar la autenticación básica HTTP (el nombre de usuario predeterminado es `opencode`).
+Esto inicia un servidor HTTP que proporciona acceso API a la funcionalidad jekko sin la interfaz TUI. Configure `JEKKO_SERVER_PASSWORD` para habilitar la autenticación básica HTTP (el nombre de usuario predeterminado es `jekko`).
 
 #### Opciones
 
@@ -384,20 +384,20 @@ Esto inicia un servidor HTTP que proporciona acceso API a la funcionalidad openc
 
 ### session
 
-Administrar OpenCode sesiones.
+Administrar Jekko sesiones.
 
 ```bash
-opencode session [command]
+jekko session [command]
 ```
 
 ---
 
 #### list
 
-Enumere todas las sesiones OpenCode.
+Enumere todas las sesiones Jekko.
 
 ```bash
-opencode session list
+jekko session list
 ```
 
 ##### Opciones
@@ -411,10 +411,10 @@ opencode session list
 
 ### stats
 
-Muestre el uso de tokens y las estadísticas de costos para sus sesiones OpenCode.
+Muestre el uso de tokens y las estadísticas de costos para sus sesiones Jekko.
 
 ```bash
-opencode stats
+jekko stats
 ```
 
 #### Opciones
@@ -433,7 +433,7 @@ opencode stats
 Exportar datos de la sesión como JSON.
 
 ```bash
-opencode export [sessionID]
+jekko export [sessionID]
 ```
 
 Si no proporciona una ID de sesión, se le pedirá que seleccione entre las sesiones disponibles.
@@ -442,30 +442,30 @@ Si no proporciona una ID de sesión, se le pedirá que seleccione entre las sesi
 
 ### import
 
-Importe datos de sesión desde un archivo JSON o una URL compartida OpenCode.
+Importe datos de sesión desde un archivo JSON o una URL compartida Jekko.
 
 ```bash
-opencode import <file>
+jekko import <file>
 ```
 
-Puede importar desde un archivo local o una URL compartida OpenCode.
+Puede importar desde un archivo local o una URL compartida Jekko.
 
 ```bash
-opencode import session.json
-opencode import https://opncd.ai/s/abc123
+jekko import session.json
+jekko import https://opncd.ai/s/abc123
 ```
 
 ---
 
 ### web
 
-Inicie un servidor OpenCode sin cabeza con una interfaz web.
+Inicie un servidor Jekko sin cabeza con una interfaz web.
 
 ```bash
-opencode web
+jekko web
 ```
 
-Esto inicia un servidor HTTP y abre un navegador web para acceder a OpenCode a través de una interfaz web. Configure `OPENCODE_SERVER_PASSWORD` para habilitar la autenticación básica HTTP (el nombre de usuario predeterminado es `opencode`).
+Esto inicia un servidor HTTP y abre un navegador web para acceder a Jekko a través de una interfaz web. Configure `JEKKO_SERVER_PASSWORD` para habilitar la autenticación básica HTTP (el nombre de usuario predeterminado es `jekko`).
 
 #### Opciones
 
@@ -483,7 +483,7 @@ Esto inicia un servidor HTTP y abre un navegador web para acceder a OpenCode a t
 Inicie un servidor ACP (Agent Client Protocol).
 
 ```bash
-opencode acp
+jekko acp
 ```
 
 Este comando inicia un servidor ACP que se comunica a través de stdin/stdout usando nd-JSON.
@@ -500,10 +500,10 @@ Este comando inicia un servidor ACP que se comunica a través de stdin/stdout us
 
 ### uninstall
 
-Desinstale OpenCode y elimine todos los archivos relacionados.
+Desinstale Jekko y elimine todos los archivos relacionados.
 
 ```bash
-opencode uninstall
+jekko uninstall
 ```
 
 #### Opciones
@@ -519,22 +519,22 @@ opencode uninstall
 
 ### upgrade
 
-Actualiza opencode a la última versión o a una versión específica.
+Actualiza jekko a la última versión o a una versión específica.
 
 ```bash
-opencode upgrade [target]
+jekko upgrade [target]
 ```
 
 Para actualizar a la última versión.
 
 ```bash
-opencode upgrade
+jekko upgrade
 ```
 
 Para actualizar a una versión específica.
 
 ```bash
-opencode upgrade v0.1.48
+jekko upgrade v0.1.48
 ```
 
 #### Opciones
@@ -547,7 +547,7 @@ opencode upgrade v0.1.48
 
 ## Opciones globales
 
-La CLI de OpenCode toma las siguientes banderas globales.
+La CLI de Jekko toma las siguientes banderas globales.
 
 | Opción                                     | Corta | Descripción                                  |
 | ------------------------------------------ | ----- | -------------------------------------------- |
@@ -560,33 +560,33 @@ La CLI de OpenCode toma las siguientes banderas globales.
 
 ## Variables de entorno
 
-OpenCode se puede configurar mediante variables de entorno.
+Jekko se puede configurar mediante variables de entorno.
 
 | Variable                              | Type     | Description                                                                     |
 | ------------------------------------- | -------- | ------------------------------------------------------------------------------- |
-| `OPENCODE_AUTO_SHARE`                 | booleano | Compartir sesiones automáticamente                                              |
-| `OPENCODE_GIT_BASH_PATH`              | cadena   | Ruta al ejecutable de Git Bash en Windows                                       |
-| `OPENCODE_CONFIG`                     | cadena   | Ruta al archivo de configuración                                                |
-| `OPENCODE_CONFIG_DIR`                 | cadena   | Ruta al directorio de configuración                                             |
-| `OPENCODE_CONFIG_CONTENT`             | cadena   | Contenido de configuración json en línea                                        |
-| `OPENCODE_DISABLE_AUTOUPDATE`         | booleano | Deshabilitar las comprobaciones automáticas de actualizaciones                  |
-| `OPENCODE_DISABLE_PRUNE`              | booleano | Deshabilitar la poda de datos antiguos                                          |
-| `OPENCODE_DISABLE_TERMINAL_TITLE`     | booleano | Deshabilitar las actualizaciones automáticas de títulos de terminal             |
-| `OPENCODE_PERMISSION`                 | cadena   | Configuración de permisos json incorporados                                     |
-| `OPENCODE_DISABLE_DEFAULT_PLUGINS`    | booleano | Deshabilitar complementos predeterminados                                       |
-| `OPENCODE_DISABLE_LSP_DOWNLOAD`       | booleano | Deshabilitar las descargas automáticas del servidor LSP                         |
-| `OPENCODE_ENABLE_EXPERIMENTAL_MODELS` | booleano | Habilitar modelos experimentales                                                |
-| `OPENCODE_DISABLE_AUTOCOMPACT`        | booleano | Deshabilitar la compactación automática de contexto                             |
-| `OPENCODE_DISABLE_CLAUDE_CODE`        | booleano | Deshabilitar la lectura desde `.claude` (mensaje + habilidades)                 |
-| `OPENCODE_DISABLE_CLAUDE_CODE_PROMPT` | booleano | Desactivar lectura `~/.claude/CLAUDE.md`                                        |
-| `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS` | booleano | Deshabilitar la carga `.claude/skills`                                          |
-| `OPENCODE_DISABLE_MODELS_FETCH`       | booleano | Deshabilitar la recuperación de modelos desde fuentes remotas                   |
-| `OPENCODE_FAKE_VCS`                   | cadena   | Proveedor de VCS falso para fines de prueba                                     |
-| `OPENCODE_CLIENT`                     | cadena   | Identificador de cliente (por defecto `cli`)                                    |
-| `OPENCODE_ENABLE_EXA`                 | booleano | Habilitar las herramientas de búsqueda web de Exa                               |
-| `OPENCODE_SERVER_PASSWORD`            | cadena   | Habilite la autenticación básica para `serve`/`web`                             |
-| `OPENCODE_SERVER_USERNAME`            | cadena   | Anular el nombre de usuario de autenticación básica (predeterminado `opencode`) |
-| `OPENCODE_MODELS_URL`                 | cadena   | URL personalizada para buscar la configuración de modelos                       |
+| `JEKKO_AUTO_SHARE`                 | booleano | Compartir sesiones automáticamente                                              |
+| `JEKKO_GIT_BASH_PATH`              | cadena   | Ruta al ejecutable de Git Bash en Windows                                       |
+| `JEKKO_CONFIG`                     | cadena   | Ruta al archivo de configuración                                                |
+| `JEKKO_CONFIG_DIR`                 | cadena   | Ruta al directorio de configuración                                             |
+| `JEKKO_CONFIG_CONTENT`             | cadena   | Contenido de configuración json en línea                                        |
+| `JEKKO_DISABLE_AUTOUPDATE`         | booleano | Deshabilitar las comprobaciones automáticas de actualizaciones                  |
+| `JEKKO_DISABLE_PRUNE`              | booleano | Deshabilitar la poda de datos antiguos                                          |
+| `JEKKO_DISABLE_TERMINAL_TITLE`     | booleano | Deshabilitar las actualizaciones automáticas de títulos de terminal             |
+| `JEKKO_PERMISSION`                 | cadena   | Configuración de permisos json incorporados                                     |
+| `JEKKO_DISABLE_DEFAULT_PLUGINS`    | booleano | Deshabilitar complementos predeterminados                                       |
+| `JEKKO_DISABLE_LSP_DOWNLOAD`       | booleano | Deshabilitar las descargas automáticas del servidor LSP                         |
+| `JEKKO_ENABLE_EXPERIMENTAL_MODELS` | booleano | Habilitar modelos experimentales                                                |
+| `JEKKO_DISABLE_AUTOCOMPACT`        | booleano | Deshabilitar la compactación automática de contexto                             |
+| `JEKKO_DISABLE_CLAUDE_CODE`        | booleano | Deshabilitar la lectura desde `.claude` (mensaje + habilidades)                 |
+| `JEKKO_DISABLE_CLAUDE_CODE_PROMPT` | booleano | Desactivar lectura `~/.claude/CLAUDE.md`                                        |
+| `JEKKO_DISABLE_CLAUDE_CODE_SKILLS` | booleano | Deshabilitar la carga `.claude/skills`                                          |
+| `JEKKO_DISABLE_MODELS_FETCH`       | booleano | Deshabilitar la recuperación de modelos desde fuentes remotas                   |
+| `JEKKO_FAKE_VCS`                   | cadena   | Proveedor de VCS falso para fines de prueba                                     |
+| `JEKKO_CLIENT`                     | cadena   | Identificador de cliente (por defecto `cli`)                                    |
+| `JEKKO_ENABLE_EXA`                 | booleano | Habilitar las herramientas de búsqueda web de Exa                               |
+| `JEKKO_SERVER_PASSWORD`            | cadena   | Habilite la autenticación básica para `serve`/`web`                             |
+| `JEKKO_SERVER_USERNAME`            | cadena   | Anular el nombre de usuario de autenticación básica (predeterminado `jekko`) |
+| `JEKKO_MODELS_URL`                 | cadena   | URL personalizada para buscar la configuración de modelos                       |
 
 ---
 
@@ -596,16 +596,16 @@ Estas variables de entorno habilitan funciones experimentales que pueden cambiar
 
 | Variable                                        | Type     | Description                                                |
 | ----------------------------------------------- | -------- | ---------------------------------------------------------- |
-| `OPENCODE_EXPERIMENTAL`                         | booleano | Habilitar todas las funciones experimentales               |
-| `OPENCODE_EXPERIMENTAL_ICON_DISCOVERY`          | booleano | Habilitar descubrimiento de íconos                         |
-| `OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT`  | booleano | Deshabilitar copia al seleccionar en TUI                   |
-| `OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS` | número   | Tiempo de espera predeterminado para comandos bash en ms   |
-| `OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX`        | número   | Tokens de salida máximos para respuestas LLM               |
-| `OPENCODE_EXPERIMENTAL_FILEWATCHER`             | booleano | Habilite el observador de archivos para todo el directorio |
-| `OPENCODE_EXPERIMENTAL_OXFMT`                   | booleano | Habilitar el formateador oxfmt                             |
-| `OPENCODE_EXPERIMENTAL_LSP_TOOL`                | booleano | Habilitar herramienta experimental LSP                     |
-| `OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER`     | booleano | Deshabilitar el observador de archivos                     |
-| `OPENCODE_EXPERIMENTAL_EXA`                     | booleano | Habilitar funciones experimentales de Exa                  |
-| `OPENCODE_EXPERIMENTAL_LSP_TY`                  | booleano | Habilitar Habilitar TY LSP para archivos python            |
-| `OPENCODE_EXPERIMENTAL_MARKDOWN`                | booleano | Habilitar funciones de Markdown experimentales             |
-| `OPENCODE_EXPERIMENTAL_PLAN_MODE`               | booleano | Habilitar modo de plan                                     |
+| `JEKKO_EXPERIMENTAL`                         | booleano | Habilitar todas las funciones experimentales               |
+| `JEKKO_EXPERIMENTAL_ICON_DISCOVERY`          | booleano | Habilitar descubrimiento de íconos                         |
+| `JEKKO_EXPERIMENTAL_DISABLE_COPY_ON_SELECT`  | booleano | Deshabilitar copia al seleccionar en TUI                   |
+| `JEKKO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS` | número   | Tiempo de espera predeterminado para comandos bash en ms   |
+| `JEKKO_EXPERIMENTAL_OUTPUT_TOKEN_MAX`        | número   | Tokens de salida máximos para respuestas LLM               |
+| `JEKKO_EXPERIMENTAL_FILEWATCHER`             | booleano | Habilite el observador de archivos para todo el directorio |
+| `JEKKO_EXPERIMENTAL_OXFMT`                   | booleano | Habilitar el formateador oxfmt                             |
+| `JEKKO_EXPERIMENTAL_LSP_TOOL`                | booleano | Habilitar herramienta experimental LSP                     |
+| `JEKKO_EXPERIMENTAL_DISABLE_FILEWATCHER`     | booleano | Deshabilitar el observador de archivos                     |
+| `JEKKO_EXPERIMENTAL_EXA`                     | booleano | Habilitar funciones experimentales de Exa                  |
+| `JEKKO_EXPERIMENTAL_LSP_TY`                  | booleano | Habilitar Habilitar TY LSP para archivos python            |
+| `JEKKO_EXPERIMENTAL_MARKDOWN`                | booleano | Habilitar funciones de Markdown experimentales             |
+| `JEKKO_EXPERIMENTAL_PLAN_MODE`               | booleano | Habilitar modo de plan                                     |

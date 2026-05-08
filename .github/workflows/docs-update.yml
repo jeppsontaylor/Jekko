@@ -14,7 +14,7 @@ env:
 
 jobs:
   update-docs:
-    if: github.repository == 'sst/opencode'
+    if: github.repository == 'sst/jekko'
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
     permissions:
@@ -46,13 +46,13 @@ jobs:
             } >> $GITHUB_OUTPUT
           fi
 
-      - name: Run opencode
+      - name: Run jekko
         if: steps.commits.outputs.has_commits == 'true'
-        uses: sst/opencode/github@decc616c800827e1e28c96fe2253ee229095dc23
+        uses: sst/jekko/github@decc616c800827e1e28c96fe2253ee229095dc23
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          JEKKO_API_KEY: ${{ secrets.JEKKO_API_KEY }}
         with:
-          model: opencode/gpt-5.2
+          model: jekko/gpt-5.2
           agent: docs
           prompt: |
             Review the following commits from the last ${{ env.LOOKBACK_HOURS }} hours and identify any new features that may need documentation.

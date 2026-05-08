@@ -50,7 +50,7 @@ ZYAL parser + validator + preview compiler
 Host policy engine
         ↓
 Runtime adapter
-        ├── OpenCode daemon
+        ├── Jekko daemon
         ├── OpenHands SDK/runtime
         ├── LangGraph durable graph
         ├── Codex worktree/cloud task
@@ -101,7 +101,7 @@ Add:
 
 ```yaml
 schema:
-  id: "https://opencode.ai/zyal/v2alpha/schema.json"
+  id: "https://jekko.ai/zyal/v2alpha/schema.json"
   strict: true
   unknown_keys: reject
   allow_extensions:
@@ -114,7 +114,7 @@ schema:
 compile:
   mode: preview_first
   targets:
-    - opencode
+    - jekko
     - openhands
     - langgraph
     - codex
@@ -145,7 +145,7 @@ capability_report:
     - a2a_delegation
 ```
 
-That matters because Codex, Claude Code, OpenHands, OpenCode, and Hermes-like runtimes will never have identical primitives.
+That matters because Codex, Claude Code, OpenHands, Jekko, and Hermes-like runtimes will never have identical primitives.
 
 ---
 
@@ -339,7 +339,7 @@ environment:
       - "repo://docs"
     writable:
       - "repo://worktree"
-      - ".opencode/daemon/{{run_id}}/scratch"
+      - ".jekko/daemon/{{run_id}}/scratch"
     protected:
       - ".env"
       - ".git/config"
@@ -481,7 +481,7 @@ memory:
       at_rest: true
     mirror:
       enabled: true
-      path: ".opencode/daemon/{{run_id}}/memory"
+      path: ".jekko/daemon/{{run_id}}/memory"
 
   namespaces:
     - id: working
@@ -616,7 +616,7 @@ skills:
 
   sources:
     - id: repo_skills
-      path: ".opencode/skills"
+      path: ".jekko/skills"
       trust: repo_reviewed
     - id: org_registry
       registry: "org://agent-skills"
@@ -683,7 +683,7 @@ aibom:
     - policy_files
     - sandbox_image
   output:
-    path: ".opencode/daemon/{{run_id}}/AIBOM.json"
+    path: ".jekko/daemon/{{run_id}}/AIBOM.json"
     attach_to_checkpoint: true
 ```
 
@@ -955,7 +955,7 @@ Every promotion, checkpoint, PR, or merge should produce an evidence bundle.
 ```yaml
 evidence:
   bundle:
-    path: ".opencode/daemon/{{run_id}}/evidence/{{checkpoint_id}}.json"
+    path: ".jekko/daemon/{{run_id}}/evidence/{{checkpoint_id}}.json"
     include:
       - objective
       - task_id
@@ -1007,7 +1007,7 @@ checkpoint:
     add: ["."]
     commit_message: "daemon: {{task_id}} {{evidence.summary}}"
     attach:
-      - ".opencode/daemon/{{run_id}}/evidence/{{checkpoint_id}}.json"
+      - ".jekko/daemon/{{run_id}}/evidence/{{checkpoint_id}}.json"
     push: ask
 ```
 
@@ -1162,7 +1162,7 @@ on:
       - create_artifact:
           id: no_progress_diagnostic
           schema: diagnostic_report
-      - run: "bun test --reporter=json > .opencode/daemon/{{run_id}}/diag.json"
+      - run: "bun test --reporter=json > .jekko/daemon/{{run_id}}/diag.json"
         on_fail: warn
 
   - signal: permission_denied
@@ -1308,7 +1308,7 @@ observability:
 
   dashboards:
     mirror:
-      path: ".opencode/daemon/{{run_id}}/STATE.md"
+      path: ".jekko/daemon/{{run_id}}/STATE.md"
       update_every: 1_iteration
     api:
       expose:
@@ -1549,7 +1549,7 @@ learning:
     - human_review
 
   publish:
-    destination: ".opencode/skills/proposed"
+    destination: ".jekko/skills/proposed"
     auto_enable: false
 ```
 
@@ -1724,7 +1724,7 @@ job:
     - Monorepo package boundaries may be accidentally changed.
 
 compile:
-  targets: [opencode, openhands, langgraph, codex, claude_code]
+  targets: [jekko, openhands, langgraph, codex, claude_code]
   preview:
     render_graph: true
     render_permissions: true
@@ -1749,7 +1749,7 @@ environment:
       - domain: "api.github.com"
   filesystem:
     readonly: ["repo://main"]
-    writable: ["repo://worktree", ".opencode/daemon/{{run_id}}/scratch"]
+    writable: ["repo://worktree", ".jekko/daemon/{{run_id}}/scratch"]
     protected: [".env", "~/.ssh/**", "**/*.pem"]
 
 budgets:
@@ -2048,7 +2048,7 @@ The biggest additions are:
 | New key         | Why it matters                                                   |
 | --------------- | ---------------------------------------------------------------- |
 | `schema`        | Strict validation, migrations, unknown-key policy                |
-| `compile`       | Portability across OpenCode, OpenHands, Codex, Claude, LangGraph |
+| `compile`       | Portability across Jekko, OpenHands, Codex, Claude, LangGraph |
 | `environment`   | Real sandbox, filesystem, network, secret policy                 |
 | `budgets`       | Cost, token, wall-time, per-task, per-lane budgets               |
 | `workflow`      | Durable graph phases, not only loop                              |
@@ -2268,7 +2268,7 @@ This is necessary for enterprise adoption.
 Ship first-class adapters for:
 
 ```text
-OpenCode native daemon
+Jekko native daemon
 OpenHands SDK/runtime
 LangGraph
 Codex

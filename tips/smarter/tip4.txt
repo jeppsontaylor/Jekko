@@ -1,13 +1,13 @@
 ## Bottom line
 
-I would add **one major extension** to the current OCAL daemon plan:
+I would add **one major extension** to the current ZYAL daemon plan:
 
-> **OCAL Hardening Lanes + Task Capsules**
+> **ZYAL Hardening Lanes + Task Capsules**
 > A bounded, host-enforced cross-loop collaboration system for difficult tasks, where low-confidence or high-risk work is routed into structured planning/research/critique/prototype passes before the daemon allows implementation and checkpointing.
 
 This should **not** be another unbounded forever loop. The global daemon can run forever, but a hard task’s scratchpad/reflection loop must be **bounded**, evidence-driven, and cleanly archived or promoted.
 
-I’m preserving the previous OCAL plan’s core choices: strict `OCAL v1` sentinel syntax, deliberate arming, SQLite as source of truth, generated ledger mirrors, daemon-owned continuation, hard context clear as new epoch/child session, serial-first runtime, and later swarms/MCP. 
+I’m preserving the previous ZYAL plan’s core choices: strict `ZYAL v1` sentinel syntax, deliberate arming, SQLite as source of truth, generated ledger mirrors, daemon-owned continuation, hard context clear as new epoch/child session, serial-first runtime, and later swarms/MCP. 
 
 The missing piece is a **difficulty router** that says:
 
@@ -30,25 +30,25 @@ The current ecosystem does **not** have one universal “in-prompt agent scripti
 
 OpenHands is especially relevant because it is a coding-agent platform, not a generic chatbot framework. Its current docs emphasize task planning/decomposition, automatic context compression, security analysis, and strong agent-computer interfaces; its skills system also uses always-on repository context plus on-demand skills so the agent does not overload the prompt with everything at once. ([OpenHands Docs][1])
 
-LangGraph is another strong reference point. Its own README describes it as a low-level framework for **long-running, stateful agents**, with durable execution, human-in-the-loop, comprehensive memory, and debugging/trace visibility. That maps almost perfectly to what OCAL should do inside OpenCode: not “prompt harder,” but build a real host-controlled state graph. ([GitHub][2])
+LangGraph is another strong reference point. Its own README describes it as a low-level framework for **long-running, stateful agents**, with durable execution, human-in-the-loop, comprehensive memory, and debugging/trace visibility. That maps almost perfectly to what ZYAL should do inside Jekko: not “prompt harder,” but build a real host-controlled state graph. ([GitHub][2])
 
-AutoGen’s termination model is directly relevant. Its termination conditions are callable, stateful, resettable, and combinable with AND/OR operators, and group chat teams evaluate termination after each agent response. OCAL should mirror that idea: “assistant stopped” is only an event; host-defined stop conditions decide whether the daemon actually stops. ([Microsoft GitHub][3])
+AutoGen’s termination model is directly relevant. Its termination conditions are callable, stateful, resettable, and combinable with AND/OR operators, and group chat teams evaluate termination after each agent response. ZYAL should mirror that idea: “assistant stopped” is only an event; host-defined stop conditions decide whether the daemon actually stops. ([Microsoft GitHub][3])
 
-CrewAI gives two useful patterns: hierarchical management and persistent memory. Its hierarchical process uses a manager agent to delegate tasks and validate outcomes, while its memory system supports adaptive recall based on semantic similarity, recency, and importance. For OCAL, that suggests a supervisor-owned hard-task capsule, not random workers editing markdown trackers. ([CrewAI Documentation][4])
+CrewAI gives two useful patterns: hierarchical management and persistent memory. Its hierarchical process uses a manager agent to delegate tasks and validate outcomes, while its memory system supports adaptive recall based on semantic similarity, recency, and importance. For ZYAL, that suggests a supervisor-owned hard-task capsule, not random workers editing markdown trackers. ([CrewAI Documentation][4])
 
-Claude Code’s hook model reinforces the same principle: hooks provide deterministic control so certain actions always happen instead of relying on the model to remember. Its docs also distinguish blocking hooks from async hooks; async hooks can add context later but cannot control behavior after the fact. That distinction matters for OCAL: hard-task promotion, checkpointing, and stop decisions must be blocking host decisions, not after-the-fact prompt nudges. ([Claude][5])
+Claude Code’s hook model reinforces the same principle: hooks provide deterministic control so certain actions always happen instead of relying on the model to remember. Its docs also distinguish blocking hooks from async hooks; async hooks can add context later but cannot control behavior after the fact. That distinction matters for ZYAL: hard-task promotion, checkpointing, and stop decisions must be blocking host decisions, not after-the-fact prompt nudges. ([Claude][5])
 
-OpenAI’s agent guidance is also aligned. It explicitly describes the agent while-loop as central, recommends starting with a capable single agent before splitting into multiple agents, and distinguishes manager-style “agents as tools” from decentralized handoffs. For OCAL, that means hard-task collaboration should default to **manager-owned specialist passes**, not a free-for-all swarm. ([OpenAI][6])
+OpenAI’s agent guidance is also aligned. It explicitly describes the agent while-loop as central, recommends starting with a capable single agent before splitting into multiple agents, and distinguishes manager-style “agents as tools” from decentralized handoffs. For ZYAL, that means hard-task collaboration should default to **manager-owned specialist passes**, not a free-for-all swarm. ([OpenAI][6])
 
 The academic patterns also support this. Reflexion stores verbal reflections in an episodic memory buffer after feedback; Self-Refine iteratively generates feedback and refinements; Tree of Thoughts explores multiple reasoning paths and self-evaluates them; Graph of Thoughts models thoughts as a graph with feedback loops and dependencies. The useful lesson is not “let the model think forever”; it is “store attempts, feedback, alternatives, and critique as structured artifacts, then route the next attempt using that accumulated evidence.” ([arXiv][7])
 
-The OpenCode community is already feeling this gap. There is an open feature request asking for native continuous loops until task completion because agents stop after compaction, summarization, or partial milestones. There are also OpenCode reports about compaction causing premature stops or infinite continuation loops, and a Reddit workaround where a plugin auto-continues when the assistant emits `TASK_STATUS: INCOMPLETE`, capped at 20 nudges. Those are strong signals that the correct fix is a native runtime controller, not another clever prompt. ([GitHub][8])
+The Jekko community is already feeling this gap. There is an open feature request asking for native continuous loops until task completion because agents stop after compaction, summarization, or partial milestones. There are also Jekko reports about compaction causing premature stops or infinite continuation loops, and a Reddit workaround where a plugin auto-continues when the assistant emits `TASK_STATUS: INCOMPLETE`, capped at 20 nudges. Those are strong signals that the correct fix is a native runtime controller, not another clever prompt. ([GitHub][8])
 
 ---
 
-# 2. The new OCAL concept: Hardening Lanes
+# 2. The new ZYAL concept: Hardening Lanes
 
-The current OCAL plan has:
+The current ZYAL plan has:
 
 ```text
 daemon loop
@@ -153,7 +153,7 @@ SQLite source of truth:
   daemon_task_artifact
 
 Generated mirror:
-  .opencode/daemon/<runID>/tasks/<taskID>/
+  .jekko/daemon/<runID>/tasks/<taskID>/
     CAPSULE.md
     MEMORY.md
     PLAN.current.md
@@ -198,7 +198,7 @@ You called out two important modes:
 1. A fresh agent makes a new plan from scratch.
 2. A fresh agent reads the existing plan and improves it.
 
-Both are useful. OCAL should support both explicitly.
+Both are useful. ZYAL should support both explicitly.
 
 ## Context modes
 
@@ -227,7 +227,7 @@ This mirrors the manager/specialist distinction from current agent frameworks: t
 
 # 6. Hardening pass types
 
-Add these pass types to OCAL.
+Add these pass types to ZYAL.
 
 ## `scout`
 
@@ -396,7 +396,7 @@ Then the global daemon chooses another task. This avoids endless “thinking abo
 
 ---
 
-# 9. Recommended OCAL syntax addition
+# 9. Recommended ZYAL syntax addition
 
 I would add a new top-level block:
 
@@ -404,7 +404,7 @@ I would add a new top-level block:
 hardening:
 ```
 
-This keeps OCAL simple. It avoids inventing a second language.
+This keeps ZYAL simple. It avoids inventing a second language.
 
 ## Minimal version
 
@@ -427,7 +427,7 @@ hardening:
 
   capsule:
     storage: sqlite
-    mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}"
+    mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}"
     commit_scratch: false
     preserve_after_complete:
       - final_summary
@@ -482,7 +482,7 @@ hardening:
 This is how your original dirty-worktree loop would look after adding hardening lanes.
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -598,9 +598,9 @@ hardening:
 
   capsule:
     storage: sqlite
-    mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}"
+    mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}"
     scratch_mode: ignored_files
-    scratch_path: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/SCRATCH"
+    scratch_path: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/SCRATCH"
     commit_scratch: false
     memory:
       keep:
@@ -720,14 +720,14 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   hardening:
     show_lane: true
     show_capsule: true
     color: amber
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 ---
@@ -764,11 +764,11 @@ The hardening lane sits **inside** the daemon loop but has its own local budget.
 Add these files to the current implementation plan.
 
 ```text
-packages/opencode/src/session/daemon-risk.ts
-packages/opencode/src/session/daemon-hardening.ts
-packages/opencode/src/session/daemon-capsule.ts
-packages/opencode/src/session/daemon-pass.ts
-packages/opencode/src/session/daemon-promotion.ts
+packages/jekko/src/session/daemon-risk.ts
+packages/jekko/src/session/daemon-hardening.ts
+packages/jekko/src/session/daemon-capsule.ts
+packages/jekko/src/session/daemon-pass.ts
+packages/jekko/src/session/daemon-promotion.ts
 ```
 
 ## Extend parser/schema
@@ -776,10 +776,10 @@ packages/opencode/src/session/daemon-promotion.ts
 Modify:
 
 ```text
-packages/opencode/src/agent-script/schema.ts
-packages/opencode/src/agent-script/parser.ts
-packages/opencode/src/agent-script/examples.ts
-packages/opencode/specs/daemon-ocal.md
+packages/jekko/src/agent-script/schema.ts
+packages/jekko/src/agent-script/parser.ts
+packages/jekko/src/agent-script/examples.ts
+packages/jekko/specs/daemon-zyal.md
 ```
 
 Add schemas:
@@ -932,7 +932,7 @@ The capsule needs safe temp storage, but it must not pollute the repo or get acc
 ## Rules
 
 ```text
-1. Scratch lives under .opencode/daemon/<runID>/tasks/<taskID>/SCRATCH.
+1. Scratch lives under .jekko/daemon/<runID>/tasks/<taskID>/SCRATCH.
 2. Prototype code runs in a worker git worktree or scratch-only area.
 3. Main worktree edits are forbidden until promotion passes.
 4. Scratch is excluded from checkpoint git add unless explicitly allowed.
@@ -975,7 +975,7 @@ This gives the agent memory while preventing a permanent junk drawer.
 
 # 15. Syntax highlighting and UX
 
-OCAL should remain YAML inside explicit sentinels. That gives you good syntax highlighting without inventing a whole grammar.
+ZYAL should remain YAML inside explicit sentinels. That gives you good syntax highlighting without inventing a whole grammar.
 
 ## Recommended highlighting layers
 
@@ -984,14 +984,14 @@ OCAL should remain YAML inside explicit sentinels. That gives you good syntax hi
 Highlight these as executable infrastructure, not prose:
 
 ```text
-<<<OCAL v1:daemon id=...>>>
-<<<END_OCAL id=...>>>
-OCAL_ARM RUN_FOREVER id=...
+<<<ZYAL v1:daemon id=...>>>
+<<<END_ZYAL id=...>>>
+ZYAL_ARM RUN_FOREVER id=...
 ```
 
 Color: gold + bold.
 
-### Layer 2: Top-level OCAL keys
+### Layer 2: Top-level ZYAL keys
 
 Highlight known top-level keys:
 
@@ -1109,7 +1109,7 @@ The capsule answers those.
 
 # 17. The “hard tasks after easy tasks are gone” behavior
 
-I would make this explicit in OCAL selection:
+I would make this explicit in ZYAL selection:
 
 ```yaml
 selection:
@@ -1195,7 +1195,7 @@ Verifier
 
 This aligns with CrewAI’s manager/delegation/validation pattern and OpenAI’s “manager calls specialists as bounded capabilities” pattern. ([CrewAI Documentation][4])
 
-For OpenCode specifically, default worker isolation should remain `git_worktree`. Same-worktree writing should stay forbidden for hardening workers.
+For Jekko specifically, default worker isolation should remain `git_worktree`. Same-worktree writing should stay forbidden for hardening workers.
 
 ---
 
@@ -1210,7 +1210,7 @@ Test:
 ```text
 valid hardening block parses
 unknown hardening keys reject
-hardening cannot appear outside armed OCAL
+hardening cannot appear outside armed ZYAL
 duplicate hardening blocks reject
 ```
 
@@ -1287,7 +1287,7 @@ cleanup status
 
 # 20. Acceptance tests for this addition
 
-These are the tests I would add to the existing OCAL plan.
+These are the tests I would add to the existing ZYAL plan.
 
 ```text
 1. Hard task routes to capsule, easy task does not.
@@ -1307,7 +1307,7 @@ These are the tests I would add to the existing OCAL plan.
 Security blockers:
 
 ```text
-- Assistant-generated OCAL hardening block starts a daemon.
+- Assistant-generated ZYAL hardening block starts a daemon.
 - Scratch files are committed by default.
 - Worker writes main worktree before promotion.
 - A hardening pass loop ignores max_total_per_task.
@@ -1318,7 +1318,7 @@ Security blockers:
 
 # 21. The exact plan update I would give the implementation agent
 
-Add this section to the existing “OCAL Daemon Runtime V1 Plan”:
+Add this section to the existing “ZYAL Daemon Runtime V1 Plan”:
 
 ```markdown
 ## Addendum: Hardening Lanes and Task Capsules
@@ -1336,11 +1336,11 @@ Key decisions:
 - Exhausted hard tasks become blocked/deferred with a capsule summary, then daemon continues elsewhere.
 
 New files:
-- packages/opencode/src/session/daemon-risk.ts
-- packages/opencode/src/session/daemon-hardening.ts
-- packages/opencode/src/session/daemon-capsule.ts
-- packages/opencode/src/session/daemon-pass.ts
-- packages/opencode/src/session/daemon-promotion.ts
+- packages/jekko/src/session/daemon-risk.ts
+- packages/jekko/src/session/daemon-hardening.ts
+- packages/jekko/src/session/daemon-capsule.ts
+- packages/jekko/src/session/daemon-pass.ts
+- packages/jekko/src/session/daemon-promotion.ts
 
 Schema additions:
 - OcalHardening
@@ -1382,12 +1382,12 @@ Tests:
 
 ## Final recommendation
 
-Do **not** make OCAL “more magical.” Make it more **host-enforced**.
+Do **not** make ZYAL “more magical.” Make it more **host-enforced**.
 
 The addition should be:
 
 ```text
-OCAL daemon runtime
+ZYAL daemon runtime
   + task lanes
   + risk router
   + hardening capsules
@@ -1419,7 +1419,7 @@ If the task remains too hard, it becomes a well-documented blocker instead of an
 [5]: https://code.claude.com/docs/en/hooks-guide "Automate workflows with hooks - Claude Code Docs"
 [6]: https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/ "A practical guide to building agents | OpenAI"
 [7]: https://arxiv.org/abs/2303.11366 "[2303.11366] Reflexion: Language Agents with Verbal Reinforcement Learning"
-[8]: https://github.com/anomalyco/opencode/issues/18636 "[FEATURE]: Config option for continuous execution loop until task completion · Issue #18636 · anomalyco/opencode · GitHub"
+[8]: https://github.com/anomalyco/jekko/issues/18636 "[FEATURE]: Config option for continuous execution loop until task completion · Issue #18636 · anomalyco/jekko · GitHub"
 [9]: https://developers.openai.com/api/docs/guides/agents/orchestration "Orchestration and handoffs | OpenAI API"
 [10]: https://developers.openai.com/api/docs/guides/agents/guardrails-approvals "Guardrails and human review | OpenAI API"
 

@@ -56,7 +56,7 @@ Summary:
 
 ### JK-0001 - [medium] HLT-001-DEAD-MARKER - .
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:00:00Z
 - Completed: 2026-05-07T12:05:00Z
 - Source packet: `1`
@@ -96,7 +96,7 @@ Summary:
 
 ### JK-0002 - [high] HLT-009-GENERATED-SECURITY - .github/workflows
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:00:00Z
 - Completed: 2026-05-07T12:05:00Z
 - Source packet: `2`
@@ -135,7 +135,7 @@ Summary:
 
 ### JK-0003 - [high] HLT-016-SUPPLY-CHAIN-DRIFT - .github/workflows
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T13:15:00Z
 - Completed: 2026-05-07T13:20:00Z
 - Source packet: `3`
@@ -603,7 +603,7 @@ Summary:
 
 ### JK-0015 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-locale-sync.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T13:10:00Z
 - Completed: 2026-05-07T13:30:00Z
 - Source packet: `15`
@@ -641,7 +641,7 @@ Summary:
 -   - Files touched: `.github/workflows/docs-locale-sync.yml`
 - Touched files: `.github/workflows/docs-locale-sync.yml`
  - Status: Complete
- - Assignee: opencode
+ - Assignee: jekko
  - Started: 2026-05-07T13:10:00Z
  - Completed: 2026-05-07T13:15:00Z
  - Source packet: `15`
@@ -875,7 +875,7 @@ Summary:
 
 ### JK-0021 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-update.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T12:05:00Z
 - Completed: 2026-05-08T12:15:00Z
 - Proof receipt:
@@ -1270,7 +1270,7 @@ Summary:
 
 ### JK-0031 - [medium] HLT-016-SUPPLY-CHAIN-DRIFT - .github/workflows/jankurai.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T13:00:00Z
 - Completed: 2026-05-07T13:05:00Z
 - Source packet: `31`
@@ -1310,7 +1310,7 @@ Summary:
 
 ### JK-0032 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:00:00Z
 - Completed: 2026-05-07T12:05:00Z
 - Source packet: `32`
@@ -1350,7 +1350,7 @@ Summary:
 
 ### JK-0033 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:05:00Z
 - Completed: 2026-05-07T12:10:00Z
 - Source packet: `33`
@@ -1406,7 +1406,7 @@ Summary:
 
 ### JK-0034 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:20:00Z
 - Completed: 2026-05-07T12:20:30Z
 - Source packet: `34`
@@ -1446,7 +1446,7 @@ Summary:
 
 ### JK-0035 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:21:00Z
 - Completed: 2026-05-08T13:15:00Z
 - Touched files: `.github/workflows/jankurai.yml`
@@ -1488,7 +1488,7 @@ Summary:
 
 ### JK-0036 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T14:00:00Z
 - Completed: 2026-05-07T14:05:00Z
 - Source packet: `36`
@@ -1543,7 +1543,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `.github/workflows/opencode.yml`
+- Scope path: `.github/workflows/jekko.yml`
 - Problem: workflow job is missing timeout-minutes
 - Why: workflow can run without a checked time bound
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -1551,7 +1551,7 @@ Summary:
 - `.github/`
 - `ops/`
 - `.github/workflows/`
-- `.github/workflows/opencode.yml`
+- `.github/workflows/jekko.yml`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -1567,10 +1567,10 @@ Summary:
   - Command: `rtk just fast`
   - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
   - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
+  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
 
-### JK-0051 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/opencode.yml
+### JK-0051 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
 - Assignee: codex-agent
 - Started: 2026-05-07T09:45:45Z
 - Completed: 2026-05-07T09:46:46Z
@@ -1582,7 +1582,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `.github/workflows/opencode.yml`
+- Scope path: `.github/workflows/jekko.yml`
 - Problem: workflow job is missing timeout-minutes
 - Why: workflow can run without a checked time bound
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -1590,7 +1590,7 @@ Summary:
 - `.github/`
 - `ops/`
 - `.github/workflows/`
-- `.github/workflows/opencode.yml`
+- `.github/workflows/jekko.yml`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -1606,10 +1606,10 @@ Summary:
   - Command: `rtk just fast`
   - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
   - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
+  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
 
-### JK-0052 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/opencode.yml
+### JK-0052 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
 - Assignee: codex-agent
 - Started: 2026-05-07T09:45:45Z
 - Completed: 2026-05-07T09:46:46Z
@@ -1621,7 +1621,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `.github/workflows/opencode.yml`
+- Scope path: `.github/workflows/jekko.yml`
 - Problem: workflow uses an external action not pinned to a full commit SHA
 - Why: tag or branch refs can change without review
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -1629,7 +1629,7 @@ Summary:
 - `.github/`
 - `ops/`
 - `.github/workflows/`
-- `.github/workflows/opencode.yml`
+- `.github/workflows/jekko.yml`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -1645,10 +1645,10 @@ Summary:
   - Command: `rtk just fast`
   - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
   - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
+  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
 
-### JK-0053 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/opencode.yml
+### JK-0053 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
 - Assignee: codex-agent
 - Started: 2026-05-07T09:45:45Z
 - Completed: 2026-05-07T09:46:46Z
@@ -1660,7 +1660,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `.github/workflows/opencode.yml`
+- Scope path: `.github/workflows/jekko.yml`
 - Problem: workflow uses a mutable action or image reference
 - Why: action ref can change without review
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -1668,7 +1668,7 @@ Summary:
 - `.github/`
 - `ops/`
 - `.github/workflows/`
-- `.github/workflows/opencode.yml`
+- `.github/workflows/jekko.yml`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -1684,10 +1684,10 @@ Summary:
   - Command: `rtk just fast`
   - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
   - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
+  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
 
-### JK-0054 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/opencode.yml
+### JK-0054 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
 - Assignee: codex-agent
 - Started: 2026-05-07T09:45:45Z
 - Completed: 2026-05-07T09:46:46Z
@@ -1699,7 +1699,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `.github/workflows/opencode.yml`
+- Scope path: `.github/workflows/jekko.yml`
 - Problem: workflow uses an external action not pinned to a full commit SHA
 - Why: tag or branch refs can change without review
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -1707,7 +1707,7 @@ Summary:
 - `.github/`
 - `ops/`
 - `.github/workflows/`
-- `.github/workflows/opencode.yml`
+- `.github/workflows/jekko.yml`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -1723,8 +1723,8 @@ Summary:
   - Command: `rtk just fast`
   - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
   - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/opencode.yml`, `JANKURAI_TASKLIST.md`
+  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
+- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0055 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
 - Status: Blocked
@@ -1768,7 +1768,7 @@ Summary:
 
 ### JK-0056 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:30:00Z
 - Completed: 2026-05-07T15:30:00Z
 - Proof receipt:
@@ -1809,7 +1809,7 @@ Summary:
 
 ### JK-0057 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T14:00:00Z
 - Completed: 2026-05-07T11:14:20Z
 - Source packet: `57`
@@ -1849,7 +1849,7 @@ Summary:
 
 ### JK-0058 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/pr-management.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T15:00:00Z
 - Completed: 2026-05-07T15:15:00Z
 - Source packet: `58`
@@ -1885,7 +1885,7 @@ Summary:
 
 ### JK-0059 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/review.yml
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T15:05:00Z
 - Completed: 2026-05-07T15:15:00Z
 - Source packet: `60`
@@ -1922,9 +1922,9 @@ Summary:
 -   - Timestamp: 2026-05-07T15:10:00Z
 -   - Files touched: `.github/workflows/review.yml`
 
-### JK-0061 - [high] HLT-001-DEAD-MARKER - .opencode/plugins/tui-smoke.tsx
+### JK-0061 - [high] HLT-001-DEAD-MARKER - .jekko/plugins/tui-smoke.tsx
  - Status: In Progress
- - Assignee: opencode
+ - Assignee: jekko
  - Started: 2026-05-07T14:10:00Z
  - Completed:
  - Source packet: `61`
@@ -1958,9 +1958,9 @@ Summary:
  - Touched files:
  - Proof receipt:
 
-### JK-0062 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - .opencode/plugins/tui-smoke.tsx
+### JK-0062 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - .jekko/plugins/tui-smoke.tsx
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T14:30:00Z
 - Completed: 2026-05-07T14:31:00Z
 - Source packet: `62`
@@ -1971,7 +1971,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `no`
-- Scope path: `.opencode/plugins/tui-smoke.tsx`
+- Scope path: `.jekko/plugins/tui-smoke.tsx`
 - Problem: raw shell or SQL text is built from untrusted TypeScript input
 - Why: trusted input proof is missing
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -1979,8 +1979,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `.opencode/plugins/`
-- `.opencode/plugins/tui-smoke.tsx`
+- `.jekko/plugins/`
+- `.jekko/plugins/tui-smoke.tsx`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -1997,11 +1997,11 @@ Summary:
 -   - Command: `just fast`
 -   - Result: `exit 0; repo checks ok`
 -   - Timestamp: 2026-05-07T14:31:00Z
--   - Files touched: `.opencode/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
+-   - Files touched: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
 
-### JK-0063 - [high] HLT-023-INPUT-BOUNDARY-GAP - .opencode/plugins/tui-smoke.tsx
+### JK-0063 - [high] HLT-023-INPUT-BOUNDARY-GAP - .jekko/plugins/tui-smoke.tsx
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T12:40:00Z
 - Completed: 2026-05-08T12:45:00Z
 - Source packet: `63`
@@ -2012,15 +2012,15 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `.opencode/plugins/tui-smoke.tsx`
+- Scope path: `.jekko/plugins/tui-smoke.tsx`
 - Problem: unsafe or unvalidated input boundary marker appears in product code
 - Why: input handling risk needs deterministic negative tests
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.github/`
 - `ops/`
-- `.opencode/plugins/`
-- `.opencode/plugins/tui-smoke.tsx`
+- `.jekko/plugins/`
+- `.jekko/plugins/tui-smoke.tsx`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -2032,12 +2032,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.opencode/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
+- Touched files: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
 - Proof receipt:
   - Command: `rtk just security`
   - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
   - Timestamp: 2026-05-08T12:45:00Z
-  - Files touched: `.opencode/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
+  - Files touched: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
 
 ### JK-0065 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
 - Status: Complete
@@ -2053,8 +2053,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/agent/owner-map.json` has no owner-map route
-- Why: path `.opencode/agent/owner-map.json` has no owner-map route
+- Problem: path `.jekko/agent/owner-map.json` has no owner-map route
+- Why: path `.jekko/agent/owner-map.json` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2069,8 +2069,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2107,8 +2107,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/agent/proof-lanes.toml` has no owner-map route
-- Why: path `.opencode/agent/proof-lanes.toml` has no owner-map route
+- Problem: path `.jekko/agent/proof-lanes.toml` has no owner-map route
+- Why: path `.jekko/agent/proof-lanes.toml` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2123,8 +2123,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2161,8 +2161,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/agent/triage.md` has no owner-map route
-- Why: path `.opencode/agent/triage.md` has no owner-map route
+- Problem: path `.jekko/agent/triage.md` has no owner-map route
+- Why: path `.jekko/agent/triage.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2177,8 +2177,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2215,8 +2215,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/command/ai-deps.md` has no owner-map route
-- Why: path `.opencode/command/ai-deps.md` has no owner-map route
+- Problem: path `.jekko/command/ai-deps.md` has no owner-map route
+- Why: path `.jekko/command/ai-deps.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2231,8 +2231,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2269,8 +2269,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/command/changelog.md` has no owner-map route
-- Why: path `.opencode/command/changelog.md` has no owner-map route
+- Problem: path `.jekko/command/changelog.md` has no owner-map route
+- Why: path `.jekko/command/changelog.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2285,8 +2285,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2323,8 +2323,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/command/commit.md` has no owner-map route
-- Why: path `.opencode/command/commit.md` has no owner-map route
+- Problem: path `.jekko/command/commit.md` has no owner-map route
+- Why: path `.jekko/command/commit.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2339,8 +2339,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2377,8 +2377,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/command/issues.md` has no owner-map route
-- Why: path `.opencode/command/issues.md` has no owner-map route
+- Problem: path `.jekko/command/issues.md` has no owner-map route
+- Why: path `.jekko/command/issues.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2393,8 +2393,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2431,8 +2431,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/command/learn.md` has no owner-map route
-- Why: path `.opencode/command/learn.md` has no owner-map route
+- Problem: path `.jekko/command/learn.md` has no owner-map route
+- Why: path `.jekko/command/learn.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2447,8 +2447,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2485,8 +2485,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/command/rmslop.md` has no owner-map route
-- Why: path `.opencode/command/rmslop.md` has no owner-map route
+- Problem: path `.jekko/command/rmslop.md` has no owner-map route
+- Why: path `.jekko/command/rmslop.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2501,8 +2501,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2539,8 +2539,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/owner-map.json`
-- Problem: path `.opencode/command/spellcheck.md` has no owner-map route
-- Why: path `.opencode/command/spellcheck.md` has no owner-map route
+- Problem: path `.jekko/command/spellcheck.md` has no owner-map route
+- Why: path `.jekko/command/spellcheck.md` has no owner-map route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2555,8 +2555,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/owner-map.json`
@@ -2593,8 +2593,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/agent/owner-map.json` has no test-map proof route
-- Why: path `.opencode/agent/owner-map.json` has no test-map proof route
+- Problem: path `.jekko/agent/owner-map.json` has no test-map proof route
+- Why: path `.jekko/agent/owner-map.json` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2609,8 +2609,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -2647,8 +2647,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/agent/proof-lanes.toml` has no test-map proof route
-- Why: path `.opencode/agent/proof-lanes.toml` has no test-map proof route
+- Problem: path `.jekko/agent/proof-lanes.toml` has no test-map proof route
+- Why: path `.jekko/agent/proof-lanes.toml` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2663,8 +2663,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -2701,8 +2701,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/agent/triage.md` has no test-map proof route
-- Why: path `.opencode/agent/triage.md` has no test-map proof route
+- Problem: path `.jekko/agent/triage.md` has no test-map proof route
+- Why: path `.jekko/agent/triage.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2717,8 +2717,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -2755,8 +2755,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/command/ai-deps.md` has no test-map proof route
-- Why: path `.opencode/command/ai-deps.md` has no test-map proof route
+- Problem: path `.jekko/command/ai-deps.md` has no test-map proof route
+- Why: path `.jekko/command/ai-deps.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2771,8 +2771,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -2809,8 +2809,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/command/changelog.md` has no test-map proof route
-- Why: path `.opencode/command/changelog.md` has no test-map proof route
+- Problem: path `.jekko/command/changelog.md` has no test-map proof route
+- Why: path `.jekko/command/changelog.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2825,8 +2825,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -2863,8 +2863,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/command/commit.md` has no test-map proof route
-- Why: path `.opencode/command/commit.md` has no test-map proof route
+- Problem: path `.jekko/command/commit.md` has no test-map proof route
+- Why: path `.jekko/command/commit.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2879,8 +2879,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -2917,8 +2917,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/command/issues.md` has no test-map proof route
-- Why: path `.opencode/command/issues.md` has no test-map proof route
+- Problem: path `.jekko/command/issues.md` has no test-map proof route
+- Why: path `.jekko/command/issues.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2933,8 +2933,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -2971,8 +2971,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/command/learn.md` has no test-map proof route
-- Why: path `.opencode/command/learn.md` has no test-map proof route
+- Problem: path `.jekko/command/learn.md` has no test-map proof route
+- Why: path `.jekko/command/learn.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -2987,8 +2987,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -3025,8 +3025,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/command/rmslop.md` has no test-map proof route
-- Why: path `.opencode/command/rmslop.md` has no test-map proof route
+- Problem: path `.jekko/command/rmslop.md` has no test-map proof route
+- Why: path `.jekko/command/rmslop.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -3041,8 +3041,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -3079,8 +3079,8 @@ Summary:
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `agent/test-map.json`
-- Problem: path `.opencode/command/spellcheck.md` has no test-map proof route
-- Why: path `.opencode/command/spellcheck.md` has no test-map proof route
+- Problem: path `.jekko/command/spellcheck.md` has no test-map proof route
+- Why: path `.jekko/command/spellcheck.md` has no test-map proof route
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
 - `.agents/agents.md`
@@ -3095,8 +3095,8 @@ Summary:
 - `.github/ISSUE_TEMPLATE/feature-request.yml`
 - `.gitignore`
 - `.husky/pre-push`
-- `.opencode/agent/duplicate-pr.md`
-- `.opencode/agent/generated-zones.toml`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
 - `AGENTS.md`
 - `agent/`
 - `agent/test-map.json`
@@ -3121,7 +3121,7 @@ Summary:
 
 ### JK-0085 - [high] HLT-013-RENDERED-UX-GAP - apps/web
 - Status: In Progress
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T11:20:00Z
 - Completed:
 - Source packet: `85`
@@ -3311,7 +3311,7 @@ Summary:
 
 ### JK-0090 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - github/index.ts
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T14:00:00Z
 - Completed: 2026-05-08T14:01:00Z
 - Source packet: `90`
@@ -3352,7 +3352,7 @@ Summary:
 
 ### JK-0091 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - github/index.ts
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T14:05:00Z
 - Completed: 2026-05-08T14:08:00Z
 - Source packet: `91`
@@ -3395,7 +3395,7 @@ Summary:
 
 ### JK-0092 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - github/index.ts
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T14:45:00Z
 - Completed: 2026-05-07T15:00:00Z
 - Source packet: `92`
@@ -3432,7 +3432,7 @@ Summary:
 
 ### JK-0093 - [high] UNKNOWN - infra/console.ts
 - Status: In Progress
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T15:00:00Z
 - Completed:
 - Source packet: `93`
@@ -3466,14 +3466,14 @@ Summary:
 
 ### JK-0094 - [critical] HLT-010-SECRET-SPRAWL - infra/console.ts
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T12:40:00Z
 - Completed: 2026-05-08T12:45:00Z
 - Proof receipt:
   - Command: `rtk just security`
   - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
   - Timestamp: 2026-05-08T12:45:00Z
-  - Files touched: `.opencode/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
+  - Files touched: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
 
 ### JK-0095 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/state.rs
 - Assignee: Codex
@@ -3550,7 +3550,7 @@ Summary:
 
 ### JK-0097 - [high] UNKNOWN - packages/app/public/oc-theme-preload.js
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T15:00:00Z
 - Completed: 2026-05-08T15:05:00Z
 - Source packet: `97`
@@ -3587,7 +3587,7 @@ Summary:
 
 ### JK-0098 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/dialog-edit-project.tsx
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T15:10:00Z
 - Completed: 2026-05-08T15:12:00Z
 - Source packet: `98`
@@ -3624,7 +3624,7 @@ Summary:
 
 ### JK-0099 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/dialog-select-directory.tsx
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-08T16:00:00Z
 - Completed: 2026-05-08T16:05:00Z
 - Source packet: `99`
@@ -4861,7 +4861,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0131 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/console/app/src/asset/brand/opencode-brand-assets.zip
+### JK-0131 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/console/app/src/asset/brand/jekko-brand-assets.zip
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:04:09Z
@@ -4874,7 +4874,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/console/app/src/asset/brand/opencode-brand-assets.zip`
+- Scope path: `packages/console/app/src/asset/brand/jekko-brand-assets.zip`
 - Problem: active tree contains an archive or backup artifact that looks like a source snapshot
 - Why: checked-in snapshots bypass normal source control review and can preserve stale code or secrets
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -4883,7 +4883,7 @@ Summary:
 - `packages/`
 - `tools/`
 - `packages/console/app/src/asset/brand/`
-- `packages/console/app/src/asset/brand/opencode-brand-assets.zip`
+- `packages/console/app/src/asset/brand/jekko-brand-assets.zip`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -4895,7 +4895,7 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/console/app/src/routes/brand/index.tsx`, `packages/console/app/src/asset/brand/opencode-brand-assets.zip`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/console/app/src/routes/brand/index.tsx`, `packages/console/app/src/asset/brand/jekko-brand-assets.zip`, `JANKURAI_TASKLIST.md`
 - Proof receipt:
   - Command: `rtk just score`
   - Result: `exit 0; archive finding removed from agent/repo-score.json`
@@ -6532,7 +6532,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0176 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql
+### JK-0176 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6545,7 +6545,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6553,8 +6553,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6569,7 +6569,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0177 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql
+### JK-0177 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6582,7 +6582,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6590,8 +6590,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6606,7 +6606,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0178 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql
+### JK-0178 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6619,7 +6619,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6627,8 +6627,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6643,7 +6643,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0179 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql
+### JK-0179 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6656,7 +6656,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6664,8 +6664,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6680,7 +6680,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0180 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql
+### JK-0180 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6693,7 +6693,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6701,8 +6701,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6717,7 +6717,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0181 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql
+### JK-0181 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6730,7 +6730,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6738,8 +6738,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/`
-- `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6754,7 +6754,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0182 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260228203230_blue_harpoon/migration.sql
+### JK-0182 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260228203230_blue_harpoon/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6767,7 +6767,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260228203230_blue_harpoon/migration.sql`
+- Scope path: `packages/jekko/migration/20260228203230_blue_harpoon/migration.sql`
 - Problem: UPDATE or DELETE without a WHERE clause can rewrite every row
 - Why: the statement reaches a whole-table write path without a row filter
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6775,8 +6775,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260228203230_blue_harpoon/`
-- `packages/opencode/migration/20260228203230_blue_harpoon/migration.sql`
+- `packages/jekko/migration/20260228203230_blue_harpoon/`
+- `packages/jekko/migration/20260228203230_blue_harpoon/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6791,7 +6791,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0183 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260323234822_events/migration.sql
+### JK-0183 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260323234822_events/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6804,7 +6804,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260323234822_events/migration.sql`
+- Scope path: `packages/jekko/migration/20260323234822_events/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6812,8 +6812,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260323234822_events/`
-- `packages/opencode/migration/20260323234822_events/migration.sql`
+- `packages/jekko/migration/20260323234822_events/`
+- `packages/jekko/migration/20260323234822_events/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6828,7 +6828,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0184 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260410174513_workspace-name/migration.sql
+### JK-0184 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260410174513_workspace-name/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6841,7 +6841,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260410174513_workspace-name/migration.sql`
+- Scope path: `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6849,8 +6849,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260410174513_workspace-name/`
-- `packages/opencode/migration/20260410174513_workspace-name/migration.sql`
+- `packages/jekko/migration/20260410174513_workspace-name/`
+- `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6865,7 +6865,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0185 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260410174513_workspace-name/migration.sql
+### JK-0185 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260410174513_workspace-name/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6878,7 +6878,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260410174513_workspace-name/migration.sql`
+- Scope path: `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6886,8 +6886,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260410174513_workspace-name/`
-- `packages/opencode/migration/20260410174513_workspace-name/migration.sql`
+- `packages/jekko/migration/20260410174513_workspace-name/`
+- `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6902,7 +6902,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0186 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260413175956_chief_energizer/migration.sql
+### JK-0186 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260413175956_chief_energizer/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6915,7 +6915,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260413175956_chief_energizer/migration.sql`
+- Scope path: `packages/jekko/migration/20260413175956_chief_energizer/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6923,8 +6923,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260413175956_chief_energizer/`
-- `packages/opencode/migration/20260413175956_chief_energizer/migration.sql`
+- `packages/jekko/migration/20260413175956_chief_energizer/`
+- `packages/jekko/migration/20260413175956_chief_energizer/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6939,7 +6939,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0187 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260427172553_slow_nightmare/migration.sql
+### JK-0187 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6952,7 +6952,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6960,8 +6960,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -6976,7 +6976,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0188 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260427172553_slow_nightmare/migration.sql
+### JK-0188 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -6989,7 +6989,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -6997,8 +6997,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7013,7 +7013,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0189 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260427172553_slow_nightmare/migration.sql
+### JK-0189 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7026,7 +7026,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7034,8 +7034,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7050,7 +7050,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0190 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260427172553_slow_nightmare/migration.sql
+### JK-0190 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7063,7 +7063,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7071,8 +7071,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/`
-- `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7087,7 +7087,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0191 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260507054800_memory_os/migration.sql
+### JK-0191 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507054800_memory_os/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7100,7 +7100,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260507054800_memory_os/migration.sql`
+- Scope path: `packages/jekko/migration/20260507054800_memory_os/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7108,8 +7108,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260507054800_memory_os/`
-- `packages/opencode/migration/20260507054800_memory_os/migration.sql`
+- `packages/jekko/migration/20260507054800_memory_os/`
+- `packages/jekko/migration/20260507054800_memory_os/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7124,7 +7124,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0192 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/opencode/migration/20260507054800_memory_os/migration.sql
+### JK-0192 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507054800_memory_os/migration.sql
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7137,7 +7137,7 @@ Summary:
 - Risk: `high`
 - Eligibility: `human-required`
 - Human review required: `yes`
-- Scope path: `packages/opencode/migration/20260507054800_memory_os/migration.sql`
+- Scope path: `packages/jekko/migration/20260507054800_memory_os/migration.sql`
 - Problem: destructive migration appears without nearby rollback or backup proof
 - Why: the migration can remove or rewrite data without local evidence of recovery
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7145,8 +7145,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/migration/20260507054800_memory_os/`
-- `packages/opencode/migration/20260507054800_memory_os/migration.sql`
+- `packages/jekko/migration/20260507054800_memory_os/`
+- `packages/jekko/migration/20260507054800_memory_os/migration.sql`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7161,7 +7161,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0193 - [high] HLT-001-DEAD-MARKER - packages/opencode/script/httpapi-exercise.ts
+### JK-0193 - [high] HLT-001-DEAD-MARKER - packages/jekko/script/httpapi-exercise.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7174,7 +7174,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/script/httpapi-exercise.ts`
+- Scope path: `packages/jekko/script/httpapi-exercise.ts`
 - Problem: future-hostile/dead-language term `deprecated` appears in product/runtime code
 - Why: future-hostile/dead-language term `deprecated` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7182,8 +7182,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/script/`
-- `packages/opencode/script/httpapi-exercise.ts`
+- `packages/jekko/script/`
+- `packages/jekko/script/httpapi-exercise.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7198,7 +7198,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0194 - [high] HLT-001-DEAD-MARKER - packages/opencode/script/httpapi-exercise.ts
+### JK-0194 - [high] HLT-001-DEAD-MARKER - packages/jekko/script/httpapi-exercise.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7211,7 +7211,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/script/httpapi-exercise.ts`
+- Scope path: `packages/jekko/script/httpapi-exercise.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7219,8 +7219,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/script/`
-- `packages/opencode/script/httpapi-exercise.ts`
+- `packages/jekko/script/`
+- `packages/jekko/script/httpapi-exercise.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7235,7 +7235,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0195 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/acp/agent.ts
+### JK-0195 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/acp/agent.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7248,7 +7248,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/acp/agent.ts`
+- Scope path: `packages/jekko/src/acp/agent.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7256,8 +7256,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/acp/`
-- `packages/opencode/src/acp/agent.ts`
+- `packages/jekko/src/acp/`
+- `packages/jekko/src/acp/agent.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7272,7 +7272,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0196 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/acp/agent.ts
+### JK-0196 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/acp/agent.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7285,7 +7285,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/acp/agent.ts`
+- Scope path: `packages/jekko/src/acp/agent.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7293,8 +7293,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/acp/`
-- `packages/opencode/src/acp/agent.ts`
+- `packages/jekko/src/acp/`
+- `packages/jekko/src/acp/agent.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7309,7 +7309,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0197 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/github.ts
+### JK-0197 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/github.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7322,7 +7322,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/github.ts`
+- Scope path: `packages/jekko/src/cli/cmd/github.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7330,8 +7330,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/`
-- `packages/opencode/src/cli/cmd/github.ts`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/github.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7346,7 +7346,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0198 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/run.ts
+### JK-0198 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/run.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7359,7 +7359,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/run.ts`
+- Scope path: `packages/jekko/src/cli/cmd/run.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7367,8 +7367,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/`
-- `packages/opencode/src/cli/cmd/run.ts`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/run.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7383,7 +7383,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0199 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/tui/context/theme.tsx
+### JK-0199 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/theme.tsx
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7396,7 +7396,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/tui/context/theme.tsx`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/theme.tsx`
 - Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
 - Why: future-hostile/dead-language term `fallback` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7404,8 +7404,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/tui/context/`
-- `packages/opencode/src/cli/cmd/tui/context/theme.tsx`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/theme.tsx`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7420,7 +7420,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0200 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx
+### JK-0200 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7433,7 +7433,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7441,8 +7441,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/`
-- `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7457,7 +7457,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0201 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx
+### JK-0201 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7470,7 +7470,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7478,8 +7478,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/`
-- `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7494,7 +7494,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0202 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/tui/plugin/internal.ts
+### JK-0202 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/plugin/internal.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7507,7 +7507,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/tui/plugin/internal.ts`
+- Scope path: `packages/jekko/src/cli/cmd/tui/plugin/internal.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7515,8 +7515,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/tui/plugin/`
-- `packages/opencode/src/cli/cmd/tui/plugin/internal.ts`
+- `packages/jekko/src/cli/cmd/tui/plugin/`
+- `packages/jekko/src/cli/cmd/tui/plugin/internal.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7531,7 +7531,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0203 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/tui/routes/session/index.tsx
+### JK-0203 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/index.tsx
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7544,7 +7544,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7552,8 +7552,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/tui/routes/session/`
-- `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7568,7 +7568,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0204 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/cli/cmd/tui/routes/session/index.tsx
+### JK-0204 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/index.tsx
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7581,7 +7581,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7589,8 +7589,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/cli/cmd/tui/routes/session/`
-- `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7605,7 +7605,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0205 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/effect/app-runtime.ts
+### JK-0205 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/effect/app-runtime.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7618,7 +7618,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/effect/app-runtime.ts`
+- Scope path: `packages/jekko/src/effect/app-runtime.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7626,8 +7626,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/effect/`
-- `packages/opencode/src/effect/app-runtime.ts`
+- `packages/jekko/src/effect/`
+- `packages/jekko/src/effect/app-runtime.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7642,7 +7642,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0206 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/effect/app-runtime.ts
+### JK-0206 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/effect/app-runtime.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7655,7 +7655,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/effect/app-runtime.ts`
+- Scope path: `packages/jekko/src/effect/app-runtime.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7663,8 +7663,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/effect/`
-- `packages/opencode/src/effect/app-runtime.ts`
+- `packages/jekko/src/effect/`
+- `packages/jekko/src/effect/app-runtime.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7679,7 +7679,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0207 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/plugin/loader.ts
+### JK-0207 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/plugin/loader.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7692,7 +7692,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/plugin/loader.ts`
+- Scope path: `packages/jekko/src/plugin/loader.ts`
 - Problem: future-hostile/dead-language term `deprecated` appears in product/runtime code
 - Why: future-hostile/dead-language term `deprecated` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7700,8 +7700,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/plugin/`
-- `packages/opencode/src/plugin/loader.ts`
+- `packages/jekko/src/plugin/`
+- `packages/jekko/src/plugin/loader.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7716,7 +7716,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0208 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/plugin/shared.ts
+### JK-0208 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/plugin/shared.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:40:21Z
@@ -7729,7 +7729,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/plugin/shared.ts`
+- Scope path: `packages/jekko/src/plugin/shared.ts`
 - Problem: future-hostile/dead-language term `old` appears in product/runtime code
 - Why: future-hostile/dead-language term `old` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7737,8 +7737,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/plugin/`
-- `packages/opencode/src/plugin/shared.ts`
+- `packages/jekko/src/plugin/`
+- `packages/jekko/src/plugin/shared.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7750,14 +7750,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/src/plugin/shared.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/src/plugin/shared.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:41:33Z
-  - Files touched: packages/opencode/src/plugin/shared.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/src/plugin/shared.ts, JANKURAI_TASKLIST.md
 
-### JK-0209 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/httpapi/groups/session.ts
+### JK-0209 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/groups/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7770,7 +7770,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7778,8 +7778,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/httpapi/groups/`
-- `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7794,7 +7794,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0210 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/httpapi/groups/session.ts
+### JK-0210 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/groups/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7807,7 +7807,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7815,8 +7815,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/httpapi/groups/`
-- `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7831,7 +7831,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0211 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/httpapi/groups/session.ts
+### JK-0211 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/groups/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7844,7 +7844,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7852,8 +7852,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/httpapi/groups/`
-- `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7868,7 +7868,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0212 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts
+### JK-0212 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7881,7 +7881,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7889,8 +7889,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/httpapi/handlers/`
-- `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7905,7 +7905,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0213 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts
+### JK-0213 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7918,7 +7918,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7926,8 +7926,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/httpapi/handlers/`
-- `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7942,7 +7942,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0214 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/opencode/src/server/routes/instance/httpapi/handlers/v2.ts
+### JK-0214 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/jekko/src/server/routes/instance/httpapi/handlers/v2.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7955,7 +7955,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/httpapi/handlers/v2.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/handlers/v2.ts`
 - Problem: active source path looks like an old, backup, copied, or parked implementation
 - Why: ambiguous old-looking active source makes agents and reviewers guess whether code is live
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -7963,8 +7963,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/httpapi/handlers/`
-- `packages/opencode/src/server/routes/instance/httpapi/handlers/v2.ts`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/v2.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -7979,7 +7979,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0215 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/httpapi/server.ts
+### JK-0215 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/server.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -7992,7 +7992,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/httpapi/server.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/server.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8000,8 +8000,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/httpapi/`
-- `packages/opencode/src/server/routes/instance/httpapi/server.ts`
+- `packages/jekko/src/server/routes/instance/httpapi/`
+- `packages/jekko/src/server/routes/instance/httpapi/server.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8016,7 +8016,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0216 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/index.ts
+### JK-0216 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/index.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8029,7 +8029,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/index.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/index.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8037,8 +8037,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/index.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/index.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8053,7 +8053,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0217 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0217 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8066,7 +8066,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8074,8 +8074,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8090,7 +8090,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0218 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0218 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8103,7 +8103,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8111,8 +8111,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8127,7 +8127,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0219 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0219 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8140,7 +8140,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8148,8 +8148,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8164,7 +8164,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0220 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0220 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8177,7 +8177,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8185,8 +8185,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8201,7 +8201,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0221 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0221 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8214,7 +8214,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8222,8 +8222,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8238,7 +8238,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0222 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0222 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8251,7 +8251,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8259,8 +8259,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8275,7 +8275,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0223 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0223 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8288,7 +8288,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8296,8 +8296,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8312,7 +8312,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0224 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0224 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8325,7 +8325,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8333,8 +8333,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8349,7 +8349,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0225 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0225 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8362,7 +8362,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8370,8 +8370,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8386,7 +8386,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0226 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0226 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8399,7 +8399,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8407,8 +8407,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8423,7 +8423,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0227 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/server/routes/instance/session.ts
+### JK-0227 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8436,7 +8436,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/server/routes/instance/session.ts`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8444,8 +8444,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/server/routes/instance/`
-- `packages/opencode/src/server/routes/instance/session.ts`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8460,7 +8460,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0228 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/llm.ts
+### JK-0228 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/llm.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8473,7 +8473,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/llm.ts`
+- Scope path: `packages/jekko/src/session/llm.ts`
 - Problem: future-hostile/dead-language term `unused` appears in product/runtime code
 - Why: future-hostile/dead-language term `unused` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8481,8 +8481,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/llm.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/llm.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8497,7 +8497,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0229 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/opencode/src/session/message-v2.ts
+### JK-0229 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/jekko/src/session/message-v2.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8510,7 +8510,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/message-v2.ts`
+- Scope path: `packages/jekko/src/session/message-v2.ts`
 - Problem: active source path looks like an old, backup, copied, or parked implementation
 - Why: ambiguous old-looking active source makes agents and reviewers guess whether code is live
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8518,8 +8518,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/message-v2.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/message-v2.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8534,7 +8534,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0230 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/message.ts
+### JK-0230 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/message.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:43:03Z
@@ -8547,7 +8547,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/message.ts`
+- Scope path: `packages/jekko/src/session/message.ts`
 - Problem: future-hostile/dead-language term `old` appears in product/runtime code
 - Why: future-hostile/dead-language term `old` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8555,8 +8555,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/message.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/message.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8568,14 +8568,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/src/session/message.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/src/session/message.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:44:02Z
-  - Files touched: packages/opencode/src/session/message.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/src/session/message.ts, JANKURAI_TASKLIST.md
 
-### JK-0231 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/pending.ts
+### JK-0231 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/pending.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8588,7 +8588,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/pending.ts`
+- Scope path: `packages/jekko/src/session/pending.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8596,8 +8596,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/pending.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/pending.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8612,7 +8612,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0232 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/pending.ts
+### JK-0232 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/pending.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8625,7 +8625,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/pending.ts`
+- Scope path: `packages/jekko/src/session/pending.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8633,8 +8633,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/pending.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/pending.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8649,7 +8649,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0233 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0233 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8662,7 +8662,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8670,8 +8670,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8686,7 +8686,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0234 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0234 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8699,7 +8699,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8707,8 +8707,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8723,7 +8723,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0235 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0235 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8736,7 +8736,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8744,8 +8744,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8760,7 +8760,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0236 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0236 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8773,7 +8773,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8781,8 +8781,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8797,7 +8797,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0237 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0237 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8810,7 +8810,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8818,8 +8818,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8834,7 +8834,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0238 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0238 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8847,7 +8847,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8855,8 +8855,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8871,7 +8871,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0239 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0239 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8884,7 +8884,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8892,8 +8892,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8908,7 +8908,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0240 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0240 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8921,7 +8921,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8929,8 +8929,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8945,7 +8945,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0241 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0241 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8958,7 +8958,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -8966,8 +8966,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -8982,7 +8982,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0242 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0242 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -8995,7 +8995,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9003,8 +9003,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9019,7 +9019,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0243 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0243 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9032,7 +9032,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9040,8 +9040,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9056,7 +9056,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0244 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0244 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9069,7 +9069,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9077,8 +9077,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9093,7 +9093,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0245 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0245 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9106,7 +9106,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9114,8 +9114,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9130,7 +9130,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0246 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/processor.ts
+### JK-0246 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/processor.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9143,7 +9143,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/processor.ts`
+- Scope path: `packages/jekko/src/session/processor.ts`
 - Problem: future-hostile/dead-language term `compat` appears in product/runtime code
 - Why: future-hostile/dead-language term `compat` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9151,8 +9151,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/processor.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/processor.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9167,7 +9167,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0247 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/prompt.ts
+### JK-0247 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/prompt.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9180,7 +9180,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/prompt.ts`
+- Scope path: `packages/jekko/src/session/prompt.ts`
 - Problem: future-hostile/dead-language term `temporary` appears in product/runtime code
 - Why: future-hostile/dead-language term `temporary` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9188,8 +9188,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/prompt.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/prompt.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9204,7 +9204,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0248 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/prompt.ts
+### JK-0248 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/prompt.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9217,7 +9217,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/prompt.ts`
+- Scope path: `packages/jekko/src/session/prompt.ts`
 - Problem: future-hostile/dead-language term `temporary` appears in product/runtime code
 - Why: future-hostile/dead-language term `temporary` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9225,8 +9225,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/prompt.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/prompt.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9241,9 +9241,9 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0249 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/session.ts
+### JK-0249 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/session.ts
 - Status: In Progress
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T15:04:41Z
 - Completed:
 - Source packet: `249`
@@ -9254,7 +9254,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/session.ts`
+- Scope path: `packages/jekko/src/session/session.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9262,8 +9262,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/session.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/session.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9278,7 +9278,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0250 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/todo.ts
+### JK-0250 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9291,7 +9291,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/todo.ts`
+- Scope path: `packages/jekko/src/session/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9299,8 +9299,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/todo.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9315,7 +9315,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0251 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/todo.ts
+### JK-0251 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9328,7 +9328,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/todo.ts`
+- Scope path: `packages/jekko/src/session/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9336,8 +9336,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/todo.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9352,7 +9352,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0252 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/todo.ts
+### JK-0252 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9365,7 +9365,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/todo.ts`
+- Scope path: `packages/jekko/src/session/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9373,8 +9373,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/todo.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9389,7 +9389,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0253 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/session/todo.ts
+### JK-0253 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9402,7 +9402,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/session/todo.ts`
+- Scope path: `packages/jekko/src/session/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9410,8 +9410,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/session/`
-- `packages/opencode/src/session/todo.ts`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9426,7 +9426,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0254 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/registry.ts
+### JK-0254 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/registry.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9439,7 +9439,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/registry.ts`
+- Scope path: `packages/jekko/src/tool/registry.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9447,8 +9447,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/registry.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/registry.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9463,7 +9463,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0255 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/registry.ts
+### JK-0255 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/registry.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9476,7 +9476,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/registry.ts`
+- Scope path: `packages/jekko/src/tool/registry.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9484,8 +9484,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/registry.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/registry.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9500,7 +9500,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0256 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/registry.ts
+### JK-0256 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/registry.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9513,7 +9513,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/registry.ts`
+- Scope path: `packages/jekko/src/tool/registry.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9521,8 +9521,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/registry.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/registry.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9537,7 +9537,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0257 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/todo.ts
+### JK-0257 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9550,7 +9550,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/todo.ts`
+- Scope path: `packages/jekko/src/tool/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9558,8 +9558,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/todo.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9574,7 +9574,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0258 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/todo.ts
+### JK-0258 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9587,7 +9587,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/todo.ts`
+- Scope path: `packages/jekko/src/tool/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9595,8 +9595,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/todo.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9611,7 +9611,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0259 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/todo.ts
+### JK-0259 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9624,7 +9624,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/todo.ts`
+- Scope path: `packages/jekko/src/tool/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9632,8 +9632,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/todo.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9648,7 +9648,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0260 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/todo.ts
+### JK-0260 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9661,7 +9661,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/todo.ts`
+- Scope path: `packages/jekko/src/tool/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9669,8 +9669,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/todo.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9685,7 +9685,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0261 - [high] HLT-001-DEAD-MARKER - packages/opencode/src/tool/todo.ts
+### JK-0261 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/tool/todo.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9698,7 +9698,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/src/tool/todo.ts`
+- Scope path: `packages/jekko/src/tool/todo.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9706,8 +9706,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/src/tool/`
-- `packages/opencode/src/tool/todo.ts`
+- `packages/jekko/src/tool/`
+- `packages/jekko/src/tool/todo.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9722,7 +9722,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0262 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/config/config.part-07.test.ts
+### JK-0262 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/config/config.part-07.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9735,7 +9735,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/config/config.part-07.test.ts`
+- Scope path: `packages/jekko/test/config/config.part-07.test.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9743,8 +9743,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/config/`
-- `packages/opencode/test/config/config.part-07.test.ts`
+- `packages/jekko/test/config/`
+- `packages/jekko/test/config/config.part-07.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9759,7 +9759,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0263 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/effect/app-runtime-logger.test.ts
+### JK-0263 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/effect/app-runtime-logger.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9772,7 +9772,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- Scope path: `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Problem: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Why: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9780,8 +9780,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/effect/`
-- `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- `packages/jekko/test/effect/`
+- `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9796,7 +9796,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0264 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/effect/app-runtime-logger.test.ts
+### JK-0264 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/effect/app-runtime-logger.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9809,7 +9809,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- Scope path: `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Problem: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Why: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9817,8 +9817,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/effect/`
-- `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- `packages/jekko/test/effect/`
+- `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9833,7 +9833,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0265 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/effect/app-runtime-logger.test.ts
+### JK-0265 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/effect/app-runtime-logger.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9846,7 +9846,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- Scope path: `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Problem: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Why: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9854,8 +9854,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/effect/`
-- `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- `packages/jekko/test/effect/`
+- `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9870,7 +9870,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0266 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/effect/app-runtime-logger.test.ts
+### JK-0266 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/effect/app-runtime-logger.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9883,7 +9883,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- Scope path: `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Problem: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Why: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9891,8 +9891,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/effect/`
-- `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- `packages/jekko/test/effect/`
+- `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9907,7 +9907,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0267 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/effect/app-runtime-logger.test.ts
+### JK-0267 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/effect/app-runtime-logger.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -9920,7 +9920,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- Scope path: `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Problem: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Why: future-hostile/dead-language term `dummy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9928,8 +9928,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/effect/`
-- `packages/opencode/test/effect/app-runtime-logger.test.ts`
+- `packages/jekko/test/effect/`
+- `packages/jekko/test/effect/app-runtime-logger.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9944,7 +9944,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0268 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/lsp/lifecycle.test.ts
+### JK-0268 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/lsp/lifecycle.test.ts
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:09:28Z
@@ -9957,7 +9957,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/lsp/lifecycle.test.ts`
+- Scope path: `packages/jekko/test/lsp/lifecycle.test.ts`
 - Problem: future-hostile/dead-language term `unused` appears in product/runtime code
 - Why: future-hostile/dead-language term `unused` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -9965,8 +9965,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/lsp/`
-- `packages/opencode/test/lsp/lifecycle.test.ts`
+- `packages/jekko/test/lsp/`
+- `packages/jekko/test/lsp/lifecycle.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -9978,13 +9978,13 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/opencode/test/lsp/lifecycle.test.ts`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/jekko/test/lsp/lifecycle.test.ts`, `JANKURAI_TASKLIST.md`
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0`
   - Timestamp: 2026-05-07T15:09:45Z
 
-### JK-0269 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/lsp/lifecycle.test.ts
+### JK-0269 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/lsp/lifecycle.test.ts
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:09:45Z
@@ -9997,7 +9997,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/lsp/lifecycle.test.ts`
+- Scope path: `packages/jekko/test/lsp/lifecycle.test.ts`
 - Problem: future-hostile/dead-language term `unused` appears in product/runtime code
 - Why: future-hostile/dead-language term `unused` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10005,8 +10005,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/lsp/`
-- `packages/opencode/test/lsp/lifecycle.test.ts`
+- `packages/jekko/test/lsp/`
+- `packages/jekko/test/lsp/lifecycle.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10018,13 +10018,13 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/opencode/test/lsp/lifecycle.test.ts`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/jekko/test/lsp/lifecycle.test.ts`, `JANKURAI_TASKLIST.md`
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; proof shared with JK-0268`
   - Timestamp: 2026-05-07T15:09:45Z
 
-### JK-0270 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/memory/abort-leak.test.ts
+### JK-0270 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/memory/abort-leak.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:45:02Z
@@ -10037,7 +10037,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/memory/abort-leak.test.ts`
+- Scope path: `packages/jekko/test/memory/abort-leak.test.ts`
 - Problem: future-hostile/dead-language term `old` appears in product/runtime code
 - Why: future-hostile/dead-language term `old` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10045,8 +10045,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/memory/`
-- `packages/opencode/test/memory/abort-leak.test.ts`
+- `packages/jekko/test/memory/`
+- `packages/jekko/test/memory/abort-leak.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10058,14 +10058,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:46:03Z
-  - Files touched: packages/opencode/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0271 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/memory/abort-leak.test.ts
+### JK-0271 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/memory/abort-leak.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:46:03Z
@@ -10078,7 +10078,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/memory/abort-leak.test.ts`
+- Scope path: `packages/jekko/test/memory/abort-leak.test.ts`
 - Problem: future-hostile/dead-language term `old` appears in product/runtime code
 - Why: future-hostile/dead-language term `old` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10086,8 +10086,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/memory/`
-- `packages/opencode/test/memory/abort-leak.test.ts`
+- `packages/jekko/test/memory/`
+- `packages/jekko/test/memory/abort-leak.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10099,14 +10099,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:46:03Z
-  - Files touched: packages/opencode/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0272 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/memory/abort-leak.test.ts
+### JK-0272 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/memory/abort-leak.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:46:03Z
@@ -10119,7 +10119,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/memory/abort-leak.test.ts`
+- Scope path: `packages/jekko/test/memory/abort-leak.test.ts`
 - Problem: future-hostile/dead-language term `old` appears in product/runtime code
 - Why: future-hostile/dead-language term `old` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10127,8 +10127,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/memory/`
-- `packages/opencode/test/memory/abort-leak.test.ts`
+- `packages/jekko/test/memory/`
+- `packages/jekko/test/memory/abort-leak.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10140,14 +10140,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:46:03Z
-  - Files touched: packages/opencode/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0273 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/patch/patch.test.ts
+### JK-0273 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/patch/patch.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T11:13:32Z
@@ -10160,7 +10160,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/patch/patch.test.ts`
+- Scope path: `packages/jekko/test/patch/patch.test.ts`
 - Problem: future-hostile/dead-language term `old` appears in product/runtime code
 - Why: future-hostile/dead-language term `old` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10168,8 +10168,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/patch/`
-- `packages/opencode/test/patch/patch.test.ts`
+- `packages/jekko/test/patch/`
+- `packages/jekko/test/patch/patch.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10181,14 +10181,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/patch/patch.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/patch/patch.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T11:14:46Z
-  - Files touched: packages/opencode/test/patch/patch.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/patch/patch.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0274 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/preload.ts
+### JK-0274 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/preload.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T14:38:32Z
@@ -10201,7 +10201,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/preload.ts`
+- Scope path: `packages/jekko/test/preload.ts`
 - Problem: future-hostile/dead-language term `temp` appears in product/runtime code
 - Why: future-hostile/dead-language term `temp` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10209,8 +10209,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/`
-- `packages/opencode/test/preload.ts`
+- `packages/jekko/test/`
+- `packages/jekko/test/preload.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10222,14 +10222,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/preload.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/preload.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T14:40:29Z
-  - Files touched: packages/opencode/test/preload.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/preload.ts, JANKURAI_TASKLIST.md
 
-### JK-0275 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/project/migrate-global.test.ts
+### JK-0275 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/project/migrate-global.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T14:44:16Z
@@ -10242,7 +10242,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/project/migrate-global.test.ts`
+- Scope path: `packages/jekko/test/project/migrate-global.test.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10250,8 +10250,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/project/`
-- `packages/opencode/test/project/migrate-global.test.ts`
+- `packages/jekko/test/project/`
+- `packages/jekko/test/project/migrate-global.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10263,14 +10263,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/project/migrate-global.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/project/migrate-global.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T14:45:35Z
-  - Files touched: packages/opencode/test/project/migrate-global.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/project/migrate-global.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0276 - [medium] HLT-027-HUMAN-REVIEW-EVIDENCE-GAP - packages/opencode/test/provider/copilot/copilot-chat-model.test.ts
+### JK-0276 - [medium] HLT-027-HUMAN-REVIEW-EVIDENCE-GAP - packages/jekko/test/provider/copilot/copilot-chat-model.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10283,7 +10283,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/provider/copilot/copilot-chat-model.test.ts`
+- Scope path: `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
 - Problem: human review or proof claim lacks reproducible evidence
 - Why: proof and review claims need receipts
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10291,8 +10291,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/provider/copilot/`
-- `packages/opencode/test/provider/copilot/copilot-chat-model.test.ts`
+- `packages/jekko/test/provider/copilot/`
+- `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10307,7 +10307,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0277 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/provider/models.test.ts
+### JK-0277 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/provider/models.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10320,7 +10320,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/provider/models.test.ts`
+- Scope path: `packages/jekko/test/provider/models.test.ts`
 - Problem: future-hostile/dead-language term `stale` appears in product/runtime code
 - Why: future-hostile/dead-language term `stale` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10328,8 +10328,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/provider/`
-- `packages/opencode/test/provider/models.test.ts`
+- `packages/jekko/test/provider/`
+- `packages/jekko/test/provider/models.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10344,7 +10344,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0278 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/provider/provider.part-07.test.ts
+### JK-0278 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/provider/provider.part-07.test.ts
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:10:00Z
@@ -10357,7 +10357,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/provider/provider.part-07.test.ts`
+- Scope path: `packages/jekko/test/provider/provider.part-07.test.ts`
 - Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
 - Why: future-hostile/dead-language term `fallback` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10365,8 +10365,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/provider/`
-- `packages/opencode/test/provider/provider.part-07.test.ts`
+- `packages/jekko/test/provider/`
+- `packages/jekko/test/provider/provider.part-07.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10378,13 +10378,13 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/opencode/test/provider/provider.part-07.test.ts`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/jekko/test/provider/provider.part-07.test.ts`, `JANKURAI_TASKLIST.md`
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0`
   - Timestamp: 2026-05-07T15:10:08Z
 
-### JK-0279 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-event.test.ts
+### JK-0279 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-event.test.ts
 - Assignee: codex-agent
 - Started: 2026-05-07T09:28:01Z
 - Completed: 2026-05-07T09:29:23Z
@@ -10396,7 +10396,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/server/httpapi-event.test.ts`
+- Scope path: `packages/jekko/test/server/httpapi-event.test.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10404,8 +10404,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/server/`
-- `packages/opencode/test/server/httpapi-event.test.ts`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-event.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10417,14 +10417,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T09:29:23Z
-  - Files touched: packages/opencode/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0280 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-json-parity.test.ts
+### JK-0280 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-json-parity.test.ts
 - Assignee: codex-agent
 - Started: 2026-05-07T09:30:05Z
 - Completed: 2026-05-07T09:31:30Z
@@ -10436,7 +10436,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/server/httpapi-json-parity.test.ts`
+- Scope path: `packages/jekko/test/server/httpapi-json-parity.test.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10444,8 +10444,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/server/`
-- `packages/opencode/test/server/httpapi-json-parity.test.ts`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-json-parity.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10457,14 +10457,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T09:31:30Z
-  - Files touched: packages/opencode/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0281 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-mcp.test.ts
+### JK-0281 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-mcp.test.ts
 - Assignee: codex-agent
 - Started: 2026-05-07T09:32:13Z
 - Completed: 2026-05-07T09:33:51Z
@@ -10476,7 +10476,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/server/httpapi-mcp.test.ts`
+- Scope path: `packages/jekko/test/server/httpapi-mcp.test.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10484,8 +10484,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/server/`
-- `packages/opencode/test/server/httpapi-mcp.test.ts`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-mcp.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10497,14 +10497,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/server/httpapi-mcp.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/server/httpapi-mcp.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T09:33:51Z
-  - Files touched: packages/opencode/test/server/httpapi-mcp.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/server/httpapi-mcp.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0284 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-provider.test.ts
+### JK-0284 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-provider.test.ts
 - Assignee: codex-agent
 - Started: 2026-05-07T09:24:11Z
 - Completed: 2026-05-07T09:27:13Z
@@ -10516,7 +10516,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/server/httpapi-provider.test.ts`
+- Scope path: `packages/jekko/test/server/httpapi-provider.test.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10524,8 +10524,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/server/`
-- `packages/opencode/test/server/httpapi-provider.test.ts`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-provider.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10537,14 +10537,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T09:27:13Z
-  - Files touched: packages/opencode/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0289 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/server/httpapi-tui.test.ts
+### JK-0289 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-tui.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:24:00Z
@@ -10557,7 +10557,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/server/httpapi-tui.test.ts`
+- Scope path: `packages/jekko/test/server/httpapi-tui.test.ts`
 - Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Why: future-hostile/dead-language term `legacy` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10565,8 +10565,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/server/`
-- `packages/opencode/test/server/httpapi-tui.test.ts`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-tui.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10578,14 +10578,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/server/httpapi-tui.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/server/httpapi-tui.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:24:00Z
-  - Files touched: packages/opencode/test/server/httpapi-tui.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/server/httpapi-tui.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0290 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/llm.test.ts
+### JK-0290 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/llm.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:28:45Z
@@ -10598,7 +10598,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/llm.test.ts`
+- Scope path: `packages/jekko/test/session/llm.test.ts`
 - Problem: future-hostile/dead-language term `stub` appears in product/runtime code
 - Why: future-hostile/dead-language term `stub` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10606,8 +10606,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/llm.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/llm.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10619,14 +10619,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/session/llm.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:29:43Z
-  - Files touched: packages/opencode/test/session/llm.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0291 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/llm.test.ts
+### JK-0291 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/llm.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:29:43Z
@@ -10639,7 +10639,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/llm.test.ts`
+- Scope path: `packages/jekko/test/session/llm.test.ts`
 - Problem: future-hostile/dead-language term `stub` appears in product/runtime code
 - Why: future-hostile/dead-language term `stub` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10647,8 +10647,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/llm.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/llm.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10660,14 +10660,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/session/llm.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:29:43Z
-  - Files touched: packages/opencode/test/session/llm.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0292 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/message-v2.test.ts
+### JK-0292 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/message-v2.test.ts
 - Status: Complete
 - Assignee: unassigned
 - Started: 2026-05-07T10:34:14Z
@@ -10680,7 +10680,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/message-v2.test.ts`
+- Scope path: `packages/jekko/test/session/message-v2.test.ts`
 - Problem: future-hostile/dead-language term `old` appears in product/runtime code
 - Why: future-hostile/dead-language term `old` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10688,8 +10688,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/message-v2.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/message-v2.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10701,14 +10701,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/opencode/test/session/message-v2.test.ts, JANKURAI_TASKLIST.md
+- Touched files: packages/jekko/test/session/message-v2.test.ts, JANKURAI_TASKLIST.md
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
   - Timestamp: 2026-05-07T10:35:16Z
-  - Files touched: packages/opencode/test/session/message-v2.test.ts, JANKURAI_TASKLIST.md
+  - Files touched: packages/jekko/test/session/message-v2.test.ts, JANKURAI_TASKLIST.md
 
-### JK-0293 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/prompt.test.ts
+### JK-0293 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/prompt.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10721,7 +10721,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/prompt.test.ts`
+- Scope path: `packages/jekko/test/session/prompt.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10729,8 +10729,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/prompt.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/prompt.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10745,7 +10745,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0294 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/prompt.test.ts
+### JK-0294 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/prompt.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10758,7 +10758,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/prompt.test.ts`
+- Scope path: `packages/jekko/test/session/prompt.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10766,8 +10766,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/prompt.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/prompt.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10782,7 +10782,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0295 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/schema-decoding.test.ts
+### JK-0295 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10795,7 +10795,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/schema-decoding.test.ts`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10803,8 +10803,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/schema-decoding.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10819,7 +10819,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0296 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/schema-decoding.test.ts
+### JK-0296 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10832,7 +10832,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/schema-decoding.test.ts`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10840,8 +10840,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/schema-decoding.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10856,7 +10856,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0297 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/schema-decoding.test.ts
+### JK-0297 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10869,7 +10869,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/schema-decoding.test.ts`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10877,8 +10877,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/schema-decoding.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10893,7 +10893,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0298 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/schema-decoding.test.ts
+### JK-0298 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -10906,7 +10906,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/schema-decoding.test.ts`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10914,8 +10914,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/schema-decoding.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10930,7 +10930,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0299 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/snapshot-tool-race.test.ts
+### JK-0299 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/snapshot-tool-race.test.ts
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:10:26Z
@@ -10943,7 +10943,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/snapshot-tool-race.test.ts`
+- Scope path: `packages/jekko/test/session/snapshot-tool-race.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10951,8 +10951,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/snapshot-tool-race.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/snapshot-tool-race.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -10964,13 +10964,13 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/opencode/test/session/snapshot-tool-race.test.ts`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/jekko/test/session/snapshot-tool-race.test.ts`, `JANKURAI_TASKLIST.md`
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0`
   - Timestamp: 2026-05-07T15:11:08Z
 
-### JK-0300 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/session/snapshot-tool-race.test.ts
+### JK-0300 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/snapshot-tool-race.test.ts
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:11:08Z
@@ -10983,7 +10983,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/session/snapshot-tool-race.test.ts`
+- Scope path: `packages/jekko/test/session/snapshot-tool-race.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -10991,8 +10991,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/session/`
-- `packages/opencode/test/session/snapshot-tool-race.test.ts`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/snapshot-tool-race.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11004,13 +11004,13 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/opencode/test/session/snapshot-tool-race.test.ts`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/jekko/test/session/snapshot-tool-race.test.ts`, `JANKURAI_TASKLIST.md`
 - Proof receipt:
   - Command: `rtk just fast`
   - Result: `exit 0; proof shared with JK-0299`
   - Timestamp: 2026-05-07T15:11:08Z
 
-### JK-0301 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/storage/json-migration.test.ts
+### JK-0301 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11023,7 +11023,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/storage/json-migration.test.ts`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
 - Problem: future-hostile/dead-language term `stale` appears in product/runtime code
 - Why: future-hostile/dead-language term `stale` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11031,8 +11031,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/storage/`
-- `packages/opencode/test/storage/json-migration.test.ts`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11047,7 +11047,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0302 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/storage/json-migration.test.ts
+### JK-0302 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11060,7 +11060,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/storage/json-migration.test.ts`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
 - Problem: future-hostile/dead-language term `stale` appears in product/runtime code
 - Why: future-hostile/dead-language term `stale` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11068,8 +11068,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/storage/`
-- `packages/opencode/test/storage/json-migration.test.ts`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11084,7 +11084,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0303 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/storage/json-migration.test.ts
+### JK-0303 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11097,7 +11097,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/storage/json-migration.test.ts`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
 - Problem: future-hostile/dead-language term `stale` appears in product/runtime code
 - Why: future-hostile/dead-language term `stale` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11105,8 +11105,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/storage/`
-- `packages/opencode/test/storage/json-migration.test.ts`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11121,7 +11121,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0304 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/storage/json-migration.test.ts
+### JK-0304 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11134,7 +11134,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/storage/json-migration.test.ts`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
 - Problem: future-hostile/dead-language term `stale` appears in product/runtime code
 - Why: future-hostile/dead-language term `stale` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11142,8 +11142,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/storage/`
-- `packages/opencode/test/storage/json-migration.test.ts`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11158,7 +11158,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0305 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/storage/json-migration.test.ts
+### JK-0305 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11171,7 +11171,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/storage/json-migration.test.ts`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
 - Problem: future-hostile/dead-language term `stale` appears in product/runtime code
 - Why: future-hostile/dead-language term `stale` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11179,8 +11179,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/storage/`
-- `packages/opencode/test/storage/json-migration.test.ts`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11195,7 +11195,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0306 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/storage/json-migration.test.ts
+### JK-0306 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11208,7 +11208,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/storage/json-migration.test.ts`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
 - Problem: future-hostile/dead-language term `stale` appears in product/runtime code
 - Why: future-hostile/dead-language term `stale` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11216,8 +11216,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/storage/`
-- `packages/opencode/test/storage/json-migration.test.ts`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11232,7 +11232,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0307 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/tool/parameters.test.ts
+### JK-0307 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11245,7 +11245,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/tool/parameters.test.ts`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11253,8 +11253,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/tool/`
-- `packages/opencode/test/tool/parameters.test.ts`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11269,7 +11269,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0308 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/tool/parameters.test.ts
+### JK-0308 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11282,7 +11282,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/tool/parameters.test.ts`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11290,8 +11290,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/tool/`
-- `packages/opencode/test/tool/parameters.test.ts`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11306,7 +11306,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0309 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/tool/parameters.test.ts
+### JK-0309 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11319,7 +11319,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/tool/parameters.test.ts`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11327,8 +11327,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/tool/`
-- `packages/opencode/test/tool/parameters.test.ts`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11343,7 +11343,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0310 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/tool/parameters.test.ts
+### JK-0310 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
 - Status: Pending
 - Assignee: unassigned
 - Started:
@@ -11356,7 +11356,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/tool/parameters.test.ts`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11364,8 +11364,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/tool/`
-- `packages/opencode/test/tool/parameters.test.ts`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11380,7 +11380,7 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0311 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/tool/registry.test.ts
+### JK-0311 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/registry.test.ts
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:12:11Z
@@ -11393,7 +11393,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/tool/registry.test.ts`
+- Scope path: `packages/jekko/test/tool/registry.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11401,8 +11401,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/tool/`
-- `packages/opencode/test/tool/registry.test.ts`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/registry.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11414,10 +11414,10 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/opencode/test/tool/registry.test.ts`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/jekko/test/tool/registry.test.ts`, `JANKURAI_TASKLIST.md`
 - Proof receipt: `rtk just fast` (pass, exit 0, 2026-05-07T15:12:25Z)
 
-### JK-0312 - [high] HLT-001-DEAD-MARKER - packages/opencode/test/tool/registry.test.ts
+### JK-0312 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/registry.test.ts
 - Status: Complete
 - Assignee: codex-agent
 - Started: 2026-05-07T15:12:11Z
@@ -11430,7 +11430,7 @@ Summary:
 - Risk: `medium`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
-- Scope path: `packages/opencode/test/tool/registry.test.ts`
+- Scope path: `packages/jekko/test/tool/registry.test.ts`
 - Problem: future-hostile/dead-language term `todo` appears in product/runtime code
 - Why: future-hostile/dead-language term `todo` appears in product/runtime code
 - Instructions: scoped fix with targeted proof and no authority expansion
@@ -11438,8 +11438,8 @@ Summary:
 - `crates/`
 - `packages/`
 - `tools/`
-- `packages/opencode/test/tool/`
-- `packages/opencode/test/tool/registry.test.ts`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/registry.test.ts`
 - Forbidden paths:
 - `reference/`
 - `target/`
@@ -11451,7 +11451,7 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/opencode/test/tool/registry.test.ts`, `JANKURAI_TASKLIST.md`
+- Touched files: `packages/jekko/test/tool/registry.test.ts`, `JANKURAI_TASKLIST.md`
 - Proof receipt: `rtk just fast` (pass, exit 0, 2026-05-07T15:12:25Z)
 
 ### JK-0313 - [high] HLT-001-DEAD-MARKER - packages/plugin/src/tui.ts
@@ -11530,7 +11530,7 @@ Summary:
 
 ### JK-0315 - [high] HLT-002-GENERATED-MUTATION - packages/sdk/js/src/gen/client/client.gen.ts
 - Status: Complete
-- Assignee: opencode
+- Assignee: jekko
 - Started: 2026-05-07T12:00:00Z
 - Completed: 2026-05-07T12:05:00Z
 - Source packet: `315`

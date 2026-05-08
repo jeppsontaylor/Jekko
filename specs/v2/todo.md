@@ -27,9 +27,9 @@ We need to figure out how we want server plugins to work and what hooks are usef
 Some ideas:
 
 - plugins get immer drafts so bad mutations can be thrown away
-- plugins get global "opencode" instance like in that post i showed
-- opencode instance has stuff like `opencode.session.prompt()` or
-  `opencode.tool.register({...})`
+- plugins get global "jekko" instance like in that post i showed
+- jekko instance has stuff like `jekko.session.prompt()` or
+  `jekko.tool.register({...})`
 
 ## Rework Config - ???
 

@@ -47,9 +47,9 @@ export default function Home() {
 
       <div data-component="content">
         <section data-component="top">
-          <img data-slot="logo light" src={logoLight} alt="OpenCode logo" />
-          <img data-slot="logo dark" src={logoDark} alt="OpenCode logo" />
-          <h1 data-slot="title">OpenCode</h1>
+          <img data-slot="logo light" src={logoLight} alt="Jekko logo" />
+          <img data-slot="logo dark" src={logoDark} alt="Jekko logo" />
+          <h1 data-slot="title">Jekko</h1>
           <div data-slot="login">
             <a href="/auth">{i18n.t("zen.title")}</a>
           </div>
@@ -67,7 +67,7 @@ export default function Home() {
               <span>
                 <span>curl -fsSL </span>
                 <span data-slot="protocol">https://</span>
-                <span data-slot="highlight">opencode.ai/install</span>
+                <span data-slot="highlight">jekko.ai/install</span>
                 <span> | bash</span>
               </span>
               <CopyStatus />
@@ -112,7 +112,7 @@ export default function Home() {
             <h3 data-component="title">npm</h3>
             <button data-copy data-slot="button">
               <span>
-                npm install -g <strong>opencode-ai</strong>
+                npm install -g <strong>jekko-ai</strong>
               </span>
               <CopyStatus />
             </button>
@@ -121,7 +121,7 @@ export default function Home() {
             <h3 data-component="title">bun</h3>
             <button data-copy data-slot="button">
               <span>
-                bun install -g <strong>opencode-ai</strong>
+                bun install -g <strong>jekko-ai</strong>
               </span>
               <CopyStatus />
             </button>
@@ -130,7 +130,7 @@ export default function Home() {
             <h3 data-component="title">homebrew</h3>
             <button data-copy data-slot="button">
               <span>
-                brew install <strong>opencode</strong>
+                brew install <strong>jekko</strong>
               </span>
               <CopyStatus />
             </button>
@@ -139,7 +139,7 @@ export default function Home() {
             <h3 data-component="title">paru</h3>
             <button data-copy data-slot="button">
               <span>
-                paru -S <strong>opencode-bin</strong>
+                paru -S <strong>jekko-bin</strong>
               </span>
               <CopyStatus />
             </button>
@@ -150,20 +150,20 @@ export default function Home() {
           <figure>
             <figcaption>Product screenshot</figcaption>
             <a href={language.route("/docs/cli")}>
-              <img src={IMG_SPLASH} alt="OpenCode screenshot" />
+              <img src={IMG_SPLASH} alt="Jekko screenshot" />
             </a>
           </figure>
         </section>
 
         <footer data-component="footer">
           <div data-slot="cell">
-            <a href="https://x.com/opencode">{i18n.t("footer.x")}</a>
+            <a href="https://x.com/jekko">{i18n.t("footer.x")}</a>
           </div>
           <div data-slot="cell">
-            <a href="https://github.com/anomalyco/opencode">{i18n.t("footer.github")}</a>
+            <a href="https://github.com/anomalyco/jekko">{i18n.t("footer.github")}</a>
           </div>
           <div data-slot="cell">
-            <a href="https://opencode.ai/discord">{i18n.t("footer.discord")}</a>
+            <a href="https://jekko.ai/discord">{i18n.t("footer.discord")}</a>
           </div>
         </footer>
       </div>

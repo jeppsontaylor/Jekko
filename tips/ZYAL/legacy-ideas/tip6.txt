@@ -1,6 +1,6 @@
 Absolutely — ZYAL is **not redundant** if it stays focused on the thing most agent frameworks still do poorly: **a host-enforced, portable, declarative control plane for long-running autonomous software work**.
 
-My strongest take: **ZYAL should not become another agent framework.** It should become the **Autonomous Software Delivery Contract** that can sit above OpenCode, Codex, Claude Code, OpenHands, LangGraph, Hermes, OpenClaw, local shells, MCP, A2A, Temporal, Kubernetes, and CI. In other words: ZYAL should be the language that tells the host what the agent is allowed to attempt, how evidence must be gathered, how memory is governed, how experiments are isolated, how promotions happen, and how autonomy is bounded.
+My strongest take: **ZYAL should not become another agent framework.** It should become the **Autonomous Software Delivery Contract** that can sit above Jekko, Codex, Claude Code, OpenHands, LangGraph, Hermes, OpenClaw, local shells, MCP, A2A, Temporal, Kubernetes, and CI. In other words: ZYAL should be the language that tells the host what the agent is allowed to attempt, how evidence must be gathered, how memory is governed, how experiments are isolated, how promotions happen, and how autonomy is bounded.
 
 I did a broad online study across primary docs, open-source repos, research papers, and public posts. I would not honestly claim to have read every X, LinkedIn, Quora, Reddit, blog, repo, and paper ever written on the topic; the highest-confidence recommendations below are anchored in primary sources and representative public discussions.
 
@@ -41,7 +41,7 @@ The biggest missing categories are:
 
 The winning strategy is not “ZYAL vs OpenHands” or “ZYAL vs LangGraph.” It is:
 
-> **ZYAL as the host-enforced policy and runbook layer that can compile to or drive OpenCode, OpenHands, Codex, Claude Code, LangGraph, Temporal, CI, Kubernetes, and MCP/A2A tools.**
+> **ZYAL as the host-enforced policy and runbook layer that can compile to or drive Jekko, OpenHands, Codex, Claude Code, LangGraph, Temporal, CI, Kubernetes, and MCP/A2A tools.**
 
 ---
 
@@ -112,7 +112,7 @@ Hermes’s strength is adaptive agency. ZYAL’s strength should be **governed a
 
 OpenClaw is relevant because it looks like a multi-interface agent workspace: routing, voice/talk mode, live canvas, tools, browser, cron, sessions, Discord/Slack, companion apps, onboarding, and skills. Its security docs also make an important point: main-session tools can run on the host with broad access, while sandboxed mode changes the risk posture. ([GitHub][8])
 
-OpenClaw also has a coding-agent skill that delegates work to Codex, Claude Code, OpenCode, and other coding agents via background processes. ([GitHub][9])
+OpenClaw also has a coding-agent skill that delegates work to Codex, Claude Code, Jekko, and other coding agents via background processes. ([GitHub][9])
 
 **What ZYAL should absorb from OpenClaw:**
 
@@ -123,7 +123,7 @@ OpenClaw also has a coding-agent skill that delegates work to Codex, Claude Code
 
 **Where ZYAL should be stricter:**
 
-ZYAL should not merely “launch Codex/Claude/OpenCode in the background.” It should wrap each delegated agent with a **capability envelope**: path scope, allowed tools, max tokens, max time, test requirements, artifact requirements, and promotion gates.
+ZYAL should not merely “launch Codex/Claude/Jekko in the background.” It should wrap each delegated agent with a **capability envelope**: path scope, allowed tools, max tokens, max time, test requirements, artifact requirements, and promotion gates.
 
 ---
 
@@ -144,7 +144,7 @@ Claude’s Agent SDK exposes tools, hooks, subagents, MCP, permissions, and sess
 
 **Where ZYAL should be stronger:**
 
-Codex and Claude have their own runtime semantics. ZYAL can become the **cross-runtime declarative layer** that says: “regardless of whether this is Codex, Claude, OpenCode, or OpenHands, here is the lifecycle, policy, memory, and evidence contract.”
+Codex and Claude have their own runtime semantics. ZYAL can become the **cross-runtime declarative layer** that says: “regardless of whether this is Codex, Claude, Jekko, or OpenHands, here is the lifecycle, policy, memory, and evidence contract.”
 
 ---
 
@@ -201,7 +201,7 @@ A good mental model:
 | Layer             | Examples                                      | ZYAL role                                    |
 | ----------------- | --------------------------------------------- | -------------------------------------------- |
 | Model             | GPT, Claude, Gemini, Qwen, local models       | Select, route, constrain, compare            |
-| Coding agent      | OpenCode, Codex, Claude Code, OpenHands       | Govern lifecycle and tools                   |
+| Coding agent      | Jekko, Codex, Claude Code, OpenHands       | Govern lifecycle and tools                   |
 | Workflow engine   | SQLite loop, LangGraph, Temporal, DBOS        | Declare durable execution policy             |
 | Tool protocol     | MCP, A2A, shell, HTTP                         | Gate capabilities and evidence               |
 | Code intelligence | LSP, AST, Bazel, Nx, Pants, coverage          | Require scoped context and affected analysis |
@@ -257,7 +257,7 @@ runtime:
       action: pause_low_priority
 
   mirror:
-    filesystem: ".opencode/daemon/{{run.id}}"
+    filesystem: ".jekko/daemon/{{run.id}}"
     regenerate_from_state: true
     include_debug_artifacts: ask
 ```
@@ -281,7 +281,7 @@ ZYAL should preserve the principle:
 
 > **The host owns the loop.**
 
-But the host should be allowed to be a local OpenCode process, a Kubernetes runner, a Temporal workflow, or a CI-integrated daemon cluster.
+But the host should be allowed to be a local Jekko process, a Kubernetes runner, a Temporal workflow, or a CI-integrated daemon cluster.
 
 ---
 
@@ -341,7 +341,7 @@ workspace:
     record_session: true
 
   artifacts:
-    path: ".opencode/daemon/{{run.id}}/artifacts"
+    path: ".jekko/daemon/{{run.id}}/artifacts"
     max_size: 2Gi
 ```
 
@@ -807,7 +807,7 @@ ZYAL should add governed skills.
 skills:
   registry:
     sources:
-      - path: ".opencode/skills"
+      - path: ".jekko/skills"
       - path: ".codex/skills"
       - path: ".claude/skills"
       - mcp: "repo://skills"
@@ -844,7 +844,7 @@ skills:
       - repeated_success_gte: 3
       - no_security_flags
       - human_review
-    output_path: ".opencode/skills/generated"
+    output_path: ".jekko/skills/generated"
 ```
 
 ### Skill promotion should be gated
@@ -1114,7 +1114,7 @@ permissions:
 
 But ambitious projects need fine-grained capability control.
 
-Also, OpenCode has already seen concerns that MCP tools can bypass normal permission filtering if not handled carefully. ([GitHub][30]) OpenAI Agents SDK docs also show that guardrails can have scoped limitations around tools and handoffs. ([OpenAI GitHub][31])
+Also, Jekko has already seen concerns that MCP tools can bypass normal permission filtering if not handled carefully. ([GitHub][30]) OpenAI Agents SDK docs also show that guardrails can have scoped limitations around tools and handoffs. ([OpenAI GitHub][31])
 
 ZYAL should introduce a universal **capability gateway** that applies to:
 
@@ -1457,7 +1457,7 @@ assertions:
 
 # 18. Major missing block: `observability`
 
-ZYAL’s `.opencode/daemon/` mirror is great for human inspection, but production autonomy needs structured observability.
+ZYAL’s `.jekko/daemon/` mirror is great for human inspection, but production autonomy needs structured observability.
 
 OpenAI Agents SDK includes tracing of LLM generations, tool calls, handoffs, guardrails, and custom events. ([GitHub][34]) OpenHands also emphasizes event-sourced state and observability. ([arXiv][1])
 
@@ -1506,7 +1506,7 @@ observability:
 
   dashboards:
     mirror:
-      path: ".opencode/daemon/{{run.id}}/STATE.md"
+      path: ".jekko/daemon/{{run.id}}/STATE.md"
     api:
       enabled: true
     live_ui:
@@ -1588,7 +1588,7 @@ This prevents open-ended “AI burn.”
 
 # 20. Major missing block: `interop`
 
-The user’s most important requirement is that ZYAL should be available inside **any chat prompt**: OpenCode, Codex, Claude, etc.
+The user’s most important requirement is that ZYAL should be available inside **any chat prompt**: Jekko, Codex, Claude, etc.
 
 That means ZYAL needs a formal interop layer.
 
@@ -1604,7 +1604,7 @@ interop:
     arm_requires_human_or_host: true
 
   adapters:
-    opencode:
+    jekko:
       agents: native
       permissions: native
       mcp: native
@@ -1748,7 +1748,7 @@ A 1B+ line system is less like “a repo” and more like a **software city**. Z
 
 # 22. Anti-vibe-coding / anti-jankurai controls
 
-Recent public posts around Jankurai describe realtime auditing of hundreds of vibe-coding failure modes across tools like Claude, Codex, Cursor-like systems, and OpenCode. ([Reddit][37]) More broadly, vibe-coding discussions describe the risk of accepting AI-generated code without deep review, and recent research characterizes recurring issues around specification, reliability, debugging, latency, review burden, collaboration, stochasticity, and trust. ([Wikipedia][38])
+Recent public posts around Jankurai describe realtime auditing of hundreds of vibe-coding failure modes across tools like Claude, Codex, Cursor-like systems, and Jekko. ([Reddit][37]) More broadly, vibe-coding discussions describe the risk of accepting AI-generated code without deep review, and recent research characterizes recurring issues around specification, reliability, debugging, latency, review burden, collaboration, stochasticity, and trust. ([Wikipedia][38])
 
 ZYAL should make “anti-vibe” structural.
 
@@ -2250,7 +2250,7 @@ runtime:
     every_events: 500
     compact_after_events: 50000
   mirror:
-    filesystem: ".opencode/daemon/{{run.id}}"
+    filesystem: ".jekko/daemon/{{run.id}}"
     regenerate_from_state: true
 
 workspace:
@@ -3039,7 +3039,7 @@ That is how ZYAL can avoid being “yet another agent YAML” and become the lan
 [27]: https://developers.openai.com/codex/skills "https://developers.openai.com/codex/skills"
 [28]: https://github.com/All-Hands-AI/OpenHands/issues/7547 "https://github.com/All-Hands-AI/OpenHands/issues/7547"
 [29]: https://code.claude.com/docs/en/sub-agents "https://code.claude.com/docs/en/sub-agents"
-[30]: https://github.com/anomalyco/opencode/issues/23045?utm_source=chatgpt.com "MCP tools bypass agent permission filtering · Issue #23045"
+[30]: https://github.com/anomalyco/jekko/issues/23045?utm_source=chatgpt.com "MCP tools bypass agent permission filtering · Issue #23045"
 [31]: https://openai.github.io/openai-agents-python/guardrails/?utm_source=chatgpt.com "Guardrails - OpenAI Agents SDK"
 [32]: https://www.swebench.com/ "https://www.swebench.com/"
 [33]: https://openreview.net/forum?id=9R2iUHhVfr "https://openreview.net/forum?id=9R2iUHhVfr"

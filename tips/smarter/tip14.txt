@@ -1,12 +1,12 @@
-## Best addition to the OCAL plan: task-level “incubation lanes”
+## Best addition to the ZYAL plan: task-level “incubation lanes”
 
-The current OCAL daemon plan solves the first problem: **the agent stops too early**. The next problem is subtler:
+The current ZYAL daemon plan solves the first problem: **the agent stops too early**. The next problem is subtler:
 
 > Once easy work is gone, a forever daemon can thrash on the remaining hard work unless it has a structured way to accumulate task-specific knowledge, compare approaches, invite fresh agents, prototype safely, and only promote a solution when evidence crosses a threshold.
 
-I would add a new OCAL subsystem:
+I would add a new ZYAL subsystem:
 
-# **OCAL Task Incubation Runtime**
+# **ZYAL Task Incubation Runtime**
 
 Public-facing names:
 
@@ -33,9 +33,9 @@ The key is that **the top-level daemon may run forever**, but **hard-task scratc
 
 This borrows the right ideas from existing agent communities without blindly copying them. LangGraph emphasizes short-term and long-term memory plus stateful subgraphs; OpenHands uses append-only event history and context condensers; OpenAI’s Agents SDK distinguishes handoffs from “agents as tools” and uses guardrails/human review to decide continue/pause/stop; CrewAI Flows push structured state, conditionals, loops, and branching into workflow code rather than leaving it to vibes. ([LangChain Docs][1])
 
-OpenCode’s community is already converging on this need: there are feature requests for a continuous execution loop, a native `/loop`, task-based checkpoints, and better compaction/pinned instruction handling; there are also bug reports showing how dangerous uncontrolled infinite loops, compaction loops, and subagent retry loops can be. That strongly supports making OCAL host-enforced, stateful, and circuit-broken instead of prompt-only. ([GitHub][2])
+Jekko’s community is already converging on this need: there are feature requests for a continuous execution loop, a native `/loop`, task-based checkpoints, and better compaction/pinned instruction handling; there are also bug reports showing how dangerous uncontrolled infinite loops, compaction loops, and subagent retry loops can be. That strongly supports making ZYAL host-enforced, stateful, and circuit-broken instead of prompt-only. ([GitHub][2])
 
-Claude Code’s current command system is also instructive: commands are only recognized at the start of a message, `/loop` repeats prompts while the session stays open, `/batch` decomposes large work into 5–30 units with isolated git worktrees, and `/simplify` spawns parallel review agents. OCAL should learn from those shapes, but go further by making the durable state, exit criteria, risk routing, and scratchpad cleanup first-class. ([Claude][3])
+Claude Code’s current command system is also instructive: commands are only recognized at the start of a message, `/loop` repeats prompts while the session stays open, `/batch` decomposes large work into 5–30 units with isolated git worktrees, and `/simplify` spawns parallel review agents. ZYAL should learn from those shapes, but go further by making the durable state, exit criteria, risk routing, and scratchpad cleanup first-class. ([Claude][3])
 
 ---
 
@@ -54,7 +54,7 @@ SQLite tables
 Human/model mirror:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/
+.jekko/daemon/<runID>/tasks/<taskID>/
   STATE.md
   task.json
   ledger.jsonl
@@ -187,9 +187,9 @@ The model feels ready.
 
 ---
 
-# 4. Add “lanes” to OCAL
+# 4. Add “lanes” to ZYAL
 
-OCAL should route tasks into lanes. A lane is a host-managed workflow for a class of work.
+ZYAL should route tasks into lanes. A lane is a host-managed workflow for a class of work.
 
 Recommended lanes:
 
@@ -210,7 +210,7 @@ The daemon should default to `fast` while easy work exists. It should only route
 
 # 5. Syntax addition: simple version
 
-This is the minimal addition I would make to the existing OCAL plan.
+This is the minimal addition I would make to the existing ZYAL plan.
 
 ```yaml
 difficulty:
@@ -230,9 +230,9 @@ difficulty:
         - failed_attempts_at_least: 1
         - no_progress_iterations_at_least: 2
         - touches_paths:
-            - "packages/opencode/src/session/**"
-            - "packages/opencode/src/server/**"
-            - "packages/opencode/migration/**"
+            - "packages/jekko/src/session/**"
+            - "packages/jekko/src/server/**"
+            - "packages/jekko/migration/**"
         - requires_capability:
             any: ["algorithm_design", "schema_migration", "multi_agent_runtime"]
 
@@ -256,7 +256,7 @@ difficulty:
         - abandoned_worktrees
 ```
 
-This is deliberately simple. It gives OCAL the missing hard-task behavior without turning v1 into a full programming language.
+This is deliberately simple. It gives ZYAL the missing hard-task behavior without turning v1 into a full programming language.
 
 ---
 
@@ -285,7 +285,7 @@ task_routing:
       - paths: ["**/auth/**", "**/permission/**", "**/security/**"]
         add: 0.35
         reason: "security-sensitive"
-      - paths: ["packages/opencode/src/session/prompt.ts"]
+      - paths: ["packages/jekko/src/session/prompt.ts"]
         add: 0.30
         reason: "core loop semantics"
     signals:
@@ -343,7 +343,7 @@ task_routing:
 
 ---
 
-# 7. Pass types OCAL should support
+# 7. Pass types ZYAL should support
 
 These are the pass functions I would add.
 
@@ -504,12 +504,12 @@ Runs confidence-building passes after implementation.
 
 ---
 
-# 8. Full OCAL example for the hard-task problem
+# 8. Full ZYAL example for the hard-task problem
 
 This is how I would extend the Jankurai daemon example.
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -554,7 +554,7 @@ tasks:
     lease_ttl: 45m
 
   task_dossier:
-    root: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}"
+    root: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}"
     source_of_truth: sqlite
     mirror:
       - STATE.md
@@ -577,16 +577,16 @@ task_routing:
 
   risk:
     path_rules:
-      - paths: ["packages/opencode/src/session/**"]
+      - paths: ["packages/jekko/src/session/**"]
         add: 0.30
         reason: "core session semantics"
-      - paths: ["packages/opencode/src/server/**"]
+      - paths: ["packages/jekko/src/server/**"]
         add: 0.20
         reason: "API/runtime behavior"
-      - paths: ["packages/opencode/migration/**"]
+      - paths: ["packages/jekko/migration/**"]
         add: 0.30
         reason: "durable DB migration"
-      - paths: ["packages/opencode/src/cli/cmd/tui/**"]
+      - paths: ["packages/jekko/src/cli/cmd/tui/**"]
         add: 0.15
         reason: "interactive UX regression risk"
     signals:
@@ -686,7 +686,7 @@ checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - shell: "bun --cwd packages/opencode test --timeout 30000 packages/opencode/test/session/daemon-runtime.test.ts"
+    - shell: "bun --cwd packages/jekko test --timeout 30000 packages/jekko/test/session/daemon-runtime.test.ts"
     - shell: "jankurai audit . --json target/jankurai/daemon-audit.json"
   git:
     add: ["."]
@@ -709,7 +709,7 @@ cleanup:
     branches: delete_if_merged
 
   on_daemon_satisfied:
-    archive_root: ".opencode/daemon/{{run.id}}/archive"
+    archive_root: ".jekko/daemon/{{run.id}}/archive"
     keep_summary: true
     keep_db_history: true
     prune_temp_artifacts: true
@@ -723,15 +723,15 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   show_task_lane: true
   show_incubation_round: true
   show_readiness: true
   show_risk: true
 
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 ---
@@ -915,10 +915,10 @@ I would add this as **Phase 3.5**, after basic daemon looping and durable store,
 Modify:
 
 ```text
-packages/opencode/src/agent-script/schema.ts
-packages/opencode/src/agent-script/parser.ts
-packages/opencode/src/agent-script/examples.ts
-packages/opencode/specs/daemon-ocal.md
+packages/jekko/src/agent-script/schema.ts
+packages/jekko/src/agent-script/parser.ts
+packages/jekko/src/agent-script/examples.ts
+packages/jekko/specs/daemon-zyal.md
 ```
 
 Add schema classes:
@@ -1011,7 +1011,7 @@ daemon_task_prototype
 Mirror files under:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/
+.jekko/daemon/<runID>/tasks/<taskID>/
 ```
 
 ## Phase 3.5C: Runtime modules
@@ -1019,12 +1019,12 @@ Mirror files under:
 Create:
 
 ```text
-packages/opencode/src/session/daemon-router.ts
-packages/opencode/src/session/daemon-confidence.ts
-packages/opencode/src/session/daemon-dossier.ts
-packages/opencode/src/session/daemon-passes.ts
-packages/opencode/src/session/daemon-incubation.ts
-packages/opencode/src/session/daemon-cleanup.ts
+packages/jekko/src/session/daemon-router.ts
+packages/jekko/src/session/daemon-confidence.ts
+packages/jekko/src/session/daemon-dossier.ts
+packages/jekko/src/session/daemon-passes.ts
+packages/jekko/src/session/daemon-incubation.ts
+packages/jekko/src/session/daemon-cleanup.ts
 ```
 
 Responsibilities:
@@ -1094,11 +1094,11 @@ POST /daemon/:runID/tasks/:taskID/cleanup
 CLI:
 
 ```text
-opencode daemon tasks <runID>
-opencode daemon task <runID> <taskID>
-opencode daemon incubate <runID> <taskID>
-opencode daemon promote <runID> <taskID>
-opencode daemon cleanup <runID> <taskID>
+jekko daemon tasks <runID>
+jekko daemon task <runID> <taskID>
+jekko daemon incubate <runID> <taskID>
+jekko daemon promote <runID> <taskID>
+jekko daemon cleanup <runID> <taskID>
 ```
 
 TUI gold banner should add lane/risk/readiness:
@@ -1118,7 +1118,7 @@ promotion: readiness .61 / .78
 
 ---
 
-# 13. Syntax highlighting / UX for OCAL
+# 13. Syntax highlighting / UX for ZYAL
 
 The syntax should be highlighted by semantic risk, not just YAML colors.
 
@@ -1142,14 +1142,14 @@ Recommended TUI highlights:
 Validation warnings should be specific:
 
 ```text
-Invalid OCAL:
+Invalid ZYAL:
 - incubation lane has no max_rounds_per_task
 - prototype lane writes source files without git_worktree isolation
 - promotion uses self_confidence only
-- cleanup.delete includes paths outside .opencode/daemon
+- cleanup.delete includes paths outside .jekko/daemon
 ```
 
-This is important because Claude Code’s docs now make a clear distinction between commands recognized at the start of a message and ordinary text, and OCAL already plans to require sentinels plus arming. That same principle should apply here: powerful syntax must be visually and procedurally unmistakable. ([Claude][3])
+This is important because Claude Code’s docs now make a clear distinction between commands recognized at the start of a message and ordinary text, and ZYAL already plans to require sentinels plus arming. That same principle should apply here: powerful syntax must be visually and procedurally unmistakable. ([Claude][3])
 
 ---
 
@@ -1194,7 +1194,7 @@ cleanup:
         - reviewer_warnings
 
     archive:
-      root: ".opencode/daemon/{{run.id}}/archive/tasks/{{task.id}}"
+      root: ".jekko/daemon/{{run.id}}/archive/tasks/{{task.id}}"
       keep:
         - STATE.md
         - current-best-plan.md
@@ -1205,21 +1205,21 @@ cleanup:
     delete:
       safe_only: true
       paths:
-        - ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/scratch/raw-transcripts/**"
-        - ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/prototypes/*/worktree"
+        - ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/scratch/raw-transcripts/**"
+        - ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/prototypes/*/worktree"
 
     git:
       delete_temp_branches: merged_only
       delete_worktrees: clean_only
 ```
 
-The daemon should refuse cleanup if a prototype worktree is dirty unless the OCAL file explicitly says how to preserve it.
+The daemon should refuse cleanup if a prototype worktree is dirty unless the ZYAL file explicitly says how to preserve it.
 
 ---
 
 # 15. Updated examples library
 
-Add these examples to `agent-script/examples.ts` and `specs/daemon-ocal.md`.
+Add these examples to `agent-script/examples.ts` and `specs/daemon-zyal.md`.
 
 ## `hard-task-incubation`
 
@@ -1396,23 +1396,23 @@ This is the same broad lesson visible across modern agent systems: reliable auto
 
 # 18. Concrete plan update
 
-I would amend the previous OCAL plan with this new section:
+I would amend the previous ZYAL plan with this new section:
 
 ```text
 ### 6. Task Incubation, Confidence Routing, and Cross-Loop Collaboration
 
 Create/modify:
-- packages/opencode/src/session/daemon-router.ts
-- packages/opencode/src/session/daemon-confidence.ts
-- packages/opencode/src/session/daemon-dossier.ts
-- packages/opencode/src/session/daemon-passes.ts
-- packages/opencode/src/session/daemon-incubation.ts
-- packages/opencode/src/session/daemon-cleanup.ts
-- packages/opencode/src/tool/daemon.ts
-- packages/opencode/src/agent-script/schema.ts
-- packages/opencode/src/agent-script/parser.ts
-- packages/opencode/src/agent-script/examples.ts
-- packages/opencode/specs/daemon-ocal.md
+- packages/jekko/src/session/daemon-router.ts
+- packages/jekko/src/session/daemon-confidence.ts
+- packages/jekko/src/session/daemon-dossier.ts
+- packages/jekko/src/session/daemon-passes.ts
+- packages/jekko/src/session/daemon-incubation.ts
+- packages/jekko/src/session/daemon-cleanup.ts
+- packages/jekko/src/tool/daemon.ts
+- packages/jekko/src/agent-script/schema.ts
+- packages/jekko/src/agent-script/parser.ts
+- packages/jekko/src/agent-script/examples.ts
+- packages/jekko/specs/daemon-zyal.md
 
 Add store support:
 - daemon_task readiness/risk/lane fields
@@ -1421,7 +1421,7 @@ Add store support:
 - daemon_task_plan
 - daemon_task_prototype
 
-Add OCAL blocks:
+Add ZYAL blocks:
 - task_routing
 - task_dossier
 - lanes
@@ -1445,12 +1445,12 @@ Rules:
 
 # 19. Final recommendation
 
-Add **OCAL Task Incubation Runtime** now, but keep v1 sane:
+Add **ZYAL Task Incubation Runtime** now, but keep v1 sane:
 
 ```text
 Phase 1: daemon forever loop
 Phase 2: durable store/checkpoint/context
-Phase 3: OCAL parser/API/TUI gold mode
+Phase 3: ZYAL parser/API/TUI gold mode
 Phase 3.5: task dossiers + confidence routing + bounded incubation
 Phase 4: swarms/MCP/worktree workers
 ```
@@ -1499,7 +1499,7 @@ That is the difference between “an agent keeps going” and “an agent system
 coming an unbounded mess.”
 
 [1]: https://docs.langchain.com/oss/python/langgraph/add-memory "Memory - Docs by LangChain"
-[2]: https://github.com/anomalyco/opencode/issues/18636?utm_source=chatgpt.com "Config option for continuous execution loop until task ..."
+[2]: https://github.com/anomalyco/jekko/issues/18636?utm_source=chatgpt.com "Config option for continuous execution loop until task ..."
 [3]: https://code.claude.com/docs/en/commands "Commands - Claude Code Docs"
 [4]: https://arxiv.org/abs/2303.11366?utm_source=chatgpt.com "Reflexion: Language Agents with Verbal Reinforcement Learning"
 [5]: https://docs.openhands.dev/sdk/arch/events "Events - OpenHands Docs"

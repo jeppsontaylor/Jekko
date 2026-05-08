@@ -39,7 +39,7 @@ The most important architectural rule is this:
 
 > **ZYAL should own policy, lifecycle, memory contracts, evidence, and promotion. Existing systems should own execution details.**
 
-That means ZYAL should be able to run inside OpenCode natively, compile into LangGraph, emit OpenHands hooks, invoke Codex subagents, use MCP tools, expose ACP events to editors, borrow Hermes-style memory/skills/scheduling, and adopt OpenClaw-style trust boundaries and gateways.
+That means ZYAL should be able to run inside Jekko natively, compile into LangGraph, emit OpenHands hooks, invoke Codex subagents, use MCP tools, expose ACP events to editors, borrow Hermes-style memory/skills/scheduling, and adopt OpenClaw-style trust boundaries and gateways.
 
 ---
 
@@ -91,7 +91,7 @@ capabilities:
     optional: degrade_with_warning
 
 adapters:
-  opencode:
+  jekko:
     mode: native
   codex:
     map_agents_to: codex_subagents
@@ -121,7 +121,7 @@ adapters:
       - task_state
 ```
 
-This makes ZYAL portable without pretending every host can do everything. A Claude chat, Codex session, OpenHands workspace, OpenCode daemon, or LangGraph app can all parse the same block, then either execute natively or lower to supported primitives.
+This makes ZYAL portable without pretending every host can do everything. A Claude chat, Codex session, OpenHands workspace, Jekko daemon, or LangGraph app can all parse the same block, then either execute natively or lower to supported primitives.
 
 ### Required compiler phases
 
@@ -320,7 +320,7 @@ evidence:
     format: zyal.evidence/v1
     storage:
       sqlite: true
-      mirror: ".opencode/daemon/{{run_id}}/evidence/{{task_id}}"
+      mirror: ".jekko/daemon/{{run_id}}/evidence/{{task_id}}"
     include:
       - objective
       - task_capsule
@@ -427,8 +427,8 @@ LangChain/Deep Agents also frame long-running agents around context engineering,
 ```yaml
 memory:
   truth:
-    sqlite: ".opencode/daemon/state.db"
-    mirror: ".opencode/daemon/{{run_id}}"
+    sqlite: ".jekko/daemon/state.db"
+    mirror: ".jekko/daemon/{{run_id}}"
 
   stores:
     working:
@@ -471,7 +471,7 @@ memory:
       sources:
         - "AGENTS.md"
         - "CLAUDE.md"
-        - ".opencode/skills/**/SKILL.md"
+        - ".jekko/skills/**/SKILL.md"
         - ".codex/skills/**/SKILL.md"
         - "docs/architecture/**"
         - "CODEOWNERS"
@@ -507,7 +507,7 @@ memory:
     procedural:
       description: "Reusable skills and workflows."
       skill_dirs:
-        - ".opencode/skills"
+        - ".jekko/skills"
         - ".codex/skills"
         - ".agents/skills"
       invocation: explicit_or_matched
@@ -690,10 +690,10 @@ workspace:
   filesystem:
     read:
       - "."
-      - "~/.cache/opencode/readonly"
+      - "~/.cache/jekko/readonly"
     write:
       - "."
-      - ".opencode/daemon/{{run_id}}"
+      - ".jekko/daemon/{{run_id}}"
     deny:
       - "~/.ssh"
       - "~/.aws"
@@ -1365,7 +1365,7 @@ ZYAL should introduce skills, but not let the model silently mutate global behav
 ```yaml
 skills:
   directories:
-    - ".opencode/skills"
+    - ".jekko/skills"
     - ".codex/skills"
     - ".agents/skills"
 
@@ -1990,7 +1990,7 @@ workspace:
       - dependency_upgrade
   filesystem:
     read: ["."]
-    write: [".", ".opencode/daemon/{{run_id}}"]
+    write: [".", ".jekko/daemon/{{run_id}}"]
     deny: ["~/.ssh", "~/.aws", ".env", "**/*secret*"]
   network:
     default: deny
@@ -2284,7 +2284,7 @@ evidence:
   package:
     storage:
       sqlite: true
-      mirror: ".opencode/daemon/{{run_id}}/evidence/{{task_id}}"
+      mirror: ".jekko/daemon/{{run_id}}/evidence/{{task_id}}"
     include:
       - objective
       - changed_files

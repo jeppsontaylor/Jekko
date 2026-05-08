@@ -47,7 +47,7 @@ repo_intelligence:
 stop:
   all:
     - shell:
-        command: "opencode repo-graph status auth-context-migration --assert complete"
+        command: "jekko repo-graph status auth-context-migration --assert complete"
         timeout: 30s
         assert: { exit_code: 0 }
     - shell:
@@ -58,7 +58,7 @@ stop:
 tasks:
   ledger: sqlite
   discover:
-    - command: "opencode repo-graph usages AuthContext --json"
+    - command: "jekko repo-graph usages AuthContext --json"
       timeout: 60s
 
 agents:
@@ -232,7 +232,7 @@ rollback:
     touches_paths: ["**/migrations/**", "packages/auth/**", "infra/**"]
     risk_score_gte: 0.5
   plan_required: true
-  verify_command: "git apply --reverse --check < .opencode/daemon/rollback.patch"
+  verify_command: "git apply --reverse --check < .jekko/daemon/rollback.patch"
   on_failure_after_merge: revert_commit
 
 done:
@@ -249,7 +249,7 @@ done:
     - api_contract_unreviewed
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

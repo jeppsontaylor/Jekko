@@ -24,14 +24,14 @@ jobs:
 
       - uses: ./.github/actions/setup-bun
 
-      - name: Install opencode
-        run: bun i -g opencode-ai
+      - name: Install jekko
+        run: bun i -g jekko-ai
 
       - name: Check duplicates and compliance
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          JEKKO_API_KEY: ${{ secrets.JEKKO_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENCODE_PERMISSION: |
+          JEKKO_PERMISSION: |
             {
               "bash": {
                 "*": "deny",
@@ -40,7 +40,7 @@ jobs:
               "webfetch": "deny"
             }
         run: |
-          opencode run -m opencode/claude-sonnet-4-6 "A new issue has been created:
+          jekko run -m jekko/claude-sonnet-4-6 "A new issue has been created:
 
           Issue number: ${{ github.event.issue.number }}
 
@@ -137,14 +137,14 @@ jobs:
 
       - uses: ./.github/actions/setup-bun
 
-      - name: Install opencode
-        run: bun i -g opencode-ai
+      - name: Install jekko
+        run: bun i -g jekko-ai
 
       - name: Recheck compliance
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          JEKKO_API_KEY: ${{ secrets.JEKKO_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENCODE_PERMISSION: |
+          JEKKO_PERMISSION: |
             {
               "bash": {
                 "*": "deny",
@@ -153,7 +153,7 @@ jobs:
               "webfetch": "deny"
             }
         run: |
-          opencode run -m opencode/claude-sonnet-4-6 "Issue #${{ github.event.issue.number }} was previously flagged as non-compliant and has been edited.
+          jekko run -m jekko/claude-sonnet-4-6 "Issue #${{ github.event.issue.number }} was previously flagged as non-compliant and has been edited.
 
           Lookup this issue with gh issue view ${{ github.event.issue.number }}.
 

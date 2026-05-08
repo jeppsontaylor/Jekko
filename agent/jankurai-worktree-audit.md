@@ -63,7 +63,7 @@ Scope: worker 3 only
   - `packages/ui/src/assets/icons/file-types/folder-backup.svg` deletion kept
   - `packages/web/src/assets/lander/copy.svg` deletion kept
   - `packages/console/app/src/asset/lander/copy.svg` deletion kept
-  - `packages/console/app/src/asset/brand/opencode-brand-assets.zip` deletion kept
+  - `packages/console/app/src/asset/brand/jekko-brand-assets.zip` deletion kept
   - `agent/repo-score.json` and `agent/repo-score.md` kept for regeneration only
 
 - Fix First

@@ -79,11 +79,11 @@ capabilities:
       decision: allow
     - id: edit-src-and-tests
       tool: edit
-      paths: ["packages/opencode/src/**", "packages/opencode/test/**"]
+      paths: ["packages/jekko/src/**", "packages/jekko/test/**"]
       decision: allow
     - id: edit-migrations-blocked
       tool: edit
-      paths: ["packages/opencode/migration/**"]
+      paths: ["packages/jekko/migration/**"]
       decision: ask
       require_gate: dba_review
       reason: schema-sensitive
@@ -146,11 +146,11 @@ budgets:
 rollback:
   required_when:
     touches_paths:
-      - "packages/opencode/migration/**"
-      - "packages/opencode/src/auth/**"
+      - "packages/jekko/migration/**"
+      - "packages/jekko/src/auth/**"
     risk_score_gte: 0.6
   plan_required: true
-  verify_command: "git apply --reverse --check < .opencode/daemon/rollback.patch"
+  verify_command: "git apply --reverse --check < .jekko/daemon/rollback.patch"
   on_failure_after_merge: revert_commit
 
 approvals:
@@ -187,7 +187,7 @@ done:
     - pending_human_gate
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

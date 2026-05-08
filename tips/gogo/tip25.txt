@@ -1,14 +1,14 @@
 # Best answer: build a host-enforced daemon supervisor, not XML prompt tags
 
-The plan you were given is directionally right, but it is still too “prompt-loop-ish.” For what you want—**PROMISED infinite loop, context clearing, multi-agent orchestration, MCP control, git checkpointing, and hard stop criteria**—the loop must be owned by OpenCode itself, not by the model.
+The plan you were given is directionally right, but it is still too “prompt-loop-ish.” For what you want—**PROMISED infinite loop, context clearing, multi-agent orchestration, MCP control, git checkpointing, and hard stop criteria**—the loop must be owned by Jekko itself, not by the model.
 
 A model can be told “FOREVER” and still produce `finish: stop`. That is not a bug in the model; it is the normal agent loop completing. The fix is: **when the model stops, the daemon supervisor treats that as “iteration finished,” not “process finished.”**
 
-The syntax should therefore be a **compiled, deliberate, host-interpreted control language** embedded in the prompt only when launched through an explicit daemon entrypoint. The LLM can read the task, make decisions, and do coding, but OpenCode should enforce the loop, exit checks, checkpointing, context reset, child-agent scheduling, permissions, and kill/pause controls.
+The syntax should therefore be a **compiled, deliberate, host-interpreted control language** embedded in the prompt only when launched through an explicit daemon entrypoint. The LLM can read the task, make decisions, and do coding, but Jekko should enforce the loop, exit checks, checkpointing, context reset, child-agent scheduling, permissions, and kill/pause controls.
 
 I would call this something like:
 
-**ODL v1 — OpenCode Daemon Language**
+**ODL v1 — Jekko Daemon Language**
 
 or more generally:
 
@@ -18,45 +18,45 @@ The important point is not the name. The important point is that it is **not jus
 
 ---
 
-# 1. What exists today: OpenCode and the broader agent ecosystem
+# 1. What exists today: Jekko and the broader agent ecosystem
 
-## OpenCode already has many of the right primitives
+## Jekko already has many of the right primitives
 
-OpenCode is in a good position to support this because it already has a client/server architecture, built-in agent concepts, subagents, commands, MCP, custom tools, plugins, permissions, compaction, and headless `run` mode. Its README positions it as an open-source coding agent with LSP support, TUI focus, provider flexibility, and client/server design. ([GitHub][1])
+Jekko is in a good position to support this because it already has a client/server architecture, built-in agent concepts, subagents, commands, MCP, custom tools, plugins, permissions, compaction, and headless `run` mode. Its README positions it as an open-source coding agent with LSP support, TUI focus, provider flexibility, and client/server design. ([GitHub][1])
 
-OpenCode commands are already prompt templates with frontmatter, argument substitution, shell-output injection, and file references. Commands can also target specific agents or subagents, and `subtask: true` keeps subagent work out of the primary context. ([OpenCode][2])
+Jekko commands are already prompt templates with frontmatter, argument substitution, shell-output injection, and file references. Commands can also target specific agents or subagents, and `subtask: true` keeps subagent work out of the primary context. ([Jekko][2])
 
-OpenCode agents already distinguish primary agents from subagents. The built-in `build` agent has broad tool access, `general` can run parallel units of work, `explore` is read-only, and there is a hidden `compaction` agent used for long contexts. ([OpenCode][3])
+Jekko agents already distinguish primary agents from subagents. The built-in `build` agent has broad tool access, `general` can run parallel units of work, `explore` is read-only, and there is a hidden `compaction` agent used for long contexts. ([Jekko][3])
 
-OpenCode also already exposes agent `steps`, permissions, task permissions, MCP permissions, bash-command permissions, and a `doom_loop` permission key. The docs explicitly say that when `steps` is unset, the model iterates until it chooses to stop or the user interrupts. That statement is basically the product-level version of your problem: **today, the model is allowed to decide it is done.** ([OpenCode][3])
+Jekko also already exposes agent `steps`, permissions, task permissions, MCP permissions, bash-command permissions, and a `doom_loop` permission key. The docs explicitly say that when `steps` is unset, the model iterates until it chooses to stop or the user interrupts. That statement is basically the product-level version of your problem: **today, the model is allowed to decide it is done.** ([Jekko][3])
 
-OpenCode supports MCP servers, and MCP tools become available alongside built-in tools. The docs also warn that MCP servers add to context and can quickly consume a lot of tokens, which matters a lot for “forever” mode. ([OpenCode][4])
+Jekko supports MCP servers, and MCP tools become available alongside built-in tools. The docs also warn that MCP servers add to context and can quickly consume a lot of tokens, which matters a lot for “forever” mode. ([Jekko][4])
 
-OpenCode plugins can observe and hook into session events, tool execution, permission requests, message events, file edits, session status, compaction, and TUI hooks. This is a useful extension surface, but a truly durable daemon should still be a core runtime feature rather than only a plugin hack. ([OpenCode][5])
+Jekko plugins can observe and hook into session events, tool execution, permission requests, message events, file edits, session status, compaction, and TUI hooks. This is a useful extension surface, but a truly durable daemon should still be a core runtime feature rather than only a plugin hack. ([Jekko][5])
 
 ## The code path confirms why agents stop
 
 The current `prompt.ts` loop has a normal exit path when the last assistant message has a finish reason other than tool calls, there are no pending tool calls, and the assistant has responded after the last user message. In other words: when the model says “I am done,” the loop exits. ([GitHub][6])
 
-OpenCode’s status model is currently centered around `idle`, `busy`, and `retry`. Headless `opencode run` exits when the session status becomes idle. That is correct for normal run mode, but wrong for a daemon where `idle` should often mean “iteration boundary; decide whether to continue.” ([GitHub][7])
+Jekko’s status model is currently centered around `idle`, `busy`, and `retry`. Headless `jekko run` exits when the session status becomes idle. That is correct for normal run mode, but wrong for a daemon where `idle` should often mean “iteration boundary; decide whether to continue.” ([GitHub][7])
 
-Compaction is already real. OpenCode has a summary prompt that preserves the goal, constraints, progress, decisions, next steps, files, and critical context. It also has an auto-continue mechanism that injects a synthetic “continue” message after compaction. ([GitHub][8])
+Compaction is already real. Jekko has a summary prompt that preserves the goal, constraints, progress, decisions, next steps, files, and critical context. It also has an auto-continue mechanism that injects a synthetic “continue” message after compaction. ([GitHub][8])
 
-But recent OpenCode issues show this area is delicate. One issue reports `opencode run` exiting after compaction because the synthetic continue was skipped and the prompt loop hit the normal “assistant stopped” exit path. Another issue reports the opposite failure mode: auto-compaction causing an infinite loop after the assistant had naturally ended. ([GitHub][9])
+But recent Jekko issues show this area is delicate. One issue reports `jekko run` exiting after compaction because the synthetic continue was skipped and the prompt loop hit the normal “assistant stopped” exit path. Another issue reports the opposite failure mode: auto-compaction causing an infinite loop after the assistant had naturally ended. ([GitHub][9])
 
 That is the key lesson: **daemon behavior must be explicit runtime state, not an accidental side effect of compaction or synthetic prompts.**
 
-## OpenCode community signals
+## Jekko community signals
 
-I found OpenCode community discussion adjacent to this idea, but not a formal built-in daemon scripting language.
+I found Jekko community discussion adjacent to this idea, but not a formal built-in daemon scripting language.
 
-There is an OpenCode issue proposing a “council/swarm” multi-agent coordination system with parallel agents, specialized roles, consensus, conflict resolution, and shared coordination. It was closed as not planned, but it shows that the desire for multi-agent orchestration is real. ([GitHub][10])
+There is an Jekko issue proposing a “council/swarm” multi-agent coordination system with parallel agents, specialized roles, consensus, conflict resolution, and shared coordination. It was closed as not planned, but it shows that the desire for multi-agent orchestration is real. ([GitHub][10])
 
 There is also an issue asking for delayed queueing so users can queue a repeated instruction “in a loop overnight,” instead of having new messages interrupt the current run. That is extremely close to a manual version of daemon mode. ([GitHub][11])
 
-A Reddit discussion around OpenCode reports a subagent loop burning through usage while unattended, and another commenter recommends explicit “stop after X attempts” guardrails. That is exactly why a daemon design needs visible UI state, budgets, leases, stop controls, and explicit exit checks—even when the requested mode is “forever.” ([Reddit][12])
+A Reddit discussion around Jekko reports a subagent loop burning through usage while unattended, and another commenter recommends explicit “stop after X attempts” guardrails. That is exactly why a daemon design needs visible UI state, budgets, leases, stop controls, and explicit exit checks—even when the requested mode is “forever.” ([Reddit][12])
 
-I did not find an official OpenCode-native in-prompt daemon DSL in the current docs I reviewed. I found commands, agents, skills, MCP, custom tools, permissions, plugins, server mode, and ACP support—but not a formal “run this prompt as a durable forever program” syntax. ([OpenCode][2])
+I did not find an official Jekko-native in-prompt daemon DSL in the current docs I reviewed. I found commands, agents, skills, MCP, custom tools, permissions, plugins, server mode, and ACP support—but not a formal “run this prompt as a durable forever program” syntax. ([Jekko][2])
 
 ## Broader ecosystem: no single standard, but clear patterns
 
@@ -64,7 +64,7 @@ There is not yet one dominant standard for “in-prompt agent scripting language
 
 **MCP** is becoming the major tool/resource/prompt interoperability layer. Anthropic introduced MCP as an open standard for connecting assistants to external systems and data; MCP servers expose tools, resources, and prompts, and tools are JSON-schema-defined. ([Anthropic][13])
 
-**ACP** is the protocol side for editor-agent communication. OpenCode supports ACP via `opencode acp`, and OpenCode says ACP exposes features like tools, slash commands, MCP, AGENTS.md rules, and permissions. ([OpenCode][14])
+**ACP** is the protocol side for editor-agent communication. Jekko supports ACP via `jekko acp`, and Jekko says ACP exposes features like tools, slash commands, MCP, AGENTS.md rules, and permissions. ([Jekko][14])
 
 **AGENTS.md** is emerging as the “README for agents” convention. The official AGENTS.md site describes it as a simple open format for guiding coding agents, and other tooling such as OpenAI Codex and GitHub Copilot coding agent have added support for AGENTS.md-style instructions. ([Agents][15])
 
@@ -76,7 +76,7 @@ There is not yet one dominant standard for “in-prompt agent scripting language
 
 **CrewAI Flows** similarly separate structured event-driven workflows from free-form agent behavior. Their model supports conditional logic, branching, loops, shared state, persistence, and resuming long-running workflows. ([CrewAI Documentation][19])
 
-**Temporal** is the extreme durable-execution reference point. Temporal workflows can run for years, persist event history, and replay state after crashes. OpenCode does not need to become Temporal, but daemon mode should borrow the idea that the source of truth is an event history / ledger, not the model’s conversation window. ([Temporal Docs][20])
+**Temporal** is the extreme durable-execution reference point. Temporal workflows can run for years, persist event history, and replay state after crashes. Jekko does not need to become Temporal, but daemon mode should borrow the idea that the source of truth is an event history / ledger, not the model’s conversation window. ([Temporal Docs][20])
 
 There are also emerging prompt/workflow DSL ideas, including Prompt Declaration Language, plain-text/YAML workflow descriptions, graph intermediate representations, and agent workflow surveys. But the field has not standardized on one in-prompt DSL. The common direction is clear: **declarative workflow spec + validated runtime + durable state + explicit tool permissions.** ([arXiv][21])
 
@@ -88,9 +88,9 @@ The previous plan gets the core pain right, but I would change the architecture.
 
 ## What the previous plan got right
 
-It correctly identifies the most important stop path: the model finishes without tool calls, and OpenCode exits the loop. That matches the current `prompt.ts` behavior. ([GitHub][6])
+It correctly identifies the most important stop path: the model finishes without tool calls, and Jekko exits the loop. That matches the current `prompt.ts` behavior. ([GitHub][6])
 
-It correctly sees that compaction is already present and should be reused. OpenCode already has a hidden compaction agent and a structured summary prompt. ([OpenCode][3])
+It correctly sees that compaction is already present and should be reused. Jekko already has a hidden compaction agent and a structured summary prompt. ([Jekko][3])
 
 It correctly points at `status.ts` and `run.ts` as integration points, because status currently has no daemon state and headless run exits on idle. ([GitHub][7])
 
@@ -131,7 +131,7 @@ permissions:
   on_missing_mcp_auth: pause
 ```
 
-Headless OpenCode currently auto-approves only with `--dangerously-skip-permissions`; otherwise permission requests are auto-rejected. Daemon mode should not silently turn rejected permission into infinite retries. ([GitHub][22])
+Headless Jekko currently auto-approves only with `--dangerously-skip-permissions`; otherwise permission requests are auto-rejected. Daemon mode should not silently turn rejected permission into infinite retries. ([GitHub][22])
 
 ### 3. Do not store daemon state only as session metadata
 
@@ -148,7 +148,7 @@ daemon_checkpoint
 daemon_verification
 ```
 
-If OpenCode crashes, the daemon should resume cleanly or remain paused with a reason. It should not depend on whatever context the model still remembers.
+If Jekko crashes, the daemon should resume cleanly or remain paused with a reason. It should not depend on whatever context the model still remembers.
 
 ### 4. Forced compaction every N iterations is not enough
 
@@ -175,13 +175,13 @@ context:
       - current_queue
 ```
 
-OpenCode issues around compaction exiting too early and compaction looping forever show that context policy needs to be explicit and tested. ([GitHub][9])
+Jekko issues around compaction exiting too early and compaction looping forever show that context policy needs to be explicit and tested. ([GitHub][9])
 
 ### 5. MCP scaling cannot be only prompt engineering
 
 The earlier plan says to inject a system instruction telling the agent to use parallel MCP tooling. That is weak.
 
-MCP servers add tools into model context, and OpenCode warns that some MCP servers can add a lot of tokens. Daemon mode needs MCP profiles per agent, max tool counts, allowed tool globs, denied tool globs, auth status, and context budgets. ([OpenCode][4])
+MCP servers add tools into model context, and Jekko warns that some MCP servers can add a lot of tokens. Daemon mode needs MCP profiles per agent, max tool counts, allowed tool globs, denied tool globs, auth status, and context budgets. ([Jekko][4])
 
 ### 6. Multi-agent coordination should use a ledger, not a markdown tracker
 
@@ -249,7 +249,7 @@ Pause / Continue / Exit / Kill
 ## Runtime flow
 
 ```text
-/daemon run or opencode run --daemon
+/daemon run or jekko run --daemon
         |
         v
 Parse ODL block
@@ -278,7 +278,7 @@ Iteration N
   |      exit criteria
   |      last failure
   |
-  +--> Run normal OpenCode prompt loop
+  +--> Run normal Jekko prompt loop
   |      model/tool/model/tool/.../model stops
   |
   +--> Classify stop reason:
@@ -320,16 +320,16 @@ This one change addresses the exact “why are our agents always stopping?” fa
 
 ---
 
-# 4. Concrete OpenCode implementation plan
+# 4. Concrete Jekko implementation plan
 
-## New module: `packages/opencode/src/session/daemon/`
+## New module: `packages/jekko/src/session/daemon/`
 
 Add a daemon subsystem rather than scattering daemon behavior throughout normal prompt logic.
 
 Suggested files:
 
 ```text
-packages/opencode/src/session/daemon/
+packages/jekko/src/session/daemon/
   schema.ts
   parser.ts
   supervisor.ts
@@ -380,7 +380,7 @@ DaemonCheckpoint
 DaemonExitCheck
 ```
 
-This should use the same schema style OpenCode already uses for config and status, so malformed daemon programs fail before the model sees them.
+This should use the same schema style Jekko already uses for config and status, so malformed daemon programs fail before the model sees them.
 
 ## `parser.ts`
 
@@ -390,8 +390,8 @@ The parser should only activate when one of these is true:
 
 ```text
 /daemon run
-opencode run --daemon
-opencode run --daemon-file <file>
+jekko run --daemon
+jekko run --daemon-file <file>
 server API daemon.start
 ACP daemon.start
 ```
@@ -401,7 +401,7 @@ It should ignore daemon-looking text in normal chat.
 It should require all of the following:
 
 ```text
-1. First top-level fenced block is language `opencode-daemon.v1`
+1. First top-level fenced block is language `jekko-daemon.v1`
 2. Begin marker exists
 3. End marker exists
 4. Nonce matches
@@ -421,7 +421,7 @@ do things forever
 And this should not run if casually pasted into a normal chat:
 
 ````md
-```opencode-daemon.v1
+```jekko-daemon.v1
 ...
 ```
 ````
@@ -557,11 +557,11 @@ Current headless mode exits when status becomes idle. ([GitHub][22])
 Add:
 
 ```text
-opencode run --daemon
-opencode run --daemon-file daemon.odl.yaml
-opencode run --daemon-resume <run-id>
-opencode run --daemon-stop <run-id>
-opencode run --daemon-status <run-id>
+jekko run --daemon
+jekko run --daemon-file daemon.odl.yaml
+jekko run --daemon-resume <run-id>
+jekko run --daemon-stop <run-id>
+jekko run --daemon-status <run-id>
 ```
 
 Suggested flags:
@@ -776,7 +776,7 @@ The LLM should not be trusted to decide whether “0 findings and 0 caps” happ
 
 Daemon permissions need to be stricter than ordinary chat, not looser.
 
-OpenCode already has permissions for read, edit, bash, task, MCP, skills, question prompts, and doom-loop behavior. ([OpenCode][3])
+Jekko already has permissions for read, edit, bash, task, MCP, skills, question prompts, and doom-loop behavior. ([Jekko][3])
 
 Daemon mode should add policy on top:
 
@@ -836,13 +836,13 @@ Use a structured blackboard / ledger.
 A daemon run gets a ledger:
 
 ```text
-.opencode/daemon/<run-id>/ledger.jsonl
+.jekko/daemon/<run-id>/ledger.jsonl
 ```
 
 or better:
 
 ```text
-.opencode/daemon/<run-id>/blackboard.sqlite
+.jekko/daemon/<run-id>/blackboard.sqlite
 ```
 
 Core entities:
@@ -867,7 +867,7 @@ A work item:
   "status": "claimed",
   "priority": 80,
   "source": "git_dirty_files",
-  "files": ["packages/opencode/src/session/prompt.ts"],
+  "files": ["packages/jekko/src/session/prompt.ts"],
   "claim": {
     "agent": "fixer-2",
     "leaseExpiresAt": "2026-05-07T19:00:00Z"
@@ -1024,8 +1024,8 @@ Use a gated fenced block:
 ````md
 /daemon run
 
-```opencode-daemon.v1
-OPENCODE_DAEMON_BEGIN nonce="jankurai-2026-05-07" intent="run-until-stop"
+```jekko-daemon.v1
+JEKKO_DAEMON_BEGIN nonce="jankurai-2026-05-07" intent="run-until-stop"
 ack: "I_UNDERSTAND_THIS_RUNS_UNTIL_STOPPED_OR_KILLED"
 requires_launch: "/daemon"
 
@@ -1036,7 +1036,7 @@ program:
   title: "JANKURAI dirty-worktree daemon"
 
 # ...
-OPENCODE_DAEMON_END nonce="jankurai-2026-05-07"
+JEKKO_DAEMON_END nonce="jankurai-2026-05-07"
 ```
 ````
 
@@ -1044,7 +1044,7 @@ The block is executable only if:
 
 ```text
 1. The user launched `/daemon run`, or CLI/API equivalent.
-2. The fenced language is exactly `opencode-daemon.v1`.
+2. The fenced language is exactly `jekko-daemon.v1`.
 3. The begin marker exists.
 4. The end marker exists.
 5. The nonce matches.
@@ -1059,8 +1059,8 @@ A pasted block in normal chat should be displayed or discussed, not executed.
 # 7. Example ODL program for your JANKURAI workflow
 
 ````yaml
-```opencode-daemon.v1
-OPENCODE_DAEMON_BEGIN nonce="jankurai-2026-05-07" intent="run-until-stop"
+```jekko-daemon.v1
+JEKKO_DAEMON_BEGIN nonce="jankurai-2026-05-07" intent="run-until-stop"
 
 ack: "I_UNDERSTAND_THIS_RUNS_UNTIL_STOPPED_OR_KILLED"
 requires_launch: "/daemon"
@@ -1077,7 +1077,7 @@ program:
 
 runtime:
   cwd: "."
-  worktree_lock: ".opencode/daemon/jankurai.lock"
+  worktree_lock: ".jekko/daemon/jankurai.lock"
   resume: true
   on_model_stop: continue
   on_permission: pause
@@ -1117,7 +1117,7 @@ task:
     Continue through as many dirty worktree items as possible.
 
 queue:
-  ledger: ".opencode/daemon/jankurai/ledger.jsonl"
+  ledger: ".jekko/daemon/jankurai/ledger.jsonl"
   sources:
     - git_dirty_files: true
     - file: "JANKURAI_TASKLIST.md"
@@ -1303,8 +1303,8 @@ context:
   prune_tool_outputs: true
 
 observability:
-  log: ".opencode/daemon/jankurai/events.jsonl"
-  transcript: ".opencode/daemon/jankurai/transcript.md"
+  log: ".jekko/daemon/jankurai/events.jsonl"
+  transcript: ".jekko/daemon/jankurai/transcript.md"
   metrics: true
 
 hooks:
@@ -1315,7 +1315,7 @@ hooks:
   on_exit:
     - shell: "git status --short && jankurai audit"
 
-OPENCODE_DAEMON_END nonce="jankurai-2026-05-07"
+JEKKO_DAEMON_END nonce="jankurai-2026-05-07"
 ```
 ````
 
@@ -1503,7 +1503,7 @@ shell:
   name: audit
   command: "jankurai audit --json"
 json:
-  path: ".opencode/work-items.json"
+  path: ".jekko/work-items.json"
 github_issues:
   repo: "owner/repo"
 ```
@@ -1851,7 +1851,7 @@ compact_now: true
 checkpoint_now: true
 ```
 
-OpenCode’s plugin system already has a rich event surface, so daemon hooks would fit naturally with the existing direction. ([OpenCode][5])
+Jekko’s plugin system already has a rich event surface, so daemon hooks would fit naturally with the existing direction. ([Jekko][5])
 
 ## UI
 
@@ -1894,8 +1894,8 @@ Example:
 
 ```yaml
 observability:
-  log: ".opencode/daemon/events.jsonl"
-  transcript: ".opencode/daemon/transcript.md"
+  log: ".jekko/daemon/events.jsonl"
+  transcript: ".jekko/daemon/transcript.md"
   metrics: true
 ```
 
@@ -1929,8 +1929,8 @@ Syntax:
 ````yaml
 /daemon patch jankurai-clean-worktree
 
-```opencode-daemon.patch.v1
-OPENCODE_DAEMON_PATCH_BEGIN run="jankurai-clean-worktree" nonce="patch-2026-05-07-a"
+```jekko-daemon.patch.v1
+JEKKO_DAEMON_PATCH_BEGIN run="jankurai-clean-worktree" nonce="patch-2026-05-07-a"
 
 ack: "I_UNDERSTAND_THIS_CHANGES_A_RUNNING_DAEMON"
 
@@ -1948,7 +1948,7 @@ patch:
   - set: context.compact.every_iterations
     value: 1
 
-OPENCODE_DAEMON_PATCH_END nonce="patch-2026-05-07-a"
+JEKKO_DAEMON_PATCH_END nonce="patch-2026-05-07-a"
 ```
 ````
 
@@ -1986,11 +1986,11 @@ A patch should be validated, recorded in the daemon ledger, and shown in the TUI
 
 # 9. “How best to do this today” without core changes
 
-Today, without modifying OpenCode core, the closest approximation is an external supervisor script:
+Today, without modifying Jekko core, the closest approximation is an external supervisor script:
 
 ```text
 while true:
-  run opencode run "<prompt>"
+  run jekko run "<prompt>"
   run verification
   run checkpoint
   run exit condition
@@ -1998,9 +1998,9 @@ while true:
   rebuild prompt from ledger summary
 ```
 
-You can improve that with OpenCode commands, agents, AGENTS.md rules, skills, custom tools, plugins, and MCP configuration. OpenCode already supports all of those primitives. ([OpenCode][2])
+You can improve that with Jekko commands, agents, AGENTS.md rules, skills, custom tools, plugins, and MCP configuration. Jekko already supports all of those primitives. ([Jekko][2])
 
-But this is not bulletproof because `opencode run` currently exits on idle, compaction behavior is not daemon-aware, and the model can still end a run. ([GitHub][22])
+But this is not bulletproof because `jekko run` currently exits on idle, compaction behavior is not daemon-aware, and the model can still end a run. ([GitHub][22])
 
 So the real answer is: **external wrapper now, core daemon supervisor next.**
 
@@ -2013,19 +2013,19 @@ So the real answer is: **external wrapper now, core daemon supervisor next.**
 Files:
 
 ```text
-packages/opencode/src/session/daemon/schema.ts
-packages/opencode/src/session/daemon/parser.ts
-packages/opencode/src/session/daemon/supervisor.ts
-packages/opencode/src/session/prompt.ts
-packages/opencode/src/session/status.ts
-packages/opencode/src/cli/cmd/run.ts
+packages/jekko/src/session/daemon/schema.ts
+packages/jekko/src/session/daemon/parser.ts
+packages/jekko/src/session/daemon/supervisor.ts
+packages/jekko/src/session/prompt.ts
+packages/jekko/src/session/status.ts
+packages/jekko/src/cli/cmd/run.ts
 ```
 
 Ship:
 
 ```text
 - `/daemon run`
-- `opencode run --daemon`
+- `jekko run --daemon`
 - ODL parser with nonce/ack gate
 - Outer supervisor loop
 - `on_model_stop: continue`
@@ -2068,7 +2068,7 @@ Ship:
 - preserve original task, exit criteria, open claims, last verification
 ```
 
-This should be tested against the compaction failure modes already reported in OpenCode issues. ([GitHub][9])
+This should be tested against the compaction failure modes already reported in Jekko issues. ([GitHub][9])
 
 ## Phase 4 — TUI gold forever UX
 
@@ -2113,7 +2113,7 @@ Ship:
 - MCP safety warnings
 ```
 
-This is important because MCP is powerful but increases both context pressure and trust surface. ([OpenCode][4])
+This is important because MCP is powerful but increases both context pressure and trust surface. ([Jekko][4])
 
 ## Phase 7 — Live patching
 
@@ -2153,7 +2153,7 @@ Supervisor:
 
 ```text
 Headless:
-  - opencode run --daemon does not exit on session idle
+  - jekko run --daemon does not exit on session idle
   - exits only on daemon terminal state
 
 Compaction:
@@ -2183,7 +2183,7 @@ Multi-agent:
 - Exit condition becomes true; daemon exits cleanly.
 - Permission required; daemon pauses visibly.
 - Kill daemon; no hidden child process remains.
-- Resume daemon after OpenCode restart.
+- Resume daemon after Jekko restart.
 ```
 
 ---
@@ -2193,11 +2193,11 @@ Multi-agent:
 The strongest version is:
 
 ```text
-OpenCode Daemon Mode =
+Jekko Daemon Mode =
   explicit launch gate
   + validated ODL program
   + durable supervisor
-  + normal OpenCode prompt loop as child action
+  + normal Jekko prompt loop as child action
   + host-side exit checks
   + host-side verification
   + host-side checkpointing
@@ -2210,24 +2210,24 @@ OpenCode Daemon Mode =
 
 The shortest possible architectural truth is:
 
-> **Do not ask the model to run forever. Make OpenCode run forever, and let the model complete one supervised iteration at a time.**
+> **Do not ask the model to run forever. Make Jekko run forever, and let the model complete one supervised iteration at a time.**
 
 That is how you get the behavior you want without relying on hope, XML tags, or the model remembering that “FOREVER” means forever.
 
-[1]: https://github.com/anomalyco/opencode "GitHub - anomalyco/opencode: The open source coding agent. · GitHub"
-[2]: https://opencode.ai/docs/commands/ "Commands | OpenCode"
-[3]: https://opencode.ai/docs/agents/ "Agents | OpenCode"
-[4]: https://opencode.ai/docs/mcp-servers/ "MCP servers | OpenCode"
-[5]: https://opencode.ai/docs/plugins/ "Plugins | OpenCode"
-[6]: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/opencode/src/session/prompt.ts "raw.githubusercontent.com"
-[7]: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/session/status.ts?plain=1 "opencode/packages/opencode/src/session/status.ts at dev · anomalyco/opencode · GitHub"
-[8]: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/session/compaction.ts?plain=1 "opencode/packages/opencode/src/session/compaction.ts at dev · anomalyco/opencode · GitHub"
-[9]: https://github.com/anomalyco/opencode/issues/13946 "Issue · GitHub"
-[10]: https://github.com/anomalyco/opencode/issues/9446 "feat: Implement opencode-council-swarm - Multi-agent coordination system · Issue #9446 · anomalyco/opencode · GitHub"
-[11]: https://github.com/anomalyco/opencode/issues/5408 "[FEATURE]: Delayed queue feature · Issue #5408 · anomalyco/opencode · GitHub"
-[12]: https://www.reddit.com/r/opencodeCLI/comments/1t5q8mo/dont_leave_opencode_unattended_a_subagent_loop/ "Don’t leave Opencode unattended! A sub-agent loop just burned through my entire limits. : r/opencodeCLI"
+[1]: https://github.com/anomalyco/jekko "GitHub - anomalyco/jekko: The open source coding agent. · GitHub"
+[2]: https://jekko.ai/docs/commands/ "Commands | Jekko"
+[3]: https://jekko.ai/docs/agents/ "Agents | Jekko"
+[4]: https://jekko.ai/docs/mcp-servers/ "MCP servers | Jekko"
+[5]: https://jekko.ai/docs/plugins/ "Plugins | Jekko"
+[6]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/prompt.ts "raw.githubusercontent.com"
+[7]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/session/status.ts?plain=1 "jekko/packages/jekko/src/session/status.ts at dev · anomalyco/jekko · GitHub"
+[8]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/session/compaction.ts?plain=1 "jekko/packages/jekko/src/session/compaction.ts at dev · anomalyco/jekko · GitHub"
+[9]: https://github.com/anomalyco/jekko/issues/13946 "Issue · GitHub"
+[10]: https://github.com/anomalyco/jekko/issues/9446 "feat: Implement jekko-council-swarm - Multi-agent coordination system · Issue #9446 · anomalyco/jekko · GitHub"
+[11]: https://github.com/anomalyco/jekko/issues/5408 "[FEATURE]: Delayed queue feature · Issue #5408 · anomalyco/jekko · GitHub"
+[12]: https://www.reddit.com/r/jekkoCLI/comments/1t5q8mo/dont_leave_jekko_unattended_a_subagent_loop/ "Don’t leave Opencode unattended! A sub-agent loop just burned through my entire limits. : r/jekkoCLI"
 [13]: https://www.anthropic.com/news/model-context-protocol "Introducing the Model Context Protocol \ Anthropic"
-[14]: https://opencode.ai/docs/acp/ "ACP Support | OpenCode"
+[14]: https://jekko.ai/docs/acp/ "ACP Support | Jekko"
 [15]: https://agents.md/?utm_source=chatgpt.com "AGENTS.md"
 [16]: https://llmstxt.org/?utm_source=chatgpt.com "llms-txt: The /llms.txt file"
 [17]: https://github.com/langchain-ai/langgraph "GitHub - langchain-ai/langgraph: Build resilient language agents as graphs. Available in TypeScript! · GitHub"
@@ -2235,6 +2235,6 @@ That is how you get the behavior you want without relying on hope, XML tags, or 
 [19]: https://docs.crewai.com/en/concepts/flows?utm_source=chatgpt.com "Flows"
 [20]: https://docs.temporal.io/workflows "Temporal Workflow | Temporal Platform Documentation"
 [21]: https://arxiv.org/html/2603.22386v1?utm_source=chatgpt.com "A Survey of Workflow Optimization for LLM Agents"
-[22]: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/cli/cmd/run.ts?plain=1 "opencode/packages/opencode/src/cli/cmd/run.ts at dev · anomalyco/opencode · GitHub"
+[22]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/cli/cmd/run.ts?plain=1 "jekko/packages/jekko/src/cli/cmd/run.ts at dev · anomalyco/jekko · GitHub"
 [23]: https://arxiv.org/abs/2602.14281 "[2602.14281] MCPShield: A Security Cognition Layer for Adaptive Trust Calibration in Model Context Protocol Agents"
 

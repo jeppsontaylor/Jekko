@@ -199,7 +199,7 @@ No audited runtime boundary reclassifications declared.
    Fix: pin the download, verify a checksum or signature, and avoid shell piping
    Rerun: `just security`
    Fingerprint: `sha256:58e0e923f4fe83904de413db3c7ca3e07f3f867661bd430c108a9fc93d612149`
-   Evidence: detector=docker.install.unverified-remote, path=.github/workflows/docs-locale-sync.yml, line=54, proof_window=None, snippet=run: curl -fsSL https://opencode.ai/install | bash -
+   Evidence: detector=docker.install.unverified-remote, path=.github/workflows/docs-locale-sync.yml, line=54, proof_window=None, snippet=run: curl -fsSL https://jekko.ai/install | bash -
 5. `medium` `security` `.github/workflows/jankurai.yml`
    Rule: `HLT-016-SUPPLY-CHAIN-DRIFT`
    Check: `HLT-016-SUPPLY-CHAIN-DRIFT:security` `soft` confidence `0.76`
@@ -210,7 +210,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just security`
    Fingerprint: `sha256:da221881fae691071bddc454109bed0998c48e6a9f99ee7c2e61538c8340a5d8`
    Evidence: lockfile present, secret or dependency scan tooling found, provenance/SBOM tooling found, security lane present
-6. `high` `security` `.github/workflows/opencode.yml:34`
+6. `high` `security` `.github/workflows/jekko.yml:34`
    Rule: `HLT-034-CI-BAD-BEHAVIOR`
    Check: `HLT-034-CI-BAD-BEHAVIOR:security` `hard` confidence `0.95`
    Route: TLR `Security, secrets, agency`, lane `security`, owner `ops`
@@ -220,7 +220,7 @@ No audited runtime boundary reclassifications declared.
    Fix: pin every external action to a 40-character commit SHA
    Rerun: `just security`
    Fingerprint: `sha256:f4409cd68dc48838fcf9313c2320676dac7cd73e14d99ba87c178caf8f47a6f1`
-   Evidence: detector=ci.action.not-full-sha, path=.github/workflows/opencode.yml, line=34, proof_window=None, snippet=uses: anomalyco/opencode/github@v1.0.220
+   Evidence: detector=ci.action.not-full-sha, path=.github/workflows/jekko.yml, line=34, proof_window=None, snippet=uses: anomalyco/jekko/github@v1.0.220
 7. `high` `security` `.github/workflows/pr-standards.yml:1`
    Rule: `HLT-034-CI-BAD-BEHAVIOR`
    Check: `HLT-034-CI-BAD-BEHAVIOR:security` `hard` confidence `0.95`
@@ -748,8 +748,8 @@ No audited runtime boundary reclassifications declared.
    Fix: pin the download, verify a checksum or signature, and avoid shell piping
    Rerun: `just security`
    Fingerprint: `sha256:31091e87505a8a41edd98a2ac05e536f0fe1229a0845c14dd5a0612f684fe95e`
-   Evidence: detector=docker.install.unverified-remote, path=.github/workflows/triage.yml, line=23, proof_window=None, snippet=run: curl -fsSL https://opencode.ai/install | bash
-55. `high` `vibe` `.opencode/plugins/tui-smoke.tsx:680`
+   Evidence: detector=docker.install.unverified-remote, path=.github/workflows/triage.yml, line=23, proof_window=None, snippet=run: curl -fsSL https://jekko.ai/install | bash
+55. `high` `vibe` `.jekko/plugins/tui-smoke.tsx:680`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `agent`
@@ -758,8 +758,8 @@ No audited runtime boundary reclassifications declared.
    Fix: replace placeholders with implemented behavior, typed unsupported-state errors, or a tracked exception record with docs
    Rerun: `just fast`
    Fingerprint: `sha256:abe0534991e954e8f8a08fbbe89b78ccab8c59a788c0fedd0103382edde1e606`
-   Evidence: .opencode/plugins/tui-smoke.tsx:680 placeholders={{ normal }}
-56. `high` `boundary` `.opencode/plugins/tui-smoke.tsx:852`
+   Evidence: .jekko/plugins/tui-smoke.tsx:680 placeholders={{ normal }}
+56. `high` `boundary` `.jekko/plugins/tui-smoke.tsx:852`
    Rule: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR`
    Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `fast`, owner `agent`
@@ -769,8 +769,8 @@ No audited runtime boundary reclassifications declared.
    Fix: use argv arrays, prepared statements, or a safe allowlisted command path
    Rerun: `just fast`
    Fingerprint: `sha256:cf5f66102b9be7e72763c6b7417a78e4ff7f6b2a29575981d10e68e04a13c44f`
-   Evidence: detector=typescript.security.raw-command-sql, path=.opencode/plugins/tui-smoke.tsx, line=852, snippet=title: `${input.label} select dialog`,
-57. `high` `security` `.opencode/plugins/tui-smoke.tsx:852`
+   Evidence: detector=typescript.security.raw-command-sql, path=.jekko/plugins/tui-smoke.tsx, line=852, snippet=title: `${input.label} select dialog`,
+57. `high` `security` `.jekko/plugins/tui-smoke.tsx:852`
    Rule: `HLT-023-INPUT-BOUNDARY-GAP`
    Check: `HLT-023-INPUT-BOUNDARY-GAP:security` `hard` confidence `0.88`
    Route: TLR `Security, secrets, agency`, lane `security`, owner `agent`
@@ -2659,7 +2659,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just security`
    Fingerprint: `sha256:63aa6a36dcae77e7a0e43ae8604b85535c79a910819689dbd22b1794127b0d39`
    Evidence: detector=websec.vite.public-dev-server, path=packages/enterprise/vite.config.ts, line=31, proof_window=None, snippet=allowedHosts: true,
-239. `high` `data` `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql:30`
+239. `high` `data` `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql:30`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2670,7 +2670,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:50c96cd9b46a77d66e87e1b8aea1dfbed789a089168eea256e0fffb46d5025aa`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_message_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
-240. `high` `data` `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql:40`
+240. `high` `data` `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql:40`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2681,7 +2681,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:1e79451626eba6b0ba3700f5410e6e85591f75d42b3055d1311cd666335331f3`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_part_message_id_message_id_fk` FOREIGN KEY (`message_id`) REFERENCES `message`(`id`) ON DELETE CASCADE
-241. `high` `data` `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql:48`
+241. `high` `data` `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql:48`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2692,7 +2692,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:028d147e225e5ab9fe890280fc78f6ce77bec1955298e6ca4948b9267d226009`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_permission_project_id_project_id_fk` FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON DELETE CASCADE
-242. `high` `data` `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql:70`
+242. `high` `data` `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql:70`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2703,7 +2703,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:cd34308dff1a0a6656779b41968993c47d54b47888a76756c425f9aad17acdfd`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_session_project_id_project_id_fk` FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON DELETE CASCADE
-243. `high` `data` `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql:82`
+243. `high` `data` `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql:82`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2714,7 +2714,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:112283fd2b0e3dfdc3fd4d475d1e27661a7d8b698d26095cc67c11b10e5b1c76`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_todo_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
-244. `high` `data` `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql:92`
+244. `high` `data` `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql:92`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2725,7 +2725,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:6684b442d273a0ab674bdcc821e68f977d70aa22407dff94c72b4f37d4069c1a`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_session_share_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
-245. `high` `data` `packages/opencode/migration/20260228203230_blue_harpoon/migration.sql:21`
+245. `high` `data` `packages/jekko/migration/20260228203230_blue_harpoon/migration.sql:21`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2736,7 +2736,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:24a20a13eed31776d0966a1c95f79474b66281867ed328c6b97963959d5e98aa`
    Evidence: detector=sql.query.full-table-write, proof-window=where-clause, snippet=FOREIGN KEY (`active_account_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE set null
-246. `high` `data` `packages/opencode/migration/20260323234822_events/migration.sql:17`
+246. `high` `data` `packages/jekko/migration/20260323234822_events/migration.sql:17`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2747,7 +2747,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:930020673218eaa5a31718bcc9133da43fea2dcc4e5c4a34a081e6dbcd87316c`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_event_aggregate_id_event_sequence_aggregate_id_fk` FOREIGN KEY (`aggregate_id`) REFERENCES `event_sequence`(`aggregate_id`) ON DELETE CASCADE
-247. `high` `data` `packages/opencode/migration/20260410174513_workspace-name/migration.sql:15`
+247. `high` `data` `packages/jekko/migration/20260410174513_workspace-name/migration.sql:15`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2758,7 +2758,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:85f7a6e4d72b91ec050d43f3d80119cdd33387fc12867d95f0bb196788a24b27`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_workspace_project_id_project_id_fk` FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON DELETE CASCADE
-248. `high` `data` `packages/opencode/migration/20260410174513_workspace-name/migration.sql:19`
+248. `high` `data` `packages/jekko/migration/20260410174513_workspace-name/migration.sql:19`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2769,7 +2769,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:d430f69eefd1e6fbab0b344ebe7810c702afeb12c83b849de10e78e434437992`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=DROP TABLE `workspace`
-249. `high` `data` `packages/opencode/migration/20260413175956_chief_energizer/migration.sql:11`
+249. `high` `data` `packages/jekko/migration/20260413175956_chief_energizer/migration.sql:11`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2780,7 +2780,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:87760ec65336c80d325f3f3abe2362bc839514ef2af3307463316bc21eea42d8`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_session_entry_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
-250. `high` `data` `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql:13`
+250. `high` `data` `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql:13`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2791,7 +2791,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:681c48cd39eafd9dc5985b8c3862a384ce4cfed48ee94f39d674d22080453e3a`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_session_message_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
-251. `high` `data` `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql:16`
+251. `high` `data` `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql:16`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2802,7 +2802,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:76435eae02994dfb78f3b28a6f861cc8f1dad0cc7b0eb45adcbd64712ffa3ba0`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=DROP INDEX IF EXISTS `session_entry_session_idx`
-252. `high` `data` `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql:17`
+252. `high` `data` `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql:17`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2813,7 +2813,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:0bc40c323bc7ce00ea05382dc57c6f77bcc45d34aab5a136d68c7fc79892373a`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=DROP INDEX IF EXISTS `session_entry_session_type_idx`
-253. `high` `data` `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql:18`
+253. `high` `data` `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql:18`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2824,7 +2824,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:731c098c1168fbab99e37f45d8988040cf348e8acf832c51caf908905e1b7d4d`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=DROP INDEX IF EXISTS `session_entry_time_created_idx`
-254. `high` `data` `packages/opencode/migration/20260507054800_memory_os/migration.sql:21`
+254. `high` `data` `packages/jekko/migration/20260507054800_memory_os/migration.sql:21`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2835,7 +2835,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a4230e5db5b65c97e7ea5ea630169223539395d56a632599335d087804bfff8f`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade
-255. `high` `data` `packages/opencode/migration/20260507054800_memory_os/migration.sql:42`
+255. `high` `data` `packages/jekko/migration/20260507054800_memory_os/migration.sql:42`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2846,7 +2846,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a4230e5db5b65c97e7ea5ea630169223539395d56a632599335d087804bfff8f`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade
-256. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:3`
+256. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:3`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2857,7 +2857,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:339b292cfcb965e03573e0234e5fc7f167454a3e2625adcbbb55648d6d6ddf0a`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`root_session_id` text NOT NULL REFERENCES `session`(`id`) ON DELETE cascade,
-257. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:4`
+257. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:4`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2868,7 +2868,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:c29212e72a3fee121a7db0ecba66bd4ee93671a5d9d4fd0700834aa6ccd4c925`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`active_session_id` text NOT NULL REFERENCES `session`(`id`) ON DELETE cascade,
-258. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:25`
+258. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:25`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2879,7 +2879,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,
-259. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:27`
+259. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:27`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2890,7 +2890,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:1c12e873037ce355c14e4a3d7312398e2d5127cc3c582840da503e4f58881e62`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`session_id` text NOT NULL REFERENCES `session`(`id`) ON DELETE cascade,
-260. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:42`
+260. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:42`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2901,7 +2901,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,
-261. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:54`
+261. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:54`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2912,7 +2912,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,
-262. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:91`
+262. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:91`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2923,7 +2923,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,
-263. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:92`
+263. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:92`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2934,7 +2934,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:4c5be5474db6e622acdf4cb32a1f67abb5005c851ce6519446624f521c876c0a`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`task_id` text NOT NULL REFERENCES `daemon_task`(`id`) ON DELETE cascade,
-264. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:117`
+264. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:117`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2945,7 +2945,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,
-265. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:118`
+265. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:118`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2956,7 +2956,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:4c5be5474db6e622acdf4cb32a1f67abb5005c851ce6519446624f521c876c0a`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`task_id` text NOT NULL REFERENCES `daemon_task`(`id`) ON DELETE cascade,
-266. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:136`
+266. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:136`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2967,7 +2967,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,
-267. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:152`
+267. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:152`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2978,7 +2978,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,
-268. `high` `data` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql:153`
+268. `high` `data` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql:153`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `tools`
@@ -2989,7 +2989,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:ef3ef1c7d57b6976440d37fb873bd345a5e8658d8b681fbedd3838338a59f2ad`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=`task_id` text REFERENCES `daemon_task`(`id`) ON DELETE cascade,
-269. `high` `vibe` `packages/opencode/script/httpapi-exercise.ts:1402`
+269. `high` `vibe` `packages/jekko/script/httpapi-exercise.ts:1402`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -2998,8 +2998,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:08501c897cbe81926ba6cfbe2d2d85ed3ea2969585ea59038ee5beaec8cdfd28`
-   Evidence: packages/opencode/script/httpapi-exercise.ts:1402, future-hostile/dead-language term `deprecated` appears
-270. `high` `vibe` `packages/opencode/script/httpapi-exercise.ts:1759`
+   Evidence: packages/jekko/script/httpapi-exercise.ts:1402, future-hostile/dead-language term `deprecated` appears
+270. `high` `vibe` `packages/jekko/script/httpapi-exercise.ts:1759`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3008,8 +3008,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:d34da740b37ce677c25f2fb5e3f7cc6a6cd0aa197d9d8b8f2a7a4270f48ae633`
-   Evidence: packages/opencode/script/httpapi-exercise.ts:1759, future-hostile/dead-language term `legacy` appears
-271. `high` `vibe` `packages/opencode/src/acp/agent.ts:48`
+   Evidence: packages/jekko/script/httpapi-exercise.ts:1759, future-hostile/dead-language term `legacy` appears
+271. `high` `vibe` `packages/jekko/src/acp/agent.ts:48`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3018,8 +3018,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b606ba87ced8633257bac458dea72a9c58a3176a010531c564a1ca3ac80c74fe`
-   Evidence: packages/opencode/src/acp/agent.ts:48, future-hostile/dead-language term `todo` appears
-272. `high` `vibe` `packages/opencode/src/acp/agent.ts:58`
+   Evidence: packages/jekko/src/acp/agent.ts:48, future-hostile/dead-language term `todo` appears
+272. `high` `vibe` `packages/jekko/src/acp/agent.ts:58`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3028,8 +3028,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:1c11ccf6ebc39a4d70a57471fbe741f0a536814d97f3afb0f33bf6bc967696ae`
-   Evidence: packages/opencode/src/acp/agent.ts:58, future-hostile/dead-language term `todo` appears
-273. `high` `vibe` `packages/opencode/src/cli/cmd/github.ts:885`
+   Evidence: packages/jekko/src/acp/agent.ts:58, future-hostile/dead-language term `todo` appears
+273. `high` `vibe` `packages/jekko/src/cli/cmd/github.ts:885`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3038,8 +3038,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:219f8eab3f0c7528f23a930a1398974bbe5c43d46608bd80466736268133ff36`
-   Evidence: packages/opencode/src/cli/cmd/github.ts:885, future-hostile/dead-language term `todo` appears
-274. `high` `vibe` `packages/opencode/src/cli/cmd/run.ts:28`
+   Evidence: packages/jekko/src/cli/cmd/github.ts:885, future-hostile/dead-language term `todo` appears
+274. `high` `vibe` `packages/jekko/src/cli/cmd/run.ts:28`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3048,8 +3048,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b2df407dafb43344c90f691e3821b797cbdb0a1fe56ce15ec4b731ad34186c8f`
-   Evidence: packages/opencode/src/cli/cmd/run.ts:28, future-hostile/dead-language term `todo` appears
-275. `high` `vibe` `packages/opencode/src/cli/cmd/tui/app.tsx:144`
+   Evidence: packages/jekko/src/cli/cmd/run.ts:28, future-hostile/dead-language term `todo` appears
+275. `high` `vibe` `packages/jekko/src/cli/cmd/tui/app.tsx:144`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3058,8 +3058,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:40f10eb94f9e2ef754f733bca9a6de17c6dd6815eba81b6da298aebabadff756`
-   Evidence: packages/opencode/src/cli/cmd/tui/app.tsx:144, future-hostile/dead-language term `fallback` appears
-276. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/dialog-model.tsx:73`
+   Evidence: packages/jekko/src/cli/cmd/tui/app.tsx:144, future-hostile/dead-language term `fallback` appears
+276. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/dialog-model.tsx:73`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3068,8 +3068,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:40b05f0a1847937e96b38ebfdf4d7c19ae4330fa1f5ce4e1e1723f876f7b23da`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/dialog-model.tsx:73, future-hostile/dead-language term `deprecated` appears
-277. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:53`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/dialog-model.tsx:73, future-hostile/dead-language term `deprecated` appears
+277. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:53`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3078,8 +3078,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:e05128cdcc687fe0928902c00bc948d5c48580c9caf60946f7dfe7b4ca18b094`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:53, future-hostile/dead-language term `fallback` appears
-278. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:78`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:53, future-hostile/dead-language term `fallback` appears
+278. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:78`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3088,8 +3088,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:44fea828a55e589b5ff0f07c15790b1db55bde0065b7d78ee93a18bfcd631243`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:78, future-hostile/dead-language term `fallback` appears
-279. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:121`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:78, future-hostile/dead-language term `fallback` appears
+279. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:121`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3098,8 +3098,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:efe2d54afe0186b9719ab9ace78ccfe6de6639ba44c2c933048fd3a6d8d7a750`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:121, future-hostile/dead-language term `fallback` appears
-280. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:143`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:121, future-hostile/dead-language term `fallback` appears
+280. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:143`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3108,8 +3108,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:0cf6fe95967bdc2c10eb8e326b61aaa58efb4aafa006cd135ec6a3dab2a809fd`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx:143, future-hostile/dead-language term `fallback` appears
-281. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/prompt/autocomplete.tsx:683`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx:143, future-hostile/dead-language term `fallback` appears
+281. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx:683`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3118,8 +3118,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:2e4c8ef2e6b8ccdfd798fbf29b3b0809d9797939ec5e6cd77a6c46a6415f5d75`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/prompt/autocomplete.tsx:683, future-hostile/dead-language term `fallback` appears
-282. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1500`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx:683, future-hostile/dead-language term `fallback` appears
+282. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx:1500`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3128,8 +3128,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:25f79036d838b5ea46d128b5b6c77b1c4805868eb909d190538e375eac8c3104`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1500, future-hostile/dead-language term `fallback` appears
-283. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1575`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx:1500, future-hostile/dead-language term `fallback` appears
+283. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx:1575`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3138,8 +3138,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:c03c9d46c2b5a437e6b47b2c9d5a8fde60b6cfb7048c672f20951b65be37b27a`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1575, future-hostile/dead-language term `fallback` appears
-284. `high` `vibe` `packages/opencode/src/cli/cmd/tui/component/spinner.tsx:15`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx:1575, future-hostile/dead-language term `fallback` appears
+284. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/spinner.tsx:15`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3148,8 +3148,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:e9083fdaa40859cc330c2ba8bd402d72b6c14a6519e347d3d8f06132bd6b6d21`
-   Evidence: packages/opencode/src/cli/cmd/tui/component/spinner.tsx:15, future-hostile/dead-language term `fallback` appears
-285. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:8`
+   Evidence: packages/jekko/src/cli/cmd/tui/component/spinner.tsx:15, future-hostile/dead-language term `fallback` appears
+285. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:8`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3158,8 +3158,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:53d01c8675748cd03f12cdc49b385f2cf05315506272479949b5809025090d65`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:8, future-hostile/dead-language term `todo` appears
-286. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:61`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:8, future-hostile/dead-language term `todo` appears
+286. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:61`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3168,8 +3168,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:d7999f277f493c49cf45f4dfcd83cd4f03dd3cac6924e77332a5b016cb23439a`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:61, future-hostile/dead-language term `todo` appears
-287. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:62`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:61, future-hostile/dead-language term `todo` appears
+287. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:62`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3178,8 +3178,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:8017dabb00f03a099470dbed3a6782e56e27c4b728e94d3a510eaeaece7b9e0b`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:62, future-hostile/dead-language term `todo` appears
-288. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:65`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:62, future-hostile/dead-language term `todo` appears
+288. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:65`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3188,8 +3188,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:5cc425d8c0a9821794225cbdc22dbf39c45b256ecb5eb86027e20090ce192caa`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:65, future-hostile/dead-language term `todo` appears
-289. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:101`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:65, future-hostile/dead-language term `todo` appears
+289. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:101`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3198,8 +3198,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b2fb2aad88cfecb090fbe11211de5f40156e21b502e9da534254208b3e144fae`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:101, future-hostile/dead-language term `todo` appears
-290. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:159`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:101, future-hostile/dead-language term `todo` appears
+290. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:159`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3208,8 +3208,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f13a275216741f8e8580a67f22a725dd824121596f585a3507dbb6d41d30939a`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:159, future-hostile/dead-language term `todo` appears
-291. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:161`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:159, future-hostile/dead-language term `todo` appears
+291. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:161`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3218,8 +3218,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f0081f6ae86f883aeea3206f35209992e3e92202799b9bd5449c75da83bf0490`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:161, future-hostile/dead-language term `todo` appears
-292. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:172`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:161, future-hostile/dead-language term `todo` appears
+292. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:172`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3228,8 +3228,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b7a16edfdf0d82a94dd678091ef14f91023d08faaf1f3b89d0f2d7412eeb0e8a`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:172, future-hostile/dead-language term `todo` appears
-293. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:173`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:172, future-hostile/dead-language term `todo` appears
+293. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:173`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3238,8 +3238,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b95b7ec3c5178f82abcfe1ea2e5b3b896523798fbf64a3c759d36a97b86ab204`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:173, future-hostile/dead-language term `todo` appears
-294. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:324`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:173, future-hostile/dead-language term `todo` appears
+294. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:324`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3248,8 +3248,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:5a7fa3f64ca78b68fe0a0145b3a4a65b46561a6f2893769dbbd09077c0372224`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:324, future-hostile/dead-language term `todo` appears
-295. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:325`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:324, future-hostile/dead-language term `todo` appears
+295. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:325`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3258,8 +3258,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:fc3455d60a161b70fdc3edf36215105ce00bb148cea9738adf35e8617d6cafc2`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx:325, future-hostile/dead-language term `todo` appears
-296. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/sync.tsx:309`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx:325, future-hostile/dead-language term `todo` appears
+296. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/sync.tsx:309`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3268,8 +3268,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:5055c97738e3d35783111e652183fad8a8f4beaa2dbca54c42718d4b3c021a34`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/sync.tsx:309, future-hostile/dead-language term `legacy` appears
-297. `high` `vibe` `packages/opencode/src/cli/cmd/tui/context/theme.tsx:303`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/sync.tsx:309, future-hostile/dead-language term `legacy` appears
+297. `high` `vibe` `packages/jekko/src/cli/cmd/tui/context/theme.tsx:303`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3278,8 +3278,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3500a7923da7795ff163b86e030d5a5da9d50ef425e9da6dabd468c018785f76`
-   Evidence: packages/opencode/src/cli/cmd/tui/context/theme.tsx:303, future-hostile/dead-language term `fallback` appears
-298. `high` `vibe` `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx:60`
+   Evidence: packages/jekko/src/cli/cmd/tui/context/theme.tsx:303, future-hostile/dead-language term `fallback` appears
+298. `high` `vibe` `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx:60`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3288,8 +3288,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3d009bbcb745f1dcca1a26e58d0c3e6c793098c952a8925d9232584a866530f6`
-   Evidence: packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx:60, future-hostile/dead-language term `fallback` appears
-299. `high` `vibe` `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:3`
+   Evidence: packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx:60, future-hostile/dead-language term `fallback` appears
+299. `high` `vibe` `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:3`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3298,8 +3298,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:5c5fd1d727fcf860fd66a059855bf3ee97dc5bce42d887fa5c762bbfc33908b5`
-   Evidence: packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:3, future-hostile/dead-language term `todo` appears
-300. `high` `vibe` `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:21`
+   Evidence: packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:3, future-hostile/dead-language term `todo` appears
+300. `high` `vibe` `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:21`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3308,8 +3308,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:08a618a40665cd6e3993ddca407c3bf93a70bb730e65601130288cdfdcc9c7b4`
-   Evidence: packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:21, future-hostile/dead-language term `todo` appears
-301. `high` `vibe` `packages/opencode/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:484`
+   Evidence: packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx:21, future-hostile/dead-language term `todo` appears
+301. `high` `vibe` `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:484`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3318,8 +3318,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:371f375196475e1e3bc135aa9b35083bf2a7d6f30b83dc2e1174e296ae2fe6a6`
-   Evidence: packages/opencode/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:484, future-hostile/dead-language term `fallback` appears
-302. `high` `vibe` `packages/opencode/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:638`
+   Evidence: packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:484, future-hostile/dead-language term `fallback` appears
+302. `high` `vibe` `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:638`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3328,8 +3328,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:ff0754dabf581fd6dd768b49751084b567f690ad205b5c840bbfe1ee2a934409`
-   Evidence: packages/opencode/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:638, future-hostile/dead-language term `fallback` appears
-303. `high` `vibe` `packages/opencode/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:874`
+   Evidence: packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:638, future-hostile/dead-language term `fallback` appears
+303. `high` `vibe` `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:874`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3338,8 +3338,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f5f36205cc9f82e56ef28ed69a1d12947afda3cb96a3e8b18c8fc47071aaa393`
-   Evidence: packages/opencode/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:874, future-hostile/dead-language term `fallback` appears
-304. `high` `vibe` `packages/opencode/src/cli/cmd/tui/plugin/internal.ts:6`
+   Evidence: packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx:874, future-hostile/dead-language term `fallback` appears
+304. `high` `vibe` `packages/jekko/src/cli/cmd/tui/plugin/internal.ts:6`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3348,8 +3348,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:c16d750821ce785c6072f6c8cf2c70f501713efd6e77aaf531c8e1ee7cfa2592`
-   Evidence: packages/opencode/src/cli/cmd/tui/plugin/internal.ts:6, future-hostile/dead-language term `todo` appears
-305. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:44`
+   Evidence: packages/jekko/src/cli/cmd/tui/plugin/internal.ts:6, future-hostile/dead-language term `todo` appears
+305. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:44`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3358,8 +3358,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:a964c7dc41077b8e92100f60db8db8da2fdbd2aad3734ad2928a02811d87abbd`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:44, future-hostile/dead-language term `todo` appears
-306. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:60`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:44, future-hostile/dead-language term `todo` appears
+306. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:60`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3368,8 +3368,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b7522c58c8ff9c86fbf24992a514df5509efb9f2784b0c9ccefda486f17a559e`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:60, future-hostile/dead-language term `todo` appears
-307. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1380`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:60, future-hostile/dead-language term `todo` appears
+307. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1380`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3378,8 +3378,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:94cf0f3a4ec8182e8b051898a67cd14223c2d984ade0acf5f5c80268cda62982`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1380, future-hostile/dead-language term `fallback` appears
-308. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1684`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1380, future-hostile/dead-language term `fallback` appears
+308. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1684`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3388,8 +3388,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:900bef6f5a66e08df555f0a15864810f804f323444cba61fe147ca504b072a0e`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1684, future-hostile/dead-language term `fallback` appears
-309. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1785`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1684, future-hostile/dead-language term `fallback` appears
+309. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1785`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3398,8 +3398,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:570ebb51326f25ff39c1b7ff5cf8c085d196c50bd3bdd3681bfec7ebfb69b5ee`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1785, future-hostile/dead-language term `fallback` appears
-310. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1829`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1785, future-hostile/dead-language term `fallback` appears
+310. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1829`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3408,8 +3408,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3e877bae17efffe4144699500a9a6d8c812cadf79debe07d353d70b877a92d37`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1829, future-hostile/dead-language term `fallback` appears
-311. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:2192`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:1829, future-hostile/dead-language term `fallback` appears
+311. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:2192`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3418,8 +3418,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:d9ca123f2c95a79b0024208d7d016b30ab8e13ea263dcd2ddf9fde1a12980c58`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:2192, future-hostile/dead-language term `fallback` appears
-312. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx:616`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/index.tsx:2192, future-hostile/dead-language term `fallback` appears
+312. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx:616`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3428,8 +3428,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:2b80934ea6d315d082144e1b3fe3cdd3f23a938acdebc71fd71c639973641ec0`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx:616, future-hostile/dead-language term `fallback` appears
-313. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx:679`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx:616, future-hostile/dead-language term `fallback` appears
+313. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx:679`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3438,8 +3438,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:c285a48f11d9875431838d09624b53cc492a34ae8eb930e4eef5114059d1210e`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx:679, future-hostile/dead-language term `fallback` appears
-314. `high` `vibe` `packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx:66`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx:679, future-hostile/dead-language term `fallback` appears
+314. `high` `vibe` `packages/jekko/src/cli/cmd/tui/routes/session/sidebar.tsx:66`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3448,8 +3448,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:04af0f2fa69d6c392c7b2004fb8320128c427871af3ab9c2cd3f10da30a7220f`
-   Evidence: packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx:66, future-hostile/dead-language term `fallback` appears
-315. `high` `vibe` `packages/opencode/src/cli/cmd/tui/ui/dialog-prompt.tsx:101`
+   Evidence: packages/jekko/src/cli/cmd/tui/routes/session/sidebar.tsx:66, future-hostile/dead-language term `fallback` appears
+315. `high` `vibe` `packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx:101`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3458,8 +3458,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:d7d59f750b82a8d795d57b0167e301c6f1d2efb589a5555faef2dceb56e1f85d`
-   Evidence: packages/opencode/src/cli/cmd/tui/ui/dialog-prompt.tsx:101, future-hostile/dead-language term `fallback` appears
-316. `high` `vibe` `packages/opencode/src/cli/cmd/tui/ui/dialog-select.tsx:286`
+   Evidence: packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx:101, future-hostile/dead-language term `fallback` appears
+316. `high` `vibe` `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx:286`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3468,8 +3468,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:a3096e6d38e3d6ca0b6e4bbbcf0340ec3b88537b8d0d2c0d2c87f6cf2f19d218`
-   Evidence: packages/opencode/src/cli/cmd/tui/ui/dialog-select.tsx:286, future-hostile/dead-language term `fallback` appears
-317. `high` `vibe` `packages/opencode/src/cli/cmd/tui/ui/dialog-select.tsx:307`
+   Evidence: packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx:286, future-hostile/dead-language term `fallback` appears
+317. `high` `vibe` `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx:307`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3478,8 +3478,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:19f3cc854e28d72a092d3cf415d20ec8d834196ee3d5eb284ac6505683f63470`
-   Evidence: packages/opencode/src/cli/cmd/tui/ui/dialog-select.tsx:307, future-hostile/dead-language term `fallback` appears
-318. `high` `vibe` `packages/opencode/src/cli/cmd/tui/ui/dialog-select.tsx:371`
+   Evidence: packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx:307, future-hostile/dead-language term `fallback` appears
+318. `high` `vibe` `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx:371`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3488,8 +3488,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:aa9ef5e8be367b25628274868f6b297d0d5a8d90d90477515b29765527cce26c`
-   Evidence: packages/opencode/src/cli/cmd/tui/ui/dialog-select.tsx:371, future-hostile/dead-language term `fallback` appears
-319. `high` `vibe` `packages/opencode/src/config/provider.ts:52`
+   Evidence: packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx:371, future-hostile/dead-language term `fallback` appears
+319. `high` `vibe` `packages/jekko/src/config/provider.ts:52`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3498,8 +3498,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f02cccdf06ec342e1abf72b029d9913ca3d19511314ec39f2e714d2db506ecfd`
-   Evidence: packages/opencode/src/config/provider.ts:52, future-hostile/dead-language term `deprecated` appears
-320. `high` `vibe` `packages/opencode/src/effect/app-runtime.ts:25`
+   Evidence: packages/jekko/src/config/provider.ts:52, future-hostile/dead-language term `deprecated` appears
+320. `high` `vibe` `packages/jekko/src/effect/app-runtime.ts:25`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3508,8 +3508,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:8ad7328702276b57ba9dbffaed0f0290cc4d0829b1f39bd7886934f975fb7f3a`
-   Evidence: packages/opencode/src/effect/app-runtime.ts:25, future-hostile/dead-language term `todo` appears
-321. `high` `vibe` `packages/opencode/src/effect/app-runtime.ts:81`
+   Evidence: packages/jekko/src/effect/app-runtime.ts:25, future-hostile/dead-language term `todo` appears
+321. `high` `vibe` `packages/jekko/src/effect/app-runtime.ts:81`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3518,8 +3518,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:7ef8ead3e35c5cd31771b143ae751419238a57d667611e369853737c121df8d5`
-   Evidence: packages/opencode/src/effect/app-runtime.ts:81, future-hostile/dead-language term `todo` appears
-322. `high` `vibe` `packages/opencode/src/plugin/loader.ts:142`
+   Evidence: packages/jekko/src/effect/app-runtime.ts:81, future-hostile/dead-language term `todo` appears
+322. `high` `vibe` `packages/jekko/src/plugin/loader.ts:142`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3528,8 +3528,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:212b4501042c94e2e2d138b8fefdef36058e22bf1235e0ac4cd50a514ae72e9f`
-   Evidence: packages/opencode/src/plugin/loader.ts:142, future-hostile/dead-language term `deprecated` appears
-323. `high` `vibe` `packages/opencode/src/provider/models.ts:74`
+   Evidence: packages/jekko/src/plugin/loader.ts:142, future-hostile/dead-language term `deprecated` appears
+323. `high` `vibe` `packages/jekko/src/provider/models.ts:74`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3538,8 +3538,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:4e513295d19cf3d36c1ab41db4629431e792e8df94385777250f50782b92fc81`
-   Evidence: packages/opencode/src/provider/models.ts:74, future-hostile/dead-language term `deprecated` appears
-324. `high` `vibe` `packages/opencode/src/provider/provider.ts:893`
+   Evidence: packages/jekko/src/provider/models.ts:74, future-hostile/dead-language term `deprecated` appears
+324. `high` `vibe` `packages/jekko/src/provider/provider.ts:893`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3548,8 +3548,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:318d0dcf5490122549fd5af8cf40aae82f1863800ec7b52b76b4bf42f8e14e51`
-   Evidence: packages/opencode/src/provider/provider.ts:893, future-hostile/dead-language term `deprecated` appears
-325. `high` `vibe` `packages/opencode/src/provider/provider.ts:894`
+   Evidence: packages/jekko/src/provider/provider.ts:893, future-hostile/dead-language term `deprecated` appears
+325. `high` `vibe` `packages/jekko/src/provider/provider.ts:894`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3558,8 +3558,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:788a8ebd712ea365038056dae893f80af1f0f90e84e567c56b34699c8cda8ec8`
-   Evidence: packages/opencode/src/provider/provider.ts:894, future-hostile/dead-language term `deprecated` appears
-326. `high` `vibe` `packages/opencode/src/provider/provider.ts:895`
+   Evidence: packages/jekko/src/provider/provider.ts:894, future-hostile/dead-language term `deprecated` appears
+326. `high` `vibe` `packages/jekko/src/provider/provider.ts:895`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3568,8 +3568,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:d897270c3374446f00a8e1e47c47443e12256688736202b55ed7c87acd42e335`
-   Evidence: packages/opencode/src/provider/provider.ts:895, future-hostile/dead-language term `deprecated` appears
-327. `high` `vibe` `packages/opencode/src/provider/provider.ts:931`
+   Evidence: packages/jekko/src/provider/provider.ts:895, future-hostile/dead-language term `deprecated` appears
+327. `high` `vibe` `packages/jekko/src/provider/provider.ts:931`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3578,8 +3578,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:e851daf2da3a0a45701324edcc857eabe86debb036996969aa6a6fc6c1ee5f93`
-   Evidence: packages/opencode/src/provider/provider.ts:931, future-hostile/dead-language term `deprecated` appears
-328. `high` `vibe` `packages/opencode/src/provider/provider.ts:1404`
+   Evidence: packages/jekko/src/provider/provider.ts:931, future-hostile/dead-language term `deprecated` appears
+328. `high` `vibe` `packages/jekko/src/provider/provider.ts:1404`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3588,8 +3588,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:a013bdd5dae834dc536bab22817a83835fee85379a23b3779910e310ee45de70`
-   Evidence: packages/opencode/src/provider/provider.ts:1404, future-hostile/dead-language term `deprecated` appears
-329. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:10`
+   Evidence: packages/jekko/src/provider/provider.ts:1404, future-hostile/dead-language term `deprecated` appears
+329. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:10`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3598,8 +3598,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:86b739ed907f4353789049df85b8e1ed0fde21940e4886cac14c55977d71631b`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:10, future-hostile/dead-language term `todo` appears
-330. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:151`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:10, future-hostile/dead-language term `todo` appears
+330. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:151`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3608,8 +3608,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:d6b3a939caaed418b20cb2f48433cce9435136180e35be619b74510762e327df`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:151, future-hostile/dead-language term `todo` appears
-331. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:162`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:151, future-hostile/dead-language term `todo` appears
+331. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:162`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3618,8 +3618,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:91ac2643c428099711b6d9e112fc0cfe73db8aaf354955cda18cf279cda1c718`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:162, future-hostile/dead-language term `todo` appears
-332. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:392`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:162, future-hostile/dead-language term `todo` appears
+332. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:392`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3628,8 +3628,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:de77c11b2cb1341d17b8ca32f52379b213843cbd7e54d022122d6c76125fcd9e`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/groups/session.ts:392, future-hostile/dead-language term `deprecated` appears
-333. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:17`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/groups/session.ts:392, future-hostile/dead-language term `deprecated` appears
+333. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:17`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3638,8 +3638,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:41327d824d8d5c0e812f05953e7dc33775fe0986fae088bab10a39621b9f95f1`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:17, future-hostile/dead-language term `todo` appears
-334. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:53`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:17, future-hostile/dead-language term `todo` appears
+334. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:53`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3648,8 +3648,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f458364227e0b7ece16e79767e73e3c7cb0b8d41edae253e647c3758cb05762e`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:53, future-hostile/dead-language term `todo` appears
-335. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:86`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:53, future-hostile/dead-language term `todo` appears
+335. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:86`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3658,8 +3658,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3e60b55d52c3de469b1fcabb4eb9ab9aaa68baa4033bccddb76f9c38ff0b762a`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:86, future-hostile/dead-language term `todo` appears
-336. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:361`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:86, future-hostile/dead-language term `todo` appears
+336. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:361`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3668,8 +3668,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:70f0515ff33a86d33def330c2cb7b3eb4ebd730d029fffebdf0627b8c2336d9d`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:361, future-hostile/dead-language term `todo` appears
-337. `medium` `context` `packages/opencode/src/server/routes/instance/httpapi/handlers/v2.ts:1`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts:361, future-hostile/dead-language term `todo` appears
+337. `medium` `context` `packages/jekko/src/server/routes/instance/httpapi/handlers/v2.ts:1`
    Rule: `HLT-040-REPO-ROT-BAD-BEHAVIOR`
    Check: `HLT-040-REPO-ROT-BAD-BEHAVIOR:context` `soft` confidence `0.88`
    Route: TLR `Context/setup`, lane `audit`, owner `tools`
@@ -3679,8 +3679,8 @@ No audited runtime boundary reclassifications declared.
    Fix: delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
    Rerun: `just score`
    Fingerprint: `sha256:2d4bc3e1a65c095ad6607a3de201f2b5743a40ccfdccf3411ee46886ab968608`
-   Evidence: detector=repo-rot.path.fake-versioned-source, path=packages/opencode/src/server/routes/instance/httpapi/handlers/v2.ts, line=1, proof_window=None, snippet=import { SessionV2 } from "@/v2/session"
-338. `high` `vibe` `packages/opencode/src/server/routes/instance/httpapi/server.ts:41`
+   Evidence: detector=repo-rot.path.fake-versioned-source, path=packages/jekko/src/server/routes/instance/httpapi/handlers/v2.ts, line=1, proof_window=None, snippet=import { SessionV2 } from "@/v2/session"
+338. `high` `vibe` `packages/jekko/src/server/routes/instance/httpapi/server.ts:41`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3689,8 +3689,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b237e8ddd4590363490dac99ffcd24c7047c567878e943107fb7ee4885283dd9`
-   Evidence: packages/opencode/src/server/routes/instance/httpapi/server.ts:41, future-hostile/dead-language term `todo` appears
-339. `high` `vibe` `packages/opencode/src/server/routes/instance/index.ts:118`
+   Evidence: packages/jekko/src/server/routes/instance/httpapi/server.ts:41, future-hostile/dead-language term `todo` appears
+339. `high` `vibe` `packages/jekko/src/server/routes/instance/index.ts:118`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3699,8 +3699,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:aa39dfc86a8c712fd85d37fdf8c5aa12cded151d6a2fedda90a5bc360b496a76`
-   Evidence: packages/opencode/src/server/routes/instance/index.ts:118, future-hostile/dead-language term `todo` appears
-340. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:15`
+   Evidence: packages/jekko/src/server/routes/instance/index.ts:118, future-hostile/dead-language term `todo` appears
+340. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:15`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3709,8 +3709,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f84ba0e4dbb060f9bc461b94e0b7bdd5a19b2116890b4f52c6cef1381d89705d`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:15, future-hostile/dead-language term `todo` appears
-341. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:195`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:15, future-hostile/dead-language term `todo` appears
+341. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:195`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3719,8 +3719,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:c45b495f6225efc5f038258d8246bcd72646c4ed4d264f7ebdbee6d4f715f7cc`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:195, future-hostile/dead-language term `todo` appears
-342. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:198`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:195, future-hostile/dead-language term `todo` appears
+342. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:198`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3729,8 +3729,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:0d53a754243cc3791879a9af6b07d8ac48343a7a59bee2a588558b96679e7a83`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:198, future-hostile/dead-language term `todo` appears
-343. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:214`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:198, future-hostile/dead-language term `todo` appears
+343. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:214`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3739,8 +3739,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:75f4b8e4d9181478ef36af7cb3a3b572c160f92b727725650cbcb6514b858719`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:214, future-hostile/dead-language term `todo` appears
-344. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:220`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:214, future-hostile/dead-language term `todo` appears
+344. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:220`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3749,8 +3749,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:011d33b08bada02a11681e3afcef881e58af55b372657ca15d27584db3e6b252`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:220, future-hostile/dead-language term `todo` appears
-345. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:223`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:220, future-hostile/dead-language term `todo` appears
+345. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:223`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3759,8 +3759,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:0bc1265bdbc0a0a1bf4f4783d69f6afbf659e55d2c5f1a48ac4afddde441d59c`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:223, future-hostile/dead-language term `todo` appears
-346. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:224`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:223, future-hostile/dead-language term `todo` appears
+346. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:224`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3769,8 +3769,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:ce0bec1b7eb2a31f6b126c8f6f704f02acc52940595ef593c129b6cea3fa364a`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:224, future-hostile/dead-language term `todo` appears
-347. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:227`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:224, future-hostile/dead-language term `todo` appears
+347. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:227`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3779,8 +3779,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:7a853195dfd5118fdcca9628acd8c9cc8d74c3ad78fef3fe69c87e3f1f5d8aaf`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:227, future-hostile/dead-language term `todo` appears
-348. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:230`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:227, future-hostile/dead-language term `todo` appears
+348. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:230`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3789,8 +3789,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:8c7e456c3809b799e63611e8cc5784c551b1ce2e3879be801f4e8a2169054f73`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:230, future-hostile/dead-language term `todo` appears
-349. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:245`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:230, future-hostile/dead-language term `todo` appears
+349. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:245`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3799,8 +3799,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b7bf2dd590424dd699adadd6afa3dcee5671b78dde7c28860c948e2c8310f317`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:245, future-hostile/dead-language term `todo` appears
-350. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:246`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:245, future-hostile/dead-language term `todo` appears
+350. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:246`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3809,8 +3809,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:84dc90e332287f04119b7de75e4930a5f2fcb417d430791fa94ad44770e8de7e`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:246, future-hostile/dead-language term `todo` appears
-351. `high` `vibe` `packages/opencode/src/server/routes/instance/session.ts:1119`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:246, future-hostile/dead-language term `todo` appears
+351. `high` `vibe` `packages/jekko/src/server/routes/instance/session.ts:1119`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3819,8 +3819,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:079477e8f046de099369b27ce21e95f93a6b190f865b06da15d4e1d8aeb9d0ce`
-   Evidence: packages/opencode/src/server/routes/instance/session.ts:1119, future-hostile/dead-language term `deprecated` appears
-352. `high` `vibe` `packages/opencode/src/session/daemon-pass.ts:57`
+   Evidence: packages/jekko/src/server/routes/instance/session.ts:1119, future-hostile/dead-language term `deprecated` appears
+352. `high` `vibe` `packages/jekko/src/session/daemon-pass.ts:57`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3829,8 +3829,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f8fc2e7561291ec4edd313c54e35f6398ae7df2d3c50aedc7a82e3d48726df00`
-   Evidence: packages/opencode/src/session/daemon-pass.ts:57, future-hostile/dead-language term `fallback` appears
-353. `high` `vibe` `packages/opencode/src/session/daemon-pass.ts:74`
+   Evidence: packages/jekko/src/session/daemon-pass.ts:57, future-hostile/dead-language term `fallback` appears
+353. `high` `vibe` `packages/jekko/src/session/daemon-pass.ts:74`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3839,8 +3839,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:d7c5eeb89cfc7aee4885dd7fd48f0d531df4fe8bc9bf72ada361ef93064bce00`
-   Evidence: packages/opencode/src/session/daemon-pass.ts:74, future-hostile/dead-language term `fallback` appears
-354. `high` `vibe` `packages/opencode/src/session/daemon-pass.ts:75`
+   Evidence: packages/jekko/src/session/daemon-pass.ts:74, future-hostile/dead-language term `fallback` appears
+354. `high` `vibe` `packages/jekko/src/session/daemon-pass.ts:75`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3849,8 +3849,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:dfe3338649ebd3ca6274baa7f6c55abd4330449219ffb29c7424ce9d698df96d`
-   Evidence: packages/opencode/src/session/daemon-pass.ts:75, future-hostile/dead-language term `fallback` appears
-355. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:12`
+   Evidence: packages/jekko/src/session/daemon-pass.ts:75, future-hostile/dead-language term `fallback` appears
+355. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:12`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3859,8 +3859,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:56331b594dd598f29f16eb489ba3ee449e2fdf5e9653b8966aa4ddb323a53ce5`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:12, future-hostile/dead-language term `fallback` appears
-356. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:18`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:12, future-hostile/dead-language term `fallback` appears
+356. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:18`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3869,8 +3869,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:add6272455810018deedd6dec25265ce2834324de1960ea581c6aa848fa4c2b3`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:18, future-hostile/dead-language term `fallback` appears
-357. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:26`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:18, future-hostile/dead-language term `fallback` appears
+357. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:26`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3879,8 +3879,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f78fdef1a2f2dc134b7bc5900c1b85a9b646e72e5588b2974de67a90c7bf2c40`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:26, future-hostile/dead-language term `fallback` appears
-358. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:32`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:26, future-hostile/dead-language term `fallback` appears
+358. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:32`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3889,8 +3889,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:58190261141196a462fe26206a4a3395d3ca3acd3fe1f509e5dc1c827e0d22b7`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:32, future-hostile/dead-language term `fallback` appears
-359. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:33`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:32, future-hostile/dead-language term `fallback` appears
+359. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:33`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3899,8 +3899,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:e5d54338e2eb755cd5b4fc3a58d465e3025f2b0ee7758a21c0666a63dab1050e`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:33, future-hostile/dead-language term `fallback` appears
-360. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:34`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:33, future-hostile/dead-language term `fallback` appears
+360. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:34`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3909,8 +3909,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:bd53098b94f4451fba66659364c708f92c75a1741e7b670c681e1ecaacd353a1`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:34, future-hostile/dead-language term `fallback` appears
-361. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:35`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:34, future-hostile/dead-language term `fallback` appears
+361. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:35`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3919,8 +3919,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:e37a8c3f3e6dd59834b3b32b1168880510e1ca3866026b5a11047e47c0e6e1d1`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:35, future-hostile/dead-language term `fallback` appears
-362. `high` `vibe` `packages/opencode/src/session/daemon-retry.ts:36`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:35, future-hostile/dead-language term `fallback` appears
+362. `high` `vibe` `packages/jekko/src/session/daemon-retry.ts:36`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3929,8 +3929,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:0fe81c0f08f9fc476aaf9282614884c4af828f7d06f53ecc119a3bb7b6b9844a`
-   Evidence: packages/opencode/src/session/daemon-retry.ts:36, future-hostile/dead-language term `fallback` appears
-363. `high` `vibe` `packages/opencode/src/session/daemon-task-router.ts:68`
+   Evidence: packages/jekko/src/session/daemon-retry.ts:36, future-hostile/dead-language term `fallback` appears
+363. `high` `vibe` `packages/jekko/src/session/daemon-task-router.ts:68`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3939,8 +3939,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:da11ee408ceec7059dc2cee6248a2f650846cf363c69bf7f906ca88b99c848bc`
-   Evidence: packages/opencode/src/session/daemon-task-router.ts:68, future-hostile/dead-language term `fallback` appears
-364. `high` `vibe` `packages/opencode/src/session/daemon-task-router.ts:84`
+   Evidence: packages/jekko/src/session/daemon-task-router.ts:68, future-hostile/dead-language term `fallback` appears
+364. `high` `vibe` `packages/jekko/src/session/daemon-task-router.ts:84`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3949,8 +3949,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:ba9255a0773fbc55f3488cf5b655f4e5ac9f9ba8c4c2ee71f9384028194fbaa7`
-   Evidence: packages/opencode/src/session/daemon-task-router.ts:84, future-hostile/dead-language term `fallback` appears
-365. `high` `vibe` `packages/opencode/src/session/daemon-task-router.ts:88`
+   Evidence: packages/jekko/src/session/daemon-task-router.ts:84, future-hostile/dead-language term `fallback` appears
+365. `high` `vibe` `packages/jekko/src/session/daemon-task-router.ts:88`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3959,8 +3959,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:bc84663d7f420f2a66fdb98bc36a9afdcd9f533b8c04d6994a3635719e372e03`
-   Evidence: packages/opencode/src/session/daemon-task-router.ts:88, future-hostile/dead-language term `fallback` appears
-366. `high` `vibe` `packages/opencode/src/session/daemon-task-router.ts:89`
+   Evidence: packages/jekko/src/session/daemon-task-router.ts:88, future-hostile/dead-language term `fallback` appears
+366. `high` `vibe` `packages/jekko/src/session/daemon-task-router.ts:89`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3969,8 +3969,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:bef3e870679e3d7b563f7537c158387bc689720418a01e0026ccf81ed271ae13`
-   Evidence: packages/opencode/src/session/daemon-task-router.ts:89, future-hostile/dead-language term `fallback` appears
-367. `high` `vibe` `packages/opencode/src/session/llm.ts:243`
+   Evidence: packages/jekko/src/session/daemon-task-router.ts:89, future-hostile/dead-language term `fallback` appears
+367. `high` `vibe` `packages/jekko/src/session/llm.ts:243`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -3979,8 +3979,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:91b4f942626f0adee1b2c60f038db1d0db713eadd08ebc752e2ed4c359fdcc2f`
-   Evidence: packages/opencode/src/session/llm.ts:243, future-hostile/dead-language term `unused` appears
-368. `medium` `context` `packages/opencode/src/session/message-v2.ts:1`
+   Evidence: packages/jekko/src/session/llm.ts:243, future-hostile/dead-language term `unused` appears
+368. `medium` `context` `packages/jekko/src/session/message-v2.ts:1`
    Rule: `HLT-040-REPO-ROT-BAD-BEHAVIOR`
    Check: `HLT-040-REPO-ROT-BAD-BEHAVIOR:context` `soft` confidence `0.88`
    Route: TLR `Context/setup`, lane `audit`, owner `tools`
@@ -3990,8 +3990,8 @@ No audited runtime boundary reclassifications declared.
    Fix: delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
    Rerun: `just score`
    Fingerprint: `sha256:2e48109564bc9d0b495401c1fc4c2092b9ca10b52102f964f493d80818c61d0d`
-   Evidence: detector=repo-rot.path.fake-versioned-source, path=packages/opencode/src/session/message-v2.ts, line=1, proof_window=None, snippet=export * from "./message"
-369. `high` `vibe` `packages/opencode/src/session/pending.ts:1`
+   Evidence: detector=repo-rot.path.fake-versioned-source, path=packages/jekko/src/session/message-v2.ts, line=1, proof_window=None, snippet=export * from "./message"
+369. `high` `vibe` `packages/jekko/src/session/pending.ts:1`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4000,8 +4000,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:52e987c551e11a3e23687c4cddbfad97f9b6b4f1d7e277df3e571c7785331be7`
-   Evidence: packages/opencode/src/session/pending.ts:1, future-hostile/dead-language term `todo` appears
-370. `high` `vibe` `packages/opencode/src/session/pending.ts:2`
+   Evidence: packages/jekko/src/session/pending.ts:1, future-hostile/dead-language term `todo` appears
+370. `high` `vibe` `packages/jekko/src/session/pending.ts:2`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4010,8 +4010,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:e11e5752fa1b7cb593b55666f92885ee9a53c93101b923a4efec41ece522b915`
-   Evidence: packages/opencode/src/session/pending.ts:2, future-hostile/dead-language term `todo` appears
-371. `high` `vibe` `packages/opencode/src/session/processor.ts:232`
+   Evidence: packages/jekko/src/session/pending.ts:2, future-hostile/dead-language term `todo` appears
+371. `high` `vibe` `packages/jekko/src/session/processor.ts:232`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4020,8 +4020,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:17e65972ab67df371c552b671fd151f7993ba0c33dd493bc93661f71514d3b6e`
-   Evidence: packages/opencode/src/session/processor.ts:232, future-hostile/dead-language term `compat` appears
-372. `high` `vibe` `packages/opencode/src/session/processor.ts:265`
+   Evidence: packages/jekko/src/session/processor.ts:232, future-hostile/dead-language term `compat` appears
+372. `high` `vibe` `packages/jekko/src/session/processor.ts:265`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4030,8 +4030,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:0b763c721d01447105a3d4748ca7a94057476be1ea88ccc9c8925629d9a3321c`
-   Evidence: packages/opencode/src/session/processor.ts:265, future-hostile/dead-language term `compat` appears
-373. `high` `vibe` `packages/opencode/src/session/processor.ts:284`
+   Evidence: packages/jekko/src/session/processor.ts:265, future-hostile/dead-language term `compat` appears
+373. `high` `vibe` `packages/jekko/src/session/processor.ts:284`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4040,8 +4040,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:c71ef3f72eea69bf6472709a47860978088dadbbe947275eed78a870bc30a5cb`
-   Evidence: packages/opencode/src/session/processor.ts:284, future-hostile/dead-language term `compat` appears
-374. `high` `vibe` `packages/opencode/src/session/processor.ts:313`
+   Evidence: packages/jekko/src/session/processor.ts:284, future-hostile/dead-language term `compat` appears
+374. `high` `vibe` `packages/jekko/src/session/processor.ts:313`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4050,8 +4050,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:93cf433d800efbb4d2ca9189b73da7033e486df40200c206568387316badc3a9`
-   Evidence: packages/opencode/src/session/processor.ts:313, future-hostile/dead-language term `compat` appears
-375. `high` `vibe` `packages/opencode/src/session/processor.ts:328`
+   Evidence: packages/jekko/src/session/processor.ts:313, future-hostile/dead-language term `compat` appears
+375. `high` `vibe` `packages/jekko/src/session/processor.ts:328`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4060,8 +4060,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:831964c11726d8a65cfb40104b77e9d559c277e8c857227309d88a121ad325b3`
-   Evidence: packages/opencode/src/session/processor.ts:328, future-hostile/dead-language term `compat` appears
-376. `high` `vibe` `packages/opencode/src/session/processor.ts:396`
+   Evidence: packages/jekko/src/session/processor.ts:328, future-hostile/dead-language term `compat` appears
+376. `high` `vibe` `packages/jekko/src/session/processor.ts:396`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4070,8 +4070,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:ea188444f340a267a5a2cfad8da48e24db8dba80084ab8ac84d9f31f3ec73bd6`
-   Evidence: packages/opencode/src/session/processor.ts:396, future-hostile/dead-language term `compat` appears
-377. `high` `vibe` `packages/opencode/src/session/processor.ts:427`
+   Evidence: packages/jekko/src/session/processor.ts:396, future-hostile/dead-language term `compat` appears
+377. `high` `vibe` `packages/jekko/src/session/processor.ts:427`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4080,8 +4080,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:60884dc7dcea1e36df0ee56655d2969a45ba1db3a2e0f9e7113dae0623f11f9a`
-   Evidence: packages/opencode/src/session/processor.ts:427, future-hostile/dead-language term `compat` appears
-378. `high` `vibe` `packages/opencode/src/session/processor.ts:473`
+   Evidence: packages/jekko/src/session/processor.ts:427, future-hostile/dead-language term `compat` appears
+378. `high` `vibe` `packages/jekko/src/session/processor.ts:473`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4090,8 +4090,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:4a4ca183be850ef07f6eee5d3057d343a7359b6dc3a4cb269054a3d49018df40`
-   Evidence: packages/opencode/src/session/processor.ts:473, future-hostile/dead-language term `compat` appears
-379. `high` `vibe` `packages/opencode/src/session/processor.ts:496`
+   Evidence: packages/jekko/src/session/processor.ts:473, future-hostile/dead-language term `compat` appears
+379. `high` `vibe` `packages/jekko/src/session/processor.ts:496`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4100,8 +4100,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:4ebfe31f0f80b690e03a7662479d84ba110e600917161d2d8fc0f0b492fb1f1e`
-   Evidence: packages/opencode/src/session/processor.ts:496, future-hostile/dead-language term `compat` appears
-380. `high` `vibe` `packages/opencode/src/session/processor.ts:526`
+   Evidence: packages/jekko/src/session/processor.ts:496, future-hostile/dead-language term `compat` appears
+380. `high` `vibe` `packages/jekko/src/session/processor.ts:526`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4110,8 +4110,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:bfb1c3f720d067eee47bd12a1412bfb765b1e97ee7d5d3a88956d36db0241840`
-   Evidence: packages/opencode/src/session/processor.ts:526, future-hostile/dead-language term `compat` appears
-381. `high` `vibe` `packages/opencode/src/session/processor.ts:581`
+   Evidence: packages/jekko/src/session/processor.ts:526, future-hostile/dead-language term `compat` appears
+381. `high` `vibe` `packages/jekko/src/session/processor.ts:581`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4120,8 +4120,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:ca6085d57bdbb81ef64ddf0df05802539741a197a004ceb71cd079943825f5f7`
-   Evidence: packages/opencode/src/session/processor.ts:581, future-hostile/dead-language term `compat` appears
-382. `high` `vibe` `packages/opencode/src/session/processor.ts:626`
+   Evidence: packages/jekko/src/session/processor.ts:581, future-hostile/dead-language term `compat` appears
+382. `high` `vibe` `packages/jekko/src/session/processor.ts:626`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4130,8 +4130,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:09133366567a0cd6d2973efe6fa6cfeae7767219a330850f577c51ff4999e423`
-   Evidence: packages/opencode/src/session/processor.ts:626, future-hostile/dead-language term `compat` appears
-383. `high` `vibe` `packages/opencode/src/session/processor.ts:720`
+   Evidence: packages/jekko/src/session/processor.ts:626, future-hostile/dead-language term `compat` appears
+383. `high` `vibe` `packages/jekko/src/session/processor.ts:720`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4140,8 +4140,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:77a82ff3d1bdf8097444b92073a9ef364d6407b8a3aadf23f454b75a8bd55227`
-   Evidence: packages/opencode/src/session/processor.ts:720, future-hostile/dead-language term `compat` appears
-384. `high` `vibe` `packages/opencode/src/session/processor.ts:771`
+   Evidence: packages/jekko/src/session/processor.ts:720, future-hostile/dead-language term `compat` appears
+384. `high` `vibe` `packages/jekko/src/session/processor.ts:771`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4150,8 +4150,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b0e3a7fce1a0f481c738704fd05114fefbd6722f61c25bec9acd060f35528134`
-   Evidence: packages/opencode/src/session/processor.ts:771, future-hostile/dead-language term `compat` appears
-385. `high` `vibe` `packages/opencode/src/session/prompt.ts:1355`
+   Evidence: packages/jekko/src/session/processor.ts:771, future-hostile/dead-language term `compat` appears
+385. `high` `vibe` `packages/jekko/src/session/prompt.ts:1355`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4160,8 +4160,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:a30233cf911baf0ac59f04cfc0bbc216899fe0573b4c1e878857f57c30559e08`
-   Evidence: packages/opencode/src/session/prompt.ts:1355, future-hostile/dead-language term `temporary` appears
-386. `high` `vibe` `packages/opencode/src/session/prompt.ts:1366`
+   Evidence: packages/jekko/src/session/prompt.ts:1355, future-hostile/dead-language term `temporary` appears
+386. `high` `vibe` `packages/jekko/src/session/prompt.ts:1366`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4170,8 +4170,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:12e396b0ea207601e5971207a2d0b684a763f99ebd5c5bc0e000684e6b0e040c`
-   Evidence: packages/opencode/src/session/prompt.ts:1366, future-hostile/dead-language term `temporary` appears
-387. `high` `vibe` `packages/opencode/src/session/todo.ts:20`
+   Evidence: packages/jekko/src/session/prompt.ts:1366, future-hostile/dead-language term `temporary` appears
+387. `high` `vibe` `packages/jekko/src/session/todo.ts:20`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4180,8 +4180,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:c5b25b71802aa4cd89f65596b01d4d67b7f5a857e1b8c215867300955e29d235`
-   Evidence: packages/opencode/src/session/todo.ts:20, future-hostile/dead-language term `todo` appears
-388. `high` `vibe` `packages/opencode/src/session/todo.ts:46`
+   Evidence: packages/jekko/src/session/todo.ts:20, future-hostile/dead-language term `todo` appears
+388. `high` `vibe` `packages/jekko/src/session/todo.ts:46`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4190,8 +4190,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:0ed582ec645ca2a105608a8483231c333da13865162ff7d8a8cf2491f9e59fc3`
-   Evidence: packages/opencode/src/session/todo.ts:46, future-hostile/dead-language term `todo` appears
-389. `high` `vibe` `packages/opencode/src/session/todo.ts:67`
+   Evidence: packages/jekko/src/session/todo.ts:46, future-hostile/dead-language term `todo` appears
+389. `high` `vibe` `packages/jekko/src/session/todo.ts:67`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4200,8 +4200,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:06e4bfffa4411bad6a7c5565bac943807e6f1d34abee1e32be411bfbd1e63d18`
-   Evidence: packages/opencode/src/session/todo.ts:67, future-hostile/dead-language term `todo` appears
-390. `high` `vibe` `packages/opencode/src/session/todo.ts:86`
+   Evidence: packages/jekko/src/session/todo.ts:67, future-hostile/dead-language term `todo` appears
+390. `high` `vibe` `packages/jekko/src/session/todo.ts:86`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4210,8 +4210,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:9da39dbd78f5a649b65a161c8cc39cc87ded481938a41431ebcf7276fbda5991`
-   Evidence: packages/opencode/src/session/todo.ts:86, future-hostile/dead-language term `todo` appears
-391. `high` `vibe` `packages/opencode/src/tool/pending.ts:1`
+   Evidence: packages/jekko/src/session/todo.ts:86, future-hostile/dead-language term `todo` appears
+391. `high` `vibe` `packages/jekko/src/tool/pending.ts:1`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4220,8 +4220,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f399ab8acc504cd7bba5b424e00c6e1e662f701019a891f9ed007f260dc7c9e6`
-   Evidence: packages/opencode/src/tool/pending.ts:1, future-hostile/dead-language term `todo` appears
-392. `high` `vibe` `packages/opencode/src/tool/registry.ts:10`
+   Evidence: packages/jekko/src/tool/pending.ts:1, future-hostile/dead-language term `todo` appears
+392. `high` `vibe` `packages/jekko/src/tool/registry.ts:10`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4230,8 +4230,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3d33e9e259ae525fb4910dacc463d67f2785f3624c798572c1c93a25ad07280c`
-   Evidence: packages/opencode/src/tool/registry.ts:10, future-hostile/dead-language term `todo` appears
-393. `high` `vibe` `packages/opencode/src/tool/registry.ts:43`
+   Evidence: packages/jekko/src/tool/registry.ts:10, future-hostile/dead-language term `todo` appears
+393. `high` `vibe` `packages/jekko/src/tool/registry.ts:43`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4240,8 +4240,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:aba52cdde60531c2d0045fa0916b8852071904ecac7306fe55eaaa36b837f723`
-   Evidence: packages/opencode/src/tool/registry.ts:43, future-hostile/dead-language term `todo` appears
-394. `high` `vibe` `packages/opencode/src/tool/registry.ts:324`
+   Evidence: packages/jekko/src/tool/registry.ts:43, future-hostile/dead-language term `todo` appears
+394. `high` `vibe` `packages/jekko/src/tool/registry.ts:324`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4250,8 +4250,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:8d88178c2ae29c1c2a64911f62839c0ed685b91f0f815aa52abfc5403f250e6b`
-   Evidence: packages/opencode/src/tool/registry.ts:324, future-hostile/dead-language term `todo` appears
-395. `high` `vibe` `packages/opencode/src/tool/todo.ts:4`
+   Evidence: packages/jekko/src/tool/registry.ts:324, future-hostile/dead-language term `todo` appears
+395. `high` `vibe` `packages/jekko/src/tool/todo.ts:4`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4260,8 +4260,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:83d0dae4a2c61e026073741d0028d610dbad04df9cc3071caf4554bfc8cffb30`
-   Evidence: packages/opencode/src/tool/todo.ts:4, future-hostile/dead-language term `todo` appears
-396. `high` `vibe` `packages/opencode/src/tool/todo.ts:6`
+   Evidence: packages/jekko/src/tool/todo.ts:4, future-hostile/dead-language term `todo` appears
+396. `high` `vibe` `packages/jekko/src/tool/todo.ts:6`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4270,8 +4270,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f636d593d22d15c9927ae3b0712bb3d243b78f1bb6af762b1db6e7229a158d04`
-   Evidence: packages/opencode/src/tool/todo.ts:6, future-hostile/dead-language term `todo` appears
-397. `high` `vibe` `packages/opencode/src/tool/todo.ts:22`
+   Evidence: packages/jekko/src/tool/todo.ts:6, future-hostile/dead-language term `todo` appears
+397. `high` `vibe` `packages/jekko/src/tool/todo.ts:22`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4280,8 +4280,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:524068d61d7d6c1e627fe290c74c5442d361c5c557902821f2c46a46b1ee8c89`
-   Evidence: packages/opencode/src/tool/todo.ts:22, future-hostile/dead-language term `todo` appears
-398. `high` `vibe` `packages/opencode/src/tool/todo.ts:25`
+   Evidence: packages/jekko/src/tool/todo.ts:22, future-hostile/dead-language term `todo` appears
+398. `high` `vibe` `packages/jekko/src/tool/todo.ts:25`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4290,8 +4290,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:eedf99f1a8195c15c1d294b222b6bd89cbe4274f1b618d598adcf4c215f6e059`
-   Evidence: packages/opencode/src/tool/todo.ts:25, future-hostile/dead-language term `todo` appears
-399. `high` `vibe` `packages/opencode/src/tool/todo.ts:28`
+   Evidence: packages/jekko/src/tool/todo.ts:25, future-hostile/dead-language term `todo` appears
+399. `high` `vibe` `packages/jekko/src/tool/todo.ts:28`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4300,8 +4300,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:56d8c2f002c6c60cc94f02e14a0364ae258b12361c190165e3bc8e332fd2275d`
-   Evidence: packages/opencode/src/tool/todo.ts:28, future-hostile/dead-language term `todo` appears
-400. `high` `vibe` `packages/opencode/src/v2/model.ts:117`
+   Evidence: packages/jekko/src/tool/todo.ts:28, future-hostile/dead-language term `todo` appears
+400. `high` `vibe` `packages/jekko/src/v2/model.ts:117`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4310,8 +4310,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b0f12db278f4142d3ee46c824172bbb1e646c5c46ed636bb32ad94ff80ef9276`
-   Evidence: packages/opencode/src/v2/model.ts:117, future-hostile/dead-language term `deprecated` appears
-401. `high` `vibe` `packages/opencode/test/config/config.part-07.test.ts:343`
+   Evidence: packages/jekko/src/v2/model.ts:117, future-hostile/dead-language term `deprecated` appears
+401. `high` `vibe` `packages/jekko/test/config/config.part-07.test.ts:343`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4320,8 +4320,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:9083151d923f178e440d6088e9c45beb022b6fdfd22035b4c3775cde98a90dc6`
-   Evidence: packages/opencode/test/config/config.part-07.test.ts:343, future-hostile/dead-language term `legacy` appears
-402. `high` `vibe` `packages/opencode/test/effect/app-runtime-logger.test.ts:25`
+   Evidence: packages/jekko/test/config/config.part-07.test.ts:343, future-hostile/dead-language term `legacy` appears
+402. `high` `vibe` `packages/jekko/test/effect/app-runtime-logger.test.ts:25`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4330,8 +4330,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:c8435c98d7c503ecc065f19fa9c9f48c6a212df522eeabdf41f3bbb704d9c849`
-   Evidence: packages/opencode/test/effect/app-runtime-logger.test.ts:25, future-hostile/dead-language term `dummy` appears
-403. `high` `vibe` `packages/opencode/test/effect/app-runtime-logger.test.ts:26`
+   Evidence: packages/jekko/test/effect/app-runtime-logger.test.ts:25, future-hostile/dead-language term `dummy` appears
+403. `high` `vibe` `packages/jekko/test/effect/app-runtime-logger.test.ts:26`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4340,8 +4340,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:171020305b466bb61e217df21abb12ed65aa213dac6f5cc284e3173e940faa79`
-   Evidence: packages/opencode/test/effect/app-runtime-logger.test.ts:26, future-hostile/dead-language term `dummy` appears
-404. `high` `vibe` `packages/opencode/test/effect/app-runtime-logger.test.ts:30`
+   Evidence: packages/jekko/test/effect/app-runtime-logger.test.ts:26, future-hostile/dead-language term `dummy` appears
+404. `high` `vibe` `packages/jekko/test/effect/app-runtime-logger.test.ts:30`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4350,8 +4350,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3cda88310d9312f10fa14025429b26933699184a9525308efe44bf7f377b5940`
-   Evidence: packages/opencode/test/effect/app-runtime-logger.test.ts:30, future-hostile/dead-language term `dummy` appears
-405. `high` `vibe` `packages/opencode/test/effect/app-runtime-logger.test.ts:32`
+   Evidence: packages/jekko/test/effect/app-runtime-logger.test.ts:30, future-hostile/dead-language term `dummy` appears
+405. `high` `vibe` `packages/jekko/test/effect/app-runtime-logger.test.ts:32`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4360,8 +4360,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:1e30c26912c8716c1e25af7960fe18ad1fbffb5bd883f99717922287c49f8c56`
-   Evidence: packages/opencode/test/effect/app-runtime-logger.test.ts:32, future-hostile/dead-language term `dummy` appears
-406. `high` `vibe` `packages/opencode/test/effect/app-runtime-logger.test.ts:38`
+   Evidence: packages/jekko/test/effect/app-runtime-logger.test.ts:32, future-hostile/dead-language term `dummy` appears
+406. `high` `vibe` `packages/jekko/test/effect/app-runtime-logger.test.ts:38`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4370,8 +4370,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:66921e2b5ee7f7ebc4a9c2e119b2b7b5873007338bf5b3cda15fff4ffaa9f598`
-   Evidence: packages/opencode/test/effect/app-runtime-logger.test.ts:38, future-hostile/dead-language term `dummy` appears
-407. `medium` `proof` `packages/opencode/test/provider/copilot/copilot-chat-model.test.ts:55`
+   Evidence: packages/jekko/test/effect/app-runtime-logger.test.ts:38, future-hostile/dead-language term `dummy` appears
+407. `medium` `proof` `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts:55`
    Rule: `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP`
    Check: `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP:proof` `soft` confidence `0.88`
    Route: TLR `Repair`, lane `audit`, owner `tools`
@@ -4382,7 +4382,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just score`
    Fingerprint: `sha256:c91c92883818a69b16e72254221fd8fc4ad8134809e57496d11661c8be994ca2`
    Evidence: `data: {"choices":[{"index":0,"delta":{"content":"Okay, I need to check out the project's file structure.","role":"assistant","reasoning_opaque":"WHOd3dYFnxEBOs
-408. `high` `vibe` `packages/opencode/test/provider/models.test.ts:224`
+408. `high` `vibe` `packages/jekko/test/provider/models.test.ts:224`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4391,8 +4391,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:97612d35b560dcb212a9e85229f70102c50ac8d137bd80c1fc7140a1a6f4ceee`
-   Evidence: packages/opencode/test/provider/models.test.ts:224, future-hostile/dead-language term `stale` appears
-409. `high` `vibe` `packages/opencode/test/server/httpapi-sdk.test.ts:487`
+   Evidence: packages/jekko/test/provider/models.test.ts:224, future-hostile/dead-language term `stale` appears
+409. `high` `vibe` `packages/jekko/test/server/httpapi-sdk.test.ts:487`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4401,8 +4401,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:6a721665f0a769aa8ac4e2947d9450e959eecc9f6b7ea7bf07e4e717206b993c`
-   Evidence: packages/opencode/test/server/httpapi-sdk.test.ts:487, future-hostile/dead-language term `todo` appears
-410. `high` `vibe` `packages/opencode/test/session/prompt.test.ts:20`
+   Evidence: packages/jekko/test/server/httpapi-sdk.test.ts:487, future-hostile/dead-language term `todo` appears
+410. `high` `vibe` `packages/jekko/test/session/prompt.test.ts:20`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4411,8 +4411,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:395a492f328df3c3af3c5920cc7d77548654d765cd917f3f29b91122afa62689`
-   Evidence: packages/opencode/test/session/prompt.test.ts:20, future-hostile/dead-language term `todo` appears
-411. `high` `vibe` `packages/opencode/test/session/prompt.test.ts:179`
+   Evidence: packages/jekko/test/session/prompt.test.ts:20, future-hostile/dead-language term `todo` appears
+411. `high` `vibe` `packages/jekko/test/session/prompt.test.ts:179`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4421,8 +4421,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:32fbdbc1dbb5c0175aaf219e3b5a303f9a72ca521e3507411cbde1ba8d185f0b`
-   Evidence: packages/opencode/test/session/prompt.test.ts:179, future-hostile/dead-language term `todo` appears
-412. `high` `vibe` `packages/opencode/test/session/schema-decoding.test.ts:9`
+   Evidence: packages/jekko/test/session/prompt.test.ts:179, future-hostile/dead-language term `todo` appears
+412. `high` `vibe` `packages/jekko/test/session/schema-decoding.test.ts:9`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4431,8 +4431,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:af6df614ebc843aac6acf6ad5aa76a6d932661cb5abf30fa7197dfeb0c5d23e0`
-   Evidence: packages/opencode/test/session/schema-decoding.test.ts:9, future-hostile/dead-language term `todo` appears
-413. `high` `vibe` `packages/opencode/test/session/schema-decoding.test.ts:245`
+   Evidence: packages/jekko/test/session/schema-decoding.test.ts:9, future-hostile/dead-language term `todo` appears
+413. `high` `vibe` `packages/jekko/test/session/schema-decoding.test.ts:245`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4441,8 +4441,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:29ca5401aabdf013a9eeb6308995e95f3796171a885df359b276bea1ab26b5ef`
-   Evidence: packages/opencode/test/session/schema-decoding.test.ts:245, future-hostile/dead-language term `todo` appears
-414. `high` `vibe` `packages/opencode/test/session/schema-decoding.test.ts:246`
+   Evidence: packages/jekko/test/session/schema-decoding.test.ts:245, future-hostile/dead-language term `todo` appears
+414. `high` `vibe` `packages/jekko/test/session/schema-decoding.test.ts:246`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4451,8 +4451,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:36de5ccf599f7d9ca273241f7cc344f06d6fb2ab6091b65a3a28f38c14699525`
-   Evidence: packages/opencode/test/session/schema-decoding.test.ts:246, future-hostile/dead-language term `todo` appears
-415. `high` `vibe` `packages/opencode/test/session/schema-decoding.test.ts:251`
+   Evidence: packages/jekko/test/session/schema-decoding.test.ts:246, future-hostile/dead-language term `todo` appears
+415. `high` `vibe` `packages/jekko/test/session/schema-decoding.test.ts:251`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4461,8 +4461,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:e52c2dfc0d429985d1cb4c73fcd49ab7e26f57cf1cc0503f5e23914613bd7498`
-   Evidence: packages/opencode/test/session/schema-decoding.test.ts:251, future-hostile/dead-language term `todo` appears
-416. `high` `vibe` `packages/opencode/test/session/snapshot-tool-race.test.ts:129`
+   Evidence: packages/jekko/test/session/schema-decoding.test.ts:251, future-hostile/dead-language term `todo` appears
+416. `high` `vibe` `packages/jekko/test/session/snapshot-tool-race.test.ts:129`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4471,8 +4471,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:f1de2ee99f55f4da6a18cfba6a633ad8eeb3349af32c25bb224a3f66cd805e96`
-   Evidence: packages/opencode/test/session/snapshot-tool-race.test.ts:129, future-hostile/dead-language term `todo` appears
-417. `high` `vibe` `packages/opencode/test/storage/json-migration.test.ts:140`
+   Evidence: packages/jekko/test/session/snapshot-tool-race.test.ts:129, future-hostile/dead-language term `todo` appears
+417. `high` `vibe` `packages/jekko/test/storage/json-migration.test.ts:140`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4481,8 +4481,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:5c919fc235533016a6e25a5c3f92c8d437bcbc0d9cc6829645c13be0fa423446`
-   Evidence: packages/opencode/test/storage/json-migration.test.ts:140, future-hostile/dead-language term `stale` appears
-418. `high` `vibe` `packages/opencode/test/storage/json-migration.test.ts:320`
+   Evidence: packages/jekko/test/storage/json-migration.test.ts:140, future-hostile/dead-language term `stale` appears
+418. `high` `vibe` `packages/jekko/test/storage/json-migration.test.ts:320`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4491,8 +4491,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:ab0139d13ff9a29d4a61902735325581402578fb1edb7f60b94f27c7bd7c57ac`
-   Evidence: packages/opencode/test/storage/json-migration.test.ts:320, future-hostile/dead-language term `stale` appears
-419. `high` `vibe` `packages/opencode/test/storage/json-migration.test.ts:357`
+   Evidence: packages/jekko/test/storage/json-migration.test.ts:320, future-hostile/dead-language term `stale` appears
+419. `high` `vibe` `packages/jekko/test/storage/json-migration.test.ts:357`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4501,8 +4501,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:2e2b75b7490343568982be3db3302fae850fe6bc3f0fcfe0433c41a88656906d`
-   Evidence: packages/opencode/test/storage/json-migration.test.ts:357, future-hostile/dead-language term `stale` appears
-420. `high` `vibe` `packages/opencode/test/storage/json-migration.test.ts:358`
+   Evidence: packages/jekko/test/storage/json-migration.test.ts:357, future-hostile/dead-language term `stale` appears
+420. `high` `vibe` `packages/jekko/test/storage/json-migration.test.ts:358`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4511,8 +4511,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3e83907c46bc5434a26f27ac0abeccb5c0364c71d72018bf71dfa689384a35e7`
-   Evidence: packages/opencode/test/storage/json-migration.test.ts:358, future-hostile/dead-language term `stale` appears
-421. `high` `vibe` `packages/opencode/test/storage/json-migration.test.ts:409`
+   Evidence: packages/jekko/test/storage/json-migration.test.ts:358, future-hostile/dead-language term `stale` appears
+421. `high` `vibe` `packages/jekko/test/storage/json-migration.test.ts:409`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4521,8 +4521,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:dd041de4213318b09b851439bca17aec44d72014cd23174bc2134a652b5ced35`
-   Evidence: packages/opencode/test/storage/json-migration.test.ts:409, future-hostile/dead-language term `stale` appears
-422. `high` `vibe` `packages/opencode/test/storage/json-migration.test.ts:438`
+   Evidence: packages/jekko/test/storage/json-migration.test.ts:409, future-hostile/dead-language term `stale` appears
+422. `high` `vibe` `packages/jekko/test/storage/json-migration.test.ts:438`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4531,8 +4531,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:b6098e71f8c3f2033b2692dcc84c487a83588df7f0a9a1a2a74c27b39c0cbcb7`
-   Evidence: packages/opencode/test/storage/json-migration.test.ts:438, future-hostile/dead-language term `stale` appears
-423. `high` `vibe` `packages/opencode/test/tool/parameters.test.ts:24`
+   Evidence: packages/jekko/test/storage/json-migration.test.ts:438, future-hostile/dead-language term `stale` appears
+423. `high` `vibe` `packages/jekko/test/tool/parameters.test.ts:24`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4541,8 +4541,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:76073a8dd9fcd60befe60a4644331c4b22915fe558d5e6036c4581bafc34721b`
-   Evidence: packages/opencode/test/tool/parameters.test.ts:24, future-hostile/dead-language term `todo` appears
-424. `high` `vibe` `packages/opencode/test/tool/parameters.test.ts:49`
+   Evidence: packages/jekko/test/tool/parameters.test.ts:24, future-hostile/dead-language term `todo` appears
+424. `high` `vibe` `packages/jekko/test/tool/parameters.test.ts:49`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4551,8 +4551,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:0c25fb3c39e1c14d74b7e9da93c11101500eec78eb3651fd8b6f05a7831d8747`
-   Evidence: packages/opencode/test/tool/parameters.test.ts:49, future-hostile/dead-language term `todo` appears
-425. `high` `vibe` `packages/opencode/test/tool/parameters.test.ts:213`
+   Evidence: packages/jekko/test/tool/parameters.test.ts:49, future-hostile/dead-language term `todo` appears
+425. `high` `vibe` `packages/jekko/test/tool/parameters.test.ts:213`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4561,8 +4561,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:27aa5c088dfbb9eccb853e55bc7767f6ba934788ce22679a47bf5b79fa019b80`
-   Evidence: packages/opencode/test/tool/parameters.test.ts:213, future-hostile/dead-language term `todo` appears
-426. `high` `vibe` `packages/opencode/test/tool/parameters.test.ts:219`
+   Evidence: packages/jekko/test/tool/parameters.test.ts:213, future-hostile/dead-language term `todo` appears
+426. `high` `vibe` `packages/jekko/test/tool/parameters.test.ts:219`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4571,8 +4571,8 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:3add71aeedf367eff1075c989ecbcb51e121a791221b421d5cd7f00bcae49417`
-   Evidence: packages/opencode/test/tool/parameters.test.ts:219, future-hostile/dead-language term `todo` appears
-427. `high` `vibe` `packages/opencode/test/tool/registry.test.ts:37`
+   Evidence: packages/jekko/test/tool/parameters.test.ts:219, future-hostile/dead-language term `todo` appears
+427. `high` `vibe` `packages/jekko/test/tool/registry.test.ts:37`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `tools`
@@ -4581,7 +4581,7 @@ No audited runtime boundary reclassifications declared.
    Fix: remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Rerun: `just fast`
    Fingerprint: `sha256:a5cf27a098fc05113cde4870186cecd6f494c54ff42a63e6a31736a96d68afb2`
-   Evidence: packages/opencode/test/tool/registry.test.ts:37, future-hostile/dead-language term `todo` appears
+   Evidence: packages/jekko/test/tool/registry.test.ts:37, future-hostile/dead-language term `todo` appears
 428. `high` `vibe` `packages/plugin/src/tui.ts:8`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
@@ -5159,7 +5159,7 @@ No audited runtime boundary reclassifications declared.
 
 ## Agent Fix Queue
 
-1. `high` `HLT-031-TYPESCRIPT-BAD-BEHAVIOR` `.opencode/plugins/tui-smoke.tsx` - use argv arrays, prepared statements, or a safe allowlisted command path
+1. `high` `HLT-031-TYPESCRIPT-BAD-BEHAVIOR` `.jekko/plugins/tui-smoke.tsx` - use argv arrays, prepared statements, or a safe allowlisted command path
    Route: `Contracts/data`/`fast`
 2. `high` `HLT-031-TYPESCRIPT-BAD-BEHAVIOR` `packages/app/src/components/dialog-select-directory.tsx` - validate the value first, then narrow it with a proof-aware decoder
    Route: `Contracts/data`/`fast`
@@ -5217,21 +5217,21 @@ No audited runtime boundary reclassifications declared.
    Route: `Contracts/data`/`fast`
 29. `high` `HLT-031-TYPESCRIPT-BAD-BEHAVIOR` `packages/console/mail/emails/styles.ts` - remove the broad suppression or scope it to a single justified line
    Route: `Contracts/data`/`fast`
-30. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
+30. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
    Route: `Contracts/data`/`db`
-31. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260228203230_blue_harpoon/migration.sql` - add a WHERE clause or prove the full-table rewrite with a local migration receipt
+31. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260228203230_blue_harpoon/migration.sql` - add a WHERE clause or prove the full-table rewrite with a local migration receipt
    Route: `Contracts/data`/`db`
-32. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260323234822_events/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
+32. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260323234822_events/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
    Route: `Contracts/data`/`db`
-33. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260410174513_workspace-name/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
+33. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260410174513_workspace-name/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
    Route: `Contracts/data`/`db`
-34. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260413175956_chief_energizer/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
+34. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260413175956_chief_energizer/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
    Route: `Contracts/data`/`db`
-35. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260427172553_slow_nightmare/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
+35. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
    Route: `Contracts/data`/`db`
-36. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260507054800_memory_os/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
+36. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260507054800_memory_os/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
    Route: `Contracts/data`/`db`
-37. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/opencode/migration/20260507224841_daemon_runtime/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
+37. `high` `HLT-030-SQL-BAD-BEHAVIOR` `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql` - split the change into a reviewed migration with rollback, backup, and row-count evidence
    Route: `Contracts/data`/`db`
 38. `high` `HLT-002-GENERATED-MUTATION` `packages/sdk/js/src/gen/client/client.gen.ts` - add `agent/generated-zones.toml`, require generated/do-not-edit markers, and route repairs to the source contract
    Route: `Contracts/data`/`contract`
@@ -5247,7 +5247,7 @@ No audited runtime boundary reclassifications declared.
    Route: `Verification`/`fast`
 44. `medium` `HLT-026-COST-BUDGET-GAP` `docs/testing.md` - add explicit budgets, quotas, stop conditions, and kill-switch evidence for paid or unbounded operations
    Route: `Verification`/`release`
-45. `medium` `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP` `packages/opencode/test/provider/copilot/copilot-chat-model.test.ts` - attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries
+45. `medium` `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP` `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts` - attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries
    Route: `Repair`/`audit`
 46. `high` `HLT-003-OWNERLESS-PATH` `agent/owner-map.json` - add the narrowest stable prefix for this path to `agent/owner-map.json`
    Route: `Context/setup`/`fast`
@@ -5283,9 +5283,9 @@ No audited runtime boundary reclassifications declared.
    Route: `Context/setup`/`audit`
 62. `medium` `HLT-040-REPO-ROT-BAD-BEHAVIOR` `packages/enterprise/public/favicon-v3.svg` - delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
    Route: `Context/setup`/`audit`
-63. `medium` `HLT-040-REPO-ROT-BAD-BEHAVIOR` `packages/opencode/src/server/routes/instance/httpapi/handlers/v2.ts` - delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
+63. `medium` `HLT-040-REPO-ROT-BAD-BEHAVIOR` `packages/jekko/src/server/routes/instance/httpapi/handlers/v2.ts` - delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
    Route: `Context/setup`/`audit`
-64. `medium` `HLT-040-REPO-ROT-BAD-BEHAVIOR` `packages/opencode/src/session/message-v2.ts` - delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
+64. `medium` `HLT-040-REPO-ROT-BAD-BEHAVIOR` `packages/jekko/src/session/message-v2.ts` - delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
    Route: `Context/setup`/`audit`
 65. `medium` `HLT-040-REPO-ROT-BAD-BEHAVIOR` `packages/ui/src/assets/favicon/apple-touch-icon-v3.png` - delete the stale copy, move history to VCS/archive tooling, or document owner, proof lane, expiry, and migration plan
    Route: `Context/setup`/`audit`
@@ -5309,7 +5309,7 @@ No audited runtime boundary reclassifications declared.
    Route: `Security, secrets, agency`/`security`
 75. `high` `HLT-032-DOCKER-BAD-BEHAVIOR` `.github/workflows/docs-locale-sync.yml` - pin the download, verify a checksum or signature, and avoid shell piping
    Route: `Security, secrets, agency`/`security`
-76. `high` `HLT-034-CI-BAD-BEHAVIOR` `.github/workflows/opencode.yml` - pin every external action to a 40-character commit SHA
+76. `high` `HLT-034-CI-BAD-BEHAVIOR` `.github/workflows/jekko.yml` - pin every external action to a 40-character commit SHA
    Route: `Security, secrets, agency`/`security`
 77. `high` `HLT-034-CI-BAD-BEHAVIOR` `.github/workflows/pr-standards.yml` - add workflow-level concurrency with cancel-in-progress
    Route: `Security, secrets, agency`/`security`
@@ -5347,9 +5347,9 @@ No audited runtime boundary reclassifications declared.
    Route: `Security, secrets, agency`/`security`
 94. `high` `HLT-032-DOCKER-BAD-BEHAVIOR` `.github/workflows/triage.yml` - pin the download, verify a checksum or signature, and avoid shell piping
    Route: `Security, secrets, agency`/`security`
-95. `high` `HLT-001-DEAD-MARKER` `.opencode/plugins/tui-smoke.tsx` - replace placeholders with implemented behavior, typed unsupported-state errors, or a tracked exception record with docs
+95. `high` `HLT-001-DEAD-MARKER` `.jekko/plugins/tui-smoke.tsx` - replace placeholders with implemented behavior, typed unsupported-state errors, or a tracked exception record with docs
    Route: `Entropy`/`fast`
-96. `high` `HLT-023-INPUT-BOUNDARY-GAP` `.opencode/plugins/tui-smoke.tsx` - replace unsafe sinks with typed schemas, parameterized APIs, allowlists, or sandboxed execution plus negative tests
+96. `high` `HLT-023-INPUT-BOUNDARY-GAP` `.jekko/plugins/tui-smoke.tsx` - replace unsafe sinks with typed schemas, parameterized APIs, allowlists, or sandboxed execution plus negative tests
    Route: `Security, secrets, agency`/`security`
 97. `high` `HLT-013-RENDERED-UX-GAP` `apps/web` - add Storybook state coverage, Playwright screenshots, visual review or `@jankurai/ux-qa`, accessibility scans, CLS checks, generated mocks, and design tokens
    Route: `Verification and rendered UX`/`web`
@@ -5463,113 +5463,113 @@ No audited runtime boundary reclassifications declared.
    Route: `Entropy`/`fast`
 152. `high` `HLT-039-WEB-SECURITY-BAD-BEHAVIOR` `packages/enterprise/vite.config.ts` - bind Vite to localhost, use explicit allowedHosts and origins, and keep server.fs.strict enabled
    Route: `Security, secrets, agency`/`security`
-153. `high` `HLT-001-DEAD-MARKER` `packages/opencode/script/httpapi-exercise.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+153. `high` `HLT-001-DEAD-MARKER` `packages/jekko/script/httpapi-exercise.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-154. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/acp/agent.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+154. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/acp/agent.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-155. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/github.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+155. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/github.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-156. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/run.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+156. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/run.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-157. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/app.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+157. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/app.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-158. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/component/dialog-model.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+158. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/component/dialog-model.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-159. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/component/dialog-status.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+159. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-160. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/component/prompt/autocomplete.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+160. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-161. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+161. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-162. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/component/spinner.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+162. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/component/spinner.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-163. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/context/sync-legacy.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+163. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-164. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/context/sync.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+164. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/context/sync.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-165. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/context/theme.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+165. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/context/theme.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-166. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+166. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-167. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+167. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/todo.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-168. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+168. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-169. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/plugin/internal.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+169. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/plugin/internal.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-170. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+170. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-171. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+171. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-172. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+172. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/routes/session/sidebar.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-173. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/ui/dialog-prompt.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+173. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-174. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/cli/cmd/tui/ui/dialog-select.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+174. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-175. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/config/provider.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+175. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/config/provider.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-176. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/effect/app-runtime.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+176. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/effect/app-runtime.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-177. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/plugin/loader.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+177. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/plugin/loader.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-178. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/provider/models.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+178. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/provider/models.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-179. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/provider/provider.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+179. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/provider/provider.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-180. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/server/routes/instance/httpapi/groups/session.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+180. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-181. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+181. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-182. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/server/routes/instance/httpapi/server.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+182. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/server/routes/instance/httpapi/server.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-183. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/server/routes/instance/index.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+183. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/server/routes/instance/index.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-184. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/server/routes/instance/session.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+184. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/server/routes/instance/session.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-185. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/daemon-pass.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+185. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/daemon-pass.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-186. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/daemon-retry.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+186. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/daemon-retry.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-187. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/daemon-task-router.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+187. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/daemon-task-router.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-188. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/llm.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+188. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/llm.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-189. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/pending.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+189. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/pending.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-190. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/processor.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+190. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/processor.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-191. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/prompt.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+191. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/prompt.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-192. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/session/todo.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+192. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/session/todo.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-193. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/tool/pending.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+193. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/tool/pending.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-194. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/tool/registry.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+194. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/tool/registry.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-195. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/tool/todo.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+195. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/tool/todo.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-196. `high` `HLT-001-DEAD-MARKER` `packages/opencode/src/v2/model.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+196. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/v2/model.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-197. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/config/config.part-07.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+197. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/config/config.part-07.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-198. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/effect/app-runtime-logger.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+198. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/effect/app-runtime-logger.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-199. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/provider/models.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+199. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/provider/models.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-200. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/server/httpapi-sdk.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+200. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/server/httpapi-sdk.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-201. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/session/prompt.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+201. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/session/prompt.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-202. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/session/schema-decoding.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+202. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/session/schema-decoding.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-203. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/session/snapshot-tool-race.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+203. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/session/snapshot-tool-race.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-204. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/storage/json-migration.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+204. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/storage/json-migration.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-205. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/tool/parameters.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+205. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/tool/parameters.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
-206. `high` `HLT-001-DEAD-MARKER` `packages/opencode/test/tool/registry.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
+206. `high` `HLT-001-DEAD-MARKER` `packages/jekko/test/tool/registry.test.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`
 207. `high` `HLT-001-DEAD-MARKER` `packages/plugin/src/tui.ts` - remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context
    Route: `Entropy`/`fast`

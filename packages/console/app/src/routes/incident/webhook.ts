@@ -1,5 +1,5 @@
 import type { APIEvent } from "@solidjs/start/server"
-import { Resource } from "@opencode-ai/console-resource"
+import { Resource } from "@jekko-ai/console-resource"
 import { Webhook } from "svix"
 
 const DISCORD_INCIDENT_ROLE_ID = "1501447160175136838"

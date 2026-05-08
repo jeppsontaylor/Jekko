@@ -1,12 +1,12 @@
-# Plan update: add an **OCAL Crucible Lane** for hard tasks
+# Plan update: add an **ZYAL Crucible Lane** for hard tasks
 
-The current OCAL plan is already pointed in the right direction: host-enforced daemon runtime, strict gated syntax, SQLite as source of truth, hard context clearing through new epochs, no prompt-only continuation, and no assistant-generated OCAL execution. That gives us the foundation for “FOREVER means forever unless host stop checks pass.” 
+The current ZYAL plan is already pointed in the right direction: host-enforced daemon runtime, strict gated syntax, SQLite as source of truth, hard context clearing through new epochs, no prompt-only continuation, and no assistant-generated ZYAL execution. That gives us the foundation for “FOREVER means forever unless host stop checks pass.” 
 
 The missing layer is exactly what you are describing now:
 
 > When the easy/high-confidence tasks are gone, the daemon should not just keep randomly poking at the remaining hard tasks. It should route hard tasks into a deliberate, bounded, collaborative scratchpad/research/hardening process until there is enough evidence to implement safely.
 
-I would add this as a new first-class OCAL subsystem:
+I would add this as a new first-class ZYAL subsystem:
 
 ```yaml
 crucible:
@@ -33,17 +33,17 @@ There is still no universal “in-prompt agent scripting standard” for coding 
 
 Microsoft Agent Framework is especially relevant because it separates “agents” from “workflows”: agents handle open-ended model behavior, while workflows provide explicit control flow, type-validated routing, checkpointing, human-in-the-loop, and multi-agent orchestration. Its 2026 docs and launch materials specifically call out sequential, concurrent, handoff, group chat, Magentic-style orchestration, checkpointing, hydration, declarative YAML, A2A, and MCP support. ([Microsoft Learn][2])
 
-CrewAI Flows is another parallel: it frames flows as structured, event-driven workflows that connect tasks and crews, manage state, and support conditional logic, loops, and branching. That maps cleanly to OCAL’s “runtime owns the loop” idea. ([CrewAI Documentation][3])
+CrewAI Flows is another parallel: it frames flows as structured, event-driven workflows that connect tasks and crews, manage state, and support conditional logic, loops, and branching. That maps cleanly to ZYAL’s “runtime owns the loop” idea. ([CrewAI Documentation][3])
 
-Anthropic’s “Building Effective Agents” is probably the best conceptual guide for the hard-task lane. It names exactly the patterns OCAL should encode: routing, parallelization, orchestrator-workers, and evaluator-optimizer. The evaluator-optimizer pattern is specifically for cases where clear evaluation criteria exist and iterative refinement adds measurable value. ([Anthropic][4])
+Anthropic’s “Building Effective Agents” is probably the best conceptual guide for the hard-task lane. It names exactly the patterns ZYAL should encode: routing, parallelization, orchestrator-workers, and evaluator-optimizer. The evaluator-optimizer pattern is specifically for cases where clear evaluation criteria exist and iterative refinement adds measurable value. ([Anthropic][4])
 
 OpenAI’s Agents SDK docs make the same distinction in different language: orchestration can be LLM-directed or code-directed, and you can mix them; their guide also recommends adding specialists only when the contract changes, because premature agent splitting adds prompts, traces, and approval surfaces. That is directly applicable here: Crucible should route only the tasks whose contract actually changes from “implement this” to “research, compare, critique, and evidence-gate this.” ([OpenAI Developers][5])
 
-Research patterns also support the proposed design. **Self-Refine** alternates feedback and refinement to improve outputs without training. **Reflexion** stores verbal reflections in episodic memory between trials and explicitly limits memory length to avoid context blowup. **Tree of Thoughts** explores multiple reasoning paths and evaluates them before committing. **Multi-agent debate** uses multiple model instances over rounds to improve reasoning/factuality. OCAL should not copy these as prompt tricks; it should encode them as host-orchestrated pass types. ([arXiv][6])
+Research patterns also support the proposed design. **Self-Refine** alternates feedback and refinement to improve outputs without training. **Reflexion** stores verbal reflections in episodic memory between trials and explicitly limits memory length to avoid context blowup. **Tree of Thoughts** explores multiple reasoning paths and evaluates them before committing. **Multi-agent debate** uses multiple model instances over rounds to improve reasoning/factuality. ZYAL should not copy these as prompt tricks; it should encode them as host-orchestrated pass types. ([arXiv][6])
 
 OpenHands is also relevant, but mostly for two lessons: use repository-specific persistent instructions/skills for stable project knowledge, and use sandboxed/isolated runtimes for risky execution. OpenHands loads repo-specific skills or microagents from `.openhands/skills/` or `.openhands/microagents/`, and its runtime architecture emphasizes Docker isolation for executing arbitrary code safely and reproducibly. ([GitHub][7])
 
-For OpenCode specifically, there is no native documented OCAL/daemon runbook standard today. OpenCode does support agents, subagents, model overrides, permissions, MCP tool gating, commands, plugins, custom config directories, compaction controls, and an ecosystem with background-agent/worktree/persistent-memory plugins. Those are the right primitives, but OCAL would be a new native runtime layer rather than a wrapper around existing prompt commands. ([OpenCode][8])
+For Jekko specifically, there is no native documented ZYAL/daemon runbook standard today. Jekko does support agents, subagents, model overrides, permissions, MCP tool gating, commands, plugins, custom config directories, compaction controls, and an ecosystem with background-agent/worktree/persistent-memory plugins. Those are the right primitives, but ZYAL would be a new native runtime layer rather than a wrapper around existing prompt commands. ([Jekko][8])
 
 ---
 
@@ -246,7 +246,7 @@ The source of truth remains SQLite. The filesystem mirror is generated for inspe
 Recommended layout:
 
 ```text
-.opencode/daemon/<runID>/
+.jekko/daemon/<runID>/
   STATE.md
   ledger.jsonl
   tasks/
@@ -276,7 +276,7 @@ Memory rules:
 scratch:
   scope: task
   source_of_truth: sqlite
-  mirror: ".opencode/daemon/{{run_id}}/tasks/{{task_id}}"
+  mirror: ".jekko/daemon/{{run_id}}/tasks/{{task_id}}"
   max_rounds: 4
   max_attempts: 8
   max_bytes_per_task: 250kb
@@ -294,13 +294,13 @@ scratch:
     - obsolete hypotheses
 ```
 
-This mirrors Reflexion’s useful idea—carry forward compact lessons between trials—without letting memory grow without bound. Reflexion’s paper reports truncating memory to recent reflections to avoid context-window issues, which is the same operational problem OCAL has to solve. ([OpenReview][9])
+This mirrors Reflexion’s useful idea—carry forward compact lessons between trials—without letting memory grow without bound. Reflexion’s paper reports truncating memory to recent reflections to avoid context-window issues, which is the same operational problem ZYAL has to solve. ([OpenReview][9])
 
 ---
 
 # 6. Add these tables to the current daemon store plan
 
-The existing OCAL plan already proposes `daemon_run`, `daemon_iteration`, `daemon_event`, `daemon_task`, `daemon_worker`, and `daemon_artifact`. Add these:
+The existing ZYAL plan already proposes `daemon_run`, `daemon_iteration`, `daemon_event`, `daemon_task`, `daemon_worker`, and `daemon_artifact`. Add these:
 
 ```sql
 daemon_task_score
@@ -405,26 +405,26 @@ Should it expire?
 Add these to the implementation plan:
 
 ```text
-packages/opencode/src/session/daemon-router.ts
+packages/jekko/src/session/daemon-router.ts
   Computes route: direct | standard | crucible | blocked.
 
-packages/opencode/src/session/daemon-scorer.ts
+packages/jekko/src/session/daemon-scorer.ts
   Computes risk/evidence/confidence scores from task metadata,
   git state, prior attempts, LLM risk cards, and verification results.
 
-packages/opencode/src/session/daemon-crucible.ts
+packages/jekko/src/session/daemon-crucible.ts
   Runs bounded hard-task passes and promotion gates.
 
-packages/opencode/src/session/daemon-memory.ts
+packages/jekko/src/session/daemon-memory.ts
   Stores task memory, summarizes attempts, mirrors files, expires scratch.
 
-packages/opencode/src/session/daemon-strategy.ts
+packages/jekko/src/session/daemon-strategy.ts
   Handles independent strategy generation, synthesis, ranking, and pruning.
 
-packages/opencode/src/session/daemon-review.ts
+packages/jekko/src/session/daemon-review.ts
   Runs critic/red-team/evaluator passes and records verdicts.
 
-packages/opencode/src/session/daemon-cleanup.ts
+packages/jekko/src/session/daemon-cleanup.ts
   Releases locks, prunes scratch, archives artifacts, removes worktrees.
 ```
 
@@ -487,9 +487,9 @@ The runtime owns promotion, stop, deletion, and permission escalation.
 
 ---
 
-# 9. OCAL syntax addition: simple form
+# 9. ZYAL syntax addition: simple form
 
-This is the syntax I would add to the existing OCAL block.
+This is the syntax I would add to the existing ZYAL block.
 
 ```yaml
 routing:
@@ -568,7 +568,7 @@ This keeps the user-facing configuration simple.
 
 ---
 
-# 10. OCAL syntax addition: explicit pass graph
+# 10. ZYAL syntax addition: explicit pass graph
 
 For advanced users, allow explicit Crucible passes.
 
@@ -677,7 +677,7 @@ expand / critique / prototype
 promote or prune
 ```
 
-OCAL syntax:
+ZYAL syntax:
 
 ```yaml
 crucible:
@@ -785,9 +785,9 @@ routing:
       any:
         - failed_attempts_gte: 2
         - touched_paths_match:
-            - "packages/opencode/src/session/**"
-            - "packages/opencode/src/server/**"
-            - "packages/opencode/migration/**"
+            - "packages/jekko/src/session/**"
+            - "packages/jekko/src/server/**"
+            - "packages/jekko/migration/**"
         - test_gap: high
         - risk_gte: 0.65
         - task_class_in: [algorithm, architecture, migration, security]
@@ -854,10 +854,10 @@ Presets matter. Most users should not have to write a whole pass graph.
 
 ---
 
-# 16. A full Jankurai-flavored OCAL example with Crucible
+# 16. A full Jankurai-flavored ZYAL example with Crucible
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -934,7 +934,7 @@ crucible:
   scratch:
     scope: task
     source_of_truth: sqlite
-    mirror: ".opencode/daemon/{{run_id}}/tasks/{{task_id}}"
+    mirror: ".jekko/daemon/{{run_id}}/tasks/{{task_id}}"
     expose_to_workers: summary_only
     max_bytes_per_task: 250kb
     summarize_after_attempts: 2
@@ -1018,7 +1018,7 @@ checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - shell: "bun --cwd packages/opencode test --timeout 30000 packages/opencode/test/session/daemon-runtime.test.ts"
+    - shell: "bun --cwd packages/jekko test --timeout 30000 packages/jekko/test/session/daemon-runtime.test.ts"
   git:
     add: ["."]
     commit_message: "jankurai: daemon verified work item"
@@ -1045,13 +1045,13 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   show_lanes: true
   show_crucible: true
 
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 ---
@@ -1079,10 +1079,10 @@ task_id: task-123
 strategy_id: strategy-002
 summary: "Change daemon loop to return LoopOutcome and move restart logic to DaemonService."
 expected_files:
-  - packages/opencode/src/session/prompt.ts
-  - packages/opencode/src/session/daemon.ts
+  - packages/jekko/src/session/prompt.ts
+  - packages/jekko/src/session/daemon.ts
 risks:
-  - "Could regress normal opencode run idle exit behavior."
+  - "Could regress normal jekko run idle exit behavior."
 verification:
   - "Plain run exits on idle."
   - "Daemon run continues after assistant_stop."
@@ -1107,9 +1107,9 @@ type: evidence_card
 task_id: task-123
 evidence_id: evidence-004
 commands:
-  - command: "bun --cwd packages/opencode test packages/opencode/test/session/daemon-runtime.test.ts"
+  - command: "bun --cwd packages/jekko test packages/jekko/test/session/daemon-runtime.test.ts"
     result: pass
-  - command: "opencode run 'hello'"
+  - command: "jekko run 'hello'"
     result: pass
 artifacts:
   - "target/jankurai/daemon-audit.json"
@@ -1121,7 +1121,7 @@ task_id: task-123
 summary: "Best plan is strategy-002 after red-team revisions."
 known_bad_approaches:
   - "Do not overload session.status with daemon in v1."
-  - "Do not let assistant-generated OCAL start daemon."
+  - "Do not let assistant-generated ZYAL start daemon."
 next_action: "Implement LoopOutcome compatibility layer."
 ```
 
@@ -1138,7 +1138,7 @@ MCP servers are tool/context providers.
 Workers are agents/subagents/sessions.
 ```
 
-So OCAL should not say “spin up multiple MCPs” when it means “spin up multiple coding agents.” It should say:
+So ZYAL should not say “spin up multiple MCPs” when it means “spin up multiple coding agents.” It should say:
 
 ```yaml
 workers:
@@ -1164,7 +1164,7 @@ mcp:
 
 The MCP spec defines MCP as an open protocol for connecting LLM apps to external data sources and tools; that makes it the right place for tool profiles, resources, and health checks, not for worker identity. ([Model Context Protocol][12])
 
-Also, MCP security cannot be an afterthought. Recent MCP security discussions focus on prompt injection, tool abuse, tool-origin visibility, and human approval/consent fatigue. For OCAL, that means MCP allowlists must be enforced before tool resolution, and required MCP health checks should pause the daemon if a critical server is unhealthy. ([Coalition for Secure AI][13])
+Also, MCP security cannot be an afterthought. Recent MCP security discussions focus on prompt injection, tool abuse, tool-origin visibility, and human approval/consent fatigue. For ZYAL, that means MCP allowlists must be enforced before tool resolution, and required MCP health checks should pause the daemon if a critical server is unhealthy. ([Coalition for Secure AI][13])
 
 ---
 
@@ -1183,7 +1183,7 @@ The TUI should make Crucible visually distinct from Forever.
 While editing/pasting:
 
 ```text
-- OCAL sentinel line: bright gold
+- ZYAL sentinel line: bright gold
 - `confirm: RUN_FOREVER`: bright gold underline
 - `checkpoint.git.push`: amber/red
 - `permissions`: red/amber when broad
@@ -1191,8 +1191,8 @@ While editing/pasting:
 - `scratch`: teal
 - `stop`: green
 - unknown keys: red squiggle
-- unarmed valid OCAL: inert gray/gold preview
-- armed valid OCAL: gold confirm dialog
+- unarmed valid ZYAL: inert gray/gold preview
+- armed valid ZYAL: gold confirm dialog
 ```
 
 Preview should show:
@@ -1217,11 +1217,11 @@ Active banner:
 ⚗ CRUCIBLE · task audit-17 · round 2/4 · evidence 0.58 · risk 0.71
 ```
 
-This matters because OpenCode already has community reports around compaction continuing unexpectedly, model loops, and subagent hangs/permission issues. Daemon and Crucible modes must be visually and semantically obvious rather than hidden inside normal chat behavior. ([GitHub][14])
+This matters because Jekko already has community reports around compaction continuing unexpectedly, model loops, and subagent hangs/permission issues. Daemon and Crucible modes must be visually and semantically obvious rather than hidden inside normal chat behavior. ([GitHub][14])
 
 ---
 
-# 20. Integration with the current OCAL implementation plan
+# 20. Integration with the current ZYAL implementation plan
 
 I would update the existing implementation plan like this.
 
@@ -1247,11 +1247,11 @@ Phase 1.5: Risk router + bounded Crucible lane
 Modify:
 
 ```text
-packages/opencode/src/agent-script/schema.ts
-packages/opencode/src/agent-script/parser.ts
-packages/opencode/src/agent-script/examples.ts
-packages/opencode/src/agent-script/parser.test.ts
-packages/opencode/specs/daemon-ocal.md
+packages/jekko/src/agent-script/schema.ts
+packages/jekko/src/agent-script/parser.ts
+packages/jekko/src/agent-script/examples.ts
+packages/jekko/src/agent-script/parser.test.ts
+packages/jekko/specs/daemon-zyal.md
 ```
 
 Add schema classes:
@@ -1284,9 +1284,9 @@ rejects worker write crucible with isolation: none
 Modify:
 
 ```text
-packages/opencode/src/session/daemon.sql.ts
-packages/opencode/src/session/daemon-store.ts
-packages/opencode/src/session/daemon-event.ts
+packages/jekko/src/session/daemon.sql.ts
+packages/jekko/src/session/daemon-store.ts
+packages/jekko/src/session/daemon-event.ts
 ```
 
 Add migration tables listed above.
@@ -1296,15 +1296,15 @@ Add migration tables listed above.
 Modify/create:
 
 ```text
-packages/opencode/src/session/daemon.ts
-packages/opencode/src/session/daemon-router.ts
-packages/opencode/src/session/daemon-scorer.ts
-packages/opencode/src/session/daemon-crucible.ts
-packages/opencode/src/session/daemon-memory.ts
-packages/opencode/src/session/daemon-strategy.ts
-packages/opencode/src/session/daemon-review.ts
-packages/opencode/src/session/daemon-cleanup.ts
-packages/opencode/src/session/daemon-workers.ts
+packages/jekko/src/session/daemon.ts
+packages/jekko/src/session/daemon-router.ts
+packages/jekko/src/session/daemon-scorer.ts
+packages/jekko/src/session/daemon-crucible.ts
+packages/jekko/src/session/daemon-memory.ts
+packages/jekko/src/session/daemon-strategy.ts
+packages/jekko/src/session/daemon-review.ts
+packages/jekko/src/session/daemon-cleanup.ts
+packages/jekko/src/session/daemon-workers.ts
 ```
 
 Daemon task loop becomes:
@@ -1453,27 +1453,27 @@ forever_crucible
 
 # 23. Final recommendation
 
-Add **OCAL Crucible Lane** to the plan.
+Add **ZYAL Crucible Lane** to the plan.
 
 The full mental model becomes:
 
 ```text
-OCAL daemon:
+ZYAL daemon:
   host-enforced forever loop
 
-OCAL routing:
+ZYAL routing:
   host decides easy / standard / hard / blocked
 
-OCAL crucible:
+ZYAL crucible:
   bounded hard-task research, strategy, critique, prototype, and evidence loop
 
-OCAL scratch:
+ZYAL scratch:
   durable per-task memory, not context-window sludge
 
-OCAL promotion:
+ZYAL promotion:
   only evidence-gated hard tasks reach implementation
 
-OCAL cleanup:
+ZYAL cleanup:
   archive useful memory, delete stale scratch/worktrees, release locks
 ```
 
@@ -1491,7 +1491,7 @@ The task scratchpad is bounded and cleaned up.
 The outer daemon still runs forever until global stop checks pass.
 ```
 
-That is the most powerful version I would add to the current OCAL plan: **forever runtime outside, bounded crucible inside, evidence gates between them.**
+That is the most powerful version I would add to the current ZYAL plan: **forever runtime outside, bounded crucible inside, evidence gates between them.**
 
 [1]: https://docs.langchain.com/oss/python/langgraph/overview "LangGraph overview - Docs by LangChain"
 [2]: https://learn.microsoft.com/en-us/agent-framework/workflows/ "Microsoft Agent Framework Workflows | Microsoft Learn"
@@ -1500,11 +1500,11 @@ That is the most powerful version I would add to the current OCAL plan: **foreve
 [5]: https://developers.openai.com/api/docs/guides/agents/orchestration "Orchestration and handoffs | OpenAI API"
 [6]: https://arxiv.org/abs/2303.17651 "[2303.17651] Self-Refine: Iterative Refinement with Self-Feedback"
 [7]: https://github.com/OpenHands/OpenHands/blob/main/skills/README.md "OpenHands/skills/README.md at main · OpenHands/OpenHands · GitHub"
-[8]: https://opencode.ai/docs/agents/ "Agents | OpenCode"
+[8]: https://jekko.ai/docs/agents/ "Agents | Jekko"
 [9]: https://openreview.net/pdf?id=vAElhFcKW6&utm_source=chatgpt.com "Language Agents with Verbal Reinforcement Learning"
 [10]: https://arxiv.org/abs/2305.10601?utm_source=chatgpt.com "Tree of Thoughts: Deliberate Problem Solving with Large Language Models"
 [11]: https://arxiv.org/abs/2305.14325 "[2305.14325] Improving Factuality and Reasoning in Language Models through Multiagent Debate"
 [12]: https://modelcontextprotocol.io/specification/2025-11-25?utm_source=chatgpt.com "Specification"
 [13]: https://www.coalitionforsecureai.org/securing-the-ai-agent-revolution-a-practical-guide-to-mcp-security/?utm_source=chatgpt.com "A Practical Guide to Model Context Protocol Security"
-[14]: https://github.com/anomalyco/opencode/issues/18794?utm_source=chatgpt.com "compact causes the agent to continue unexpectedly #18794"
+[14]: https://github.com/anomalyco/jekko/issues/18794?utm_source=chatgpt.com "compact causes the agent to continue unexpectedly #18794"
 

@@ -38,7 +38,7 @@ But today ZYAL is still primarily a **loop/control/checkpoint language**. To dom
 9. **Large-repo intelligence**: code index, dependency graph, ownership, affected-test selection, architectural boundaries.
 10. **Security policy packs**: least privilege per tool/file/network/secret/MCP server, prompt-injection/memory-poisoning defenses.
 11. **Skill and procedure system**: progressive-disclosure procedural memory with validation, versioning, signatures, and evals.
-12. **Universal host adapters**: OpenCode native, OpenHands runtime, LangGraph/DeepAgents runtime, Claude Code/Codex harnesses.
+12. **Universal host adapters**: Jekko native, OpenHands runtime, LangGraph/DeepAgents runtime, Claude Code/Codex harnesses.
 13. **Human gate UX**: preview run cards, risk scoring, approval bundles, merge/open-PR/discard decisions.
 14. **Fleet/state backend abstraction**: SQLite for local runs, Postgres/event-store/warehouse for enterprise and 1B+ LOC programs.
 15. **Supply-chain and provenance controls**: dependency diffs, SBOMs, lockfile policy, artifact attestations, rollback plans.
@@ -148,7 +148,7 @@ Claude Code’s docs reinforce several ideas ZYAL should adopt: hooks at lifecyc
 
 **Where ZYAL can be stronger:**
 
-Claude Code is tool-specific. ZYAL can be the cross-agent policy that works with OpenCode, Claude Code, Codex, OpenHands, and future tools.
+Claude Code is tool-specific. ZYAL can be the cross-agent policy that works with Jekko, Claude Code, Codex, OpenHands, and future tools.
 
 ---
 
@@ -273,7 +273,7 @@ I would keep the existing ZYAL core, but add modular top-level blocks. The desig
 | `artifacts`     | Patches, PRs, reports, SBOMs, build artifacts, provenance.                           |
 | `rollout`       | Merge, canary, deployment, rollback, production gates.                               |
 | `governance`    | Policy packs, audit retention, identity, compliance labels.                          |
-| `interop`       | Compile/run adapters for OpenCode, OpenHands, LangGraph, Claude, Codex.              |
+| `interop`       | Compile/run adapters for Jekko, OpenHands, LangGraph, Claude, Codex.              |
 
 The current keys are good; they just need to sit inside a larger operating envelope.
 
@@ -645,7 +645,7 @@ skills:
   enabled: true
   registry:
     backend: filesystem
-    path: ".opencode/skills"
+    path: ".jekko/skills"
     source_of_truth: git
   activation:
     mode: progressive_disclosure
@@ -961,13 +961,13 @@ evals:
 
     behavior_golden:
       type: dataset
-      dataset: ".opencode/evals/golden.jsonl"
+      dataset: ".jekko/evals/golden.jsonl"
       evaluator: exact_or_semantic
       pass_rate_gte: 0.98
 
     reviewer_quality:
       type: llm_judge
-      rubric: ".opencode/rubrics/maintainability.md"
+      rubric: ".jekko/rubrics/maintainability.md"
       judge_model: strong
       score_gte: 0.80
       require_explanation: true
@@ -1070,7 +1070,7 @@ observability:
         - require_approval: "Diff exceeded 5000 changed lines."
 ```
 
-This should also connect to `.opencode/daemon/<runID>/STATE.md`, but the mirror should be a human-friendly projection, not the observability backend.
+This should also connect to `.jekko/daemon/<runID>/STATE.md`, but the mirror should be a human-friendly projection, not the observability backend.
 
 ---
 
@@ -1393,7 +1393,7 @@ repo_intelligence:
         - touches_shared_library: true
 
   architecture:
-    boundaries_file: ".opencode/architecture.yml"
+    boundaries_file: ".jekko/architecture.yml"
     enforce_layering: true
     enforce_no_new_cycles: true
 ```
@@ -1691,7 +1691,7 @@ rollout:
   pr:
     create: ask
     title: "daemon: {{job.name}}"
-    body_template: ".opencode/templates/pr.md"
+    body_template: ".jekko/templates/pr.md"
     labels: ["zyal", "agent-generated"]
     require_codeowners: true
 
@@ -1733,7 +1733,7 @@ Suggested schema:
 ```yaml
 interop:
   target_hosts:
-    opencode:
+    jekko:
       native: true
 
     openhands:
@@ -2010,11 +2010,11 @@ job:
 skills:
   enabled: true
   registry:
-    path: ".opencode/skills"
+    path: ".jekko/skills"
     source_of_truth: git
   creation:
     allow_agent_proposals: true
-    write_to: ".opencode/skills_quarantine"
+    write_to: ".jekko/skills_quarantine"
     require:
       - trigger_conditions
       - step_by_step_procedure
@@ -2039,21 +2039,21 @@ evals:
     skill_validation:
       type: shell
       commands:
-        - command: "bun test .opencode/skills-tests --timeout 30000"
+        - command: "bun test .jekko/skills-tests --timeout 30000"
           assert: { exit_code: 0 }
 
 on:
   - signal: checkpoint_succeeded
     count_gte: 3
     do:
-      - run: "opencode skills propose-from-trace --last 3"
+      - run: "jekko skills propose-from-trace --last 3"
       - notify: "A new skill proposal is ready for review."
 
 security:
   command_floor:
     always_block:
-      - "opencode daemon modify-runtime"
-      - "opencode skills auto-promote"
+      - "jekko daemon modify-runtime"
+      - "jekko skills auto-promote"
 ```
 
 Key rule:
@@ -2211,7 +2211,7 @@ Example:
 
 ```yaml
 schema:
-  id: "https://opencode.ai/zyal/v1/schema.json"
+  id: "https://jekko.ai/zyal/v1/schema.json"
   unknown_keys: reject
   extensions:
     allow_namespaced: true
@@ -2808,7 +2808,7 @@ ZYAL should position itself as:
 
 Not “an agent framework.”
 Not “a prompt format.”
-Not “a YAML wrapper around Claude/Codex/OpenCode.”
+Not “a YAML wrapper around Claude/Codex/Jekko.”
 Not “a swarm launcher.”
 
 The winning design is:
@@ -2824,7 +2824,7 @@ The winning design is:
 9. **Observable** rather than magical.
 10. **Human-governed** at risk boundaries.
 
-ZYAL’s current draft is a very strong start. The core insight is correct. The expansion path is to turn it into a full **AgentOps + Software Engineering + Safety manifest** that can run inside OpenCode first, then compile to OpenHands, LangGraph/DeepAgents, Claude Code, Codex, Hermes/OpenClaw-style hosts, and future agent systems.
+ZYAL’s current draft is a very strong start. The core insight is correct. The expansion path is to turn it into a full **AgentOps + Software Engineering + Safety manifest** that can run inside Jekko first, then compile to OpenHands, LangGraph/DeepAgents, Claude Code, Codex, Hermes/OpenClaw-style hosts, and future agent systems.
 
 The strongest single upgrade: **make every autonomous coding decision evidence-backed, replayable, and promotable only through host-checked gates.**
 

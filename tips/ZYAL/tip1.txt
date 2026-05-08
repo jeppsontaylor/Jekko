@@ -248,7 +248,7 @@ Add:
 skills:
   registries:
     - id: trusted-local
-      path: ".opencode/skills"
+      path: ".jekko/skills"
       trust: signed_only
 
   generated:
@@ -285,7 +285,7 @@ Add:
 evals:
   suites:
     - id: regression
-      source: ".opencode/evals/regression.yml"
+      source: ".jekko/evals/regression.yml"
       run_before_promote: true
     - id: memory_quality
       checks:

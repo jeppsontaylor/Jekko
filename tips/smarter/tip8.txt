@@ -1,6 +1,6 @@
-# Recommended addition: OCAL Hardlane / Deliberation Runtime
+# Recommended addition: ZYAL Hardlane / Deliberation Runtime
 
-The existing OCAL daemon plan is strong for **never stop until host stop criteria pass**. The missing layer is what happens when the daemon runs out of easy work and only hard, ambiguous, high-risk tasks remain. The right addition is a bounded, host-enforced **Hardlane** mode: a task-specific deliberation lane where agents can accumulate scratchpad knowledge, run multiple fresh or memory-aware passes, red-team plans, prototype safely, and only promote to implementation when confidence is justified by evidence.
+The existing ZYAL daemon plan is strong for **never stop until host stop criteria pass**. The missing layer is what happens when the daemon runs out of easy work and only hard, ambiguous, high-risk tasks remain. The right addition is a bounded, host-enforced **Hardlane** mode: a task-specific deliberation lane where agents can accumulate scratchpad knowledge, run multiple fresh or memory-aware passes, red-team plans, prototype safely, and only promote to implementation when confidence is justified by evidence.
 
 The important distinction:
 
@@ -13,29 +13,29 @@ Hardlane loop:
   then either promotes, pauses, splits, or escalates.
 ```
 
-The previous OCAL plan already establishes the right safety base: strict `OCAL v1` sentinels, no XML tags, no instant execution on paste, SQLite as source of truth, readable ledger mirrors, hard context clearing by child session/epoch rather than deleting history, serial daemon first, and no prompt-only continuation. This proposal extends that plan rather than replacing it. 
+The previous ZYAL plan already establishes the right safety base: strict `ZYAL v1` sentinels, no XML tags, no instant execution on paste, SQLite as source of truth, readable ledger mirrors, hard context clearing by child session/epoch rather than deleting history, serial daemon first, and no prompt-only continuation. This proposal extends that plan rather than replacing it. 
 
 ---
 
 # 1. What the broader agent ecosystem teaches us
 
-The cross-loop collaboration idea is not weird or made up. It lines up with several established patterns, but none of those patterns should be copied blindly into OpenCode as prompt-only behavior.
+The cross-loop collaboration idea is not weird or made up. It lines up with several established patterns, but none of those patterns should be copied blindly into Jekko as prompt-only behavior.
 
-**LangGraph / Deep Agents:** LangGraph’s durable execution model saves progress through a checkpointer so long-running workflows can pause, resume, and survive failures; it specifically emphasizes deterministic/idempotent side effects for reliable replay. Deep Agents builds on this with planning tools, virtual filesystem context management, auto-summarization, subagent spawning, long-term memory, filesystem permissions, and human-in-the-loop support. That maps almost directly to OCAL’s need for durable task memory, bounded scratchpads, and isolated subagents. ([LangChain Docs][1])
+**LangGraph / Deep Agents:** LangGraph’s durable execution model saves progress through a checkpointer so long-running workflows can pause, resume, and survive failures; it specifically emphasizes deterministic/idempotent side effects for reliable replay. Deep Agents builds on this with planning tools, virtual filesystem context management, auto-summarization, subagent spawning, long-term memory, filesystem permissions, and human-in-the-loop support. That maps almost directly to ZYAL’s need for durable task memory, bounded scratchpads, and isolated subagents. ([LangChain Docs][1])
 
-**OpenHands:** OpenHands documents its agent loop as stateless and event-driven, with a condenser for context management and a security analyzer before action execution. It also has persistence for multi-session workflows and a TaskToolSet for delegating complex work to synchronous subagents that preserve sub-task context. This validates the idea that OCAL should keep task memory outside any one model context and treat each pass as an event over durable state. ([OpenHands Docs][2])
+**OpenHands:** OpenHands documents its agent loop as stateless and event-driven, with a condenser for context management and a security analyzer before action execution. It also has persistence for multi-session workflows and a TaskToolSet for delegating complex work to synchronous subagents that preserve sub-task context. This validates the idea that ZYAL should keep task memory outside any one model context and treat each pass as an event over durable state. ([OpenHands Docs][2])
 
 **AutoGen:** AutoGen’s reflection pattern is explicitly a coder/reviewer loop that continues until approval or a stopping condition, and its termination conditions can be combined with AND/OR logic. That is exactly the right mental model for “hard pass loops”: not infinite, not vibes-based, and not controlled only by the model. ([Microsoft GitHub][3])
 
-**LangChain evaluator-optimizer / human-in-the-loop:** LangGraph/LangChain describes evaluator-optimizer workflows where a generator creates output, an evaluator gives feedback, and generation repeats until accepted. Its human-in-the-loop interrupt model also supports approval, edit, and reject decisions while preserving state. OCAL should copy the structure: evaluator feedback and promotion gates are runtime steps, not natural-language hopes. ([LangChain Docs][4])
+**LangChain evaluator-optimizer / human-in-the-loop:** LangGraph/LangChain describes evaluator-optimizer workflows where a generator creates output, an evaluator gives feedback, and generation repeats until accepted. Its human-in-the-loop interrupt model also supports approval, edit, and reject decisions while preserving state. ZYAL should copy the structure: evaluator feedback and promotion gates are runtime steps, not natural-language hopes. ([LangChain Docs][4])
 
-**Dify / CrewAI:** Dify separates iteration over arrays from agent nodes and gives Agent nodes explicit max iterations and memory settings. CrewAI Flows emphasize event-driven workflows, state management, persistence, and resume. These confirm that OCAL should distinguish “batch over many tasks” from “bounded deep work on one hard task.” ([Dify Docs][5])
+**Dify / CrewAI:** Dify separates iteration over arrays from agent nodes and gives Agent nodes explicit max iterations and memory settings. CrewAI Flows emphasize event-driven workflows, state management, persistence, and resume. These confirm that ZYAL should distinguish “batch over many tasks” from “bounded deep work on one hard task.” ([Dify Docs][5])
 
 **Aider:** Aider’s architect mode separates solution design from concrete edits, and its repo map provides compressed repository context. This is highly relevant: Hardlane should often run an architect/reviewer/prototyper flow before letting a build agent edit production files. ([Aider][6])
 
-**Research patterns:** Reflexion stores verbal feedback in episodic memory for later trials; Self-Refine iterates generation, feedback, and refinement; Tree of Thoughts explores and evaluates multiple reasoning paths; multi-agent debate uses multiple model instances to critique and converge. These are the conceptual basis for OCAL Hardlane, but OCAL must enforce budgets, pass limits, and promotion gates so this does not become unbounded “thinking forever.” ([Hugging Face][7])
+**Research patterns:** Reflexion stores verbal feedback in episodic memory for later trials; Self-Refine iterates generation, feedback, and refinement; Tree of Thoughts explores and evaluates multiple reasoning paths; multi-agent debate uses multiple model instances to critique and converge. These are the conceptual basis for ZYAL Hardlane, but ZYAL must enforce budgets, pass limits, and promotion gates so this does not become unbounded “thinking forever.” ([Hugging Face][7])
 
-**OpenCode-specific reality:** OpenCode already supports primary agents/subagents, task permissions, tool permissions, custom tools, MCP servers, and skills. It also has explicit `doom_loop` and external-directory permission guards, which is important because the OpenCode community has seen accidental infinite-loop bugs around session termination, retry, and compaction. So OCAL must make intentional looping visually obvious and host-owned. ([OpenCode][8])
+**Jekko-specific reality:** Jekko already supports primary agents/subagents, task permissions, tool permissions, custom tools, MCP servers, and skills. It also has explicit `doom_loop` and external-directory permission guards, which is important because the Jekko community has seen accidental infinite-loop bugs around session termination, retry, and compaction. So ZYAL must make intentional looping visually obvious and host-owned. ([Jekko][8])
 
 The synthesis is:
 
@@ -160,13 +160,13 @@ only then does implementation proceed
 
 The key is that **each pass leaves structured memory**, and future passes are controlled in how much of that memory they see.
 
-Sometimes you want a fresh agent to avoid anchoring bias. Sometimes you want an agent to read the existing plan and improve it. OCAL should support both as first-class pass modes.
+Sometimes you want a fresh agent to avoid anchoring bias. Sometimes you want an agent to read the existing plan and improve it. ZYAL should support both as first-class pass modes.
 
 ---
 
-# 4. Add this to the OCAL plan: task routing
+# 4. Add this to the ZYAL plan: task routing
 
-## New OCAL block: `routing`
+## New ZYAL block: `routing`
 
 Add a host-owned routing layer before a task is claimed.
 
@@ -226,7 +226,7 @@ The agent’s self-confidence is useful, but unreliable by itself. The host shou
 
 ---
 
-# 5. Add this to the OCAL plan: confidence reports
+# 5. Add this to the ZYAL plan: confidence reports
 
 Give agents a structured way to say, “I might fail here,” without letting that become a stop condition.
 
@@ -268,9 +268,9 @@ This is similar in spirit to evaluator/optimizer and reflection workflows, but s
 
 ---
 
-# 6. Add this to the OCAL plan: Hardlane passes
+# 6. Add this to the ZYAL plan: Hardlane passes
 
-## New OCAL block: `hardlane`
+## New ZYAL block: `hardlane`
 
 ```yaml
 hardlane:
@@ -288,7 +288,7 @@ hardlane:
   scratchpad:
     scope: per_task
     storage: sqlite_and_mirror
-    mirror_path: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}"
+    mirror_path: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}"
     max_bytes: 5mb
     max_files: 64
     cleanup:
@@ -370,7 +370,7 @@ This borrows from multi-agent debate, Self-Refine, Reflexion, and Deep Agents-st
 
 ---
 
-# 7. Add this to the OCAL plan: task memory and scratchpad
+# 7. Add this to the ZYAL plan: task memory and scratchpad
 
 ## New DB tables
 
@@ -430,7 +430,7 @@ The existing plan already includes daemon runs, iterations, events, tasks, worke
 SQLite remains source of truth, but mirror task files make the process inspectable:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/
+.jekko/daemon/<runID>/tasks/<taskID>/
   TASK.md
   STATE.md
   SCRATCH.md
@@ -478,11 +478,11 @@ This gives you compounded knowledge without permanent junk.
 
 ---
 
-# 8. Add this to the OCAL plan: promotion gates
+# 8. Add this to the ZYAL plan: promotion gates
 
 A hard task should not become implementation just because one agent says “I’m confident now.”
 
-## New OCAL block: `promotion`
+## New ZYAL block: `promotion`
 
 ```yaml
 promotion:
@@ -520,7 +520,7 @@ This matches the broader evaluator/optimizer and reflection patterns, but adds h
 
 ---
 
-# 9. Add this to the OCAL plan: splitting hard tasks
+# 9. Add this to the ZYAL plan: splitting hard tasks
 
 Some hard tasks are hard because they are actually multiple tasks.
 
@@ -559,7 +559,7 @@ This is a safer version of “spin up multiple MCPs/agents” because each child
 
 ---
 
-# 10. Add this to the OCAL plan: implementation lanes
+# 10. Add this to the ZYAL plan: implementation lanes
 
 Once promoted, the actual implementation should still be controlled.
 
@@ -574,7 +574,7 @@ implementation:
 
     verify:
       - shell:
-          command: "bun --cwd packages/opencode test --timeout 30000"
+          command: "bun --cwd packages/jekko test --timeout 30000"
           timeout: 30m
       - shell:
           command: "jankurai audit . --json target/jankurai/daemon-audit.json"
@@ -585,19 +585,19 @@ implementation:
       when: verifier_approved
       message: "{{run.id}} hardlane {{task.id}}: {{task.title}}"
       include_trailer:
-        - "OCAL-Run: {{run.id}}"
-        - "OCAL-Task: {{task.id}}"
-        - "OCAL-Hardlane-Summary: {{task.memory.final_summary_sha}}"
+        - "ZYAL-Run: {{run.id}}"
+        - "ZYAL-Task: {{task.id}}"
+        - "ZYAL-Hardlane-Summary: {{task.memory.final_summary_sha}}"
 ```
 
 Aider’s git model is relevant here: commits and undoable checkpoints make AI edits easier to review and recover from, and Aider’s architect/editor split supports the idea of separating design from concrete file edits. ([Aider][10])
 
 ---
 
-# 11. Full example: OCAL with Hardlane for dirty-worktree cleanup
+# 11. Full example: ZYAL with Hardlane for dirty-worktree cleanup
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -675,7 +675,7 @@ hardlane:
   scratchpad:
     scope: per_task
     storage: sqlite_and_mirror
-    mirror_path: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}"
+    mirror_path: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}"
     max_bytes: 5mb
     cleanup:
       on_promoted_and_committed: compress_then_archive
@@ -779,7 +779,7 @@ implementation:
       mode: supervised
     verify:
       - shell:
-          command: "bun --cwd packages/opencode test --timeout 30000"
+          command: "bun --cwd packages/jekko test --timeout 30000"
           timeout: 30m
       - shell:
           command: "jankurai audit . --json target/jankurai/daemon-audit.json"
@@ -814,7 +814,7 @@ checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - shell: "bun --cwd packages/opencode test --timeout 30000 packages/opencode/test/session/daemon-runtime.test.ts"
+    - shell: "bun --cwd packages/jekko test --timeout 30000 packages/jekko/test/session/daemon-runtime.test.ts"
   git:
     add: ["."]
     commit_message: "jankurai: daemon verified work item"
@@ -829,15 +829,15 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   hardlane_badge: amber
   show_task_route: true
   show_confidence: true
   show_scratchpad: true
 
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 ---
@@ -932,7 +932,7 @@ Creates per-task durable memory.
 scratchpad:
   scope: per_task
   storage: sqlite_and_mirror
-  mirror_path: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}"
+  mirror_path: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}"
   cleanup:
     on_promoted_and_committed: compress_then_archive
 ```
@@ -1161,11 +1161,11 @@ Model proposes child tasks.
   "children": [
     {
       "title": "Parser gate tests",
-      "scope": ["packages/opencode/src/agent-script/**"]
+      "scope": ["packages/jekko/src/agent-script/**"]
     },
     {
       "title": "Daemon DB migration",
-      "scope": ["packages/opencode/src/session/daemon*.ts"]
+      "scope": ["packages/jekko/src/session/daemon*.ts"]
     }
   ]
 }
@@ -1182,22 +1182,22 @@ Host creates child tasks if within policy.
 Use:
 
 ```text
-*.ocal.yml
+*.zyal.yml
 ```
 
 or:
 
 ```text
-.opencode/runbooks/*.ocal.yml
+.jekko/runbooks/*.zyal.yml
 ```
 
 For inline prompt form, keep the exact sentinels:
 
 ```text
-<<<OCAL v1:daemon id=...>>>
+<<<ZYAL v1:daemon id=...>>>
 ...
-<<<END_OCAL id=...>>>
-OCAL_ARM RUN_FOREVER id=...
+<<<END_ZYAL id=...>>>
+ZYAL_ARM RUN_FOREVER id=...
 ```
 
 The previous plan’s gate is good because it requires a first-column opening sentinel, matching closing ID, required `intent`, required `confirm`, and trailing arm line. Keep that. 
@@ -1206,7 +1206,7 @@ The previous plan’s gate is good because it requires a first-column opening se
 
 In TUI preview and any future editor grammar:
 
-| OCAL section           | Color         | Reason                                    |
+| ZYAL section           | Color         | Reason                                    |
 | ---------------------- | ------------- | ----------------------------------------- |
 | `loop.policy: forever` | gold          | Unbounded daemon danger/visibility.       |
 | `stop`                 | green         | Completion criteria.                      |
@@ -1222,7 +1222,7 @@ In TUI preview and any future editor grammar:
 
 ## TUI preview cards
 
-When OCAL is pasted, do not execute. Show cards:
+When ZYAL is pasted, do not execute. Show cards:
 
 ```text
 ∞ FOREVER DAEMON
@@ -1256,11 +1256,11 @@ Gold remains for daemon. Amber overlays when current task is in Hardlane.
 Modify:
 
 ```text
-packages/opencode/src/agent-script/schema.ts
-packages/opencode/src/agent-script/parser.ts
-packages/opencode/src/agent-script/examples.ts
-packages/opencode/specs/daemon-ocal.md
-packages/opencode/src/agent-script/parser.test.ts
+packages/jekko/src/agent-script/schema.ts
+packages/jekko/src/agent-script/parser.ts
+packages/jekko/src/agent-script/examples.ts
+packages/jekko/specs/daemon-zyal.md
+packages/jekko/src/agent-script/parser.test.ts
 ```
 
 Add schema classes:
@@ -1293,9 +1293,9 @@ Parser rules:
 Add:
 
 ```text
-packages/opencode/src/session/daemon-memory.ts
-packages/opencode/src/session/daemon-router.ts
-packages/opencode/src/session/daemon-hardlane.ts
+packages/jekko/src/session/daemon-memory.ts
+packages/jekko/src/session/daemon-router.ts
+packages/jekko/src/session/daemon-hardlane.ts
 ```
 
 Add tables:
@@ -1404,12 +1404,12 @@ POST /daemon/:runID/tasks/:taskID/archive
 Add CLI:
 
 ```bash
-opencode daemon task list <runID>
-opencode daemon task show <runID> <taskID>
-opencode daemon task memory <runID> <taskID>
-opencode daemon task promote <runID> <taskID>
-opencode daemon task pause <runID> <taskID>
-opencode daemon task split <runID> <taskID>
+jekko daemon task list <runID>
+jekko daemon task show <runID> <taskID>
+jekko daemon task memory <runID> <taskID>
+jekko daemon task promote <runID> <taskID>
+jekko daemon task pause <runID> <taskID>
+jekko daemon task split <runID> <taskID>
 ```
 
 ## Phase G: TUI
@@ -1440,7 +1440,7 @@ promotion passes only with evidence
 hardlane max_passes pauses task
 scratchpad cleanup compresses on commit
 normal daemon without hardlane unchanged
-plain opencode run unchanged
+plain jekko run unchanged
 ```
 
 ---
@@ -1493,25 +1493,25 @@ routing:
         - would_push_without_verified_tests: true
 ```
 
-## Critical zones for this OpenCode work
+## Critical zones for this Jekko work
 
 ```yaml
 critical_zones:
-  - packages/opencode/src/session/prompt.ts
-  - packages/opencode/src/session/compaction.ts
-  - packages/opencode/src/session/processor.ts
-  - packages/opencode/src/session/status.ts
-  - packages/opencode/src/session/*daemon*
-  - packages/opencode/src/server/routes/instance/httpapi/**
-  - packages/opencode/src/cli/cmd/run.ts
-  - packages/opencode/migration/**
-  - packages/opencode/src/agent-script/**
+  - packages/jekko/src/session/prompt.ts
+  - packages/jekko/src/session/compaction.ts
+  - packages/jekko/src/session/processor.ts
+  - packages/jekko/src/session/status.ts
+  - packages/jekko/src/session/*daemon*
+  - packages/jekko/src/server/routes/instance/httpapi/**
+  - packages/jekko/src/cli/cmd/run.ts
+  - packages/jekko/migration/**
+  - packages/jekko/src/agent-script/**
   - permissions
   - mcp
   - worker-concurrency
 ```
 
-This matters because OpenCode has already had community reports of accidental infinite loops around finish reasons, retry behavior, and compaction. Hardlane should be mandatory for changes that could accidentally make normal sessions immortal. ([GitHub][12])
+This matters because Jekko has already had community reports of accidental infinite loops around finish reasons, retry behavior, and compaction. Hardlane should be mandatory for changes that could accidentally make normal sessions immortal. ([GitHub][12])
 
 ---
 
@@ -1570,7 +1570,7 @@ editor:
   agent: build
 ```
 
-This is directly inspired by the architect/editor split used by Aider, but OCAL should add host-owned promotion and verification gates. ([Aider][6])
+This is directly inspired by the architect/editor split used by Aider, but ZYAL should add host-owned promotion and verification gates. ([Aider][6])
 
 ## `prototype_tournament`
 
@@ -1593,7 +1593,7 @@ Best for hard implementation choices.
 
 # 18. MCP and external agent protocols
 
-OCAL should not invent a replacement for MCP, ACP, A2A, or AG-UI.
+ZYAL should not invent a replacement for MCP, ACP, A2A, or AG-UI.
 
 Use them like this:
 
@@ -1611,9 +1611,9 @@ AG-UI:
   possible future structured frontend event/state stream.
 ```
 
-MCP’s spec separates prompts, resources, and tools; resources are application-controlled context, while tools are model-controlled actions. That distinction is useful for OCAL: Hardlane memory should be application/runtime-controlled resources, not arbitrary tool outputs the model can mutate freely. ([Model Context Protocol][13])
+MCP’s spec separates prompts, resources, and tools; resources are application-controlled context, while tools are model-controlled actions. That distinction is useful for ZYAL: Hardlane memory should be application/runtime-controlled resources, not arbitrary tool outputs the model can mutate freely. ([Model Context Protocol][13])
 
-ACP standardizes communication between coding agents and editors, and OpenCode already documents ACP support, so daemon/Hardlane UI events should eventually be exposed through ACP rather than a one-off editor bridge. ([Zed][14])
+ACP standardizes communication between coding agents and editors, and Jekko already documents ACP support, so daemon/Hardlane UI events should eventually be exposed through ACP rather than a one-off editor bridge. ([Zed][14])
 
 AG-UI’s snapshot/delta state-event model is a useful design reference for exposing daemon task state to UIs: send occasional full snapshots and frequent deltas for pass progress, scratchpad updates, and promotion decisions. ([AG-UI][15])
 
@@ -1737,11 +1737,11 @@ That gives you the “God mode” power you want without letting the system diss
 [5]: https://docs.dify.ai/en/guides/workflow/node/iteration?utm_source=chatgpt.com "Iteration - Dify Docs"
 [6]: https://aider.chat/docs/usage/modes.html?utm_source=chatgpt.com "Chat modes | aider"
 [7]: https://huggingface.co/papers/2303.11366?utm_source=chatgpt.com "Paper page - Reflexion: Language Agents with Verbal Reinforcement Learning"
-[8]: https://opencode.ai/docs/agents/?utm_source=chatgpt.com "Agents | OpenCode"
+[8]: https://jekko.ai/docs/agents/?utm_source=chatgpt.com "Agents | Jekko"
 [9]: https://huggingface.co/papers/2305.14325?utm_source=chatgpt.com "Paper page - Improving Factuality and Reasoning in Language Models through Multiagent Debate"
 [10]: https://aider.chat/docs/git.html?utm_source=chatgpt.com "Git integration | aider"
 [11]: https://docs.langchain.com/oss/python/deepagents/subagents?utm_source=chatgpt.com "Subagents - Docs by LangChain"
-[12]: https://github.com/anomalyco/opencode/issues/13577?utm_source=chatgpt.com "Issue · GitHub"
+[12]: https://github.com/anomalyco/jekko/issues/13577?utm_source=chatgpt.com "Issue · GitHub"
 [13]: https://modelcontextprotocol.io/specification/2025-11-25/server/index?utm_source=chatgpt.com "Overview - Model Context Protocol"
 [14]: https://zed.dev/acp?utm_source=chatgpt.com "Zed — Agent Client Protocol"
 [15]: https://docs.ag-ui.com/concepts/events?utm_source=chatgpt.com "Events - Agent User Interaction Protocol"

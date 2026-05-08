@@ -31,7 +31,7 @@ ZYAL runbook: policy, lifecycle, budgets, evidence, safety, memory, promotion
   ↓
 Host runtime: SQLite/event log, approvals, adapters, schedulers, checkpoints
   ↓
-Agent backend: OpenCode, Codex, Claude Code, OpenHands, Hermes, LangGraph, OpenClaw, etc.
+Agent backend: Jekko, Codex, Claude Code, OpenHands, Hermes, LangGraph, OpenClaw, etc.
   ↓
 Tools/workspaces: shell, git, MCP, browser, CI, test runners, indexers, deploy systems
 ```
@@ -54,7 +54,7 @@ The draft is unusually strong in these areas:
 
 **Guardrails and constraints as runtime rules.** This is exactly the right move. Agentic systems create amplified risks from autonomy, privileges, interconnected tools, and unclear accountability; NSA/CISA-aligned guidance emphasizes governance, monitoring, human oversight, and explicit security design for agentic AI. ([National Security Agency][8])
 
-**Mirror files as generated human inspection artifacts.** This is elegant. The source of truth stays SQLite, while `.opencode/daemon/` remains readable and diffable.
+**Mirror files as generated human inspection artifacts.** This is elegant. The source of truth stays SQLite, while `.jekko/daemon/` remains readable and diffable.
 
 The core foundation is excellent. The upgrade path is to make ZYAL more like a **typed, replayable, multi-runtime, evidence-driven operating system for agent work**.
 
@@ -113,7 +113,7 @@ Hermes overlaps with ZYAL on long-running autonomy, memory, skills, isolated sub
 
 ## 3.4 OpenClaw / OpenClaw coding-agent overlap and gaps
 
-OpenClaw overlaps with ZYAL on background coding agents, channel routing, local-first gateway behavior, session management, process monitoring, and multi-agent routing. OpenClaw’s docs describe a Gateway as the source of truth for sessions, routing, and channel connections, with isolated sessions per agent/workspace/sender. ([GitHub][5]) Its ACP docs describe durable binding of conversations to ACP sessions, and its coding-agent skill delegates to Codex, Claude Code, OpenCode, or Pi in background processes while requiring explicit notification routes and process monitoring. ([OpenClaw][12])
+OpenClaw overlaps with ZYAL on background coding agents, channel routing, local-first gateway behavior, session management, process monitoring, and multi-agent routing. OpenClaw’s docs describe a Gateway as the source of truth for sessions, routing, and channel connections, with isolated sessions per agent/workspace/sender. ([GitHub][5]) Its ACP docs describe durable binding of conversations to ACP sessions, and its coding-agent skill delegates to Codex, Claude Code, Jekko, or Pi in background processes while requiring explicit notification routes and process monitoring. ([OpenClaw][12])
 
 **What ZYAL is missing relative to OpenClaw:**
 
@@ -133,7 +133,7 @@ Claude Code already exposes hooks, permissions, subagents, skills, MCP, memory, 
 
 **What ZYAL is missing relative to Claude/Codex:**
 
-1. **Provider-specific adapter semantics.** For example, OpenClaw’s coding-agent skill notes different PTY/print-mode conventions for Codex/OpenCode/Pi versus Claude Code. ZYAL should model those differences declaratively instead of hiding them in prompts. ([GitHub][16])
+1. **Provider-specific adapter semantics.** For example, OpenClaw’s coding-agent skill notes different PTY/print-mode conventions for Codex/Jekko/Pi versus Claude Code. ZYAL should model those differences declaratively instead of hiding them in prompts. ([GitHub][16])
 2. **Subagent descriptors.** Claude subagents have descriptions, tool restrictions, permission modes, hooks, and skills. ZYAL workers are currently less expressive. ([Claude][17])
 3. **Hook precedence.** ZYAL `on` handlers and guardrails should have a deterministic precedence order like Claude’s permission pipeline.
 4. **Provider capability discovery.** ZYAL should fail preview if the target runtime cannot support required semantics.
@@ -223,7 +223,7 @@ The host should reject any feature it does not understand.
 
 | New key         | Why it matters                                                                                                |
 | --------------- | ------------------------------------------------------------------------------------------------------------- |
-| `runtime`       | Provider-neutral adapters for OpenCode, Codex, Claude Code, OpenHands, Hermes, LangGraph, OpenClaw, ACP, etc. |
+| `runtime`       | Provider-neutral adapters for Jekko, Codex, Claude Code, OpenHands, Hermes, LangGraph, OpenClaw, ACP, etc. |
 | `durability`    | Event sourcing, replay, idempotency, snapshots, side-effect journaling.                                       |
 | `workflow`      | DAGs, routers, joins, drains, subgraphs, typed interrupts.                                                    |
 | `evidence`      | Typed proof objects for tests, diffs, logs, reviews, risks, rollbacks.                                        |
@@ -246,7 +246,7 @@ The host should reject any feature it does not understand.
 
 # 6. Upgrade: runtime adapters and capability negotiation
 
-ZYAL must be able to run inside OpenCode, Codex, Claude, OpenHands, Hermes, OpenClaw, or future agents without pretending they are identical.
+ZYAL must be able to run inside Jekko, Codex, Claude, OpenHands, Hermes, OpenClaw, or future agents without pretending they are identical.
 
 Add:
 
@@ -255,9 +255,9 @@ runtime:
   target: portable
 
   adapters:
-    - id: opencode-local
-      kind: opencode
-      command: "opencode run"
+    - id: jekko-local
+      kind: jekko
+      command: "jekko run"
       workspace: local
       supports:
         - shell
@@ -598,7 +598,7 @@ Hermes and Claude both make skills/procedural memory central. ZYAL should suppor
 skills:
   enabled: true
   store: sqlite
-  mirror: ".opencode/daemon/skills"
+  mirror: ".jekko/daemon/skills"
 
   propose_when:
     any:
@@ -837,7 +837,7 @@ security:
       paths: ["./"]
     - id: scratch
       trust: low
-      paths: [".opencode/daemon/scratch"]
+      paths: [".jekko/daemon/scratch"]
     - id: external_mcp
       trust: untrusted
     - id: secrets
@@ -851,7 +851,7 @@ security:
       allow_write:
         - "./src/**"
         - "./tests/**"
-        - ".opencode/daemon/**"
+        - ".jekko/daemon/**"
       deny_write:
         - ".env"
         - "**/*.pem"
@@ -1493,9 +1493,9 @@ job:
 runtime:
   target: portable
   adapters:
-    - id: opencode-local
-      kind: opencode
-      command: "opencode run"
+    - id: jekko-local
+      kind: jekko
+      command: "jekko run"
       workspace: local
     - id: openhands-remote
       kind: openhands_sdk
@@ -1889,7 +1889,7 @@ security:
     default: isolated
     filesystem:
       allow_read: ["./"]
-      allow_write: ["packages/auth/**", "services/auth/**", "tests/**", ".opencode/daemon/**"]
+      allow_write: ["packages/auth/**", "services/auth/**", "tests/**", ".jekko/daemon/**"]
       deny_write: [".env", "**/*.pem", "**/secrets/**", "infra/prod/**"]
     network:
       default: deny
@@ -2399,28 +2399,28 @@ permissions:
 The current CLI is good but too small. Add:
 
 ```sh
-opencode daemon preview <file>          # parse, validate, show risk/capability diff
-opencode daemon lint <file>             # schema + policy lint
-opencode daemon simulate <file>         # dry-run stop/guards/capabilities
-opencode daemon arm <runID>             # explicit arming action
-opencode daemon drain <runID>           # graceful stop at safe boundary
-opencode daemon replay <runID>          # deterministic replay
-opencode daemon replay <runID> --from-event <eventID>
-opencode daemon events <runID> --tail
-opencode daemon evidence <runID>
-opencode daemon graph <runID>
-opencode daemon costs <runID>
-opencode daemon approvals <runID>
-opencode daemon approve <runID> <approvalID>
-opencode daemon reject <runID> <approvalID>
-opencode daemon memory <runID> inspect
-opencode daemon memory <runID> quarantine <memoryID>
-opencode daemon skill propose <runID> <taskID>
-opencode daemon skill test <skillID>
-opencode daemon skill promote <skillID>
-opencode daemon fork <runID> --candidate <name>
-opencode daemon compare <runID> --candidates
-opencode daemon export <runID> --format bundle
+jekko daemon preview <file>          # parse, validate, show risk/capability diff
+jekko daemon lint <file>             # schema + policy lint
+jekko daemon simulate <file>         # dry-run stop/guards/capabilities
+jekko daemon arm <runID>             # explicit arming action
+jekko daemon drain <runID>           # graceful stop at safe boundary
+jekko daemon replay <runID>          # deterministic replay
+jekko daemon replay <runID> --from-event <eventID>
+jekko daemon events <runID> --tail
+jekko daemon evidence <runID>
+jekko daemon graph <runID>
+jekko daemon costs <runID>
+jekko daemon approvals <runID>
+jekko daemon approve <runID> <approvalID>
+jekko daemon reject <runID> <approvalID>
+jekko daemon memory <runID> inspect
+jekko daemon memory <runID> quarantine <memoryID>
+jekko daemon skill propose <runID> <taskID>
+jekko daemon skill test <skillID>
+jekko daemon skill promote <skillID>
+jekko daemon fork <runID> --candidate <name>
+jekko daemon compare <runID> --candidates
+jekko daemon export <runID> --format bundle
 ```
 
 API additions:
@@ -2624,7 +2624,7 @@ ZYAL should avoid several traps:
 
 **Do not depend on prompt-only safety.** MCP poisoning and agentic security risks make this non-negotiable. ([OWASP][27])
 
-**Do not bake in one backend.** OpenCode can be the native home, but ZYAL’s strategic value is portability.
+**Do not bake in one backend.** Jekko can be the native home, but ZYAL’s strategic value is portability.
 
 ---
 
@@ -2650,7 +2650,7 @@ ZYAL should avoid several traps:
 3. **Experiment portfolios.**
 4. **Repo indexes and context lenses.**
 5. **Skill proposal/promotion lifecycle.**
-6. **Adapter targets for OpenCode, Codex CLI, Claude Code, OpenHands SDK, and OpenClaw/ACP sessions.**
+6. **Adapter targets for Jekko, Codex CLI, Claude Code, OpenHands SDK, and OpenClaw/ACP sessions.**
 7. **Structured evidence contracts for promotion.**
 
 ## P2: make ZYAL enterprise-grade

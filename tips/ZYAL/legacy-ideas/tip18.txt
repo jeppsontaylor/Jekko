@@ -1,6 +1,6 @@
 ## Bottom line
 
-ZYAL is **not redundant**. It is aiming at a gap that OpenHands, LangGraph, Hermes, OpenClaw, LangChain Deep Agents, CrewAI, AutoGen, Codex, Claude Code, and OpenCode do not fully solve as a portable standard: a **host-enforced control language** that can be embedded in any chat surface while keeping lifecycle, permissions, budget, memory, evidence, and promotion under runtime control.
+ZYAL is **not redundant**. It is aiming at a gap that OpenHands, LangGraph, Hermes, OpenClaw, LangChain Deep Agents, CrewAI, AutoGen, Codex, Claude Code, and Jekko do not fully solve as a portable standard: a **host-enforced control language** that can be embedded in any chat surface while keeping lifecycle, permissions, budget, memory, evidence, and promotion under runtime control.
 
 But ZYAL v1 is still too much like a safe “daemon runbook.” To become the default language for the world’s most ambitious coding projects, it needs to evolve into a **durable, evidence-driven, graph-native operating contract for autonomous software engineering**.
 
@@ -100,7 +100,7 @@ A memory survey warns that summarization can cause drift, bigger context windows
 
 IBM describes vibe coding as using natural-language instructions to have AI generate executable code. ([IBM][22]) Recent research is more concerning: one benchmark of 200 real-world feature-request tasks found that all tested agents performed poorly on security; one configuration reached 61% functional correctness but only 10.5% security correctness. ([arXiv][23])
 
-Community tools like Jankurai are emerging around “anti-vibe coding” audits and claim real-time checks for hundreds of failure modes across tools like Claude, Codex, Cursor, and OpenCode; these are social/open-source signals rather than peer-reviewed evidence, but they show the direction of demand. ([Reddit][24]) TheAuditor is a stronger concrete pattern: a database-first code intelligence platform that indexes code into SQLite, supports vulnerability detection, cross-file taint tracking, architecture intelligence, and deterministic query tools to ground agents. ([GitHub][25])
+Community tools like Jankurai are emerging around “anti-vibe coding” audits and claim real-time checks for hundreds of failure modes across tools like Claude, Codex, Cursor, and Jekko; these are social/open-source signals rather than peer-reviewed evidence, but they show the direction of demand. ([Reddit][24]) TheAuditor is a stronger concrete pattern: a database-first code intelligence platform that indexes code into SQLite, supports vulnerability detection, cross-file taint tracking, architecture intelligence, and deterministic query tools to ground agents. ([GitHub][25])
 
 **ZYAL implication:** ZYAL needs an anti-vibe layer: no silent fallbacks, no test weakening, no fake data, no production root access, no hidden retries, no unreviewed security-sensitive changes, no “looks done” promotion without host evidence.
 
@@ -304,7 +304,7 @@ Proposed:
 ```yaml
 requirements:
   ledger: sqlite
-  mirror: ".opencode/daemon/{{runID}}/requirements.jsonl"
+  mirror: ".jekko/daemon/{{runID}}/requirements.jsonl"
 
   sources:
     - type: prompt
@@ -467,7 +467,7 @@ memory:
 
     procedural:
       type: skills
-      path: ".opencode/skills"
+      path: ".jekko/skills"
       promotion: gated
 
     negative:
@@ -1030,7 +1030,7 @@ queue:
     review: 20
 ```
 
-This answers a major overlap concern with Hermes: Hermes has a durable Kanban. ZYAL should not merely duplicate it; ZYAL should specify the portable **contract** for such a board so OpenCode, Hermes, OpenHands, LangGraph, or a custom runtime can implement it.
+This answers a major overlap concern with Hermes: Hermes has a durable Kanban. ZYAL should not merely duplicate it; ZYAL should specify the portable **contract** for such a board so Jekko, Hermes, OpenHands, LangGraph, or a custom runtime can implement it.
 
 ---
 
@@ -1132,12 +1132,12 @@ Add:
 workspace:
   mode: sandboxed
   provider: docker
-  image: "ghcr.io/opencode/daemon-node:latest"
+  image: "ghcr.io/jekko/daemon-node:latest"
 
   filesystem:
     mount_repo: read_write
     mount_home: deny
-    scratch: ".opencode/daemon/{{runID}}/scratch"
+    scratch: ".jekko/daemon/{{runID}}/scratch"
     max_file_write_bytes: 50MB
 
   resources:
@@ -1466,7 +1466,7 @@ supply_chain:
 
   sbom:
     generate_on_checkpoint: true
-    command: "syft . -o json > .opencode/daemon/{{runID}}/sbom.json"
+    command: "syft . -o json > .jekko/daemon/{{runID}}/sbom.json"
 
   vulnerability:
     scan_on:
@@ -1604,7 +1604,7 @@ eval:
   mode: shadow
   datasets:
     - name: internal_regression_tasks
-      path: ".opencode/evals/tasks.jsonl"
+      path: ".jekko/evals/tasks.jsonl"
     - name: swe_bench_style
       adapter: swe_bench
     - name: security_vibe
@@ -2197,7 +2197,7 @@ CrewAI emphasizes guardrails, memory, knowledge, and observability; its memory s
 interop:
   prompt_surfaces:
     supported:
-      - opencode
+      - jekko
       - codex
       - claude
       - cursor
@@ -2231,7 +2231,7 @@ interop:
   a2a:
     enabled: true
     agent_card:
-      name: "OpenCode ZYAL Daemon"
+      name: "Jekko ZYAL Daemon"
       capabilities:
         - coding
         - review
@@ -2282,7 +2282,7 @@ This directly attacks premature “done.”
 Current mirror:
 
 ```text
-.opencode/daemon/<runID>/
+.jekko/daemon/<runID>/
 ├── ledger.jsonl
 ├── STATE.md
 └── tasks/<taskID>/
@@ -2291,7 +2291,7 @@ Current mirror:
 Upgrade:
 
 ```text
-.opencode/daemon/<runID>/
+.jekko/daemon/<runID>/
 ├── STATE.md
 ├── RUNBOOK.yaml
 ├── EVENTS.jsonl
@@ -2340,32 +2340,32 @@ The filesystem mirror should be regenerated, but it should be good enough that a
 Current CLI:
 
 ```sh
-opencode daemon status
-opencode daemon tasks <runID>
-opencode daemon pause <runID>
-opencode daemon resume <runID>
-opencode daemon abort <runID>
+jekko daemon status
+jekko daemon tasks <runID>
+jekko daemon pause <runID>
+jekko daemon resume <runID>
+jekko daemon abort <runID>
 ```
 
 Add:
 
 ```sh
-opencode daemon preview <file>
-opencode daemon arm <previewID>
-opencode daemon events <runID> --tail
-opencode daemon evidence <runID> <taskID>
-opencode daemon memory <runID> --receipts
-opencode daemon queue <runID>
-opencode daemon claim <runID> <taskID>
-opencode daemon block <runID> <taskID> --reason ...
-opencode daemon promote <runID> <taskID>
-opencode daemon replay <runID> --from <checkpointID>
-opencode daemon experiments <runID> <taskID>
-opencode daemon compare <runID> <taskID>
-opencode daemon review <runID> <taskID>
-opencode daemon export <runID> --format bundle
-opencode daemon verify <runID> --suite security
-opencode daemon conformance
+jekko daemon preview <file>
+jekko daemon arm <previewID>
+jekko daemon events <runID> --tail
+jekko daemon evidence <runID> <taskID>
+jekko daemon memory <runID> --receipts
+jekko daemon queue <runID>
+jekko daemon claim <runID> <taskID>
+jekko daemon block <runID> <taskID> --reason ...
+jekko daemon promote <runID> <taskID>
+jekko daemon replay <runID> --from <checkpointID>
+jekko daemon experiments <runID> <taskID>
+jekko daemon compare <runID> <taskID>
+jekko daemon review <runID> <taskID>
+jekko daemon export <runID> --format bundle
+jekko daemon verify <runID> --suite security
+jekko daemon conformance
 ```
 
 API additions:
@@ -2427,7 +2427,7 @@ POST /daemon/runs/:id/human-gates/:gateID/reject
 * MCP tool/resource/prompt profiles.
 * ACP editor integration.
 * A2A agent delegation.
-* Runtime adapters for OpenCode, OpenHands, LangGraph, Hermes-like workers, and generic shell hosts.
+* Runtime adapters for Jekko, OpenHands, LangGraph, Hermes-like workers, and generic shell hosts.
 
 ## Phase 5: Make ZYAL world-scale
 

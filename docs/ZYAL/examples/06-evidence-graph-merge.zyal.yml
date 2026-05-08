@@ -22,7 +22,7 @@ job:
 stop:
   all:
     - shell:
-        command: "test -f .opencode/daemon/promoted.txt"
+        command: "test -f .jekko/daemon/promoted.txt"
         timeout: 5s
         assert: { exit_code: 0 }
 
@@ -181,7 +181,7 @@ rollback:
   required_when:
     risk_score_gte: 0.4
   plan_required: true
-  verify_command: "git apply --reverse --check < .opencode/daemon/rollback.patch"
+  verify_command: "git apply --reverse --check < .jekko/daemon/rollback.patch"
   on_failure_after_merge: revert_commit
 
 models:
@@ -235,7 +235,7 @@ observability:
     on_complete: true
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

@@ -111,8 +111,8 @@ fleet:
   telemetry:
     publish_to: jnoccio
     headers:
-      x-opencode-run-id: "${run.id}"
-      x-opencode-session: "${session.id}"
+      x-jekko-run-id: "${run.id}"
+      x-jekko-session: "${session.id}"
 
 quality:
   anti_vibe:
@@ -213,7 +213,7 @@ rollback:
   required_when:
     risk_score_gte: 0.5
   plan_required: true
-  verify_command: "git apply --reverse --check < .opencode/daemon/rollback.patch"
+  verify_command: "git apply --reverse --check < .jekko/daemon/rollback.patch"
   on_failure_after_merge: revert_commit
 
 done:
@@ -278,7 +278,7 @@ incubator:
     on_exhausted: park_with_summary
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
 
 permissions:

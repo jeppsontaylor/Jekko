@@ -48,7 +48,7 @@ Codex and Claude Code both show that coding agents already have strong local erg
 
 Claude Code has project/user/managed settings, permissions, hooks, subagents, MCP, memory files, resume workflows, worktree-based parallel sessions, and plan-before-editing practices. Its hook docs are especially relevant because hooks are deterministic control points rather than relying on the model to remember rules. ([Claude API Docs][8])
 
-**ZYAL implication:** ZYAL should not compete with these tools at the UX layer. It should compile down to them, supervise them, or use them as executors. ZYAL should become the portable policy/workflow layer that can drive OpenCode, Codex, Claude Code, OpenHands, LangGraph, and custom MCP tools.
+**ZYAL implication:** ZYAL should not compete with these tools at the UX layer. It should compile down to them, supervise them, or use them as executors. ZYAL should become the portable policy/workflow layer that can drive Jekko, Codex, Claude Code, OpenHands, LangGraph, and custom MCP tools.
 
 ## Research: agent-computer interfaces, reflection, skills, multi-agent SOPs, and “agentless” repair
 
@@ -200,7 +200,7 @@ evidence:
   store: sqlite
   hash_artifacts: true
   require_provenance: true
-  artifact_root: ".opencode/daemon/{{run_id}}/artifacts"
+  artifact_root: ".jekko/daemon/{{run_id}}/artifacts"
 
   types:
     implementation_plan:
@@ -489,7 +489,7 @@ skills:
   enabled: true
   discovery:
     sources:
-      - repo://.opencode/skills
+      - repo://.jekko/skills
       - org://engineering/skills
       - user://skills
     precedence: [repo, org, user]
@@ -676,7 +676,7 @@ LangGraph is already a durable workflow runtime for stateful agents. ZYAL overla
 ```yaml
 compile:
   targets:
-    - id: local_opencode
+    - id: local_jekko
       type: native
     - id: langgraph
       type: langgraph
@@ -728,7 +728,7 @@ channels:
   input:
     trusted:
       - tui
-      - opencode
+      - jekko
     untrusted:
       - slack
       - github_issue_comment
@@ -772,7 +772,7 @@ Codex already supports AGENTS.md, approvals, reviews by separate agent, subagent
 ```yaml
 runtimes:
   executors:
-    - id: opencode
+    - id: jekko
       type: native
       capabilities: [edit, shell, git, mcp, subagents]
     - id: codex
@@ -784,7 +784,7 @@ runtimes:
       command: "claude --print --output-format json"
       capabilities: [edit, shell, hooks, subagents, mcp]
   selection:
-    default: opencode
+    default: jekko
     fallback: codex
 ```
 
@@ -881,7 +881,7 @@ Current ZYAL says SQLite is truth. Great. Now make it precise.
 ```yaml
 state:
   store: sqlite
-  path: ".opencode/daemon/state.sqlite"
+  path: ".jekko/daemon/state.sqlite"
   event_log:
     typed: true
     append_only: true
@@ -968,10 +968,10 @@ observability:
 
   dashboards:
     mirror:
-      path: ".opencode/daemon/{{run_id}}/STATE.md"
+      path: ".jekko/daemon/{{run_id}}/STATE.md"
       update_every: 30s
     json:
-      path: ".opencode/daemon/{{run_id}}/STATUS.json"
+      path: ".jekko/daemon/{{run_id}}/STATUS.json"
 
   time_travel:
     enabled: true
@@ -1719,7 +1719,7 @@ skills:
   enabled: true
   discovery:
     sources:
-      - repo://.opencode/skills
+      - repo://.jekko/skills
       - org://platform/skills
   progressive_disclosure:
     level0_list_budget: 2000
@@ -1802,7 +1802,7 @@ arming:
 
 runtimes:
   executors:
-    - id: opencode
+    - id: jekko
       type: native
       priority: 1
       capabilities: [edit, shell, git, mcp, workers]
@@ -1839,7 +1839,7 @@ instruction_files:
     - AGENTS.md
     - CLAUDE.md
   generated:
-    - path: ".opencode/daemon/{{run_id}}/AGENT_CONTEXT.md"
+    - path: ".jekko/daemon/{{run_id}}/AGENT_CONTEXT.md"
       include:
         - objective
         - active_task
@@ -2300,7 +2300,7 @@ To be available inside any chat prompt, ZYAL needs an execution host. But the ho
 ```yaml
 compile:
   targets:
-    - opencode_native
+    - jekko_native
     - langgraph
     - openhands
     - codex_cli

@@ -27,7 +27,7 @@ That is exactly the right antidote to “vibe coding.” The problem is that tod
 9. **Human governance:** typed approvals, roles, escalation, risk tiers, editable tool calls, audit receipts.
 10. **Learning without self-corruption:** governed skills, skill tests, memory decay, skill retirement, cross-run lessons.
 
-The world does not need another agent framework. It needs a **portable, host-enforced runbook language** that can drive OpenCode, OpenHands, Codex, Claude Code, LangGraph, or local agents without trusting the model to remember the rules.
+The world does not need another agent framework. It needs a **portable, host-enforced runbook language** that can drive Jekko, OpenHands, Codex, Claude Code, LangGraph, or local agents without trusting the model to remember the rules.
 
 ---
 
@@ -106,7 +106,7 @@ ZYAL’s best parts are genuinely strong:
 | SQLite as truth                 | Essential for replay, audit, durability, and observability.                                          |
 | `loop` + circuit breaker        | Prevents infinite “just one more try” agent drift.                                                   |
 | `checkpoint.verify`             | Separates code edits from committed progress.                                                        |
-| `permissions`                   | Fits OpenCode’s permission model and makes daemon execution visible.                                 |
+| `permissions`                   | Fits Jekko’s permission model and makes daemon execution visible.                                 |
 | `guardrails` / `constraints`    | Makes safety runtime-enforced instead of prompt-enforced.                                            |
 | `incubator`                     | Very promising. This is ZYAL’s distinctive power: hard tasks mature before touching production code. |
 | `fan_out`                       | Good start for parallel audit/map-reduce.                                                            |
@@ -130,10 +130,10 @@ LangGraph’s checkpoint/time-travel model shows why this is necessary: without 
 
 ```yaml
 runtime:
-  engine: opencode-daemon
+  engine: jekko-daemon
   state_store:
     type: sqlite
-    path: ".opencode/daemon/state.sqlite"
+    path: ".jekko/daemon/state.sqlite"
   durable_execution:
     enabled: true
     checkpoint_at:
@@ -177,7 +177,7 @@ A 1B+ LOC daemon will crash, disconnect, lose containers, hit flaky CI, get inte
 
 ## 4.2 Add `origin` and `arming_policy`: prompt-portability without injection risk
 
-You want ZYAL available inside **any chat prompt**: OpenCode, Codex, Claude, etc. That is powerful, but dangerous. If the host scans arbitrary chat/tool/web output for ZYAL sentinels, malicious content could smuggle a daemon block.
+You want ZYAL available inside **any chat prompt**: Jekko, Codex, Claude, etc. That is powerful, but dangerous. If the host scans arbitrary chat/tool/web output for ZYAL sentinels, malicious content could smuggle a daemon block.
 
 The spec already says assistant output cannot start or stop the daemon, but ZYAL needs **origin-aware parsing**.
 
@@ -262,7 +262,7 @@ workspace:
     persist:
       - "test-results/**"
       - "coverage/**"
-      - ".opencode/daemon/**"
+      - ".jekko/daemon/**"
     object_store: local
 ```
 
@@ -414,13 +414,13 @@ repo_index:
     owners:
       sources:
         - CODEOWNERS
-        - ".opencode/owners.yaml"
+        - ".jekko/owners.yaml"
         - git_history
     architecture:
       sources:
         - "docs/adr/**"
         - "docs/architecture/**"
-        - ".opencode/architecture.yaml"
+        - ".jekko/architecture.yaml"
 
   query_budget:
     max_files_loaded_per_iteration: 80
@@ -555,7 +555,7 @@ proof:
       assert: { exit_code: 0 }
 
   witness:
-    write: ".opencode/daemon/{{runID}}/WITNESS.json"
+    write: ".jekko/daemon/{{runID}}/WITNESS.json"
     include:
       - changed_files
       - proof_lanes_triggered
@@ -671,7 +671,7 @@ ZYAL should support skill learning, but with host controls.
 skills:
   enabled: true
   registry:
-    path: ".opencode/skills"
+    path: ".jekko/skills"
     format: skill_dir
   progressive_disclosure: true
 
@@ -718,7 +718,7 @@ skills:
 
 ---
 
-## 4.9 Add `protocols`: make ZYAL portable across OpenCode, Codex, Claude, OpenHands, editors, and UIs
+## 4.9 Add `protocols`: make ZYAL portable across Jekko, Codex, Claude, OpenHands, editors, and UIs
 
 Current ZYAL has `mcp`, but the modern protocol surface is broader:
 
@@ -786,11 +786,11 @@ protocols:
   telemetry:
     opentelemetry:
       enabled: true
-      service_name: opencode-daemon
+      service_name: jekko-daemon
 ```
 
 **Why this matters:**
-ZYAL should be the lingua franca of agent execution. Protocol blocks let it run inside OpenCode today and still interoperate with future editors, agent networks, and UI layers.
+ZYAL should be the lingua franca of agent execution. Protocol blocks let it run inside Jekko today and still interoperate with future editors, agent networks, and UI layers.
 
 ---
 
@@ -807,7 +807,7 @@ Current `guardrails` are useful, but too command-pattern-based. For daemonic cod
 * generated code can bypass review;
 * agents can over-broaden write scope.
 
-OpenHands’ paper calls out secrets handling, security analyzer patterns, and stuck detection as core production needs. ([arXiv][2]) OpenCode already has permissions for bash/edit/MCP at configuration level, but user-reported issues around MCP approval show why daemon-level safety needs to be explicit and testable. ([OpenCode][25])
+OpenHands’ paper calls out secrets handling, security analyzer patterns, and stuck detection as core production needs. ([arXiv][2]) Jekko already has permissions for bash/edit/MCP at configuration level, but user-reported issues around MCP approval show why daemon-level safety needs to be explicit and testable. ([Jekko][25])
 
 **Add:**
 
@@ -955,7 +955,7 @@ This makes approvals durable, resumable, auditable, and role-aware.
 
 ## 4.12 Add `observability`: traces, cost, trajectory, proof, and failure taxonomy
 
-ZYAL has `.opencode/daemon/` mirror, but ambitious autonomous work needs queryable observability.
+ZYAL has `.jekko/daemon/` mirror, but ambitious autonomous work needs queryable observability.
 
 **Add:**
 
@@ -990,11 +990,11 @@ observability:
 
   reports:
     after_iteration:
-      write: ".opencode/daemon/{{runID}}/ITERATION-{{iteration}}.md"
+      write: ".jekko/daemon/{{runID}}/ITERATION-{{iteration}}.md"
     after_checkpoint:
-      write: ".opencode/daemon/{{runID}}/CHECKPOINT-{{checkpointID}}.md"
+      write: ".jekko/daemon/{{runID}}/CHECKPOINT-{{checkpointID}}.md"
     on_stop:
-      write: ".opencode/daemon/{{runID}}/FINAL-REPORT.md"
+      write: ".jekko/daemon/{{runID}}/FINAL-REPORT.md"
 
   cost:
     track:
@@ -1095,7 +1095,7 @@ task_graph:
     - local:
         files:
           - "TODO.md"
-          - ".opencode/tasks/*.yaml"
+          - ".jekko/tasks/*.yaml"
 
   schema:
     required:
@@ -1147,7 +1147,7 @@ rollout:
   pr:
     create: ask
     title: "{{task.title}}"
-    body_template: ".opencode/templates/pr.md"
+    body_template: ".jekko/templates/pr.md"
     include:
       - summary
       - proof_witness
@@ -1318,7 +1318,7 @@ providers:
       - critic
       - security_review
 
-  opencode:
+  jekko:
     enabled: true
     mode: local_daemon
     allowed_for:
@@ -1339,7 +1339,7 @@ providers:
 anti_vibe:
   standard: jankurai_compatible
   audit:
-    command: "jankurai audit --format json > .opencode/daemon/{{runID}}/jankurai.json"
+    command: "jankurai audit --format json > .jekko/daemon/{{runID}}/jankurai.json"
     timeout: 120s
   thresholds:
     min_repo_score: 0.85
@@ -1349,7 +1349,7 @@ anti_vibe:
       - generated_zone_manual_edit
       - owner_map_violation
   repair_queue:
-    write: ".opencode/daemon/{{runID}}/REPAIR_QUEUE.md"
+    write: ".jekko/daemon/{{runID}}/REPAIR_QUEUE.md"
 ```
 
 ---
@@ -1425,7 +1425,7 @@ arming_policy:
 runtime:
   state_store:
     type: sqlite
-    path: ".opencode/daemon/state.sqlite"
+    path: ".jekko/daemon/state.sqlite"
   durable_execution:
     enabled: true
     checkpoint_at:
@@ -1493,7 +1493,7 @@ repo_index:
       strategy: coverage_map
       infer_from: [naming_conventions, coverage_reports, historical_failures]
     owners:
-      sources: [CODEOWNERS, ".opencode/owners.yaml", git_history]
+      sources: [CODEOWNERS, ".jekko/owners.yaml", git_history]
     architecture:
       sources: ["docs/adr/**", "docs/architecture/**"]
 
@@ -1502,7 +1502,7 @@ task_graph:
     - github_issues:
         query: "label:agent-ready is:open"
     - local:
-        files: [".opencode/tasks/*.yaml"]
+        files: [".jekko/tasks/*.yaml"]
   schema:
     required:
       - objective
@@ -1737,7 +1737,7 @@ proof:
 
     - id: changed_file_test_map
       kind: host
-      command: "opencode proof test-map --changed"
+      command: "jekko proof test-map --changed"
       assert:
         json:
           "$.uncovered_changed_files.length": 0
@@ -1751,7 +1751,7 @@ proof:
         stdout_not_contains: "breaking"
 
   witness:
-    write: ".opencode/daemon/{{runID}}/WITNESS.json"
+    write: ".jekko/daemon/{{runID}}/WITNESS.json"
     include:
       - changed_files
       - proof_lanes_triggered
@@ -1943,7 +1943,7 @@ observability:
 stop:
   all:
     - shell:
-        command: "opencode daemon ready-queue-empty --run {{runID}}"
+        command: "jekko daemon ready-queue-empty --run {{runID}}"
         timeout: 10s
         assert: { exit_code: 0 }
     - git_clean:
@@ -1986,23 +1986,23 @@ anti_vibe:
   enabled: true
   mode: enforce
   failure_taxonomy:
-    source: ".opencode/anti-vibe/failures.yaml"
+    source: ".jekko/anti-vibe/failures.yaml"
   ownership:
     require_owner_map: true
     owner_map_sources:
       - CODEOWNERS
-      - ".opencode/owners.yaml"
+      - ".jekko/owners.yaml"
   generated_zones:
-    source: ".opencode/generated-zones.yaml"
+    source: ".jekko/generated-zones.yaml"
     block_manual_edits: true
   proof_lanes:
     require_for_all_changed_files: true
     allow_unmapped_files: false
   merge_witness:
     required: true
-    write: ".opencode/daemon/{{runID}}/MERGE_WITNESS.json"
+    write: ".jekko/daemon/{{runID}}/MERGE_WITNESS.json"
   repair_queue:
-    write: ".opencode/daemon/{{runID}}/REPAIR_QUEUE.md"
+    write: ".jekko/daemon/{{runID}}/REPAIR_QUEUE.md"
 
 proof:
   no_proof_no_promotion: true
@@ -2021,7 +2021,7 @@ proof:
   evidence:
     - id: changed_file_test_map
       kind: shell
-      command: "opencode proof test-map --changed --format json"
+      command: "jekko proof test-map --changed --format json"
       timeout: 60s
       assert:
         json:
@@ -2029,7 +2029,7 @@ proof:
 
     - id: owner_map_check
       kind: shell
-      command: "opencode proof owners --changed --format json"
+      command: "jekko proof owners --changed --format json"
       timeout: 30s
       assert:
         json:
@@ -2037,7 +2037,7 @@ proof:
 
     - id: generated_zone_check
       kind: shell
-      command: "opencode proof generated-zones --changed --format json"
+      command: "jekko proof generated-zones --changed --format json"
       timeout: 30s
       assert:
         json:
@@ -2064,7 +2064,7 @@ guardrails:
       action: block
   output:
     - name: no-unexplained-large-diff
-      shell: "opencode proof diff-budget --max-files 40 --max-lines 2000"
+      shell: "jekko proof diff-budget --max-files 40 --max-lines 2000"
       on_fail: pause
 
 on:
@@ -2075,12 +2075,12 @@ on:
     count_gte: 3
     do:
       - switch_agent: plan
-      - run: "opencode proof diagnose --run {{runID}} > .opencode/daemon/{{runID}}/DIAGNOSIS.md"
+      - run: "jekko proof diagnose --run {{runID}} > .jekko/daemon/{{runID}}/DIAGNOSIS.md"
 
 checkpoint:
   when: after_verified_change
   verify:
-    - command: "opencode proof verify --run {{runID}}"
+    - command: "jekko proof verify --run {{runID}}"
       timeout: 120s
       assert: { exit_code: 0 }
   git:
@@ -2133,7 +2133,7 @@ memory:
 skills:
   enabled: true
   registry:
-    path: ".opencode/skills"
+    path: ".jekko/skills"
     format: skill_dir
   progressive_disclosure: true
 
@@ -2159,11 +2159,11 @@ skills:
       - command: "bun run skill:test {{skill_id}}"
         timeout: 120s
         assert: { exit_code: 0 }
-      - command: "opencode skill lint {{skill_id}}"
+      - command: "jekko skill lint {{skill_id}}"
         timeout: 30s
         assert: { exit_code: 0 }
     git:
-      add: [".opencode/skills/{{skill_id}}/**"]
+      add: [".jekko/skills/{{skill_id}}/**"]
       commit_message: "skills: promote {{skill_id}}"
 
   use_policy:
@@ -2174,10 +2174,10 @@ skills:
 on:
   - signal: tool_calls_done
     if:
-      command: "opencode memory repeated-patterns --run {{runID}} --threshold 3"
+      command: "jekko memory repeated-patterns --run {{runID}} --threshold 3"
       assert: { exit_code: 0 }
     do:
-      - run: "opencode skill propose --run {{runID}}"
+      - run: "jekko skill propose --run {{runID}}"
 
 permissions:
   shell: ask
@@ -2256,10 +2256,10 @@ checkpoint:
 
 ```yaml
 include:
-  - path: ".opencode/zyal/policies/security.yaml"
+  - path: ".jekko/zyal/policies/security.yaml"
     required: true
     hash: "sha256:..."
-  - path: ".opencode/zyal/proof/frontend.yaml"
+  - path: ".jekko/zyal/proof/frontend.yaml"
     required: true
     hash: "sha256:..."
 ```
@@ -2347,7 +2347,7 @@ on:
       type: worker_conflict
       count_gte: 2
     do:
-      - run: "opencode experiment reduce --strategy best_verified_patch"
+      - run: "jekko experiment reduce --strategy best_verified_patch"
 ```
 
 Still enforce max handler depth 1. That invariant is excellent.
@@ -2380,7 +2380,7 @@ proof:
   evidence:
     - id: test_strength_delta
       kind: host
-      command: "opencode proof test-strength --base origin/main --head HEAD"
+      command: "jekko proof test-strength --base origin/main --head HEAD"
       assert:
         json:
           "$.weakened_assertions": 0
@@ -2647,17 +2647,17 @@ ZYAL should compile into an execution plan:
 Add CLI:
 
 ```sh
-opencode daemon validate ./run.zyal
-opencode daemon preview ./run.zyal
-opencode daemon explain ./run.zyal
-opencode daemon arm ./run.zyal --hash sha256:...
-opencode daemon replay <runID> --from <checkpointID>
-opencode daemon fork <runID> --from <checkpointID>
-opencode daemon witness <runID>
-opencode daemon proof <runID>
-opencode daemon costs <runID>
-opencode daemon memory <runID>
-opencode daemon skills <runID>
+jekko daemon validate ./run.zyal
+jekko daemon preview ./run.zyal
+jekko daemon explain ./run.zyal
+jekko daemon arm ./run.zyal --hash sha256:...
+jekko daemon replay <runID> --from <checkpointID>
+jekko daemon fork <runID> --from <checkpointID>
+jekko daemon witness <runID>
+jekko daemon proof <runID>
+jekko daemon costs <runID>
+jekko daemon memory <runID>
+jekko daemon skills <runID>
 ```
 
 ---
@@ -2691,8 +2691,8 @@ ZYAL already lists safety invariants. Add these:
 Ship:
 
 * JSON Schema for current ZYAL.
-* `opencode daemon validate`.
-* `opencode daemon preview`.
+* `jekko daemon validate`.
+* `jekko daemon preview`.
 * preview hash.
 * origin-aware ARM.
 * SQLite schema.
@@ -2796,6 +2796,6 @@ The current spec has the right soul. The vNext upgrade is to make ZYAL less like
 [22]: https://docs.langchain.com/oss/python/langgraph/use-time-travel "Use time-travel - Docs by LangChain"
 [23]: https://hermes-agent.nousresearch.com/docs/ "Hermes Agent Documentation | Hermes Agent"
 [24]: https://arxiv.org/abs/2603.22489?utm_source=chatgpt.com "Model Context Protocol Threat Modeling and Analyzing Vulnerabilities to Prompt Injection with Tool Poisoning"
-[25]: https://opencode.ai/docs/permissions/ "Permissions | OpenCode"
+[25]: https://jekko.ai/docs/permissions/ "Permissions | Jekko"
 [26]: https://docs.langchain.com/langsmith/double-texting "Double texting - Docs by LangChain"
 

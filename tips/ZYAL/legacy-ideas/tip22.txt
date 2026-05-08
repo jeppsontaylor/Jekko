@@ -1,6 +1,6 @@
 Here is the expansion I would propose after treating ZYAL as a serious control-plane language rather than just another agent prompt format.
 
-My conclusion: **ZYAL is not redundant.** It should not try to become OpenHands, LangGraph, Hermes, OpenClaw, Claude Code, Codex, or OpenCode. The stronger position is: **ZYAL becomes the portable, host-enforced daemon contract that can drive all of them.** It should be the thing that says: what may run, where it may write, what evidence is required, how memory is handled, when humans intervene, how experiments compete, how promotion happens, and how a multi-month autonomous engineering effort remains observable and reversible.
+My conclusion: **ZYAL is not redundant.** It should not try to become OpenHands, LangGraph, Hermes, OpenClaw, Claude Code, Codex, or Jekko. The stronger position is: **ZYAL becomes the portable, host-enforced daemon contract that can drive all of them.** It should be the thing that says: what may run, where it may write, what evidence is required, how memory is handled, when humans intervene, how experiments compete, how promotion happens, and how a multi-month autonomous engineering effort remains observable and reversible.
 
 The short version of the upgrade path is: **ZYAL v1 is a good daemon runbook. ZYAL v2 should become a durable agent operating system manifest.**
 
@@ -17,7 +17,7 @@ ZYAL already has several ideas that many agent systems either lack or leave as a
 5. **Incubator passes.** The incubator is the most differentiated part of the spec. It moves ZYAL beyond “loop until tests pass” into structured maturation.
 6. **Promotion gates.** The idea that readiness requires host evidence, not model confidence, is exactly right.
 7. **Guardrails and constraints.** These are framed as runtime-enforced, not prompt-enforced, which is the right safety boundary.
-8. **Sentinel-based portability.** The fact that an ZYAL block can live inside any chat prompt is strategically important. It makes ZYAL embeddable in OpenCode, Codex, Claude, OpenHands, and custom hosts.
+8. **Sentinel-based portability.** The fact that an ZYAL block can live inside any chat prompt is strategically important. It makes ZYAL embeddable in Jekko, Codex, Claude, OpenHands, and custom hosts.
 
 The core design is already better than a generic “agent loop.” Anthropic’s public guidance on effective agents emphasizes simple, composable workflow patterns such as chaining, routing, parallelization, orchestrator-workers, and evaluator-optimizer loops; ZYAL already encodes several of these declaratively instead of relying on ad hoc prompt instructions. ([Anthropic][1])
 
@@ -118,10 +118,10 @@ runtime:
     policy: secret_refs_only
     refs:
       - name: GITHUB_TOKEN
-        source: vault://opencode/github-token
+        source: vault://jekko/github-token
         expose_to: host_only        # host_only | tools | model_never
       - name: NPM_TOKEN
-        source: vault://opencode/npm-readonly
+        source: vault://jekko/npm-readonly
         expose_to: tools
     redact_patterns:
       - "ghp_[A-Za-z0-9_]{20,}"
@@ -299,7 +299,7 @@ ZYAL should add:
 memory:
   truth:
     primary: sqlite
-    mirror: ".opencode/daemon/{{run_id}}"
+    mirror: ".jekko/daemon/{{run_id}}"
     event_log: append_only
     checksums: true
 
@@ -390,7 +390,7 @@ skills:
       source: git://github.com/acme/zyal-skills
       ref: "v3.4.1"
     - name: local
-      source: ".opencode/skills"
+      source: ".jekko/skills"
 
   import:
     - org/typescript-migration@3.4.1
@@ -671,7 +671,7 @@ permissions:
 
 That is not enough for enterprise-scale autonomy. Permissions should be time-bound, path-bound, command-bound, and purpose-bound.
 
-Claude Code has fine-grained allow/ask/deny permissions, protected paths, and modes, and OpenCode has a similar allow/ask/deny model. ([Claude][19]) ZYAL should go further with **capability leases**:
+Claude Code has fine-grained allow/ask/deny permissions, protected paths, and modes, and Jekko has a similar allow/ask/deny model. ([Claude][19]) ZYAL should go further with **capability leases**:
 
 ```yaml
 capabilities:
@@ -778,12 +778,12 @@ ZYAL should not duplicate OpenHands’ runtime implementation. It should be able
 
 **ZYAL gap:** ZYAL has SQLite but not formal graph/workflow semantics. It has handlers, loops, and incubators, but not explicit state machine edges, typed transitions, replay contracts, or graph compilation.
 
-**Recommended ZYAL move:** add a `workflow` block that can compile to LangGraph, Temporal, DBOS, or a native OpenCode daemon runner.
+**Recommended ZYAL move:** add a `workflow` block that can compile to LangGraph, Temporal, DBOS, or a native Jekko daemon runner.
 
 ```yaml
 compile:
   targets:
-    - opencode-daemon
+    - jekko-daemon
     - langgraph
     - temporal
     - dbos
@@ -798,7 +798,7 @@ ZYAL should be the declarative manifest; LangGraph can be one implementation bac
 
 **Overlap:** persistent memory, subagents, scheduled automations, long-running tasks, sandbox backends, and a self-improving loop.
 
-**Hermes strength:** it is an always-on agent with persistent memory, auto-generated skills, scheduled tasks, messaging channels, and subagents. ([GitHub][4]) Hermes also has an OpenCode skill that can run OpenCode as a worker with long-running sessions, isolated workdirs, and session/cost management. ([GitHub][22])
+**Hermes strength:** it is an always-on agent with persistent memory, auto-generated skills, scheduled tasks, messaging channels, and subagents. ([GitHub][4]) Hermes also has an Jekko skill that can run Jekko as a worker with long-running sessions, isolated workdirs, and session/cost management. ([GitHub][22])
 
 **ZYAL gap:** ZYAL has no first-class skills, user/team memory, scheduler, channel routing, or self-improvement policy.
 
@@ -882,11 +882,11 @@ This is how ZYAL becomes operable outside a single terminal.
 
 ---
 
-## 4.5 ZYAL and Claude Code / Codex / OpenCode
+## 4.5 ZYAL and Claude Code / Codex / Jekko
 
 **Overlap:** all are coding-agent environments with shells, editing, permissions, subagents, hooks, worktrees, and tool integrations.
 
-Claude Code has hooks, subagents, skills, plugins, permissions, sandboxing, and auto-memory concepts. ([Claude][24]) Codex has parallel threads, worktree support, automations, Git workflows, terminal actions, skills, and plugins. ([OpenAI Developers][25]) OpenCode already supports agents, subagents, MCP, tool permissions, sessions, forking, and model/agent flags. ([OpenCode][26])
+Claude Code has hooks, subagents, skills, plugins, permissions, sandboxing, and auto-memory concepts. ([Claude][24]) Codex has parallel threads, worktree support, automations, Git workflows, terminal actions, skills, and plugins. ([OpenAI Developers][25]) Jekko already supports agents, subagents, MCP, tool permissions, sessions, forking, and model/agent flags. ([Jekko][26])
 
 **ZYAL gap:** no adapter/capability negotiation layer.
 
@@ -904,7 +904,7 @@ portable:
       - stop_conditions
 
   adapters:
-    opencode:
+    jekko:
       agent_map:
         plan: plan
         build: build
@@ -1369,7 +1369,7 @@ This moves beyond “green tests” to “green tests without cheating.”
 
 ## Example D: portable ZYAL inside any chat prompt
 
-This is how ZYAL becomes a universal control language for OpenCode, Codex, Claude, OpenHands, or a custom host:
+This is how ZYAL becomes a universal control language for Jekko, Codex, Claude, OpenHands, or a custom host:
 
 ```yaml
 portable:
@@ -1390,7 +1390,7 @@ portable:
     unsupported_feature_policy: fail_preview
 
   adapters:
-    opencode:
+    jekko:
       use_native_agents: true
       map_agents:
         plan: plan
@@ -1702,7 +1702,7 @@ observability:
   tracing:
     enabled: true
     provider: opentelemetry
-    service_name: opencode-daemon
+    service_name: jekko-daemon
     span_types:
       - run
       - iteration
@@ -1743,7 +1743,7 @@ observability:
       - security_reports
 
   dashboards:
-    mirror_to: ".opencode/daemon/{{run_id}}/OBSERVABILITY.md"
+    mirror_to: ".jekko/daemon/{{run_id}}/OBSERVABILITY.md"
     export_json: true
 ```
 
@@ -1852,7 +1852,7 @@ This lets ZYAL participate in a multi-agent ecosystem without losing host contro
 | OpenClaw                            | Channels, routing, identity, sessions, device/gateway model                                  | Becoming a general personal assistant rather than a coding control language |
 | Claude Code                         | Hooks, skills, subagents, protected paths, permissions, sandboxing                           | Relying on prompt-level rules for host safety                               |
 | Codex                               | Worktrees, parallel threads, automations, Git-native workflow                                | Model-owned completion or opaque promotion                                  |
-| OpenCode                            | Native agents, MCP, permissions, sessions, CLI integration                                   | Keeping daemon behavior as implicit CLI state only                          |
+| Jekko                            | Native agents, MCP, permissions, sessions, CLI integration                                   | Keeping daemon behavior as implicit CLI state only                          |
 | AutoGen / Microsoft Agent Framework | Multi-agent coordination, type safety, telemetry, session state                              | Free-form agent chatter as the source of truth                              |
 | CrewAI                              | Event-driven flows, task guardrails, memory/knowledge/observability                          | Role-play-heavy agent definitions without hard host gates                   |
 
@@ -1910,7 +1910,7 @@ unsupported_feature_policy:
     - evidence.gates
 ```
 
-This matters for portability. A Claude host, OpenCode host, OpenHands host, and Codex host may support different subsets.
+This matters for portability. A Claude host, Jekko host, OpenHands host, and Codex host may support different subsets.
 
 ## 13.3 Add `schema` versioning and migrations
 
@@ -2356,10 +2356,10 @@ eval:
 
   benchmarks:
     - id: historical-ci-failures
-      source: ".opencode/evals/historical-ci.jsonl"
+      source: ".jekko/evals/historical-ci.jsonl"
       schedule: weekly
     - id: security-regressions
-      source: ".opencode/evals/security-regressions.jsonl"
+      source: ".jekko/evals/security-regressions.jsonl"
       schedule: weekly
 
   metrics:
@@ -2513,7 +2513,7 @@ security:
 Current ZYAL uses agents like `plan` and `build`. For richer systems, distinguish:
 
 * **role**: architect, implementer, critic, verifier, security reviewer
-* **agent backend**: OpenCode build agent, Claude subagent, OpenHands runtime, Codex thread
+* **agent backend**: Jekko build agent, Claude subagent, OpenHands runtime, Codex thread
 * **model route**: which model to use
 * **tool profile**: what tools are available
 * **memory access**: what memories it can see
@@ -2523,7 +2523,7 @@ Current ZYAL uses agents like `plan` and `build`. For richer systems, distinguis
 agents:
   roles:
     architect:
-      backend: opencode
+      backend: jekko
       agent: plan
       model_route: planning
       tools: read_only
@@ -2531,7 +2531,7 @@ agents:
       writes: scratch_only
 
     implementer:
-      backend: opencode
+      backend: jekko
       agent: build
       model_route: coding
       tools: code_edit
@@ -2719,7 +2719,7 @@ Suggested standard library modules:
 ## Phase 6: adapters and ecosystem
 
 * Add capability negotiation.
-* Add OpenCode adapter.
+* Add Jekko adapter.
 * Add OpenHands adapter.
 * Add Claude Code adapter.
 * Add Codex adapter.
@@ -2806,11 +2806,11 @@ If implemented this way, ZYAL is not “another agent framework.” It becomes t
 [19]: https://code.claude.com/docs/en/permissions "Configure permissions - Claude Code Docs"
 [20]: https://docs.openhands.dev/sdk "Software Agent SDK - OpenHands Docs"
 [21]: https://docs.langchain.com/oss/python/langchain/overview?utm_source=chatgpt.com "LangChain overview - Docs by LangChain"
-[22]: https://github.com/NousResearch/hermes-agent/blob/main/skills/autonomous-ai-agents/opencode/SKILL.md "hermes-agent/skills/autonomous-ai-agents/opencode/SKILL.md at main · NousResearch/hermes-agent · GitHub"
+[22]: https://github.com/NousResearch/hermes-agent/blob/main/skills/autonomous-ai-agents/jekko/SKILL.md "hermes-agent/skills/autonomous-ai-agents/jekko/SKILL.md at main · NousResearch/hermes-agent · GitHub"
 [23]: https://docs.openclaw.ai/cli/agent "Agent - OpenClaw"
 [24]: https://code.claude.com/docs/en/hooks "Hooks reference - Claude Code Docs"
 [25]: https://developers.openai.com/codex/app "App – Codex | OpenAI Developers"
-[26]: https://opencode.ai/docs/cli/ "CLI | OpenCode"
+[26]: https://jekko.ai/docs/cli/ "CLI | Jekko"
 [27]: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-agent-spans/?utm_source=chatgpt.com "Semantic Conventions for GenAI agent and framework spans"
 [28]: https://modelcontextprotocol.io/specification/2025-06-18?utm_source=chatgpt.com "Specification"
 [29]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/?utm_source=chatgpt.com "Announcing the Agent2Agent Protocol (A2A)"

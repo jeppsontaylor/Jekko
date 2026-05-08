@@ -47,7 +47,7 @@ LangGraph’s strongest contribution is durable graph execution: checkpoints, st
 
 **Where ZYAL is stronger:**
 
-LangGraph is programmatic. ZYAL can be **operator-facing YAML** that compiles to LangGraph, Temporal, Inngest, OpenHands, Codex, Claude Code, or native OpenCode execution.
+LangGraph is programmatic. ZYAL can be **operator-facing YAML** that compiles to LangGraph, Temporal, Inngest, OpenHands, Codex, Claude Code, or native Jekko execution.
 
 ### Hermes Agent
 
@@ -60,7 +60,7 @@ Hermes also has an interesting `execute_code` model where the agent can write Py
 * Memory promotion from experience.
 * Skill creation as a first-class lifecycle.
 * Long-lived delegation surfaces.
-* Worker delegation across tools like OpenCode, Claude Code, and Codex. ([GitHub][5])
+* Worker delegation across tools like Jekko, Claude Code, and Codex. ([GitHub][5])
 * Programmatic tool composition, but host-gated.
 
 **Where ZYAL must be stricter:**
@@ -253,7 +253,7 @@ sandbox:
         allow:
           - "$REPO"
           - "$WORKTREE"
-          - ".opencode/daemon"
+          - ".jekko/daemon"
         deny:
           - "~/.ssh/**"
           - "~/.aws/**"
@@ -262,7 +262,7 @@ sandbox:
       write:
         allow:
           - "$WORKTREE/**"
-          - ".opencode/daemon/**"
+          - ".jekko/daemon/**"
         deny:
           - "$REPO/.git/config"
           - "infra/prod/**"
@@ -1003,11 +1003,11 @@ observability:
 ### CLI/API upgrades
 
 ```sh
-opencode daemon trace <runID>
-opencode daemon replay <runID> --from iteration:12
-opencode daemon evidence <runID> <taskID>
-opencode daemon cost <runID>
-opencode daemon policy-decisions <runID>
+jekko daemon trace <runID>
+jekko daemon replay <runID> --from iteration:12
+jekko daemon evidence <runID> <taskID>
+jekko daemon cost <runID>
+jekko daemon policy-decisions <runID>
 ```
 
 ---
@@ -1050,7 +1050,7 @@ supply_chain:
   skills:
     discovery:
       paths:
-        - ".opencode/skills"
+        - ".jekko/skills"
         - ".agent/skills"
       allow_marketplace: ask
 
@@ -1089,9 +1089,9 @@ A tool’s natural-language description must never be treated as authority. It i
 
 ## Missing piece 12: interoperability adapters
 
-ZYAL should be available inside any chat prompt: OpenCode, Codex, Claude, etc. That means ZYAL needs a portability layer.
+ZYAL should be available inside any chat prompt: Jekko, Codex, Claude, etc. That means ZYAL needs a portability layer.
 
-OpenCode already has permissions, tools, AGENTS.md, MCP, custom tools, and many providers. ([OpenCode][26])
+Jekko already has permissions, tools, AGENTS.md, MCP, custom tools, and many providers. ([Jekko][26])
 
 Claude Code and Codex have overlapping features—permissions, hooks, skills, subagents, sandboxes, worktrees—but different syntax and runtime semantics. ([Claude][27])
 
@@ -1100,7 +1100,7 @@ Claude Code and Codex have overlapping features—permissions, hooks, skills, su
 ```yaml
 interop:
   host:
-    preferred: opencode
+    preferred: jekko
     fallback:
       - claude_code
       - codex
@@ -1108,7 +1108,7 @@ interop:
       - langgraph
 
   adapters:
-    opencode:
+    jekko:
       permissions: native
       mcp: native
       agents: native
@@ -1170,7 +1170,7 @@ workers:
   registry:
     - id: typescript-builder
       kind: coding_agent
-      provider: opencode
+      provider: jekko
       model: "strong-coder"
       capabilities:
         languages: ["typescript", "javascript"]
@@ -1331,7 +1331,7 @@ ZYAL v1 has a solid set of keys. I would add these top-level blocks:
 | `evals`             | Golden tasks, extension robustness, performance, regression suites |
 | `observability`     | Traces, costs, replay, evidence bundles                            |
 | `supply_chain`      | MCP/skills/plugin trust, signing, SBOM, vetting                    |
-| `interop`           | Mapping to OpenCode, Codex, Claude, OpenHands, LangGraph           |
+| `interop`           | Mapping to Jekko, Codex, Claude, OpenHands, LangGraph           |
 | `workers`           | Worker registry, capability contracts, A2A-like coordination       |
 | `scheduler`         | Fleet concurrency, leases, queues, rate limits                     |
 | `rollout`           | PR, merge, canary, monitor, rollback                               |
@@ -1401,7 +1401,7 @@ sandbox:
     ephemeral: true
     filesystem:
       write:
-        allow: ["$WORKTREE/**", ".opencode/daemon/**"]
+        allow: ["$WORKTREE/**", ".jekko/daemon/**"]
         deny: ["infra/prod/**", "**/.env*"]
     network:
       mode: restricted
@@ -1953,7 +1953,7 @@ supply_chain:
   skills:
     discovery:
       paths:
-        - ".opencode/skills"
+        - ".jekko/skills"
         - ".agent/skills"
       allow_marketplace: ask
 
@@ -2083,7 +2083,7 @@ permissions:
 
 ## “Is ZYAL redundant with LangChain or LangGraph?”
 
-No. LangGraph is a programmatic runtime for graph-shaped agent execution with durable state, checkpoints, and human-in-the-loop semantics. ZYAL should be a declarative contract that can compile into a LangGraph workflow or run natively in OpenCode. ([LangChain Docs][2])
+No. LangGraph is a programmatic runtime for graph-shaped agent execution with durable state, checkpoints, and human-in-the-loop semantics. ZYAL should be a declarative contract that can compile into a LangGraph workflow or run natively in Jekko. ([LangChain Docs][2])
 
 **Recommendation:** Add `workflow.type: graph` and optional `interop.adapters.langgraph.compile_workflow_to: StateGraph`.
 
@@ -2539,7 +2539,7 @@ schema:
     - supply_chain_policy
 
 host_requirements:
-  min_opencode_version: "0.9.0"
+  min_jekko_version: "0.9.0"
   required_capabilities:
     - sqlite_ledger
     - sandbox
@@ -2638,7 +2638,7 @@ This separation will make ZYAL safer and easier to port.
 ## P4: add portability
 
 1. `interop`.
-2. OpenCode adapter.
+2. Jekko adapter.
 3. OpenHands adapter.
 4. Claude Code adapter.
 5. Codex adapter.
@@ -2708,7 +2708,7 @@ That is how it becomes the default language for ambitious autonomous coding proj
 [23]: https://arxiv.org/abs/2603.24755?utm_source=chatgpt.com "SlopCodeBench: Benchmarking How Coding Agents Degrade Over Long-Horizon Iterative Tasks"
 [24]: https://github.com/OpenHands/agent-analysis?utm_source=chatgpt.com "OpenHands/agent-analysis"
 [25]: https://www.langchain.com/articles/agent-observability?utm_source=chatgpt.com "AI Agent Observability: Tracing, Testing, and Improving ..."
-[26]: https://opencode.ai/docs/permissions/?utm_source=chatgpt.com "Permissions"
+[26]: https://jekko.ai/docs/permissions/?utm_source=chatgpt.com "Permissions"
 [27]: https://code.claude.com/docs/en/features-overview?utm_source=chatgpt.com "Extend Claude Code - Claude Code Docs"
 [28]: https://github.com/OpenHands/software-agent-sdk/?utm_source=chatgpt.com "OpenHands/software-agent-sdk"
 

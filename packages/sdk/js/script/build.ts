@@ -9,15 +9,15 @@ import path from "path"
 
 import { createClient } from "@hey-api/openapi-ts"
 
-const openapiSource = process.env.OPENCODE_SDK_OPENAPI === "hono" ? "hono" : "httpapi"
-const opencode = path.resolve(dir, "../../opencode")
+const openapiSource = process.env.JEKKO_SDK_OPENAPI === "hono" ? "hono" : "httpapi"
+const jekko = path.resolve(dir, "../../jekko")
 
 // `bun dev generate` now derives the spec from the Effect HttpApi contract by
 // default; pass `--hono` to fall back to the historical Hono spec for parity diffs.
 if (openapiSource === "httpapi") {
-  await $`bun dev generate > ${dir}/openapi.json`.cwd(opencode)
+  await $`bun dev generate > ${dir}/openapi.json`.cwd(jekko)
 } else {
-  await $`bun dev generate --hono > ${dir}/openapi.json`.cwd(opencode)
+  await $`bun dev generate --hono > ${dir}/openapi.json`.cwd(jekko)
 }
 
 await createClient({

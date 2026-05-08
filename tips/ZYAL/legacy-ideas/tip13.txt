@@ -12,7 +12,7 @@ to:
 
 I could not literally exhaust every private X, LinkedIn, Quora, and community discussion, especially content behind login or not indexed. I focused on primary docs, open-source repositories, official product docs, and relevant papers. The strongest signals are clear: OpenHands is moving toward event-sourced agent state, sandboxed runtimes, and SDK abstractions; LangGraph emphasizes durable execution, checkpointing, and human-in-the-loop decisions; Hermes/OpenClaw emphasize local-first persistent agents with skills, memory, messaging, cron, and channel control; Jankurai emphasizes anti-vibe-coding audit receipts and proof lanes; and SWE-agent, AutoCodeRover, Agentless, Voyager, Reflexion, and MetaGPT show that coding agents improve when the runtime constrains the interface, localizes before editing, stores lessons, and decomposes work into repeatable passes. ([arXiv][1])
 
-ZYAL’s opportunity is to be the **thing above all of these**: not a replacement for OpenHands, LangGraph, Hermes, OpenClaw, Codex, Claude Code, or OpenCode, but a declarative language that can compile into or constrain them.
+ZYAL’s opportunity is to be the **thing above all of these**: not a replacement for OpenHands, LangGraph, Hermes, OpenClaw, Codex, Claude Code, or Jekko, but a declarative language that can compile into or constrain them.
 
 ---
 
@@ -55,7 +55,7 @@ That means ZYAL should define:
 | **Evidence**      | Tests, proofs, audits, metrics, receipts, coverage, human review                                   |
 | **Memory**        | Run/task/repo/user/org memory with provenance and promotion gates                                  |
 | **Execution**     | Sandboxes, worktrees, idempotent side effects, replay, checkpoints                                 |
-| **Portability**   | Host capability negotiation across OpenCode, Codex, Claude, OpenHands, LangGraph, Hermes, OpenClaw |
+| **Portability**   | Host capability negotiation across Jekko, Codex, Claude, OpenHands, LangGraph, Hermes, OpenClaw |
 | **Observability** | Event streams, metrics, traces, dashboards, generated mirrors                                      |
 | **Learning**      | Skill creation, failure memories, benchmark harnesses, regression suites                           |
 
@@ -240,7 +240,7 @@ trust:
       may_override_policy: false
 
     agentry_files:
-      paths: ["AGENTS.md", ".cursorrules", ".claude/**", "opencode.json"]
+      paths: ["AGENTS.md", ".cursorrules", ".claude/**", "jekko.json"]
       label: project_guidance
       may_define_ocal: false
       may_override_policy: false
@@ -270,7 +270,7 @@ trust:
     action: quarantine
 ```
 
-This is especially important if ZYAL is meant to work in OpenCode, Codex, Claude, OpenHands, Hermes, and OpenClaw. Codex, Claude Code, and OpenCode all already have permission systems or project instruction systems, but ZYAL should not assume those systems mean repository text is trusted. Codex uses AGENTS.md as an instruction format and applies nested precedence, while Claude Code and OpenCode expose fine-grained permissions and hooks; ZYAL should compile into those host features while remaining stricter than them. ([Agents][6])
+This is especially important if ZYAL is meant to work in Jekko, Codex, Claude, OpenHands, Hermes, and OpenClaw. Codex, Claude Code, and Jekko all already have permission systems or project instruction systems, but ZYAL should not assume those systems mean repository text is trusted. Codex uses AGENTS.md as an instruction format and applies nested precedence, while Claude Code and Jekko expose fine-grained permissions and hooks; ZYAL should compile into those host features while remaining stricter than them. ([Agents][6])
 
 ---
 
@@ -324,14 +324,14 @@ This preserves the spirit of “preview before arming” while making it robust 
 
 # 6. ZYAL needs capability negotiation
 
-If ZYAL should work inside OpenCode, Codex, Claude, OpenHands, Hermes, OpenClaw, and other agents, the language must distinguish between:
+If ZYAL should work inside Jekko, Codex, Claude, OpenHands, Hermes, OpenClaw, and other agents, the language must distinguish between:
 
 * what the ZYAL script wants,
 * what the host supports,
 * what the host can emulate,
 * what must fail closed.
 
-OpenHands exposes sandboxed runtimes and an SDK-style architecture; Codex has sandbox and approval modes; Claude Code and OpenCode have their own permission and hook systems; LangGraph provides graph persistence and durable execution. ZYAL should not pretend all hosts have the same surface. ([arXiv][1])
+OpenHands exposes sandboxed runtimes and an SDK-style architecture; Codex has sandbox and approval modes; Claude Code and Jekko have their own permission and hook systems; LangGraph provides graph persistence and durable execution. ZYAL should not pretend all hosts have the same surface. ([arXiv][1])
 
 ## Proposed addition: `capabilities`
 
@@ -367,7 +367,7 @@ capabilities:
 
 ```yaml
 adapters:
-  opencode:
+  jekko:
     permissions:
       shell: ask
       edit: allow
@@ -584,7 +584,7 @@ memory:
 
     - id: repo
       scope: repository
-      storage: ".opencode/memory/repo.sqlite"
+      storage: ".jekko/memory/repo.sqlite"
       ttl: 365d
       write:
         by_model: propose_only
@@ -715,7 +715,7 @@ A skill is a reusable procedure with:
 skills:
   registry:
     sources:
-      - ".opencode/skills"
+      - ".jekko/skills"
       - "repo://skills"
       - "org://approved-skills"
     trust:
@@ -791,7 +791,7 @@ experiments:
     reject_near_duplicates: true
 
   worktrees:
-    naming: ".opencode/daemon/{{run.id}}/experiments/{{task.id}}/{{experiment.id}}"
+    naming: ".jekko/daemon/{{run.id}}/experiments/{{task.id}}/{{experiment.id}}"
     base: current_checkpoint
     cleanup: archive_losers
     keep_winner: true
@@ -1000,16 +1000,16 @@ code_intelligence:
 
   indexes:
     - type: symbols
-      command: "opencode index symbols --json"
+      command: "jekko index symbols --json"
       refresh: on_file_change
     - type: call_graph
-      command: "opencode index callgraph --json"
+      command: "jekko index callgraph --json"
     - type: test_map
-      command: "opencode index tests --json"
+      command: "jekko index tests --json"
     - type: ownership
-      command: "opencode index owners --json"
+      command: "jekko index owners --json"
     - type: dependency_graph
-      command: "opencode index deps --json"
+      command: "jekko index deps --json"
 
   localization:
     strategy: hybrid
@@ -1168,7 +1168,7 @@ This turns approval into an auditable object, not a transient prompt.
 
 OpenHands emphasizes Docker-based sandboxing for safe execution. Its docs describe the runtime as a sandboxed Docker environment with an action executor, and they explicitly discuss secure execution and keeping the user environment separate. ([OpenHands Docs][15])
 
-Codex also exposes sandbox and approval modes. OpenCode and Claude Code expose permission controls. ZYAL should abstract this.
+Codex also exposes sandbox and approval modes. Jekko and Claude Code expose permission controls. ZYAL should abstract this.
 
 ## Proposed addition: `environment`
 
@@ -1309,7 +1309,7 @@ Without rollback, “durable” just means “durably made a mess.”
 
 # 19. ZYAL needs observability beyond the mirror
 
-The `.opencode/daemon/` mirror is a great start, but ambitious usage needs metrics, traces, and a stable event schema.
+The `.jekko/daemon/` mirror is a great start, but ambitious usage needs metrics, traces, and a stable event schema.
 
 OpenHands SDK’s event system describes immutable, type-safe events and treats them as integration points for agent memory and components. ZYAL should define its own event schema rather than relying on ad hoc logs. ([OpenHands Docs][16])
 
@@ -1576,7 +1576,7 @@ Jankurai’s risk-control mapping mentions owner maps and generated zones. ZYAL 
 ownership:
   maps:
     - source: CODEOWNERS
-    - source: ".opencode/owners.yaml"
+    - source: ".jekko/owners.yaml"
 
   require_owner_review_when:
     - touches_owned_path: true
@@ -1640,7 +1640,7 @@ Long-running agents need to maintain a shared understanding of the project.
 ```yaml
 design_memory:
   docs:
-    - path: ".opencode/daemon/{{run.id}}/DESIGN.md"
+    - path: ".jekko/daemon/{{run.id}}/DESIGN.md"
       generated: true
     - path: "docs/architecture.md"
       generated: false
@@ -1710,7 +1710,7 @@ Example:
 ```yaml
 compile:
   targets:
-    - opencode
+    - jekko
     - codex
     - claude_code
     - openhands
@@ -1718,17 +1718,17 @@ compile:
     - temporal
 
   output:
-    opencode:
-      permissions_file: ".opencode/permissions.generated.json"
-      hooks_file: ".opencode/hooks.generated.json"
+    jekko:
+      permissions_file: ".jekko/permissions.generated.json"
+      hooks_file: ".jekko/hooks.generated.json"
 
     codex:
       approval_policy: on-request
       sandbox_mode: workspace-write
-      agents_md_overlay: ".opencode/AGENTS.zyal.generated.md"
+      agents_md_overlay: ".jekko/AGENTS.zyal.generated.md"
 
     langgraph:
-      graph_spec: ".opencode/daemon/graph.generated.json"
+      graph_spec: ".jekko/daemon/graph.generated.json"
       checkpointer: sqlite
 
   fail_closed_when:
@@ -1896,9 +1896,9 @@ ZYAL should add `triggers`, `channels`, and `trust` so OpenClaw can use ZYAL as 
 
 ---
 
-## ZYAL vs. Codex / Claude Code / OpenCode
+## ZYAL vs. Codex / Claude Code / Jekko
 
-These are host environments. They expose permissions, project instructions, hooks, agents/subagents, and sandboxing in different ways. Codex uses AGENTS.md as project guidance and has sandbox/approval settings; Claude Code and OpenCode both expose permission controls; OpenCode has built-in agent modes such as build, plan, general, and explore. ([Agents][6])
+These are host environments. They expose permissions, project instructions, hooks, agents/subagents, and sandboxing in different ways. Codex uses AGENTS.md as project guidance and has sandbox/approval settings; Claude Code and Jekko both expose permission controls; Jekko has built-in agent modes such as build, plan, general, and explore. ([Agents][6])
 
 **Overlap:**
 
@@ -2239,7 +2239,7 @@ memory:
       storage: sqlite
     - id: repo
       scope: repository
-      storage: ".opencode/memory/repo.sqlite"
+      storage: ".jekko/memory/repo.sqlite"
       write:
         by_model: propose_only
         approval: maintainer
@@ -2459,7 +2459,7 @@ job:
 skills:
   registry:
     sources:
-      - ".opencode/skills"
+      - ".jekko/skills"
       - "org://approved-skills"
     trust:
       org_approved: trusted
@@ -2627,7 +2627,7 @@ permissions:
       - "git push --force*"
 ```
 
-OpenCode already supports granular permission rules by tool and pattern, so ZYAL should adopt that level of specificity. ([OpenCode][20])
+Jekko already supports granular permission rules by tool and pattern, so ZYAL should adopt that level of specificity. ([Jekko][20])
 
 ## Tighten `git.add: ["."]`
 
@@ -2641,7 +2641,7 @@ checkpoint:
       exclude:
         - ".env*"
         - "node_modules/**"
-        - ".opencode/daemon/**"
+        - ".jekko/daemon/**"
 ```
 
 ## Tighten stop conditions
@@ -2775,7 +2775,7 @@ Some tasks need a graph of agents. Some need a deterministic agentless localizat
 
 ## Principle 6: fail closed on host limitations
 
-If Claude, Codex, OpenCode, OpenHands, Hermes, or OpenClaw cannot enforce a required constraint, ZYAL should not silently degrade.
+If Claude, Codex, Jekko, OpenHands, Hermes, or OpenClaw cannot enforce a required constraint, ZYAL should not silently degrade.
 
 ## Principle 7: every side effect is recorded
 
@@ -2825,7 +2825,7 @@ Add:
 
 * `adapters`
 * host capability negotiation
-* OpenCode/Codex/Claude/OpenHands/LangGraph/Hermes/OpenClaw adapter specs
+* Jekko/Codex/Claude/OpenHands/LangGraph/Hermes/OpenClaw adapter specs
 * fail-closed compilation
 * generated host policy files
 
@@ -2858,7 +2858,7 @@ Add formal semantics for:
 
 # 42. Final recommendation
 
-Do **not** position ZYAL as “OpenCode’s daemon YAML.”
+Do **not** position ZYAL as “Jekko’s daemon YAML.”
 
 Position it as:
 
@@ -2879,7 +2879,7 @@ Its signature capabilities should be:
 11. **No-proof-no-checkpoint policy.**
 12. **Rollback-first operations.**
 13. **Channel-safe triggers for persistent agents.**
-14. **Fail-closed adapters for OpenCode, Codex, Claude, OpenHands, LangGraph, Hermes, and OpenClaw.**
+14. **Fail-closed adapters for Jekko, Codex, Claude, OpenHands, LangGraph, Hermes, and OpenClaw.**
 
 The current ZYAL is a strong seed. The upgraded ZYAL should be the thing that prevents “vibe coding” from becoming “vibe infrastructure.”
 
@@ -2902,5 +2902,5 @@ The current ZYAL is a strong seed. The upgraded ZYAL should be the thing that pr
 [17]: https://github.com/openclaw/openclaw "GitHub - openclaw/openclaw: Your own personal AI assistant. Any OS. Any Platform. The lobster way.  · GitHub"
 [18]: https://arxiv.org/abs/2303.11366 "[2303.11366] Reflexion: Language Agents with Verbal Reinforcement Learning"
 [19]: https://arxiv.org/abs/2407.16741 "[2407.16741] OpenHands: An Open Platform for AI Software Developers as Generalist Agents"
-[20]: https://opencode.ai/docs/permissions/ "Permissions | OpenCode"
+[20]: https://jekko.ai/docs/permissions/ "Permissions | Jekko"
 

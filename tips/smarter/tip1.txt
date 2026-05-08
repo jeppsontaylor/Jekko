@@ -1,8 +1,8 @@
-I would add one major concept to the OCAL plan:
+I would add one major concept to the ZYAL plan:
 
-# OCAL Task Incubator: bounded cross-loop collaboration for hard tasks
+# ZYAL Task Incubator: bounded cross-loop collaboration for hard tasks
 
-The current OCAL daemon plan solves the most important problem: **the runtime owns forever**, and the model only completes one bounded iteration. The next layer should solve the problem you just identified: once all easy/high-confidence work is gone, the daemon needs a structured way to **incubate hard tasks across multiple fresh passes** without letting the agent thrash forever or dirty the repo with half-baked changes. I am treating the uploaded OCAL Daemon Runtime V1 plan as the baseline for this update. 
+The current ZYAL daemon plan solves the most important problem: **the runtime owns forever**, and the model only completes one bounded iteration. The next layer should solve the problem you just identified: once all easy/high-confidence work is gone, the daemon needs a structured way to **incubate hard tasks across multiple fresh passes** without letting the agent thrash forever or dirty the repo with half-baked changes. I am treating the uploaded ZYAL Daemon Runtime V1 plan as the baseline for this update. 
 
 The right abstraction is not “agent has low confidence, so think more.” The right abstraction is:
 
@@ -16,7 +16,7 @@ The key design principle is also consistent with OpenAI’s Agents SDK guidance:
 
 ## 1. The new concept: task maturity, not task confidence
 
-“Confidence” is useful but dangerous. Models can be overconfident, underconfident, or inconsistent. OCAL should treat model confidence as **one signal**, not the decision-maker.
+“Confidence” is useful but dangerous. Models can be overconfident, underconfident, or inconsistent. ZYAL should treat model confidence as **one signal**, not the decision-maker.
 
 Instead, each task should have a host-computed state:
 
@@ -105,17 +105,17 @@ promotion_gate
 ready_to_implement | needs_more_incubation | ask_human | parked
 ```
 
-This maps well to Tree-of-Thoughts style deliberate search, where the system explores multiple candidate reasoning paths and uses evaluation/backtracking to choose the next move, and to Reflexion-style memory where failed attempts produce bounded reflections for future attempts. The important difference is that OCAL should store **shareable summaries, evidence, plans, critiques, and artifacts**, not hidden private chain-of-thought. ([arXiv][3])
+This maps well to Tree-of-Thoughts style deliberate search, where the system explores multiple candidate reasoning paths and uses evaluation/backtracking to choose the next move, and to Reflexion-style memory where failed attempts produce bounded reflections for future attempts. The important difference is that ZYAL should store **shareable summaries, evidence, plans, critiques, and artifacts**, not hidden private chain-of-thought. ([arXiv][3])
 
 ---
 
-## 3. The addition to the OCAL plan
+## 3. The addition to the ZYAL plan
 
 Add this section to the existing plan after “Runtime Controller” and before “Swarms, Ledger, MCP”:
 
 # New Section: Task Incubator and Cross-Loop Collaboration
 
-Objective: allow OCAL daemons to route only genuinely hard or risky tasks into bounded multi-pass deliberation, preserve useful task memory across context clears and fresh sessions, and promote tasks back to implementation only when host-enforced maturity criteria are met.
+Objective: allow ZYAL daemons to route only genuinely hard or risky tasks into bounded multi-pass deliberation, preserve useful task memory across context clears and fresh sessions, and promote tasks back to implementation only when host-enforced maturity criteria are met.
 
 Non-goals:
 
@@ -136,7 +136,7 @@ Core rule:
 
 ## 4. Data model additions
 
-The existing OCAL plan already has `daemon_task`, `daemon_event`, `daemon_worker`, and `daemon_artifact`. Extend those instead of inventing a second tracker.
+The existing ZYAL plan already has `daemon_task`, `daemon_event`, `daemon_worker`, and `daemon_artifact`. Extend those instead of inventing a second tracker.
 
 Add columns to `daemon_task`:
 
@@ -213,7 +213,7 @@ task_final_summary
 The mirror files should remain generated from SQLite, not source of truth:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/
+.jekko/daemon/<runID>/tasks/<taskID>/
   TASK.md
   MEMORY.md
   SCORE.json
@@ -236,7 +236,7 @@ This is aligned with OpenHands-style persistence, where complete event logs and 
 
 ## 5. Runtime changes
 
-Add an Incubator controller inside `packages/opencode/src/session/daemon.ts` or a sibling module:
+Add an Incubator controller inside `packages/jekko/src/session/daemon.ts` or a sibling module:
 
 ```text
 daemon-incubator.ts
@@ -324,10 +324,10 @@ incubator:
           changed_lines_gte: 500
       - paths:
           match_any:
-            - "packages/opencode/src/session/**"
-            - "packages/opencode/src/server/**"
-            - "packages/opencode/migration/**"
-            - "packages/opencode/src/cli/cmd/tui/**"
+            - "packages/jekko/src/session/**"
+            - "packages/jekko/src/server/**"
+            - "packages/jekko/migration/**"
+            - "packages/jekko/src/cli/cmd/tui/**"
       - risk:
           level_gte: high
       - verification:
@@ -349,7 +349,7 @@ This prevents “ALL problems route to hard mode.” The Incubator activates onl
 
 ---
 
-## 7. OCAL syntax update
+## 7. ZYAL syntax update
 
 I would add one top-level block: `incubator`.
 
@@ -400,9 +400,9 @@ incubator:
           level_gte: high
       - paths:
           match_any:
-            - "packages/opencode/src/session/**"
-            - "packages/opencode/src/server/**"
-            - "packages/opencode/migration/**"
+            - "packages/jekko/src/session/**"
+            - "packages/jekko/src/server/**"
+            - "packages/jekko/migration/**"
       - verification:
           no_deterministic_test: true
 
@@ -417,7 +417,7 @@ incubator:
 
   scratch:
     store: sqlite_and_files
-    path: ".opencode/daemon/${run.id}/tasks/${task.id}"
+    path: ".jekko/daemon/${run.id}/tasks/${task.id}"
     authority: sqlite
     expose_to_model: summarized
     allow_hidden_chain_of_thought: false
@@ -570,10 +570,10 @@ That distinction is extremely valuable.
 
 ---
 
-## 8. Updated Jankurai-style OCAL example with hard-task incubation
+## 8. Updated Jankurai-style ZYAL example with hard-task incubation
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -624,10 +624,10 @@ incubator:
       - risk: { level_gte: high }
       - paths:
           match_any:
-            - "packages/opencode/src/session/**"
-            - "packages/opencode/src/server/**"
-            - "packages/opencode/migration/**"
-            - "packages/opencode/src/cli/cmd/tui/**"
+            - "packages/jekko/src/session/**"
+            - "packages/jekko/src/server/**"
+            - "packages/jekko/migration/**"
+            - "packages/jekko/src/cli/cmd/tui/**"
       - verification: { no_deterministic_test: true }
 
   exclude_if:
@@ -638,7 +638,7 @@ incubator:
 
   scratch:
     store: sqlite_and_files
-    path: ".opencode/daemon/${run.id}/tasks/${task.id}"
+    path: ".jekko/daemon/${run.id}/tasks/${task.id}"
     authority: sqlite
     expose_to_model: summarized
     allow_hidden_chain_of_thought: false
@@ -724,7 +724,7 @@ checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - shell: "bun --cwd packages/opencode test --timeout 30000 packages/opencode/test/session/daemon-runtime.test.ts"
+    - shell: "bun --cwd packages/jekko test --timeout 30000 packages/jekko/test/session/daemon-runtime.test.ts"
   git:
     add: ["."]
     commit_message: "jankurai: daemon verified work item"
@@ -751,14 +751,14 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   panels:
     - daemon_status
     - hard_task_incubator
     - promotion_gates
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 ---
@@ -994,7 +994,7 @@ Stores pass result and artifacts.
 daemon_artifact_write
 ```
 
-Stores a typed artifact in DB and mirrors it to `.opencode/daemon`.
+Stores a typed artifact in DB and mirrors it to `.jekko/daemon`.
 
 ```text
 daemon_prototype_patch_write
@@ -1060,39 +1060,39 @@ mcp:
       phases: [verification_design, convergence]
 ```
 
-MCP is a context/tool protocol, not a daemon language. The MCP spec standardizes how hosts, clients, and servers expose context, tools, and capabilities over JSON-RPC; its sampling section also emphasizes client control and human review for nested LLM requests. OCAL should use MCP for tools/resources, but OCAL should remain the runtime-owned control plane. ([Model Context Protocol][6])
+MCP is a context/tool protocol, not a daemon language. The MCP spec standardizes how hosts, clients, and servers expose context, tools, and capabilities over JSON-RPC; its sampling section also emphasizes client control and human review for nested LLM requests. ZYAL should use MCP for tools/resources, but ZYAL should remain the runtime-owned control plane. ([Model Context Protocol][6])
 
 ---
 
 ## 13. A2A-compatible mental model
 
-Even if OpenCode does not implement A2A immediately, OCAL should copy one A2A idea: **separate task communication from artifacts**.
+Even if Jekko does not implement A2A immediately, ZYAL should copy one A2A idea: **separate task communication from artifacts**.
 
 A2A treats a Task as the stateful unit of work and uses Artifacts as outputs; messages are not supposed to be the final deliverable. That maps perfectly to Incubator passes: each pass can send/receive messages internally, but the durable cross-loop object should be a typed artifact. ([Google Developers Blog][7])
 
-OCAL mapping:
+ZYAL mapping:
 
 ```text
-OCAL daemon_task       ≈ A2A Task
-OCAL daemon_event      ≈ A2A status/message event
-OCAL daemon_artifact   ≈ A2A Artifact
-OCAL task_pass         ≈ bounded work attempt
-OCAL task_memory       ≈ scoped durable task state
+ZYAL daemon_task       ≈ A2A Task
+ZYAL daemon_event      ≈ A2A status/message event
+ZYAL daemon_artifact   ≈ A2A Artifact
+ZYAL task_pass         ≈ bounded work attempt
+ZYAL task_memory       ≈ scoped durable task state
 ```
 
-This gives future compatibility without prematurely turning OpenCode into an A2A server.
+This gives future compatibility without prematurely turning Jekko into an A2A server.
 
 ---
 
 ## 14. Syntax highlighting and preview UX
 
-The OCAL parser already requires strict sentinels, `confirm: RUN_FOREVER`, and `OCAL_ARM`. Extend the TUI preview so Incubator semantics are obvious before arming.
+The ZYAL parser already requires strict sentinels, `confirm: RUN_FOREVER`, and `ZYAL_ARM`. Extend the TUI preview so Incubator semantics are obvious before arming.
 
 Highlighting rules:
 
 ```text
 gold / bold
-  <<<OCAL v1:daemon ...>>>
+  <<<ZYAL v1:daemon ...>>>
   loop.policy: forever
   confirm: RUN_FOREVER
   ui.banner: forever
@@ -1214,13 +1214,13 @@ cleanup:
 The root worktree should never receive speculative stubs from Incubator passes. Prototypes should live in:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/prototype-worktree/
+.jekko/daemon/<runID>/tasks/<taskID>/prototype-worktree/
 ```
 
 or a real git worktree:
 
 ```text
-../.opencode-worktrees/<runID>/<taskID>/
+../.jekko-worktrees/<runID>/<taskID>/
 ```
 
 Only the promoted implementation pass can touch the main worktree.
@@ -1229,17 +1229,17 @@ Only the promoted implementation pass can touch the main worktree.
 
 ## 16. Implementation plan update
 
-I would add this as a staged extension, not in the first OCAL daemon PR.
+I would add this as a staged extension, not in the first ZYAL daemon PR.
 
 ### Stage 1: parser support and inert preview
 
 Add schema only:
 
 ```text
-packages/opencode/src/agent-script/schema.ts
-packages/opencode/src/agent-script/parser.ts
-packages/opencode/src/agent-script/examples.ts
-packages/opencode/specs/daemon-ocal.md
+packages/jekko/src/agent-script/schema.ts
+packages/jekko/src/agent-script/parser.ts
+packages/jekko/src/agent-script/examples.ts
+packages/jekko/specs/daemon-zyal.md
 ```
 
 Support:
@@ -1261,11 +1261,11 @@ But do not execute complex swarms yet. TUI preview should display the Incubator 
 Add:
 
 ```text
-packages/opencode/src/session/daemon-incubator.ts
-packages/opencode/src/session/daemon-task-assess.ts
-packages/opencode/src/session/daemon-task-memory.ts
-packages/opencode/src/session/daemon-task-pass.ts
-packages/opencode/src/session/daemon-task-promote.ts
+packages/jekko/src/session/daemon-incubator.ts
+packages/jekko/src/session/daemon-task-assess.ts
+packages/jekko/src/session/daemon-task-memory.ts
+packages/jekko/src/session/daemon-task-pass.ts
+packages/jekko/src/session/daemon-task-promote.ts
 ```
 
 Support one hard task at a time, one pass per daemon iteration.
@@ -1334,9 +1334,9 @@ Regression tests:
 
 ```text
 normal non-daemon prompt cannot start incubator
-OCAL pasted inside code fence stays inert
-assistant-generated OCAL stays inert
-plain opencode run still exits on idle
+ZYAL pasted inside code fence stays inert
+assistant-generated ZYAL stays inert
+plain jekko run still exits on idle
 daemon forever loop still ignores assistant_stop until host stop passes
 ```
 
@@ -1349,7 +1349,7 @@ summarization preserves objective, stop criteria, current hard task, promotion s
 recoverability test can retrieve an archived pass artifact
 ```
 
-Deep Agents’ context-management docs specifically call out targeted evals for compression mechanisms, including preserving objective, recoverability, and goal-drift detection; OCAL should copy that testing style for hard clears and Incubator memories. ([LangChain][8])
+Deep Agents’ context-management docs specifically call out targeted evals for compression mechanisms, including preserving objective, recoverability, and goal-drift detection; ZYAL should copy that testing style for hard clears and Incubator memories. ([LangChain][8])
 
 ---
 
@@ -1424,7 +1424,7 @@ Do not expose every MCP to every pass.
 
 # Final recommended update
 
-Add **OCAL Incubator** to the plan as a first-class feature:
+Add **ZYAL Incubator** to the plan as a first-class feature:
 
 ```yaml
 incubator:
@@ -1450,7 +1450,7 @@ Hard/low-confidence/risky task:
   otherwise park/ask human after bounded rounds
 ```
 
-This gives you the cross-loop collaboration you want without turning every problem into a research project, without trusting model confidence blindly, and without allowing forever loops to become forever thrash. It also keeps OCAL aligned with where the rest of the ecosystem is clearly going: durable runtime state, deterministic workflow control, typed artifacts, scoped memory, subagent isolation, context compression, and explicit human/permission gates rather than prompt-only agent promises.
+This gives you the cross-loop collaboration you want without turning every problem into a research project, without trusting model confidence blindly, and without allowing forever loops to become forever thrash. It also keeps ZYAL aligned with where the rest of the ecosystem is clearly going: durable runtime state, deterministic workflow control, typed artifacts, scoped memory, subagent isolation, context compression, and explicit human/permission gates rather than prompt-only agent promises.
 
 [1]: https://github.com/langchain-ai/langgraph "GitHub - langchain-ai/langgraph: Build resilient language agents as graphs. Available in TypeScript! · GitHub"
 [2]: https://developers.openai.com/api/docs/guides/agents "Agents SDK | OpenAI API"

@@ -26,7 +26,7 @@ The fourth strength is **explicit cost sovereignty**. Nested budgets at run, tas
 
 ## Biggest gaps and issues to address
 
-The largest gap is **interoperability as a first-class design goal**. ZYAL mentions MCP, agents, skills, and observability, but it should explicitly define how an ZYAL run maps to MCP servers, A2A/ACP tasks, AG-UI events, AGENTS.md instructions, and external workflow engines. OpenClaw already uses ACP sessions to run external coding harnesses such as Claude Code, Codex, Cursor, Copilot, OpenCode, and Gemini CLI as background tasks, which is a useful precedent. ([OpenClaw][4])
+The largest gap is **interoperability as a first-class design goal**. ZYAL mentions MCP, agents, skills, and observability, but it should explicitly define how an ZYAL run maps to MCP servers, A2A/ACP tasks, AG-UI events, AGENTS.md instructions, and external workflow engines. OpenClaw already uses ACP sessions to run external coding harnesses such as Claude Code, Codex, Cursor, Copilot, Jekko, and Gemini CLI as background tasks, which is a useful precedent. ([OpenClaw][4])
 
 The second gap is **memory precision**. ZYAL has governed memory stores, context capsules, negative memory, compression, and provenance, but the spec should go further: every memory item should have type, scope, provenance, confidence, freshness, privacy class, invalidation rules, retrieval score, and evidence links. OpenClaw’s memory design is useful here because it uses plain Markdown memory, deterministic memory-wiki pages, claims/evidence tracking, contradiction/freshness checks, hybrid search, and background “dreaming” consolidation. ([OpenClaw][5]) Hermes is also relevant because it uses bounded curated memory injected at session start, session search over prior interactions, memory editing tools, duplicate prevention, consolidation thresholds, and security scanning for prompt injection or exfiltration. ([Hermes Agent][6])
 
@@ -63,7 +63,7 @@ interop:
       precedence: repo_then_ocal
   imports:
     mcp_servers: ["github", "filesystem", "ci", "linear"]
-    acp_harnesses: ["opencode", "codex", "claude-code"]
+    acp_harnesses: ["jekko", "codex", "claude-code"]
 ```
 
 This makes ZYAL the **governor** over existing ecosystems rather than a replacement for them. MCP already covers host/client/server tool integration, A2A/ACP covers agent/task interoperability, AG-UI covers user-facing runtime events, and AGENTS.md covers repo-local agent instructions used by many coding agents. ([Model Context Protocol][11])

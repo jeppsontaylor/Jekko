@@ -21,13 +21,13 @@ async function signWindows(configuration: { path: string }) {
 }
 
 const channel = (() => {
-  const raw = process.env.OPENCODE_CHANNEL
+  const raw = process.env.JEKKO_CHANNEL
   if (raw === "dev" || raw === "beta" || raw === "prod") return raw
   return "dev"
 })()
 
 const getBase = (): Configuration => ({
-  artifactName: "opencode-desktop-${os}-${arch}.${ext}",
+  artifactName: "jekko-desktop-${os}-${arch}.${ext}",
   directories: {
     output: "dist",
     buildResources: "resources",
@@ -54,8 +54,8 @@ const getBase = (): Configuration => ({
     sign: true,
   },
   protocols: {
-    name: "OpenCode",
-    schemes: ["opencode"],
+    name: "Jekko",
+    schemes: ["jekko"],
   },
   win: {
     icon: `resources/icons/icon.ico`,
@@ -85,29 +85,29 @@ function getConfig() {
     case "dev": {
       return {
         ...base,
-        appId: "ai.opencode.desktop.dev",
-        productName: "OpenCode Dev",
-        rpm: { packageName: "opencode-dev" },
+        appId: "ai.jekko.desktop.dev",
+        productName: "Jekko Dev",
+        rpm: { packageName: "jekko-dev" },
       }
     }
     case "beta": {
       return {
         ...base,
-        appId: "ai.opencode.desktop.beta",
-        productName: "OpenCode Beta",
-        protocols: { name: "OpenCode Beta", schemes: ["opencode"] },
-        publish: { provider: "github", owner: "anomalyco", repo: "opencode-beta", channel: "latest" },
-        rpm: { packageName: "opencode-beta" },
+        appId: "ai.jekko.desktop.beta",
+        productName: "Jekko Beta",
+        protocols: { name: "Jekko Beta", schemes: ["jekko"] },
+        publish: { provider: "github", owner: "anomalyco", repo: "jekko-beta", channel: "latest" },
+        rpm: { packageName: "jekko-beta" },
       }
     }
     case "prod": {
       return {
         ...base,
-        appId: "ai.opencode.desktop",
-        productName: "OpenCode",
-        protocols: { name: "OpenCode", schemes: ["opencode"] },
-        publish: { provider: "github", owner: "anomalyco", repo: "opencode", channel: "latest" },
-        rpm: { packageName: "opencode" },
+        appId: "ai.jekko.desktop",
+        productName: "Jekko",
+        protocols: { name: "Jekko", schemes: ["jekko"] },
+        publish: { provider: "github", owner: "anomalyco", repo: "jekko", channel: "latest" },
+        rpm: { packageName: "jekko" },
       }
     }
   }

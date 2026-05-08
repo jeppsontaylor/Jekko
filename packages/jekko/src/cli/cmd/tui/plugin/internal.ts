@@ -1,0 +1,32 @@
+import HomeFooter from "../feature-plugins/home/footer"
+import HomeTips from "../feature-plugins/home/tips"
+import SidebarContext from "../feature-plugins/sidebar/context"
+import SidebarZyal from "../feature-plugins/sidebar/zyal"
+import SidebarMcp from "../feature-plugins/sidebar/mcp"
+import SidebarLsp from "../feature-plugins/sidebar/lsp"
+import SidebarTodo from "../feature-plugins/sidebar/todo"
+import SidebarFiles from "../feature-plugins/sidebar/files"
+import SidebarFooter from "../feature-plugins/sidebar/footer"
+import PluginManager from "../feature-plugins/system/plugins"
+import SessionV2Debug from "../feature-plugins/system/session-debug"
+import type { TuiPlugin, TuiPluginModule } from "@jekko-ai/plugin/tui"
+import { Flag } from "@jekko-ai/core/flag/flag"
+
+export type InternalTuiPlugin = TuiPluginModule & {
+  id: string
+  tui: TuiPlugin
+}
+
+export const INTERNAL_TUI_PLUGINS: InternalTuiPlugin[] = [
+  HomeFooter,
+  HomeTips,
+  SidebarContext,
+  SidebarZyal,
+  SidebarMcp,
+  SidebarLsp,
+  SidebarTodo,
+  SidebarFiles,
+  SidebarFooter,
+  PluginManager,
+  ...(Flag.JEKKO_EXPERIMENTAL_EVENT_SYSTEM ? [SessionV2Debug] : []),
+]

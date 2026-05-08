@@ -1,8 +1,8 @@
-## Plan update: add **OCAL Task Forge** for difficult work that needs cross-loop maturation
+## Plan update: add **ZYAL Task Forge** for difficult work that needs cross-loop maturation
 
-The OCAL V1 plan is already strong on the most important baseline: strict `OCAL v1` gates, no XML `<FOREVER>`, no assistant-generated activation, TUI preview before arming, SQLite as source of truth, generated readable mirrors, context hard-clear as a new daemon epoch/child session, and normal OpenCode prompt/session semantics left unchanged. That is the right foundation. 
+The ZYAL V1 plan is already strong on the most important baseline: strict `ZYAL v1` gates, no XML `<FOREVER>`, no assistant-generated activation, TUI preview before arming, SQLite as source of truth, generated readable mirrors, context hard-clear as a new daemon epoch/child session, and normal Jekko prompt/session semantics left unchanged. That is the right foundation. 
 
-The missing layer is what I would call **OCAL Task Forge**:
+The missing layer is what I would call **ZYAL Task Forge**:
 
 > A bounded, host-controlled maturation loop for hard tasks that are too risky to “just do,” where multiple agents/passes can explore, plan, critique, prototype, preserve structured memory, and eventually promote the task back into the normal implementation queue once evidence-based readiness is high enough.
 
@@ -29,29 +29,29 @@ This is the right place for “one agent starts fresh and makes a new plan” ve
 
 # 1. What other agent communities already know
 
-There is still no universal standard for “in-prompt agent programming language that safely runs forever and coordinates hard coding tasks.” What exists are several mature patterns that OCAL should borrow without copying blindly.
+There is still no universal standard for “in-prompt agent programming language that safely runs forever and coordinates hard coding tasks.” What exists are several mature patterns that ZYAL should borrow without copying blindly.
 
-**LangGraph** is the strongest prior art for durability: its docs define durable execution as saving progress at key points so workflows can pause, resume, and recover after interruptions, especially for long-running and human-in-the-loop work. OCAL’s SQLite daemon store and epoch model should follow that same principle: the runtime state is durable; the prompt is not the source of truth. ([LangChain Docs][1])
+**LangGraph** is the strongest prior art for durability: its docs define durable execution as saving progress at key points so workflows can pause, resume, and recover after interruptions, especially for long-running and human-in-the-loop work. ZYAL’s SQLite daemon store and epoch model should follow that same principle: the runtime state is durable; the prompt is not the source of truth. ([LangChain Docs][1])
 
-**CrewAI Flows** is relevant for stateful routing: Flows support state management, persistence, conditional logic, branching, loops, routers, and human feedback. OCAL Task Forge should use the same conceptual pattern: route tasks by state and evidence, not just by what the model says it feels confident about. ([CrewAI Documentation][2])
+**CrewAI Flows** is relevant for stateful routing: Flows support state management, persistence, conditional logic, branching, loops, routers, and human feedback. ZYAL Task Forge should use the same conceptual pattern: route tasks by state and evidence, not just by what the model says it feels confident about. ([CrewAI Documentation][2])
 
-**AutoGen** is relevant for explicit termination conditions: its group chat teams evaluate termination after agent responses and include built-in conditions like max messages, text mention, token usage, timeout, and handoff termination. OCAL already plans host-side stop checks; Task Forge should add host-side **promotion**, **defer**, and **pause** conditions for hard tasks. ([Microsoft GitHub][3])
+**AutoGen** is relevant for explicit termination conditions: its group chat teams evaluate termination after agent responses and include built-in conditions like max messages, text mention, token usage, timeout, and handoff termination. ZYAL already plans host-side stop checks; Task Forge should add host-side **promotion**, **defer**, and **pause** conditions for hard tasks. ([Microsoft GitHub][3])
 
-**Reflexion** is directly relevant to your scratchpad idea: it improves agents through verbal reflection stored in episodic memory, without changing model weights. OCAL should not store raw private reasoning, but it should store structured reflections: failed assumptions, evidence, blockers, plan deltas, and test results. ([Hugging Face][4])
+**Reflexion** is directly relevant to your scratchpad idea: it improves agents through verbal reflection stored in episodic memory, without changing model weights. ZYAL should not store raw private reasoning, but it should store structured reflections: failed assumptions, evidence, blockers, plan deltas, and test results. ([Hugging Face][4])
 
-**Self-Refine** is relevant to bounded improvement loops: it uses generate → feedback → refine iterations and reports improved outputs across diverse tasks. OCAL Task Forge should support this as a pass type, but cap it with pass limits, evidence gates, and no-progress detection. ([NeurIPS Proceedings][5])
+**Self-Refine** is relevant to bounded improvement loops: it uses generate → feedback → refine iterations and reports improved outputs across diverse tasks. ZYAL Task Forge should support this as a pass type, but cap it with pass limits, evidence gates, and no-progress detection. ([NeurIPS Proceedings][5])
 
-**Tree of Thoughts** and **Graph of Thoughts** are relevant for very hard tasks because they explore multiple reasoning paths, evaluate alternatives, backtrack, and combine intermediate “thought” units into graph-like solutions. OCAL should implement this as multiple **plan candidates** and **synthesis passes**, not by asking one agent to think harder forever. ([Princeton University][6])
+**Tree of Thoughts** and **Graph of Thoughts** are relevant for very hard tasks because they explore multiple reasoning paths, evaluate alternatives, backtrack, and combine intermediate “thought” units into graph-like solutions. ZYAL should implement this as multiple **plan candidates** and **synthesis passes**, not by asking one agent to think harder forever. ([Princeton University][6])
 
-**Voyager** is relevant because it combines an automatic curriculum, iterative prompting, and a growing skill library. OCAL should allow successful hard-task learnings to be archived as reusable patterns, but not automatically promoted into global skills without explicit config or review. ([Hugging Face][7])
+**Voyager** is relevant because it combines an automatic curriculum, iterative prompting, and a growing skill library. ZYAL should allow successful hard-task learnings to be archived as reusable patterns, but not automatically promoted into global skills without explicit config or review. ([Hugging Face][7])
 
-**SWE-agent** is important for coding-agent UX: its docs emphasize that agent-computer interface design matters, including constrained file viewers, concise search results, lint-on-edit feedback, and saved trajectories. OCAL Task Forge should store task trajectories and provide agent-tailored tools rather than dumping huge logs into context. ([Hugging Face][8])
+**SWE-agent** is important for coding-agent UX: its docs emphasize that agent-computer interface design matters, including constrained file viewers, concise search results, lint-on-edit feedback, and saved trajectories. ZYAL Task Forge should store task trajectories and provide agent-tailored tools rather than dumping huge logs into context. ([Hugging Face][8])
 
-**OpenHands / AgentSkills** is relevant for progressive disclosure: OpenHands supports always-loaded context and on-demand skills, while Agent Skills use `SKILL.md` packages with progressive disclosure so agents load only the context they need. OCAL task memory should follow this: advertise a short summary, then let agents load detailed task memory only when needed. ([OpenHands Docs][9])
+**OpenHands / AgentSkills** is relevant for progressive disclosure: OpenHands supports always-loaded context and on-demand skills, while Agent Skills use `SKILL.md` packages with progressive disclosure so agents load only the context they need. ZYAL task memory should follow this: advertise a short summary, then let agents load detailed task memory only when needed. ([OpenHands Docs][9])
 
-**MCP** should remain tool/context plumbing, not the orchestration language. MCP defines a base protocol with lifecycle/capability negotiation and server/client features like tools, resources, prompts, roots, and sampling; importantly, the sampling spec calls for human review/denial affordances and forbids standalone server-initiated sampling unrelated to a client request. OCAL should use MCP profiles/scopes, but the daemon supervisor should own workflow state. ([Model Context Protocol][10])
+**MCP** should remain tool/context plumbing, not the orchestration language. MCP defines a base protocol with lifecycle/capability negotiation and server/client features like tools, resources, prompts, roots, and sampling; importantly, the sampling spec calls for human review/denial affordances and forbids standalone server-initiated sampling unrelated to a client request. ZYAL should use MCP profiles/scopes, but the daemon supervisor should own workflow state. ([Model Context Protocol][10])
 
-**OpenCode** itself already has the primitives OCAL should build on: primary agents, subagents, a read-only Explore agent, a General subagent for parallel work, hidden compaction, permissions, custom command templates, and MCP tool configuration. OpenCode’s MCP docs also warn that enabling many MCP servers can consume context quickly, so Task Forge should activate narrow MCP profiles per pass rather than “spin up everything.” ([OpenCode][11])
+**Jekko** itself already has the primitives ZYAL should build on: primary agents, subagents, a read-only Explore agent, a General subagent for parallel work, hidden compaction, permissions, custom command templates, and MCP tool configuration. Jekko’s MCP docs also warn that enabling many MCP servers can consume context quickly, so Task Forge should activate narrow MCP profiles per pass rather than “spin up everything.” ([Jekko][11])
 
 ---
 
@@ -161,7 +161,7 @@ if easy_queue.empty and hard_queue.not_empty:
 
 ---
 
-# 4. Add a new OCAL section: `hardening` or `forge`
+# 4. Add a new ZYAL section: `hardening` or `forge`
 
 I strongly prefer the public name **`forge`**. It conveys “mature the task until it is strong enough to implement,” and it is shorter than `hardening_passes`.
 
@@ -337,7 +337,7 @@ forge:
   memory:
     mode: task_scoped
     source_of_truth: sqlite
-    mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/"
+    mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/"
     advertise: summary_only
     load_policy: explicit_tool
     max_bytes_per_task: 200000
@@ -416,12 +416,12 @@ This gives you cleanup when complete and a useful handoff when not complete.
 
 ---
 
-# 6. Updated OCAL example for your original JANKURAI loop
+# 6. Updated ZYAL example for your original JANKURAI loop
 
-This is how I would extend the existing OCAL daemon example.
+This is how I would extend the existing ZYAL daemon example.
 
 ```yaml
-<<<OCAL v1:daemon id=jankurai-clean-worktree>>>
+<<<ZYAL v1:daemon id=jankurai-clean-worktree>>>
 intent: daemon
 confirm: RUN_FOREVER
 
@@ -543,7 +543,7 @@ forge:
   memory:
     mode: task_scoped
     source_of_truth: sqlite
-    mirror: ".opencode/daemon/{{run.id}}/tasks/{{task.id}}/"
+    mirror: ".jekko/daemon/{{run.id}}/tasks/{{task.id}}/"
     advertise: summary_only
     load_policy: explicit_tool
     max_bytes_per_task: 200000
@@ -585,7 +585,7 @@ checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - shell: "bun --cwd packages/opencode test --timeout 30000 packages/opencode/test/session/daemon-runtime.test.ts"
+    - shell: "bun --cwd packages/jekko test --timeout 30000 packages/jekko/test/session/daemon-runtime.test.ts"
   git:
     add: ["."]
     commit_message: "jankurai: daemon verified work item"
@@ -612,11 +612,11 @@ permissions:
   mcp: ask
 
 ui:
-  theme: opencode-gold
+  theme: jekko-gold
   banner: forever
   forge_panel: true
-<<<END_OCAL id=jankurai-clean-worktree>>>
-OCAL_ARM RUN_FOREVER id=jankurai-clean-worktree
+<<<END_ZYAL id=jankurai-clean-worktree>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-clean-worktree
 ```
 
 The important difference from the original forever loop is that hard tasks are **not retried blindly**. They are moved into a bounded forge cycle, gather structured memory, and only re-enter the implementation queue after promotion.
@@ -630,22 +630,22 @@ I would add this as **Phase 3.5: Task Forge / Hard Task Maturation**, after seri
 ## 7.1 New files
 
 ```text
-packages/opencode/src/session/daemon-forge.ts
-packages/opencode/src/session/daemon-routing.ts
-packages/opencode/src/session/daemon-memory.ts
-packages/opencode/src/session/daemon-score.ts
-packages/opencode/src/session/daemon-handoff.ts
-packages/opencode/src/session/daemon-task-artifacts.ts
-packages/opencode/src/tool/daemon.ts
-packages/opencode/src/agent-script/forge-schema.ts
-packages/opencode/test/session/daemon-forge.test.ts
-packages/opencode/test/session/daemon-memory.test.ts
-packages/opencode/test/session/daemon-routing.test.ts
+packages/jekko/src/session/daemon-forge.ts
+packages/jekko/src/session/daemon-routing.ts
+packages/jekko/src/session/daemon-memory.ts
+packages/jekko/src/session/daemon-score.ts
+packages/jekko/src/session/daemon-handoff.ts
+packages/jekko/src/session/daemon-task-artifacts.ts
+packages/jekko/src/tool/daemon.ts
+packages/jekko/src/agent-script/forge-schema.ts
+packages/jekko/test/session/daemon-forge.test.ts
+packages/jekko/test/session/daemon-memory.test.ts
+packages/jekko/test/session/daemon-routing.test.ts
 ```
 
 ## 7.2 Schema additions
 
-Extend `packages/opencode/src/agent-script/schema.ts` with:
+Extend `packages/jekko/src/agent-script/schema.ts` with:
 
 ```ts
 OcalForge
@@ -663,7 +663,7 @@ Add parser checks:
 ```text
 forge.max_passes_per_task must be finite
 forge.max_total_forge_iterations must be finite
-forge memory mirror must stay under .opencode/daemon/
+forge memory mirror must stay under .jekko/daemon/
 spike passes require isolation != same_worktree
 promotion must require at least one evidence artifact
 ```
@@ -800,12 +800,12 @@ POST /daemon/:runID/tasks/:taskID/forge/run-pass
 ## 7.7 CLI additions
 
 ```text
-opencode daemon tasks <runID>
-opencode daemon task <runID> <taskID>
-opencode daemon task-memory <runID> <taskID>
-opencode daemon forge <runID> <taskID>
-opencode daemon promote <runID> <taskID>
-opencode daemon defer <runID> <taskID>
+jekko daemon tasks <runID>
+jekko daemon task <runID> <taskID>
+jekko daemon task-memory <runID> <taskID>
+jekko daemon forge <runID> <taskID>
+jekko daemon promote <runID> <taskID>
+jekko daemon defer <runID> <taskID>
 ```
 
 ## 7.8 TUI additions
@@ -841,7 +841,7 @@ Memory:
 
 # 8. Syntax highlighting and preview UX
 
-The existing OCAL plan already says valid drafts get a gold preview and Enter opens an arming preview. 
+The existing ZYAL plan already says valid drafts get a gold preview and Enter opens an arming preview. 
 
 Task Forge needs additional visual language so users can distinguish:
 
@@ -859,8 +859,8 @@ invalid/inert syntax = gray/red
 
 | Syntax region                       |    Suggested color | Why                                         |
 | ----------------------------------- | -----------------: | ------------------------------------------- |
-| `<<<OCAL v1:daemon...>>>`           |               Gold | Explicit executable workflow gate.          |
-| `confirm: RUN_FOREVER` / `OCAL_ARM` | Bright gold + bold | Highest-risk activation marker.             |
+| `<<<ZYAL v1:daemon...>>>`           |               Gold | Explicit executable workflow gate.          |
+| `confirm: RUN_FOREVER` / `ZYAL_ARM` | Bright gold + bold | Highest-risk activation marker.             |
 | `loop.policy: forever`              |               Gold | Shows non-terminating behavior.             |
 | `forge:`                            |     Amber / bronze | Hard-task maturation, not normal execution. |
 | `forge.route_when`                  |              Amber | Explains why work will be escalated.        |
@@ -870,14 +870,14 @@ invalid/inert syntax = gray/red
 | `workers`                           |             Purple | Parallel execution.                         |
 | `mcp`                               |               Teal | External tools/context.                     |
 | unknown keys                        |      Red underline | Parser/security issue.                      |
-| fenced OCAL block                   |         Gray/inert | Documentation, not executable.              |
+| fenced ZYAL block                   |         Gray/inert | Documentation, not executable.              |
 
 ## 8.2 Preview should show risk summary
 
 Before arming, TUI should show:
 
 ```text
-OCAL DAEMON PREVIEW
+ZYAL DAEMON PREVIEW
 
 Mode: FOREVER
 Name: Jankurai dirty worktree hardening
@@ -887,7 +887,7 @@ Stop checks:
   ✓ git clean
 
 Checkpoint:
-  verify: bun --cwd packages/opencode test ...
+  verify: bun --cwd packages/jekko test ...
   git add: .
   commit: jankurai: daemon verified work item
   push: ask
@@ -990,7 +990,7 @@ This prevents forge from consuming the whole daemon.
 
 ---
 
-# 10. Cross-loop collaboration patterns OCAL should support
+# 10. Cross-loop collaboration patterns ZYAL should support
 
 ## Pattern A: Independent plans, then synthesis
 
@@ -1038,7 +1038,7 @@ pass 3 critiques plan
 pass 4 finalizes plan
 ```
 
-This is the OCAL version of Self-Refine, but host-bounded.
+This is the ZYAL version of Self-Refine, but host-bounded.
 
 ## Pattern C: Red-team then repair
 
@@ -1112,7 +1112,7 @@ pause for human approval
 A hard task should get a durable package:
 
 ```text
-.opencode/daemon/<runID>/tasks/<taskID>/
+.jekko/daemon/<runID>/tasks/<taskID>/
   PROBLEM.md
   MEMORY.md
   HYPOTHESES.md
@@ -1192,7 +1192,7 @@ forge:
       remove_idle_workers: true
 ```
 
-No task should leave random scratch files in the repo root. Temporary prototypes should live in isolated worktrees or `.opencode/daemon/.../prototypes/`, and only promoted code should enter the main worktree.
+No task should leave random scratch files in the repo root. Temporary prototypes should live in isolated worktrees or `.jekko/daemon/.../prototypes/`, and only promoted code should enter the main worktree.
 
 ---
 
@@ -1210,7 +1210,7 @@ forge:
         repeated_pattern_count: ">= 3"
 ```
 
-This would let OCAL convert repeated hard-task learnings into reusable AgentSkills-style packages. That aligns with the broader skill ecosystem, where `SKILL.md` packages contain instructions, scripts, and resources loaded through progressive disclosure. ([Microsoft Learn][12])
+This would let ZYAL convert repeated hard-task learnings into reusable AgentSkills-style packages. That aligns with the broader skill ecosystem, where `SKILL.md` packages contain instructions, scripts, and resources loaded through progressive disclosure. ([Microsoft Learn][12])
 
 Default should be `ask`, not automatic, because auto-writing long-lived skills could pollute future runs.
 
@@ -1221,7 +1221,7 @@ Default should be `ask`, not automatic, because auto-writing long-lived skills c
 I would update the prior implementation sequence like this:
 
 ```text
-Phase 1: OCAL parser/schema/examples/spec
+Phase 1: ZYAL parser/schema/examples/spec
 Phase 2: durable daemon store/events
 Phase 3: serial daemon runtime/checks/checkpoint/context
 Phase 3.5: Task Forge routing/memory/scoring/promotion
@@ -1237,7 +1237,7 @@ Task Forge should land before swarms because it defines how hard tasks are repre
 
 # 15. Test plan additions
 
-Add these tests to the OCAL plan.
+Add these tests to the ZYAL plan.
 
 ## Parser tests
 
@@ -1246,7 +1246,7 @@ accepts forge block with valid finite pass limits
 rejects forge max_passes_per_task: forever
 rejects spike pass with same_worktree isolation
 rejects promote_when without evidence
-rejects memory mirror outside .opencode/daemon
+rejects memory mirror outside .jekko/daemon
 rejects unknown forge pass type
 ```
 
@@ -1293,7 +1293,7 @@ tournament selects highest verified candidate
 
 ---
 
-# 16. The final “best possible” addition to the OCAL contract
+# 16. The final “best possible” addition to the ZYAL contract
 
 Add this as a first-class contract section:
 
@@ -1333,6 +1333,6 @@ That gives you the power you want without turning every ambiguous task into an i
 [8]: https://huggingface.co/papers/2405.15793?utm_source=chatgpt.com "Paper page - SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering"
 [9]: https://docs.openhands.dev/sdk/guides/skill?utm_source=chatgpt.com "Agent Skills & Context - OpenHands Docs"
 [10]: https://modelcontextprotocol.io/specification/2025-03-26/basic?utm_source=chatgpt.com "Overview - Model Context Protocol"
-[11]: https://opencode.ai/docs/agents/?utm_source=chatgpt.com "Agents | OpenCode"
+[11]: https://jekko.ai/docs/agents/?utm_source=chatgpt.com "Agents | Jekko"
 [12]: https://learn.microsoft.com/en-us/agent-framework/agents/skills?utm_source=chatgpt.com "Agent Skills | Microsoft Learn"
 

@@ -1,6 +1,6 @@
 # ZYAL Powerful Examples
 
-Nine flagship runbooks that show what ZYAL v2.1 makes possible. Each is a complete `<<<ZYAL v1:daemon>>>` block — paste any of them into a trusted OpenCode prompt to preview the runtime plan, then explicitly arm to execute.
+Nine flagship runbooks that show what ZYAL v2.1 makes possible. Each is a complete `<<<ZYAL v1:daemon>>>` block — paste any of them into a trusted Jekko prompt to preview the runtime plan, then explicitly arm to execute.
 
 | File | Demonstrates | Power blocks |
 |---|---|---|
@@ -16,11 +16,11 @@ Nine flagship runbooks that show what ZYAL v2.1 makes possible. Each is a comple
 
 ## Running an example
 
-1. Copy the YAML block (including sentinels) into the OpenCode prompt.
-2. The TUI flips to the **opencode-gold** theme, signalling daemon-arm mode.
+1. Copy the YAML block (including sentinels) into the Jekko prompt.
+2. The TUI flips to the **jekko-gold** theme, signalling daemon-arm mode.
 3. The host renders the **Run Card**: capabilities granted, budgets, risk score, unsupported features.
 4. Type `ZYAL_ARM RUN_FOREVER id=<run-id>` only after reviewing the Run Card.
-5. Watch the run stream events; pause/abort/inspect via `opencode daemon ...` CLI.
+5. Watch the run stream events; pause/abort/inspect via `jekko daemon ...` CLI.
 
 ## Safety reminder
 

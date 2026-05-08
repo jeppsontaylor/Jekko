@@ -1,36 +1,36 @@
-id = "opencode"
-name = "OpenCode"
+id = "jekko"
+name = "Jekko"
 description = "The open source coding agent."
 version = "1.14.39"
 schema_version = 1
 authors = ["Anomaly"]
-repository = "https://github.com/anomalyco/opencode"
+repository = "https://github.com/anomalyco/jekko"
 
-[agent_servers.opencode]
-name = "OpenCode"
-icon = "./icons/opencode.svg"
+[agent_servers.jekko]
+name = "Jekko"
+icon = "./icons/jekko.svg"
 
-[agent_servers.opencode.targets.darwin-aarch64]
-archive = "https://github.com/anomalyco/opencode/releases/download/v1.14.39/opencode-darwin-arm64.zip"
-cmd = "./opencode"
+[agent_servers.jekko.targets.darwin-aarch64]
+archive = "https://github.com/anomalyco/jekko/releases/download/v1.14.39/jekko-darwin-arm64.zip"
+cmd = "./jekko"
 args = ["acp"]
 
-[agent_servers.opencode.targets.darwin-x86_64]
-archive = "https://github.com/anomalyco/opencode/releases/download/v1.14.39/opencode-darwin-x64.zip"
-cmd = "./opencode"
+[agent_servers.jekko.targets.darwin-x86_64]
+archive = "https://github.com/anomalyco/jekko/releases/download/v1.14.39/jekko-darwin-x64.zip"
+cmd = "./jekko"
 args = ["acp"]
 
-[agent_servers.opencode.targets.linux-aarch64]
-archive = "https://github.com/anomalyco/opencode/releases/download/v1.14.39/opencode-linux-arm64.tar.gz"
-cmd = "./opencode"
+[agent_servers.jekko.targets.linux-aarch64]
+archive = "https://github.com/anomalyco/jekko/releases/download/v1.14.39/jekko-linux-arm64.tar.gz"
+cmd = "./jekko"
 args = ["acp"]
 
-[agent_servers.opencode.targets.linux-x86_64]
-archive = "https://github.com/anomalyco/opencode/releases/download/v1.14.39/opencode-linux-x64.tar.gz"
-cmd = "./opencode"
+[agent_servers.jekko.targets.linux-x86_64]
+archive = "https://github.com/anomalyco/jekko/releases/download/v1.14.39/jekko-linux-x64.tar.gz"
+cmd = "./jekko"
 args = ["acp"]
 
-[agent_servers.opencode.targets.windows-x86_64]
-archive = "https://github.com/anomalyco/opencode/releases/download/v1.14.39/opencode-windows-x64.zip"
-cmd = "./opencode.exe"
+[agent_servers.jekko.targets.windows-x86_64]
+archive = "https://github.com/anomalyco/jekko/releases/download/v1.14.39/jekko-windows-x64.zip"
+cmd = "./jekko.exe"
 args = ["acp"]

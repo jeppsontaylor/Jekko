@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/plugin",
+  "name": "@jekko-ai/plugin",
   "version": "1.14.39",
   "type": "module",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "dist"
   ],
   "dependencies": {
-    "@opencode-ai/sdk": "workspace:*",
+    "@jekko-ai/sdk": "workspace:*",
     "effect": "catalog:",
     "zod": "catalog:"
   },

@@ -1,6 +1,6 @@
 I read ZYAL as a **host-enforced, declarative control plane for long-running agents**: the host owns lifecycle, budgets, stop/done conditions, approvals, evidence, write scopes, SQLite state, incubator passes, capabilities, experiments, rollback, and repo intelligence. That is the right center of gravity; ZYAL’s strongest idea is that the model can propose and act, but the host enforces control, state, safety, and promotion gates. 
 
-I interpreted “LangChane” as **LangChain/LangGraph** and “Hermis” as **Hermes Agent**. I did not find a separate widely established “Hermis” protocol; the relevant current references are Hermes Agent docs and its agent-memory/skills/runtime patterns. For “OpenClaw,” the official docs show an ACP-based bridge for running external coding harnesses like Codex, Claude Code, Cursor, Gemini CLI, and OpenCode, with background-task tracking and session binding; importantly, those docs also warn that ACP sessions currently run on the host rather than inside OpenClaw’s sandbox. ([OpenClaw][1])
+I interpreted “LangChane” as **LangChain/LangGraph** and “Hermis” as **Hermes Agent**. I did not find a separate widely established “Hermis” protocol; the relevant current references are Hermes Agent docs and its agent-memory/skills/runtime patterns. For “OpenClaw,” the official docs show an ACP-based bridge for running external coding harnesses like Codex, Claude Code, Cursor, Gemini CLI, and Jekko, with background-task tracking and session binding; importantly, those docs also warn that ACP sessions currently run on the host rather than inside OpenClaw’s sandbox. ([OpenClaw][1])
 
 ## Ecosystem baseline: what ZYAL should not reinvent
 
@@ -198,7 +198,7 @@ registry:
     discovery: mcp
     require_schema_hash: true
   skills:
-    source: ".opencode/skills/**"
+    source: ".jekko/skills/**"
     quarantine_new: true
     promote_requires:
       - human_review

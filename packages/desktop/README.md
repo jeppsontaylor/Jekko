@@ -1,6 +1,6 @@
-# OpenCode Desktop
+# Jekko Desktop
 
-Native OpenCode desktop app, built with Tauri v2.
+Native Jekko desktop app, built with Tauri v2.
 
 ## Development
 

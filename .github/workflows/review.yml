@@ -31,13 +31,13 @@ jobs:
 
       - uses: ./.github/actions/setup-bun@main
 
-      - name: Install opencode
+      - name: Install jekko
         run: |
           OP_VERSION="v1.0.220"
           OP_SHA256="fc3c1b2123f49b6df545a7622e5127d21cd794b15134fc3b66e1ca49f7fb297e"
-          curl -fsSL "https://opencode.ai/install" > /tmp/install-opencode.sh
-          echo "${OP_SHA256}  /tmp/install-opencode.sh" | shasum -a 256 -c || exit 1
-          bash /tmp/install-opencode.sh --version "${OP_VERSION}"
+          curl -fsSL "https://jekko.ai/install" > /tmp/install-jekko.sh
+          echo "${OP_SHA256}  /tmp/install-jekko.sh" | shasum -a 256 -c || exit 1
+          bash /tmp/install-jekko.sh --version "${OP_VERSION}"
 
       - name: Get PR details
         id: pr-details
@@ -50,13 +50,13 @@ jobs:
 
       - name: Check PR guidelines compliance
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          JEKKO_API_KEY: ${{ secrets.JEKKO_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENCODE_PERMISSION: '{ "bash": {  "*": "deny", "gh*": "allow", "gh pr review*": "deny" } }'
+          JEKKO_PERMISSION: '{ "bash": {  "*": "deny", "gh*": "allow", "gh pr review*": "deny" } }'
           PR_TITLE: ${{ steps.pr-details.outputs.title }}
         run: |
           PR_BODY=$(jq -r .body pr_data.json)
-          opencode run -m opencode/gpt-5.5 --variant medium "A new pull request has been created: '${PR_TITLE}'
+          jekko run -m jekko/gpt-5.5 --variant medium "A new pull request has been created: '${PR_TITLE}'
 
           <pr-number>
           ${{ steps.pr-number.outputs.number }}
@@ -69,7 +69,7 @@ jobs:
           Please check all the code changes in this pull request against the style guide, also look for any bugs if they exist. Diffs are important but make sure you read the entire file to get proper context. Make it clear the suggestions are merely suggestions and the human can decide what to do
 
           When critiquing code against the style guide, be sure that the code is ACTUALLY in violation, don't complain about else statements if they already use early returns there. You may complain about excessive nesting though, regardless of else statement usage.
-          When critiquing code style don't be a zealot, we don't like "let" statements but sometimes they are the simplest option, if someone does a bunch of nesting with let, they should consider using iife (see packages/opencode/src/util.iife.ts)
+          When critiquing code style don't be a zealot, we don't like "let" statements but sometimes they are the simplest option, if someone does a bunch of nesting with let, they should consider using iife (see packages/jekko/src/util.iife.ts)
 
           Use the gh cli to create comments on the files for the violations. Try to leave the comment on the exact line number. If you have a suggested fix include it in a suggestion code block.
           If you are writing suggested fixes, BE SURE THAT the change you are recommending is actually valid typescript, often I have seen missing closing "}" or other syntax errors.

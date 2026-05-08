@@ -16,7 +16,7 @@ function pick(value: string | null, alternative_path?: string) {
 function rewrite(request: Request, directory?: string) {
   if (request.method !== "GET" && request.method !== "HEAD") return request
 
-  const value = pick(request.headers.get("x-opencode-directory"), directory)
+  const value = pick(request.headers.get("x-jekko-directory"), directory)
   if (!value) return request
 
   const url = new URL(request.url)
@@ -25,7 +25,7 @@ function rewrite(request: Request, directory?: string) {
   }
 
   const next = new Request(url, request)
-  next.headers.delete("x-opencode-directory")
+  next.headers.delete("x-jekko-directory")
   return next
 }
 
@@ -45,7 +45,7 @@ export function createOpencodeClient(config?: Config & { directory?: string }) {
   if (config?.directory) {
     config.headers = {
       ...config.headers,
-      "x-opencode-directory": encodeURIComponent(config.directory),
+      "x-jekko-directory": encodeURIComponent(config.directory),
     }
   }
 

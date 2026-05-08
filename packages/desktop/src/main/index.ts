@@ -18,22 +18,22 @@ try {
   process.chdir(homedir())
 } catch {}
 
-process.env.OPENCODE_DISABLE_EMBEDDED_WEB_UI = "true"
+process.env.JEKKO_DISABLE_EMBEDDED_WEB_UI = "true"
 
 const APP_NAMES: Record<string, string> = {
-  dev: "OpenCode Dev",
-  beta: "OpenCode Beta",
-  prod: "OpenCode",
+  dev: "Jekko Dev",
+  beta: "Jekko Beta",
+  prod: "Jekko",
 }
 const APP_IDS: Record<string, string> = {
-  dev: "ai.opencode.desktop.dev",
-  beta: "ai.opencode.desktop.beta",
-  prod: "ai.opencode.desktop",
+  dev: "ai.jekko.desktop.dev",
+  beta: "ai.jekko.desktop.beta",
+  prod: "ai.jekko.desktop",
 }
-const TEST_ONBOARDING = process.env.OPENCODE_TEST_ONBOARDING === "1"
-const appId = app.isPackaged ? APP_IDS[CHANNEL] : "ai.opencode.desktop.dev"
+const TEST_ONBOARDING = process.env.JEKKO_TEST_ONBOARDING === "1"
+const appId = app.isPackaged ? APP_IDS[CHANNEL] : "ai.jekko.desktop.dev"
 const onboardingTestRoot = setupOnboardingTestEnv()
-app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : "OpenCode Dev")
+app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : "Jekko Dev")
 app.setAppUserModelId(appId)
 app.setPath("userData", onboardingTestRoot ? join(onboardingTestRoot, "desktop") : join(app.getPath("appData"), appId))
 if (onboardingTestRoot) app.setPath("sessionData", join(onboardingTestRoot, "session"))
@@ -56,7 +56,7 @@ import {
   setDockIcon,
 } from "./windows"
 import { drizzle } from "drizzle-orm/node-sqlite/driver"
-import type { Server } from "virtual:opencode-server"
+import type { Server } from "virtual:jekko-server"
 import { migrate } from "./migrate"
 
 const initEmitter = new EventEmitter()
@@ -75,12 +75,12 @@ useSystemCertificates()
 function setupOnboardingTestEnv() {
   if (!TEST_ONBOARDING) return
 
-  const root = join(tmpdir(), `opencode-onboarding-${randomUUID()}`)
+  const root = join(tmpdir(), `jekko-onboarding-${randomUUID()}`)
   rmSync(root, { recursive: true, force: true })
   ;["data", "config", "cache", "state", "desktop", "session"].forEach((dir) =>
     mkdirSync(join(root, dir), { recursive: true }),
   )
-  process.env.OPENCODE_DB = ":memory:"
+  process.env.JEKKO_DB = ":memory:"
   process.env.XDG_DATA_HOME = join(root, "data")
   process.env.XDG_CONFIG_HOME = join(root, "config")
   process.env.XDG_CACHE_HOME = join(root, "cache")
@@ -108,7 +108,7 @@ function setupApp() {
   }
 
   app.on("second-instance", (_event: Event, argv: string[]) => {
-    const urls = argv.filter((arg: string) => arg.startsWith("opencode://"))
+    const urls = argv.filter((arg: string) => arg.startsWith("jekko://"))
     if (urls.length) {
       logger.log("deep link received via second-instance", { urls })
       emitDeepLinks(urls)
@@ -139,7 +139,7 @@ function setupApp() {
 
   void app.whenReady().then(async () => {
     if (!TEST_ONBOARDING) migrate()
-    app.setAsDefaultProtocolClient("opencode")
+    app.setAsDefaultProtocolClient("jekko")
     registerRendererProtocol()
     setDockIcon()
     setupAutoUpdater()
@@ -203,7 +203,7 @@ async function initialize() {
     })
 
     if (needsMigration) {
-      const { Database, JsonMigration } = await import("virtual:opencode-server")
+      const { Database, JsonMigration } = await import("virtual:jekko-server")
       await JsonMigration.run(drizzle({ client: Database.Client().$client }), {
         progress: (event: { current: number; total: number }) => {
           const percent = Math.round(event.current / event.total) * 100
@@ -227,7 +227,7 @@ async function initialize() {
     server = listener
     serverReady.resolve({
       url,
-      username: "opencode",
+      username: "jekko",
       password,
     })
 
@@ -341,7 +341,7 @@ function ensureLoopbackNoProxy() {
 }
 
 async function getSidecarPort() {
-  const fromEnv = process.env.OPENCODE_PORT
+  const fromEnv = process.env.JEKKO_PORT
   if (fromEnv) {
     const parsed = Number.parseInt(fromEnv, 10)
     if (!Number.isNaN(parsed)) return parsed
@@ -364,11 +364,11 @@ async function getSidecarPort() {
 }
 
 function sqliteFileExists() {
-  if (process.env.OPENCODE_DB === ":memory:") return true
+  if (process.env.JEKKO_DB === ":memory:") return true
 
   const xdg = process.env.XDG_DATA_HOME
   const base = xdg && xdg.length > 0 ? xdg : join(homedir(), ".local", "share")
-  return existsSync(join(base, "opencode", "opencode.db"))
+  return existsSync(join(base, "jekko", "jekko.db"))
 }
 
 function setupAutoUpdater() {
