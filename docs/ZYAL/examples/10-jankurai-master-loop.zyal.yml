@@ -1,3 +1,16 @@
+# ZYAL v2.3 — Jankurai Master Loop
+#
+# The flagship long-running ZYAL runbook: continuously audit with jankurai,
+# rotate completed work, claim a task, route trivial vs risky to direct or
+# multi-pass incubator, commit + push every verified change, hard-clear
+# context between tasks. Stops only when jankurai reports zero findings,
+# the worktree is clean, and HEAD is fully pushed to origin/main.
+#
+# Hardens against the #1 long-loop attack surface — prompt injection — via
+# the v2.3 `taint` block: every inbound source labelled, hostile content
+# blocked from arming/approving/granting/exec_shell/memory writes without
+# human review or a signed sanitiser.
+
 <<<ZYAL v1:daemon id=jankurai-master-loop>>>
 version: v1
 intent: daemon
@@ -15,6 +28,7 @@ job:
   risk:
     - Long-running with autonomous git_commit; bounded by per-iteration verify
     - Touches arbitrary files; bounded by capability rules and anti-vibe gates
+    - Inbound tool/MCP/web content is hostile by default — bounded by `taint` rules
 
 arming:
   preview_hash_required: true
@@ -25,6 +39,44 @@ arming:
   preview_expires_after: 10m
   arm_token_single_use: true
   bound_to: ["script_hash", "user_id", "repo", "branch"]
+
+# v2.3 taint — origin-aware prompt-injection defence.
+# Tainted sources cannot trigger high-privilege actions (arm, approve, grant
+# capability, write procedural memory, exec shell, install skill, modify
+# objective, expose secret) without human review or a signed sanitiser.
+taint:
+  default_label: tool_output
+  labels:
+    trusted_user: { rank: high }
+    repo_file: { rank: medium }
+    tool_output: { rank: untrusted }
+    mcp_resource: { rank: untrusted }
+    web_content: { rank: hostile }
+    assistant_generated: { rank: untrusted_for_arming }
+  forbid:
+    - from: [web_content, tool_output, mcp_resource, assistant_generated]
+      cannot:
+        - arm
+        - approve
+        - grant_capability
+        - write_memory_procedural
+        - exec_shell
+        - install_skill
+        - modify_objective
+        - expose_secret
+      unless: [human_review, signed_sanitizer]
+    - from: [web_content]
+      cannot: [write_memory_semantic]
+      unless: [human_review]
+  prompt_injection:
+    detect_patterns:
+      - "ignore\\s+(all\\s+)?previous\\s+instructions"
+      - "you\\s+are\\s+now\\s+(a|an)?\\s*[a-z]+"
+      - "system:\\s*you\\s+must"
+      - "<\\|im_(start|end)\\|>"
+      - "disregard\\s+the\\s+system\\s+prompt"
+    on_detect: pause
+    scan_sources: [tool_output, mcp_resource, web_content]
 
 fleet:
   max_workers: 20
@@ -383,6 +435,8 @@ observability:
     - { name: commits_pushed, type: counter, source: daemon }
     - { name: workers_active, type: gauge, source: fleet }
     - { name: total_tokens, type: counter, source: fleet }
+    - { name: taint_blocks, type: counter, source: taint }
+    - { name: prompt_injection_detections, type: counter, source: taint }
   cost:
     budget: 500.00
     alert_at_percent: 80

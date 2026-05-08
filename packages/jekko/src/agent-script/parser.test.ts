@@ -162,7 +162,7 @@ ZYAL_ARM RUN_FOREVER id=one`
     expect(extractZyalBlock(getZyalExample("multi-worker-audit")!.text)).toBeTruthy()
   })
 
-  test("parses full docs ZYAL examples and wow.yml", async () => {
+  test("parses full docs ZYAL examples", async () => {
     const examplesDir = path.resolve(import.meta.dir, "../../../../docs/ZYAL/examples")
     const files = fs.readdirSync(examplesDir).filter((file) => file.endsWith(".zyal.yml")).sort()
     expect(files).toEqual([
@@ -175,16 +175,30 @@ ZYAL_ARM RUN_FOREVER id=one`
       "07-self-improving-skills.zyal.yml",
       "08-full-power-runbook.zyal.yml",
       "09-control-plane-preview.zyal.yml",
+      "10-jankurai-master-loop.zyal.yml",
     ])
-    const paths = files.map((file) => path.join(examplesDir, file))
-    paths.push(path.resolve(import.meta.dir, "../../../../wow.yml"))
-
-    for (const file of paths) {
-      const text = fs.readFileSync(file, "utf8")
+    for (const file of files) {
+      const text = fs.readFileSync(path.join(examplesDir, file), "utf8")
       const parsed = await Effect.runPromise(parseZyal(text))
       expect(parsed.spec.intent).toBe("daemon")
       expect(parsed.preview.id).toBe(parsed.spec.id)
     }
+  })
+
+  test("master loop runbook hardens with v2.3 taint defence", async () => {
+    const masterPath = path.resolve(
+      import.meta.dir,
+      "../../../../docs/ZYAL/examples/10-jankurai-master-loop.zyal.yml",
+    )
+    const text = fs.readFileSync(masterPath, "utf8")
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.id).toBe("jankurai-master-loop")
+    expect(parsed.preview.taint_enabled).toBe(true)
+    expect(parsed.preview.taint_label_count).toBeGreaterThanOrEqual(5)
+    expect(parsed.preview.taint_forbid_count).toBeGreaterThanOrEqual(1)
+    expect(parsed.preview.taint_summary).toContain("injection:pause")
+    expect(parsed.preview.fleet_summary).toContain("max:20")
+    expect(parsed.preview.fleet_summary).toContain("jnoccio:on")
   })
 
   test("accepts the control-plane preview example", async () => {

@@ -162,3 +162,19 @@
   - Repoint `/opt/homebrew/bin/opencode` symlink to new `packages/jekko/dist/jekko-darwin-arm64/bin/jekko` AND add `/opt/homebrew/bin/jekko` for forward-compat.
   - Run parser tests + typecheck. Commit + push.
 - Signature: `claude`
+
+## 2026-05-08T23:50:00Z — Done — claude — wow.yml relocated + hardened
+- `wow.yml` (root) → `docs/ZYAL/examples/10-jankurai-master-loop.zyal.yml`. Root copy deleted.
+- Master loop hardened with v2.3 `taint` block: 6 labels (trusted_user, repo_file, tool_output, mcp_resource, web_content, assistant_generated), 2 forbid rules covering arm/approve/grant_capability/write_memory_procedural/exec_shell/install_skill/modify_objective/expose_secret unless human_review or signed_sanitizer + a tighter rule banning web_content from semantic memory writes, prompt-injection scanner with 5 detect patterns at on_detect:pause across tool_output/mcp_resource/web_content. Two new observability metrics: taint_blocks (counter), prompt_injection_detections (counter).
+- Parses cleanly: `taint_label_count: 6`, `taint_forbid_count: 2`, `taint_summary: "labels:6 forbid:2 injection:pause"`, `fleet_summary: "max:20 iso:same_session jnoccio:on telem:jnoccio"`.
+- `docs/ZYAL/examples/README.md` updated: 10 examples now (added row for `10-jankurai-master-loop.zyal.yml`).
+- `docs/ZYAL_MISSION.md` updated: explicit "v2.2 Fleet (1)" and "v2.3 Taint (1)" rows in the All 40+ Top-Level Blocks section, with full taint block description.
+- `parser.test.ts` updated: test file list now includes `10-jankurai-master-loop.zyal.yml`, dropped `wow.yml` reference (file no longer exists), added new "master loop runbook hardens with v2.3 taint defence" assertion that loads the new example and validates taint preview fields.
+- Binary symlinks repointed to new jekko dist:
+    /opt/homebrew/bin/jekko    -> packages/jekko/dist/jekko-darwin-arm64/bin/jekko
+    /opt/homebrew/bin/opencode -> packages/jekko/dist/jekko-darwin-arm64/bin/jekko
+  Both report `0.0.0-main-202605082211` for forward + back compat during user migration.
+- Verification:
+  - `bun run typecheck` → 0 errors.
+  - `bun test src/agent-script/parser.test.ts` → 88 pass, 0 fail, 195 expects.
+- Signature: `claude`
