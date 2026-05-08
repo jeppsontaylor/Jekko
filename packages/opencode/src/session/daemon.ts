@@ -12,6 +12,9 @@ import { Session } from "./session"
 import { SessionPrompt } from "./prompt"
 import { SessionStatus } from "./status"
 import { DaemonStore } from "./daemon-store"
+import { Database } from "@/storage/db"
+import { DaemonIterationTable } from "./daemon.sql"
+import { eq, sum, count } from "drizzle-orm"
 import { DaemonChecks } from "./daemon-checks"
 import { DaemonCheckpoint } from "./daemon-checkpoint"
 import { DaemonContext } from "./daemon-context"
@@ -151,12 +154,52 @@ export const layer = Layer.effect(
       return yield* store.getRun(run.id).pipe(Effect.map((value) => value ?? run))
     })
 
+    function enrichRun(run: DaemonStore.RunInfo): DaemonStore.RunInfo & { _stats: { iteration_count: number; total_tokens: number; total_cost: number } } {
+      const row = Database.use((db) =>
+        db
+          .select({
+            iteration_count: count(),
+            total_cost: sum(DaemonIterationTable.cost),
+          })
+          .from(DaemonIterationTable)
+          .where(eq(DaemonIterationTable.run_id, run.id))
+          .get(),
+      )
+      const iterations = Database.use((db) =>
+        db
+          .select({ token_usage_json: DaemonIterationTable.token_usage_json })
+          .from(DaemonIterationTable)
+          .where(eq(DaemonIterationTable.run_id, run.id))
+          .all(),
+      )
+      let totalTokens = 0
+      for (const iter of iterations) {
+        const usage = iter.token_usage_json as Record<string, unknown> | null
+        if (usage) {
+          const input = typeof usage.inputTokens === "number" ? usage.inputTokens : 0
+          const output = typeof usage.outputTokens === "number" ? usage.outputTokens : 0
+          const total = typeof usage.totalTokens === "number" ? usage.totalTokens : input + output
+          totalTokens += total
+        }
+      }
+      return Object.assign({}, run, {
+        _stats: {
+          iteration_count: row?.iteration_count ?? 0,
+          total_tokens: totalTokens,
+          total_cost: row?.total_cost ? Number(row.total_cost) : 0,
+        },
+      })
+    }
+
     const list = Effect.fn("Daemon.list")(function* () {
-      return yield* store.listRuns()
+      const runs = yield* store.listRuns()
+      return runs.map(enrichRun)
     })
 
     const get = Effect.fn("Daemon.get")(function* (runID: string) {
-      return yield* store.getRun(runID)
+      const run = yield* store.getRun(runID)
+      if (!run) return undefined
+      return enrichRun(run)
     })
 
     const events = Effect.fn("Daemon.events")(function* (runID: string) {

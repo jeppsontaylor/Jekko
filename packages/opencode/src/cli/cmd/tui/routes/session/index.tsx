@@ -22,7 +22,7 @@ import { useEvent } from "@tui/context/event"
 import { SplitBorder } from "@tui/component/border"
 import { Spinner } from "@tui/component/spinner"
 import { selectedForeground, useTheme } from "@tui/context/theme"
-import { setOcalFlashSource, textHasOcalSentinel } from "@tui/context/ocal-flash"
+import { setOcalFlashSource, textHasOcalSentinel, updateOcalMetrics, resetOcalMetrics } from "@tui/context/ocal-flash"
 import { BoxRenderable, ScrollBoxRenderable, addDefaultParsers, TextAttributes, RGBA } from "@opentui/core"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
 import type {
@@ -263,8 +263,28 @@ export function Session() {
         setDaemonRun(run)
         if (run && !["satisfied", "aborted", "failed"].includes(String(run.status))) {
           setOverlay("opencode-gold")
+          // Push live fleet metrics from the daemon run into the OCAL panel.
+          const tokens = run.token_usage ?? run.tokens ?? {}
+          const fleet = run.fleet ?? run.spec?.fleet ?? {}
+          const fleetMaxRaw = Number(fleet?.max_workers ?? 0)
+          updateOcalMetrics({
+            runId: String(run.id ?? run.run_id ?? sessionID),
+            status: String(run.status ?? "active"),
+            workersActive: Number(run.workers_active ?? run.active_workers ?? 0),
+            workersMax: Number.isFinite(fleetMaxRaw) && fleetMaxRaw > 0 ? Math.min(20, fleetMaxRaw) : undefined,
+            inputTokens: Number(tokens.input ?? tokens.inputTokens ?? 0),
+            outputTokens: Number(tokens.output ?? tokens.outputTokens ?? 0),
+            cacheTokens: Number(tokens.cache?.read ?? 0) + Number(tokens.cache?.write ?? 0) + Number(tokens.reasoning ?? 0),
+            totalTokens: Number(tokens.total ?? tokens.totalTokens ?? 0) ||
+              Number(tokens.input ?? 0) + Number(tokens.output ?? 0) + Number(tokens.reasoning ?? 0),
+            costUsd: Number(run.cost_usd ?? run.cost ?? 0),
+            loopsCompleted: Number(run.iteration_count ?? run.iterations ?? 0),
+            tasksCompleted: Number(run.tasks_completed ?? 0),
+            tasksIncubated: Number(run.tasks_incubated ?? 0),
+          })
         } else {
           setOverlay(undefined)
+          if (!run) resetOcalMetrics()
         }
       } catch {
         if (!alive) return
@@ -278,6 +298,7 @@ export function Session() {
       alive = false
       clearInterval(timer)
       setOverlay(undefined)
+      resetOcalMetrics()
     })
   })
 
@@ -1292,7 +1313,7 @@ export function Session() {
         <Show when={sidebarVisible()}>
           <Switch>
             <Match when={wide()}>
-              <Sidebar sessionID={route.sessionID} />
+              <Sidebar sessionID={route.sessionID} daemonRun={daemonRun()} />
             </Match>
             <Match when={!wide()}>
               <box
@@ -1304,7 +1325,7 @@ export function Session() {
                 alignItems="flex-end"
                 backgroundColor={RGBA.fromInts(0, 0, 0, 70)}
               >
-                <Sidebar sessionID={route.sessionID} />
+                <Sidebar sessionID={route.sessionID} daemonRun={daemonRun()} />
               </box>
             </Match>
           </Switch>

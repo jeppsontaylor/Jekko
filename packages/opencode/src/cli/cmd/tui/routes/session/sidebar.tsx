@@ -8,8 +8,9 @@ import { TuiPluginRuntime } from "@/cli/cmd/tui/plugin/runtime"
 
 import { getScrollAcceleration } from "../../util/scroll"
 import { WorkspaceLabel } from "../../component/workspace-label"
+import { OcalSidebar } from "./ocal-sidebar"
 
-export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
+export function Sidebar(props: { sessionID: string; overlay?: boolean; daemonRun?: any }) {
   const project = useProject()
   const sync = useSync()
   const { theme } = useTheme()
@@ -81,6 +82,9 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
                 </Show>
               </box>
             </TuiPluginRuntime.Slot>
+            <Show when={props.daemonRun}>
+              {(run) => <OcalSidebar run={run()} />}
+            </Show>
             <TuiPluginRuntime.Slot name="sidebar_content" session_id={props.sessionID} />
           </box>
         </scrollbox>

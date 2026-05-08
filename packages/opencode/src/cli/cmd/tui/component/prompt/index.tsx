@@ -1192,7 +1192,10 @@ export function Prompt(props: PromptProps) {
   )
   const borderHighlight = createMemo(() => {
     const base = tint(theme.border, highlight(), agentMetaAlpha())
-    return daemonDraft().kind === "preview" ? tint(base, theme.warning, 0.55) : base
+    const draft = daemonDraft()
+    if (draft.kind === "preview") return tint(base, theme.warning, 0.55)
+    if (draft.kind === "invalid") return tint(base, theme.error, 0.55)
+    return base
   })
 
   const placeholderText = createMemo(() => {
@@ -1534,6 +1537,25 @@ export function Prompt(props: PromptProps) {
                   )}
                 </Show>
               </box>
+              <Show when={daemonDraft().kind !== "none"}>
+                <box flexDirection="row" gap={1} alignItems="center">
+                  <Switch>
+                    <Match when={daemonDraft().kind === "preview"}>
+                      <text fg={theme.warning}>
+                        <b>✓ OCAL</b>
+                      </text>
+                    </Match>
+                    <Match when={daemonDraft().kind === "invalid"}>
+                      <text fg={theme.error}>
+                        <b>✗ OCAL</b>
+                        <span style={{ fg: theme.textMuted }}>
+                          {" "}{(daemonDraft() as { kind: "invalid"; error: string }).error.slice(0, 40)}
+                        </span>
+                      </text>
+                    </Match>
+                  </Switch>
+                </box>
+              </Show>
               <Show when={hasRightContent()}>
                 <box flexDirection="row" gap={1} alignItems="center">
                   {props.right}

@@ -1124,6 +1124,46 @@ export const OcalRepoIntelligence = Schema.Struct({
 })
 export type OcalRepoIntelligence = Schema.Schema.Type<typeof OcalRepoIntelligence>
 
+// ─── v2.2: Fleet (single-session multi-worker orchestration, capped at 20) ─
+
+export const OCAL_FLEET_MAX_WORKERS = 20
+
+export const OcalFleetTelemetryHeaders = Schema.Record(Schema.String, Schema.String)
+
+export const OcalFleetJnoccio = Schema.Struct({
+  enabled: Schema.optional(Schema.Boolean),
+  base_url: Schema.optional(Schema.String),
+  metrics_ws: Schema.optional(Schema.String),
+  spawn_on_demand: Schema.optional(Schema.Boolean),
+  register_workers: Schema.optional(Schema.Boolean),
+  heartbeat_path: Schema.optional(Schema.String),
+  heartbeat_interval: Schema.optional(Schema.String),
+  max_instances: Schema.optional(Schema.Number),
+})
+export type OcalFleetJnoccio = Schema.Schema.Type<typeof OcalFleetJnoccio>
+
+export const OcalFleetTelemetry = Schema.Struct({
+  publish_to: Schema.optional(Schema.Union([
+    Schema.Literal("jnoccio"),
+    Schema.Literal("opentelemetry"),
+    Schema.Literal("none"),
+  ])),
+  headers: Schema.optional(OcalFleetTelemetryHeaders),
+})
+export type OcalFleetTelemetry = Schema.Schema.Type<typeof OcalFleetTelemetry>
+
+export const OcalFleet = Schema.Struct({
+  max_workers: Schema.Number,
+  isolation: Schema.optional(Schema.Union([
+    Schema.Literal("same_session"),
+    Schema.Literal("git_worktree"),
+    Schema.Literal("hybrid"),
+  ])),
+  jnoccio: Schema.optional(OcalFleetJnoccio),
+  telemetry: Schema.optional(OcalFleetTelemetry),
+})
+export type OcalFleet = Schema.Schema.Type<typeof OcalFleet>
+
 // ─── Core Types ────────────────────────────────────────────────────────────
 
 export const OcalArm = Schema.Struct({
@@ -1177,6 +1217,8 @@ export const OcalSpec = Schema.Struct({
   rollback: Schema.optional(OcalRollback),
   done: Schema.optional(OcalDone),
   repo_intelligence: Schema.optional(OcalRepoIntelligence),
+  // v2.2 fleet
+  fleet: Schema.optional(OcalFleet),
 })
 
 export type OcalSpec = Schema.Schema.Type<typeof OcalSpec>
@@ -1260,6 +1302,10 @@ export const OcalPreview = Schema.Struct({
   done_summary: Schema.optional(Schema.String),
   repo_intel_enabled: Schema.Boolean,
   repo_intel_summary: Schema.optional(Schema.String),
+  // v2.2 fleet
+  fleet_enabled: Schema.Boolean,
+  fleet_max_workers: Schema.Number,
+  fleet_summary: Schema.optional(Schema.String),
 })
 
 export type OcalPreview = Schema.Schema.Type<typeof OcalPreview>
@@ -1316,6 +1362,8 @@ export function assertOcalTopLevelKeys(input: Record<string, unknown>) {
     "rollback",
     "done",
     "repo_intelligence",
+    // v2.2
+    "fleet",
   ])
   for (const key of Object.keys(input)) {
     if (!allowed.has(key)) {
@@ -1538,6 +1586,16 @@ export function buildOcalPreview(input: { spec: OcalScript; arm?: OcalArm }): Oc
           input.spec.repo_intelligence.indexes?.length ? `indexes:${input.spec.repo_intelligence.indexes.length}` : null,
           input.spec.repo_intelligence.scope_control?.require_scope_before_edit ? "scoped" : null,
         ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    fleet_enabled: input.spec.fleet !== undefined,
+    fleet_max_workers: input.spec.fleet?.max_workers ?? 0,
+    fleet_summary: input.spec.fleet
+      ? [
+          `max:${input.spec.fleet.max_workers}`,
+          input.spec.fleet.isolation ? `iso:${input.spec.fleet.isolation}` : null,
+          input.spec.fleet.jnoccio?.enabled ? "jnoccio:on" : null,
+          input.spec.fleet.telemetry?.publish_to ? `telem:${input.spec.fleet.telemetry.publish_to}` : null,
+        ].filter(Boolean).join(" ")
       : undefined,
   }
 }

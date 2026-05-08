@@ -333,6 +333,8 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
   assertSandboxNestedKeys(input)
   assertSecurityNestedKeys(input)
   assertObservabilityNestedKeys(input)
+  // v2.2 fleet
+  assertFleetNestedKeys(input)
 
   const incubator = input.incubator
   if (incubator === undefined) return
@@ -897,6 +899,92 @@ function validateOcalSemantics(spec: OcalScript) {
   if (spec.skills) {
     if (spec.skills.max_skills !== undefined && spec.skills.max_skills <= 0) {
       throw new OcalParseError("skills.max_skills must be positive")
+    }
+  }
+
+  // ─── v2.2: fleet — single-session worker cap of 20 ─────────────────
+  if (spec.fleet) {
+    const max = spec.fleet.max_workers
+    if (!Number.isInteger(max) || max < 1 || max > 20) {
+      throw new OcalParseError(
+        `fleet.max_workers must be an integer in [1, 20]; got ${max}`,
+      )
+    }
+    // Enforce that downstream worker counts respect the fleet cap.
+    const workerCount = (spec.agents?.workers ?? []).reduce((s, w) => s + (w.count ?? 0), 0)
+    if (workerCount > max) {
+      throw new OcalParseError(
+        `agents.workers total count (${workerCount}) exceeds fleet.max_workers (${max})`,
+      )
+    }
+    if (spec.fan_out?.worker.max_parallel !== undefined && spec.fan_out.worker.max_parallel > max) {
+      throw new OcalParseError(
+        `fan_out.worker.max_parallel (${spec.fan_out.worker.max_parallel}) exceeds fleet.max_workers (${max})`,
+      )
+    }
+    if (spec.experiments?.max_parallel !== undefined && spec.experiments.max_parallel > max) {
+      throw new OcalParseError(
+        `experiments.max_parallel (${spec.experiments.max_parallel}) exceeds fleet.max_workers (${max})`,
+      )
+    }
+    if (spec.incubator?.budget) {
+      const ideaParallel = spec.incubator.budget.max_parallel_idea_passes ?? 1
+      const activeTasks = spec.incubator.budget.max_active_tasks ?? 1
+      if (ideaParallel * activeTasks > max) {
+        throw new OcalParseError(
+          `incubator concurrency (${ideaParallel} × ${activeTasks} = ${ideaParallel * activeTasks}) exceeds fleet.max_workers (${max})`,
+        )
+      }
+    }
+    if (spec.fleet.jnoccio?.max_instances !== undefined) {
+      const ji = spec.fleet.jnoccio.max_instances
+      if (!Number.isInteger(ji) || ji < 1 || ji > 20) {
+        throw new OcalParseError(`fleet.jnoccio.max_instances must be in [1, 20]; got ${ji}`)
+      }
+    }
+  } else {
+    // No fleet block — keep legacy behaviour but still cap worker totals at 20.
+    const workerCount = (spec.agents?.workers ?? []).reduce((s, w) => s + (w.count ?? 0), 0)
+    if (workerCount > 20) {
+      throw new OcalParseError(
+        `agents.workers total count (${workerCount}) exceeds default fleet cap (20). Add a fleet block to declare an explicit cap.`,
+      )
+    }
+    if (spec.fan_out?.worker.max_parallel !== undefined && spec.fan_out.worker.max_parallel > 20) {
+      throw new OcalParseError(
+        `fan_out.worker.max_parallel (${spec.fan_out.worker.max_parallel}) exceeds default fleet cap (20)`,
+      )
+    }
+    if (spec.experiments?.max_parallel !== undefined && spec.experiments.max_parallel > 20) {
+      throw new OcalParseError(
+        `experiments.max_parallel (${spec.experiments.max_parallel}) exceeds default fleet cap (20)`,
+      )
+    }
+  }
+}
+
+// ─── v2.2: fleet nested-key validator ────────────────────────────────────
+function assertFleetNestedKeys(input: Record<string, unknown>) {
+  if (input.fleet === undefined) return
+  const fleet = expectRecord(input.fleet, "fleet")
+  assertKeys("fleet", fleet, ["max_workers", "isolation", "jnoccio", "telemetry"])
+  if (fleet.jnoccio !== undefined) {
+    const jn = expectRecord(fleet.jnoccio, "fleet.jnoccio")
+    assertKeys("fleet.jnoccio", jn, [
+      "enabled", "base_url", "metrics_ws", "spawn_on_demand",
+      "register_workers", "heartbeat_path", "heartbeat_interval", "max_instances",
+    ])
+  }
+  if (fleet.telemetry !== undefined) {
+    const tl = expectRecord(fleet.telemetry, "fleet.telemetry")
+    assertKeys("fleet.telemetry", tl, ["publish_to", "headers"])
+    if (tl.headers !== undefined) {
+      const headers = expectRecord(tl.headers, "fleet.telemetry.headers")
+      for (const [k, v] of Object.entries(headers)) {
+        if (typeof v !== "string") {
+          throw new OcalParseError(`fleet.telemetry.headers.${k} must be a string`)
+        }
+      }
     }
   }
 }

@@ -110,7 +110,7 @@ export const DEFAULT_THEMES: Record<string, ThemeJson> = {
   ["one-dark"]: onedark,
   ["osaka-jade"]: osakaJade,
   opencode,
-  ["opencode-gold"]: opencodeGold as any,
+  ["opencode-gold"]: opencodeGold,
   orng,
   ["lucent-orng"]: lucentOrng,
   palenight,
