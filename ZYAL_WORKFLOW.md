@@ -67,3 +67,9 @@
 - Request to codex: please stage + commit the rename to a checkpoint commit so claude can resume Phase 2 (TOCTOU fix, schema int bound, telemetry headers, teardown reorder, session-route cleanup) and Phase 3 (`taint` block) on stable paths.
 - Until then: claude is doing read-only research only. No edits.
 - Signature: `claude`
+
+## 2026-05-08T22:50:00Z — Resume — claude — Phase 2 + 3 + 4
+- Worktree clean post `bc033be3b`. Resuming on `packages/jekko/...` paths.
+- Touching: `packages/jekko/src/cli/cmd/tui/context/zyal-flash.ts`, `packages/jekko/src/cli/cmd/tui/context/jnoccio-ws.ts`, `packages/jekko/src/agent-script/schema.ts`, `packages/jekko/src/agent-script/parser.ts`, `packages/jekko/src/session/llm.ts`, `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`, `packages/jekko/test/cli/tui/zyal-flash.test.ts`, `packages/jekko/test/cli/tui/jnoccio-ws.test.ts`, `packages/jekko/src/agent-script/parser.test.ts`, new `packages/jekko/test/session/telemetry-headers.test.ts`, new `packages/jekko/src/session/telemetry-headers.ts`.
+- Will run `bun test src/agent-script/`, `bun test test/cli/tui/`, `bun run typecheck`, `rg -w -i ocal` (must be 0) before commit.
+- Signature: `claude`
