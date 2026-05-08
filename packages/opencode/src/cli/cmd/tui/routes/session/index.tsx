@@ -22,6 +22,7 @@ import { useEvent } from "@tui/context/event"
 import { SplitBorder } from "@tui/component/border"
 import { Spinner } from "@tui/component/spinner"
 import { selectedForeground, useTheme } from "@tui/context/theme"
+import { setOcalFlashSource, textHasOcalSentinel } from "@tui/context/ocal-flash"
 import { BoxRenderable, ScrollBoxRenderable, addDefaultParsers, TextAttributes, RGBA } from "@opentui/core"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
 import type {
@@ -155,6 +156,28 @@ export function Session() {
 
   const lastAssistant = createMemo(() => {
     return messages().findLast((x) => x.role === "assistant")
+  })
+
+  // OCAL gold flash: detect OCAL sentinels in the latest assistant message
+  // and any active daemon run, then toggle the gold theme overlay.
+  const ocalInAssistant = createMemo(() => {
+    const last = lastAssistant()
+    if (!last) return false
+    const parts = sync.data.part[last.id] ?? []
+    for (const part of parts) {
+      if (part.type === "text" && textHasOcalSentinel(part.text)) return true
+    }
+    return false
+  })
+  createEffect(() => {
+    setOcalFlashSource("session:assistant", ocalInAssistant())
+  })
+  createEffect(() => {
+    setOcalFlashSource("session:daemon", daemonRun() !== undefined)
+  })
+  onCleanup(() => {
+    setOcalFlashSource("session:assistant", false)
+    setOcalFlashSource("session:daemon", false)
   })
 
   const dimensions = useTerminalDimensions()

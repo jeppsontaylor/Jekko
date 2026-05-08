@@ -55,7 +55,13 @@ OCAL_ARM RUN_FOREVER id=my-script
 | `job` | object | **`name`** (string): human-readable name. **`objective`** (string): what the daemon should accomplish. **`risk`** (string[], optional): known risks. |
 | `stop` | object | **`all`** (list): conditions that must ALL be true to stop. **`any`** (list, optional): at least ONE must be true. Each condition is either `git_clean: {allow_untracked: bool}` or `shell: {command, timeout, assert: {exit_code, stdout_contains, stdout_regex, json}}`. |
 
-### Optional Keys (21 total top-level keys)
+### Optional Keys (38 total top-level keys)
+
+**v1 (15):** `version`, `intent`, `confirm`, `id`, `job`, `loop`, `stop`, `context`, `checkpoint`, `tasks`, `incubator`, `agents`, `mcp`, `permissions`, `ui`.
+**v1.1 (7):** `on`, `fan_out`, `guardrails`, `assertions`, `retry`, `hooks`, `constraints`.
+**v2 wave 1 (4):** `workflow`, `memory`, `evidence`, `approvals`.
+**v2 wave 2 (4):** `skills`, `sandbox`, `security`, `observability`.
+**v2.1 power blocks (10):** `arming`, `capabilities`, `quality`, `experiments`, `models`, `budgets`, `triggers`, `rollback`, `done`, `repo_intelligence`.
 
 #### `loop` — Iteration Policy
 ```yaml
@@ -1117,3 +1123,327 @@ permissions:
 <<<END_OCAL id=feature-impl>>>
 OCAL_ARM RUN_FOREVER id=feature-impl
 ```
+
+---
+
+## OCAL v2.1 Power Blocks
+
+These ten blocks raise OCAL from a daemon control language into a portable, host-enforced **autonomous-engineering contract**. They harden the arming surface, enforce least-privilege capabilities, kill vibe-coding by structure, run hypothesis tournaments instead of single-track loops, route across model portfolios, cap cost at multiple scopes, and define rollback as a first-class artifact.
+
+### `arming` — Origin-Aware, Hash-Bound Arming
+
+OCAL's #1 attack surface is a model-emitted `OCAL_ARM` sentinel. The `arming` block makes that structurally impossible: arming requires a host-generated nonce bound to the SHA-256 of the canonical normalized YAML, and only specific origins may arm.
+
+```yaml
+arming:
+  preview_hash_required: true
+  host_nonce_required: true
+  reject_inside_code_fence: true
+  reject_from:
+    - assistant_output
+    - tool_output
+    - web_content
+    - mcp_resource
+    - issue_comment
+  accepted_origins:
+    - trusted_user_message
+    - signed_cli_input
+    - host_ui_button
+  preview_expires_after: 10m
+  arm_token_single_use: true
+  bound_to: ["script_hash", "user_id", "repo", "branch"]
+```
+
+When `arming` is configured, the runtime emits an extended sentinel: `OCAL_ARM RUN_FOREVER id=… sha256=… nonce=… repo=git:…`.
+
+### `capabilities` — Least-Privilege Capability Leases
+
+Replaces coarse `permissions: { shell: ask }` with rule-list semantics: per-tool, per-path, per-command, per-time-window. A `command_floor` always blocks dangerous commands regardless of `allow` rules — there is no "YOLO mode."
+
+```yaml
+capabilities:
+  default: deny
+  rules:
+    - id: read-anywhere
+      tool: read
+      decision: allow
+    - id: edit-src
+      tool: edit
+      paths: ["packages/opencode/src/**"]
+      decision: allow
+    - id: edit-migrations
+      tool: edit
+      paths: ["packages/opencode/migration/**"]
+      decision: ask
+      require_gate: dba_review
+      reason: schema-sensitive
+    - id: shell-tests
+      tool: shell
+      command_regex: "^(bun test|bun run lint|tsgo --noEmit)( |$)"
+      decision: allow
+      expires: 2h
+  command_floor:
+    always_block:
+      - "git push --force"
+      - "rm -rf /"
+      - "sudo "
+      - "chmod 777"
+      - "curl .* \\| sh"
+      - "DROP DATABASE"
+```
+
+### `quality` — Anti-Vibe + Diff-Budget Gates
+
+Structurally prevents the canonical vibe-coding failure modes: deleted tests, weakened assertions, silent catches, fake-data fallbacks, `@ts-ignore`, unexplained large diffs. Bug-fix discipline requires a reproduction (failing test or captured trace) before any production patch.
+
+```yaml
+quality:
+  anti_vibe:
+    enabled: true
+    fail_closed: true
+    block_test_deletion: true
+    block_assertion_weakening: true
+    block_silent_catch: true
+    block_fake_data_fallback: true
+    block_ts_ignore: true
+    require_root_cause_for_bugfix: true
+    require_failing_test_first_for_bugfix: true
+  diff_budget:
+    max_files_changed: 25
+    max_added_lines: 1500
+    on_violation: require_approval
+  checks:
+    - name: no-test-skip
+      pattern: "\\.skip\\(|test\\.only\\(|describe\\.only\\("
+      scope: file_diff
+      on_violation: block_promotion
+    - name: no-broad-catch
+      pattern: "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}"
+      scope: file_diff
+      on_violation: warn
+```
+
+### `experiments` — Hypothesis Tournament
+
+Distinct from `fan_out` (parallel work-items) — `experiments` runs **competing hypotheses** in isolated git worktrees, scores them on weighted criteria, and reduces with `best_verified_patch` or `synthesize_best`. Failed lanes preserve their plans as **negative memory** so future runs don't repeat the dead-end.
+
+```yaml
+experiments:
+  strategy: disjoint_tournament
+  fork_from: last_green_checkpoint
+  diversity:
+    require_distinct_plan: true
+    min_plan_distance: 0.35
+    axes: [minimal_patch, test_first, refactor_boundary, dependency_strategy]
+  lanes:
+    - id: minimal
+      hypothesis: "Smallest patch satisfying acceptance criteria."
+      prompt_strategy: smallest_safe_change
+      isolation: git_worktree
+      timeout: 30m
+      budget: { max_iterations: 5, max_diff_lines: 500 }
+    - id: tests-first
+      hypothesis: "Write the failing tests, then make them pass."
+      prompt_strategy: tests_first
+      isolation: git_worktree
+      timeout: 30m
+    - id: refactor
+      hypothesis: "Extract a clean boundary, then port."
+      prompt_strategy: refactor_first
+      isolation: git_worktree
+  max_parallel: 3
+  scoring:
+    weights:
+      tests_passed: 0.30
+      typecheck_passed: 0.20
+      diff_minimal: 0.10
+      security_clean: 0.20
+      maintainability: 0.15
+      rollback_simplicity: 0.05
+    judge:
+      agent: critic
+      blind: true
+      must_use_different_provider: true
+  reduce:
+    strategy: best_verified_patch
+    require_final_verification: true
+  on_partial_failure: continue
+  preserve_failed_lanes_as_negative_memory: true
+```
+
+### `models` — Routing, Fallback, Critic Discipline
+
+Different phases get different models. Critic must use a **different provider** than the builder — provider-correlated blind spots are real. Confidence is capped (model self-reports never decisive). Fallback chain handles rate limits and context overflow without losing the run.
+
+```yaml
+models:
+  profiles:
+    planner:
+      provider: anthropic
+      model: claude-opus-4-7
+      reasoning: true
+    builder:
+      provider: anthropic
+      model: claude-sonnet-4-6
+    critic:
+      provider: openai
+      model: gpt-5
+      reasoning: true
+    summarizer:
+      provider: anthropic
+      model: claude-haiku-4-5-20251001
+      budget_usd: 0.50
+  routes:
+    plan: planner
+    implement: builder
+    review: critic
+    compress: summarizer
+  critic:
+    must_differ_from_builder: true
+    must_use_different_provider: true
+  fallback:
+    on_rate_limit: summarizer
+    on_context_overflow: summarizer
+    chain: [builder, summarizer]
+    cooldown: 60s
+  confidence_cap: 0.6
+```
+
+### `budgets` — Multi-Scope Cost Caps
+
+Budgets nest: run → task → iteration → experiment lane. Each scope has its own `on_exhaust` policy. `renew_with_approval` requires a human + progress report — `RUN_FOREVER` is honest about being lease-bounded.
+
+```yaml
+budgets:
+  run:
+    wall_clock: 8h
+    cost_usd: 50.00
+    tokens: 5000000
+    on_exhaust: renew_with_approval
+  task:
+    iterations: 30
+    cost_usd: 5.00
+    on_exhaust: park
+  iteration:
+    tool_calls: 40
+    diff_lines: 2000
+    on_exhaust: pause
+  experiment_lane:
+    wall_clock: 30m
+    cost_usd: 2.00
+    on_exhaust: abort
+```
+
+### `triggers` — Manual / Cron / GitHub / CI / Webhook
+
+First-class trigger sources with **anti-recursion** (cron jobs cannot create more cron jobs) and idempotency keys (replay never duplicates PRs/messages/deploys).
+
+```yaml
+triggers:
+  anti_recursion: true
+  list:
+    - id: nightly-sweep
+      kind: cron
+      schedule: "0 4 * * *"
+      allow_create_more_cron: false
+    - id: ci-fail
+      kind: ci_failure
+      filter: { branch: main }
+      max_runs_per_sha: 1
+    - id: issue-ocal-ready
+      kind: github_issue
+      filter: { label: ocal-ready }
+      idempotency_key_template: "issue-{{number}}-{{sha}}"
+    - id: pr-comment-fix
+      kind: github_pr_comment
+      filter: { body_contains: "/ocal fix" }
+```
+
+### `rollback` — First-Class Reversibility
+
+Rollback is required for risky paths and risky scores. Every rollback plan is verified with `git apply --reverse --check` before promotion, and on-failure-after-merge has a typed strategy.
+
+```yaml
+rollback:
+  required_when:
+    touches_paths:
+      - "packages/opencode/migration/**"
+      - "packages/opencode/src/auth/**"
+      - "infra/prod/**"
+    risk_score_gte: 0.6
+  plan_required: true
+  verify_command: "git apply --reverse --check < .opencode/daemon/rollback.patch"
+  on_failure_after_merge: revert_commit
+```
+
+### `done` — Definition-of-Done (Host-Evaluated)
+
+Separate from `stop` conditions. `stop` says "the loop may exit." `done` says "the work is genuinely complete." The host evaluates both — model self-claims never count.
+
+```yaml
+done:
+  require:
+    - stop_conditions_met
+    - requirements_verified
+    - evidence_complete
+    - no_unresolved_critical_objections
+    - memory_compressed
+    - rollback_plan_recorded
+    - final_state_clean
+  forbid:
+    - model_only_claim
+    - tests_not_run
+    - code_index_stale
+    - requirement_drift_unreviewed
+    - pending_human_gate
+```
+
+### `repo_intelligence` — Codebase Indexes + Scope Control
+
+Reads the repo into typed indexes (symbols, dependency graph, test graph, ownership, generated zones). `scope_control` forces an explicit scope before any edit — agents can't aimlessly grep their way to a billion-LOC compromise. `blast_radius` pauses the run when impact crosses a service boundary.
+
+```yaml
+repo_intelligence:
+  scale: large
+  indexes:
+    - symbols
+    - dependency_graph
+    - test_graph
+    - ownership
+    - generated_zones
+    - security_sinks
+  generated_zones:
+    - "**/*.gen.ts"
+    - "**/*.pb.go"
+    - "**/generated/**"
+  scope_control:
+    require_scope_before_edit: true
+    max_initial_scope_files: 50
+    expand_scope_requires_evidence: true
+  blast_radius:
+    compute_on: [edit, checkpoint]
+    pause_when_score_gte: 0.75
+```
+
+---
+
+## Powerful Example Runbooks
+
+The full set of flagship runbooks lives in [`docs/OCAL/examples/`](OCAL/examples/). Each demonstrates a different combination of v2.1 power blocks:
+
+| File | What it demonstrates |
+|---|---|
+| `01-fix-until-green.ocal.yml` | Minimum viable v2 daemon — bug-fix discipline, anti-vibe, rollback, done |
+| `02-hypothesis-tournament.ocal.yml` | Disjoint experiments with isolated worktrees, blind cross-provider judging, negative memory |
+| `03-billion-loc-monorepo.ocal.yml` | Repo-intelligence + scope control + blast radius for massive codebases |
+| `04-fleet-portfolio.ocal.yml` | Trigger-driven multi-issue dispatcher with budgets, leases, anti-recursion |
+| `05-secure-mcp-lockdown.ocal.yml` | Capability leases + command floor + secrets brokering + sandbox |
+| `06-evidence-graph-merge.ocal.yml` | Proof lanes + merge witness + rollback verify + done definition |
+| `07-self-improving-skills.ocal.yml` | Governed skill quarantine → human review → promotion lifecycle |
+| `08-full-power-runbook.ocal.yml` | Every v2.1 power block in one runbook, end-to-end |
+
+---
+
+## TUI Detection
+
+When OCAL is detected anywhere in the active session — in the user's prompt input, an assistant message stream, or an active daemon run — the OpenCode TUI overlays the **`opencode-gold`** theme, signalling host-mediated daemon mode. The overlay clears automatically when no source is active. Implementation: `packages/opencode/src/cli/cmd/tui/context/ocal-flash.ts`.

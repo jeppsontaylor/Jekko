@@ -652,3 +652,248 @@ approvals:
     expect(parsed.preview.approval_gate_count).toBe(1)
   })
 })
+
+// ─── v2 wave 2 parser tests ─────────────────────────────────────────────────
+
+describe("OCAL parser v2 wave 2", () => {
+  test("accepts a valid skills block", async () => {
+    const text = makeOcal(`
+skills:
+  registry:
+    code_review:
+      description: Review code
+      agent: plan
+      tools:
+        - read_file
+        - grep_search
+      trust: builtin
+      writes: none
+    test_writer:
+      description: Write tests
+      trust: verified
+      writes: isolated_worktree
+  allow_creation: true
+  max_skills: 10`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.skills_count).toBe(2)
+    expect(parsed.preview.skills_summary).toContain("code_review:builtin")
+  })
+
+  test("rejects skills with unknown nested keys", async () => {
+    const text = makeOcal(`
+skills:
+  registry:
+    my_skill:
+      description: test
+      bogus: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects skills with non-positive max_skills", async () => {
+    const text = makeOcal(`
+skills:
+  max_skills: 0`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts a valid sandbox block", async () => {
+    const text = makeOcal(`
+sandbox:
+  paths:
+    - path: src/
+      access: write
+    - path: /etc
+      access: deny
+  network:
+    outbound: allowlist
+    allowlist:
+      - api.openai.com
+      - "*.github.com"
+  resources:
+    max_file_size: 10MB
+    max_total_disk: 1GB
+    max_processes: 4
+  env_inherit:
+    - HOME
+    - PATH
+  env_deny:
+    - AWS_SECRET_KEY`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.sandbox_enabled).toBe(true)
+    expect(parsed.preview.sandbox_summary).toContain("paths:2")
+    expect(parsed.preview.sandbox_summary).toContain("net:allowlist")
+  })
+
+  test("rejects sandbox with unknown nested keys", async () => {
+    const text = makeOcal(`
+sandbox:
+  paths:
+    - path: src/
+      access: write
+      bogus: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects sandbox with allowlist but wrong outbound", async () => {
+    const text = makeOcal(`
+sandbox:
+  network:
+    outbound: deny
+    allowlist:
+      - example.com`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects sandbox with empty path", async () => {
+    const text = makeOcal(`
+sandbox:
+  paths:
+    - path: ""
+      access: write`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts a valid security block", async () => {
+    const text = makeOcal(`
+security:
+  trust_zones:
+    critical:
+      paths:
+        - src/auth
+        - src/payments
+      require_approval: true
+      max_risk_score: 0.3
+  injection:
+    scan_inputs: true
+    scan_outputs: true
+    deny_patterns:
+      - "eval("
+      - "system("
+    on_detect: abort
+  secrets:
+    allowed_env:
+      - API_KEY
+    redact_from_logs: true
+    rotate_after: 30d`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.security_enabled).toBe(true)
+    expect(parsed.preview.security_summary).toContain("zones:1")
+    expect(parsed.preview.security_summary).toContain("scan:input")
+  })
+
+  test("rejects security with unknown nested keys", async () => {
+    const text = makeOcal(`
+security:
+  trust_zones:
+    zone1:
+      paths:
+        - src/
+      bogus: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects security with empty deny pattern", async () => {
+    const text = makeOcal(`
+security:
+  injection:
+    scan_inputs: true
+    deny_patterns:
+      - ""`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts a valid observability block", async () => {
+    const text = makeOcal(`
+observability:
+  spans:
+    emit: all
+    include_tool_calls: true
+    include_model_calls: true
+  metrics:
+    - name: tool_calls
+      type: counter
+      source: runtime
+    - name: risk_score
+      type: gauge
+      source: analysis
+  cost:
+    budget: 10.0
+    currency: USD
+    alert_at_percent: 80
+    on_budget_exceeded: pause
+  report:
+    format: json
+    on_complete: true
+    include:
+      - spans
+      - costs`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.observability_enabled).toBe(true)
+    expect(parsed.preview.observability_summary).toContain("spans:all")
+    expect(parsed.preview.observability_summary).toContain("metrics:2")
+    expect(parsed.preview.observability_summary).toContain("budget:$10")
+  })
+
+  test("rejects observability with duplicate metric names", async () => {
+    const text = makeOcal(`
+observability:
+  metrics:
+    - name: x
+      type: counter
+      source: a
+    - name: x
+      type: gauge
+      source: b`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects observability with non-positive budget", async () => {
+    const text = makeOcal(`
+observability:
+  cost:
+    budget: 0`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects observability with invalid alert_at_percent", async () => {
+    const text = makeOcal(`
+observability:
+  cost:
+    budget: 10
+    alert_at_percent: 150`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts combined wave 2 blocks", async () => {
+    const text = makeOcal(`
+skills:
+  registry:
+    reviewer:
+      trust: builtin
+sandbox:
+  paths:
+    - path: src/
+      access: write
+security:
+  injection:
+    scan_inputs: true
+observability:
+  cost:
+    budget: 50`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.skills_count).toBe(1)
+    expect(parsed.preview.sandbox_enabled).toBe(true)
+    expect(parsed.preview.security_enabled).toBe(true)
+    expect(parsed.preview.observability_enabled).toBe(true)
+  })
+})

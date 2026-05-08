@@ -677,6 +677,453 @@ export const OcalApprovals = Schema.Struct({
 })
 export type OcalApprovals = Schema.Schema.Type<typeof OcalApprovals>
 
+// ─── Skills: Agent Skill Registry ──────────────────────────────────────────
+
+export const OcalSkillDefinition = Schema.Struct({
+  description: Schema.optional(Schema.String),
+  agent: Schema.optional(Schema.String),
+  tools: Schema.optional(Schema.Array(Schema.String)),
+  mcp_profile: Schema.optional(Schema.String),
+  writes: Schema.optional(Schema.Union([
+    Schema.Literal("none"),
+    Schema.Literal("scratch_only"),
+    Schema.Literal("isolated_worktree"),
+    Schema.Literal("working_tree"),
+  ])),
+  trust: Schema.optional(Schema.Union([
+    Schema.Literal("builtin"),
+    Schema.Literal("verified"),
+    Schema.Literal("community"),
+    Schema.Literal("local"),
+  ])),
+  timeout: Schema.optional(Schema.String),
+})
+export type OcalSkillDefinition = Schema.Schema.Type<typeof OcalSkillDefinition>
+
+export const OcalSkills = Schema.Struct({
+  registry: Schema.optional(Schema.Record(Schema.String, OcalSkillDefinition)),
+  allow_creation: Schema.optional(Schema.Boolean),
+  max_skills: Schema.optional(Schema.Number),
+})
+export type OcalSkills = Schema.Schema.Type<typeof OcalSkills>
+
+// ─── Sandbox: Execution Boundaries ─────────────────────────────────────────
+
+export const OcalSandboxPathRule = Schema.Struct({
+  path: Schema.String,
+  access: Schema.Union([
+    Schema.Literal("read"),
+    Schema.Literal("write"),
+    Schema.Literal("deny"),
+  ]),
+})
+export type OcalSandboxPathRule = Schema.Schema.Type<typeof OcalSandboxPathRule>
+
+export const OcalSandboxNetworkPolicy = Schema.Struct({
+  outbound: Schema.optional(Schema.Union([
+    Schema.Literal("allow"),
+    Schema.Literal("deny"),
+    Schema.Literal("allowlist"),
+  ])),
+  allowlist: Schema.optional(Schema.Array(Schema.String)),
+})
+export type OcalSandboxNetworkPolicy = Schema.Schema.Type<typeof OcalSandboxNetworkPolicy>
+
+export const OcalSandboxResources = Schema.Struct({
+  max_file_size: Schema.optional(Schema.String),
+  max_total_disk: Schema.optional(Schema.String),
+  max_memory: Schema.optional(Schema.String),
+  max_processes: Schema.optional(Schema.Number),
+})
+export type OcalSandboxResources = Schema.Schema.Type<typeof OcalSandboxResources>
+
+export const OcalSandbox = Schema.Struct({
+  paths: Schema.optional(Schema.Array(OcalSandboxPathRule)),
+  network: Schema.optional(OcalSandboxNetworkPolicy),
+  resources: Schema.optional(OcalSandboxResources),
+  env_inherit: Schema.optional(Schema.Array(Schema.String)),
+  env_deny: Schema.optional(Schema.Array(Schema.String)),
+})
+export type OcalSandbox = Schema.Schema.Type<typeof OcalSandbox>
+
+// ─── Security: Trust Zones & Injection Defense ─────────────────────────────
+
+export const OcalSecurityTrustZone = Schema.Struct({
+  paths: Schema.optional(Schema.Array(Schema.String)),
+  require_approval: Schema.optional(Schema.Boolean),
+  max_risk_score: Schema.optional(Schema.Number),
+})
+export type OcalSecurityTrustZone = Schema.Schema.Type<typeof OcalSecurityTrustZone>
+
+export const OcalSecurityInjection = Schema.Struct({
+  scan_inputs: Schema.optional(Schema.Boolean),
+  scan_outputs: Schema.optional(Schema.Boolean),
+  deny_patterns: Schema.optional(Schema.Array(Schema.String)),
+  on_detect: Schema.optional(Schema.Union([
+    Schema.Literal("abort"),
+    Schema.Literal("pause"),
+    Schema.Literal("warn"),
+    Schema.Literal("strip"),
+  ])),
+})
+export type OcalSecurityInjection = Schema.Schema.Type<typeof OcalSecurityInjection>
+
+export const OcalSecuritySecrets = Schema.Struct({
+  allowed_env: Schema.optional(Schema.Array(Schema.String)),
+  redact_from_logs: Schema.optional(Schema.Boolean),
+  rotate_after: Schema.optional(Schema.String),
+})
+export type OcalSecuritySecrets = Schema.Schema.Type<typeof OcalSecuritySecrets>
+
+export const OcalSecurity = Schema.Struct({
+  trust_zones: Schema.optional(Schema.Record(Schema.String, OcalSecurityTrustZone)),
+  injection: Schema.optional(OcalSecurityInjection),
+  secrets: Schema.optional(OcalSecuritySecrets),
+})
+export type OcalSecurity = Schema.Schema.Type<typeof OcalSecurity>
+
+// ─── Observability: Spans, Metrics & Cost Tracking ─────────────────────────
+
+export const OcalObservabilitySpan = Schema.Struct({
+  emit: Schema.optional(Schema.Union([
+    Schema.Literal("all"),
+    Schema.Literal("errors_only"),
+    Schema.Literal("none"),
+  ])),
+  include_tool_calls: Schema.optional(Schema.Boolean),
+  include_model_calls: Schema.optional(Schema.Boolean),
+})
+export type OcalObservabilitySpan = Schema.Schema.Type<typeof OcalObservabilitySpan>
+
+export const OcalObservabilityMetric = Schema.Struct({
+  name: Schema.String,
+  type: Schema.Union([
+    Schema.Literal("counter"),
+    Schema.Literal("gauge"),
+    Schema.Literal("histogram"),
+  ]),
+  source: Schema.String,
+})
+export type OcalObservabilityMetric = Schema.Schema.Type<typeof OcalObservabilityMetric>
+
+export const OcalObservabilityCost = Schema.Struct({
+  budget: Schema.optional(Schema.Number),
+  currency: Schema.optional(Schema.String),
+  alert_at_percent: Schema.optional(Schema.Number),
+  on_budget_exceeded: Schema.optional(Schema.Union([
+    Schema.Literal("pause"),
+    Schema.Literal("abort"),
+    Schema.Literal("warn"),
+  ])),
+})
+export type OcalObservabilityCost = Schema.Schema.Type<typeof OcalObservabilityCost>
+
+export const OcalObservabilityReport = Schema.Struct({
+  format: Schema.optional(Schema.Union([
+    Schema.Literal("json"),
+    Schema.Literal("markdown"),
+  ])),
+  on_complete: Schema.optional(Schema.Boolean),
+  on_checkpoint: Schema.optional(Schema.Boolean),
+  include: Schema.optional(Schema.Array(Schema.String)),
+})
+export type OcalObservabilityReport = Schema.Schema.Type<typeof OcalObservabilityReport>
+
+export const OcalObservability = Schema.Struct({
+  spans: Schema.optional(OcalObservabilitySpan),
+  metrics: Schema.optional(Schema.Array(OcalObservabilityMetric)),
+  cost: Schema.optional(OcalObservabilityCost),
+  report: Schema.optional(OcalObservabilityReport),
+})
+export type OcalObservability = Schema.Schema.Type<typeof OcalObservability>
+
+// ─── v2.1: Arming (origin-aware, hash-bound) ──────────────────────────────
+
+export const OcalArmingOrigin = Schema.Union([
+  Schema.Literal("trusted_user_message"),
+  Schema.Literal("signed_cli_input"),
+  Schema.Literal("signed_api_request"),
+  Schema.Literal("host_ui_button"),
+])
+export type OcalArmingOrigin = Schema.Schema.Type<typeof OcalArmingOrigin>
+
+export const OcalArmingPolicy = Schema.Struct({
+  preview_hash_required: Schema.optional(Schema.Boolean),
+  host_nonce_required: Schema.optional(Schema.Boolean),
+  reject_inside_code_fence: Schema.optional(Schema.Boolean),
+  reject_from: Schema.optional(Schema.Array(Schema.String)),
+  accepted_origins: Schema.optional(Schema.Array(OcalArmingOrigin)),
+  preview_expires_after: Schema.optional(Schema.String),
+  arm_token_single_use: Schema.optional(Schema.Boolean),
+  bound_to: Schema.optional(Schema.Array(Schema.String)),
+})
+export type OcalArmingPolicy = Schema.Schema.Type<typeof OcalArmingPolicy>
+
+// ─── v2.1: Capabilities (least-privilege leases) ──────────────────────────
+
+export const OcalCapabilityRule = Schema.Struct({
+  id: Schema.String,
+  tool: Schema.optional(Schema.String),
+  paths: Schema.optional(Schema.Array(Schema.String)),
+  command_regex: Schema.optional(Schema.String),
+  decision: Schema.Union([Schema.Literal("allow"), Schema.Literal("ask"), Schema.Literal("deny")]),
+  require_gate: Schema.optional(Schema.String),
+  expires: Schema.optional(Schema.String),
+  reason: Schema.optional(Schema.String),
+})
+export type OcalCapabilityRule = Schema.Schema.Type<typeof OcalCapabilityRule>
+
+export const OcalCapabilities = Schema.Struct({
+  default: Schema.optional(Schema.Union([Schema.Literal("deny"), Schema.Literal("ask"), Schema.Literal("allow")])),
+  rules: Schema.optional(Schema.Array(OcalCapabilityRule)),
+  command_floor: Schema.optional(Schema.Struct({
+    always_block: Schema.Array(Schema.String),
+  })),
+})
+export type OcalCapabilities = Schema.Schema.Type<typeof OcalCapabilities>
+
+// ─── v2.1: Quality / anti-vibe ────────────────────────────────────────────
+
+export const OcalQualityCheck = Schema.Struct({
+  name: Schema.String,
+  pattern: Schema.optional(Schema.String),
+  shell: Schema.optional(Schema.String),
+  scope: Schema.optional(Schema.Union([
+    Schema.Literal("file_diff"),
+    Schema.Literal("commit_message"),
+    Schema.Literal("tool_output"),
+    Schema.Literal("memory_write"),
+  ])),
+  on_violation: Schema.Union([
+    Schema.Literal("block_checkpoint"),
+    Schema.Literal("block_promotion"),
+    Schema.Literal("pause"),
+    Schema.Literal("warn"),
+    Schema.Literal("require_approval"),
+  ]),
+})
+export type OcalQualityCheck = Schema.Schema.Type<typeof OcalQualityCheck>
+
+export const OcalQuality = Schema.Struct({
+  anti_vibe: Schema.optional(Schema.Struct({
+    enabled: Schema.optional(Schema.Boolean),
+    fail_closed: Schema.optional(Schema.Boolean),
+    block_test_deletion: Schema.optional(Schema.Boolean),
+    block_assertion_weakening: Schema.optional(Schema.Boolean),
+    block_silent_catch: Schema.optional(Schema.Boolean),
+    block_fake_data_fallback: Schema.optional(Schema.Boolean),
+    block_ts_ignore: Schema.optional(Schema.Boolean),
+    require_root_cause_for_bugfix: Schema.optional(Schema.Boolean),
+    require_failing_test_first_for_bugfix: Schema.optional(Schema.Boolean),
+  })),
+  diff_budget: Schema.optional(Schema.Struct({
+    max_files_changed: Schema.optional(Schema.Number),
+    max_added_lines: Schema.optional(Schema.Number),
+    max_deleted_lines: Schema.optional(Schema.Number),
+    on_violation: Schema.optional(Schema.Union([
+      Schema.Literal("block_checkpoint"),
+      Schema.Literal("require_approval"),
+      Schema.Literal("warn"),
+    ])),
+  })),
+  checks: Schema.optional(Schema.Array(OcalQualityCheck)),
+})
+export type OcalQuality = Schema.Schema.Type<typeof OcalQuality>
+
+// ─── v2.1: Experiments (hypothesis tournament) ────────────────────────────
+
+export const OcalExperimentLane = Schema.Struct({
+  id: Schema.String,
+  hypothesis: Schema.String,
+  prompt_strategy: Schema.optional(Schema.String),
+  agent: Schema.optional(Schema.String),
+  model: Schema.optional(Schema.String),
+  isolation: Schema.optional(Schema.Union([Schema.Literal("git_worktree"), Schema.Literal("same_session")])),
+  timeout: Schema.optional(Schema.String),
+  budget: Schema.optional(Schema.Struct({
+    max_iterations: Schema.optional(Schema.Number),
+    max_diff_lines: Schema.optional(Schema.Number),
+    max_cost_usd: Schema.optional(Schema.Number),
+  })),
+})
+export type OcalExperimentLane = Schema.Schema.Type<typeof OcalExperimentLane>
+
+export const OcalExperiments = Schema.Struct({
+  strategy: Schema.optional(Schema.Union([
+    Schema.Literal("disjoint_tournament"),
+    Schema.Literal("parallel_distill_refine"),
+    Schema.Literal("ablation"),
+    Schema.Literal("portfolio_search"),
+  ])),
+  diversity: Schema.optional(Schema.Struct({
+    require_distinct_plan: Schema.optional(Schema.Boolean),
+    min_plan_distance: Schema.optional(Schema.Number),
+    axes: Schema.optional(Schema.Array(Schema.String)),
+  })),
+  lanes: Schema.Array(OcalExperimentLane),
+  fork_from: Schema.optional(Schema.Union([
+    Schema.Literal("last_green_checkpoint"),
+    Schema.Literal("current_head"),
+    Schema.Literal("origin_main"),
+  ])),
+  max_parallel: Schema.optional(Schema.Number),
+  scoring: Schema.optional(Schema.Struct({
+    weights: Schema.optional(Schema.Record(Schema.String, Schema.Number)),
+    command: Schema.optional(Schema.String),
+    judge: Schema.optional(Schema.Struct({
+      agent: Schema.String,
+      blind: Schema.optional(Schema.Boolean),
+      must_use_different_provider: Schema.optional(Schema.Boolean),
+    })),
+  })),
+  reduce: Schema.optional(Schema.Struct({
+    strategy: Schema.Union([
+      Schema.Literal("best_verified_patch"),
+      Schema.Literal("synthesize_best"),
+      Schema.Literal("cherry_pick_minimal"),
+      Schema.Literal("vote"),
+    ]),
+    require_final_verification: Schema.optional(Schema.Boolean),
+  })),
+  on_partial_failure: Schema.optional(Schema.Union([
+    Schema.Literal("continue"),
+    Schema.Literal("abort"),
+    Schema.Literal("pause"),
+  ])),
+  preserve_failed_lanes_as_negative_memory: Schema.optional(Schema.Boolean),
+})
+export type OcalExperiments = Schema.Schema.Type<typeof OcalExperiments>
+
+// ─── v2.1: Models (routing + fallback + critic discipline) ────────────────
+
+export const OcalModelProfile = Schema.Struct({
+  provider: Schema.optional(Schema.String),
+  model: Schema.optional(Schema.String),
+  temperature: Schema.optional(Schema.Number),
+  reasoning: Schema.optional(Schema.Boolean),
+  budget_usd: Schema.optional(Schema.Number),
+})
+export type OcalModelProfile = Schema.Schema.Type<typeof OcalModelProfile>
+
+export const OcalModels = Schema.Struct({
+  profiles: Schema.optional(Schema.Record(Schema.String, OcalModelProfile)),
+  routes: Schema.optional(Schema.Record(Schema.String, Schema.String)),
+  critic: Schema.optional(Schema.Struct({
+    must_differ_from_builder: Schema.optional(Schema.Boolean),
+    must_use_different_provider: Schema.optional(Schema.Boolean),
+  })),
+  fallback: Schema.optional(Schema.Struct({
+    on_rate_limit: Schema.optional(Schema.String),
+    on_context_overflow: Schema.optional(Schema.String),
+    chain: Schema.optional(Schema.Array(Schema.String)),
+    cooldown: Schema.optional(Schema.String),
+  })),
+  confidence_cap: Schema.optional(Schema.Number),
+})
+export type OcalModels = Schema.Schema.Type<typeof OcalModels>
+
+// ─── v2.1: Budgets (multi-scope, on_exhaust policy) ───────────────────────
+
+export const OcalBudgetScope = Schema.Struct({
+  wall_clock: Schema.optional(Schema.String),
+  iterations: Schema.optional(Schema.Number),
+  tokens: Schema.optional(Schema.Number),
+  cost_usd: Schema.optional(Schema.Number),
+  tool_calls: Schema.optional(Schema.Number),
+  diff_lines: Schema.optional(Schema.Number),
+  on_exhaust: Schema.optional(Schema.Union([
+    Schema.Literal("pause"),
+    Schema.Literal("park"),
+    Schema.Literal("abort"),
+    Schema.Literal("renew_with_approval"),
+  ])),
+})
+export type OcalBudgetScope = Schema.Schema.Type<typeof OcalBudgetScope>
+
+export const OcalBudgets = Schema.Struct({
+  run: Schema.optional(OcalBudgetScope),
+  task: Schema.optional(OcalBudgetScope),
+  iteration: Schema.optional(OcalBudgetScope),
+  experiment_lane: Schema.optional(OcalBudgetScope),
+})
+export type OcalBudgets = Schema.Schema.Type<typeof OcalBudgets>
+
+// ─── v2.1: Triggers (manual/cron/github/ci/webhook) ───────────────────────
+
+export const OcalTrigger = Schema.Struct({
+  id: Schema.String,
+  kind: Schema.Union([
+    Schema.Literal("manual"),
+    Schema.Literal("cron"),
+    Schema.Literal("github_issue"),
+    Schema.Literal("github_pr_comment"),
+    Schema.Literal("ci_failure"),
+    Schema.Literal("webhook"),
+    Schema.Literal("slack_command"),
+  ]),
+  schedule: Schema.optional(Schema.String),
+  filter: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+  idempotency_key_template: Schema.optional(Schema.String),
+  max_runs_per_sha: Schema.optional(Schema.Number),
+  allow_create_more_cron: Schema.optional(Schema.Boolean),
+})
+export type OcalTrigger = Schema.Schema.Type<typeof OcalTrigger>
+
+export const OcalTriggers = Schema.Struct({
+  list: Schema.Array(OcalTrigger),
+  anti_recursion: Schema.optional(Schema.Boolean),
+})
+export type OcalTriggers = Schema.Schema.Type<typeof OcalTriggers>
+
+// ─── v2.1: Rollback (first-class) ─────────────────────────────────────────
+
+export const OcalRollback = Schema.Struct({
+  required_when: Schema.optional(Schema.Struct({
+    touches_paths: Schema.optional(Schema.Array(Schema.String)),
+    risk_score_gte: Schema.optional(Schema.Number),
+  })),
+  plan_required: Schema.optional(Schema.Boolean),
+  verify_command: Schema.optional(Schema.String),
+  on_failure_after_merge: Schema.optional(Schema.Union([
+    Schema.Literal("revert_commit"),
+    Schema.Literal("feature_flag_off"),
+    Schema.Literal("migration_down"),
+    Schema.Literal("manual"),
+  ])),
+})
+export type OcalRollback = Schema.Schema.Type<typeof OcalRollback>
+
+// ─── v2.1: Done definition (host-evaluated) ───────────────────────────────
+
+export const OcalDone = Schema.Struct({
+  require: Schema.optional(Schema.Array(Schema.String)),
+  forbid: Schema.optional(Schema.Array(Schema.String)),
+})
+export type OcalDone = Schema.Schema.Type<typeof OcalDone>
+
+// ─── v2.1: Repo intelligence (indexes, scope, blast radius) ───────────────
+
+export const OcalRepoIntelligence = Schema.Struct({
+  scale: Schema.optional(Schema.Union([
+    Schema.Literal("small"),
+    Schema.Literal("medium"),
+    Schema.Literal("large"),
+    Schema.Literal("billion_loc"),
+  ])),
+  indexes: Schema.optional(Schema.Array(Schema.String)),
+  generated_zones: Schema.optional(Schema.Array(Schema.String)),
+  scope_control: Schema.optional(Schema.Struct({
+    require_scope_before_edit: Schema.optional(Schema.Boolean),
+    max_initial_scope_files: Schema.optional(Schema.Number),
+    expand_scope_requires_evidence: Schema.optional(Schema.Boolean),
+  })),
+  blast_radius: Schema.optional(Schema.Struct({
+    compute_on: Schema.optional(Schema.Array(Schema.String)),
+    pause_when_score_gte: Schema.optional(Schema.Number),
+  })),
+})
+export type OcalRepoIntelligence = Schema.Schema.Type<typeof OcalRepoIntelligence>
+
 // ─── Core Types ────────────────────────────────────────────────────────────
 
 export const OcalArm = Schema.Struct({
@@ -714,6 +1161,22 @@ export const OcalSpec = Schema.Struct({
   memory: Schema.optional(OcalMemory),
   evidence: Schema.optional(OcalEvidence),
   approvals: Schema.optional(OcalApprovals),
+  // v2 wave 2 blocks
+  skills: Schema.optional(OcalSkills),
+  sandbox: Schema.optional(OcalSandbox),
+  security: Schema.optional(OcalSecurity),
+  observability: Schema.optional(OcalObservability),
+  // v2.1 power blocks
+  arming: Schema.optional(OcalArmingPolicy),
+  capabilities: Schema.optional(OcalCapabilities),
+  quality: Schema.optional(OcalQuality),
+  experiments: Schema.optional(OcalExperiments),
+  models: Schema.optional(OcalModels),
+  budgets: Schema.optional(OcalBudgets),
+  triggers: Schema.optional(OcalTriggers),
+  rollback: Schema.optional(OcalRollback),
+  done: Schema.optional(OcalDone),
+  repo_intelligence: Schema.optional(OcalRepoIntelligence),
 })
 
 export type OcalSpec = Schema.Schema.Type<typeof OcalSpec>
@@ -767,6 +1230,36 @@ export const OcalPreview = Schema.Struct({
   evidence_summary: Schema.optional(Schema.String),
   approval_gate_count: Schema.Number,
   approvals_summary: Schema.optional(Schema.String),
+  // v2 wave 2 capabilities
+  skills_count: Schema.Number,
+  skills_summary: Schema.optional(Schema.String),
+  sandbox_enabled: Schema.Boolean,
+  sandbox_summary: Schema.optional(Schema.String),
+  security_enabled: Schema.Boolean,
+  security_summary: Schema.optional(Schema.String),
+  observability_enabled: Schema.Boolean,
+  observability_summary: Schema.optional(Schema.String),
+  // v2.1 power blocks
+  arming_enabled: Schema.Boolean,
+  arming_summary: Schema.optional(Schema.String),
+  capabilities_rule_count: Schema.Number,
+  capabilities_summary: Schema.optional(Schema.String),
+  quality_enabled: Schema.Boolean,
+  quality_summary: Schema.optional(Schema.String),
+  experiments_enabled: Schema.Boolean,
+  experiments_summary: Schema.optional(Schema.String),
+  models_enabled: Schema.Boolean,
+  models_summary: Schema.optional(Schema.String),
+  budgets_enabled: Schema.Boolean,
+  budgets_summary: Schema.optional(Schema.String),
+  triggers_count: Schema.Number,
+  triggers_summary: Schema.optional(Schema.String),
+  rollback_enabled: Schema.Boolean,
+  rollback_summary: Schema.optional(Schema.String),
+  done_enabled: Schema.Boolean,
+  done_summary: Schema.optional(Schema.String),
+  repo_intel_enabled: Schema.Boolean,
+  repo_intel_summary: Schema.optional(Schema.String),
 })
 
 export type OcalPreview = Schema.Schema.Type<typeof OcalPreview>
@@ -807,6 +1300,22 @@ export function assertOcalTopLevelKeys(input: Record<string, unknown>) {
     "memory",
     "evidence",
     "approvals",
+    // v2 wave 2
+    "skills",
+    "sandbox",
+    "security",
+    "observability",
+    // v2.1 power blocks
+    "arming",
+    "capabilities",
+    "quality",
+    "experiments",
+    "models",
+    "budgets",
+    "triggers",
+    "rollback",
+    "done",
+    "repo_intelligence",
   ])
   for (const key of Object.keys(input)) {
     if (!allowed.has(key)) {
@@ -926,6 +1435,109 @@ export function buildOcalPreview(input: { spec: OcalScript; arm?: OcalArm }): Oc
     approval_gate_count: input.spec.approvals?.gates ? Object.keys(input.spec.approvals.gates).length : 0,
     approvals_summary: input.spec.approvals?.gates
       ? Object.entries(input.spec.approvals.gates).map(([k, v]) => `${k}${v.required_role ? `:${v.required_role}` : ""}`).join(", ")
+      : undefined,
+    // v2 wave 2 capabilities
+    skills_count: input.spec.skills?.registry ? Object.keys(input.spec.skills.registry).length : 0,
+    skills_summary: input.spec.skills?.registry
+      ? Object.entries(input.spec.skills.registry).map(([k, v]) => `${k}${v.trust ? `:${v.trust}` : ""}`).join(", ")
+      : undefined,
+    sandbox_enabled: input.spec.sandbox !== undefined,
+    sandbox_summary: input.spec.sandbox
+      ? [
+          input.spec.sandbox.paths?.length ? `paths:${input.spec.sandbox.paths.length}` : null,
+          input.spec.sandbox.network?.outbound ? `net:${input.spec.sandbox.network.outbound}` : null,
+          input.spec.sandbox.resources ? "resources:limited" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    security_enabled: input.spec.security !== undefined,
+    security_summary: input.spec.security
+      ? [
+          input.spec.security.trust_zones ? `zones:${Object.keys(input.spec.security.trust_zones).length}` : null,
+          input.spec.security.injection?.scan_inputs ? "scan:input" : null,
+          input.spec.security.injection?.scan_outputs ? "scan:output" : null,
+          input.spec.security.secrets ? "secrets:managed" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    observability_enabled: input.spec.observability !== undefined,
+    observability_summary: input.spec.observability
+      ? [
+          input.spec.observability.spans ? `spans:${input.spec.observability.spans.emit ?? "all"}` : null,
+          input.spec.observability.metrics?.length ? `metrics:${input.spec.observability.metrics.length}` : null,
+          input.spec.observability.cost?.budget ? `budget:$${input.spec.observability.cost.budget}` : null,
+          input.spec.observability.report ? "report:enabled" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    // v2.1 power blocks
+    arming_enabled: input.spec.arming !== undefined,
+    arming_summary: input.spec.arming
+      ? [
+          input.spec.arming.preview_hash_required ? "hash" : null,
+          input.spec.arming.host_nonce_required ? "nonce" : null,
+          input.spec.arming.accepted_origins?.length ? `origins:${input.spec.arming.accepted_origins.length}` : null,
+          input.spec.arming.arm_token_single_use ? "single_use" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    capabilities_rule_count: input.spec.capabilities?.rules?.length ?? 0,
+    capabilities_summary: input.spec.capabilities
+      ? [
+          `default:${input.spec.capabilities.default ?? "deny"}`,
+          input.spec.capabilities.rules?.length ? `rules:${input.spec.capabilities.rules.length}` : null,
+          input.spec.capabilities.command_floor ? `floor:${input.spec.capabilities.command_floor.always_block.length}` : null,
+        ].filter(Boolean).join(" ")
+      : undefined,
+    quality_enabled: input.spec.quality !== undefined,
+    quality_summary: input.spec.quality
+      ? [
+          input.spec.quality.anti_vibe?.enabled ? "anti_vibe" : null,
+          input.spec.quality.diff_budget ? "diff_budget" : null,
+          input.spec.quality.checks?.length ? `checks:${input.spec.quality.checks.length}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    experiments_enabled: input.spec.experiments !== undefined,
+    experiments_summary: input.spec.experiments
+      ? `${input.spec.experiments.strategy ?? "disjoint_tournament"} lanes:${input.spec.experiments.lanes.length}${input.spec.experiments.reduce ? ` → ${input.spec.experiments.reduce.strategy}` : ""}`
+      : undefined,
+    models_enabled: input.spec.models !== undefined,
+    models_summary: input.spec.models
+      ? [
+          input.spec.models.profiles ? `profiles:${Object.keys(input.spec.models.profiles).length}` : null,
+          input.spec.models.routes ? `routes:${Object.keys(input.spec.models.routes).length}` : null,
+          input.spec.models.critic?.must_differ_from_builder ? "critic_distinct" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    budgets_enabled: input.spec.budgets !== undefined,
+    budgets_summary: input.spec.budgets
+      ? Object.entries(input.spec.budgets)
+          .filter(([, v]) => v !== undefined)
+          .map(([k]) => k)
+          .join(",")
+      : undefined,
+    triggers_count: input.spec.triggers?.list.length ?? 0,
+    triggers_summary: input.spec.triggers?.list.length
+      ? input.spec.triggers.list.map((t) => `${t.id}:${t.kind}`).join(", ")
+      : undefined,
+    rollback_enabled: input.spec.rollback !== undefined,
+    rollback_summary: input.spec.rollback
+      ? [
+          input.spec.rollback.plan_required ? "plan_required" : null,
+          input.spec.rollback.verify_command ? "verify" : null,
+          input.spec.rollback.on_failure_after_merge ? `on_fail:${input.spec.rollback.on_failure_after_merge}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    done_enabled: input.spec.done !== undefined,
+    done_summary: input.spec.done
+      ? [
+          input.spec.done.require?.length ? `require:${input.spec.done.require.length}` : null,
+          input.spec.done.forbid?.length ? `forbid:${input.spec.done.forbid.length}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    repo_intel_enabled: input.spec.repo_intelligence !== undefined,
+    repo_intel_summary: input.spec.repo_intelligence
+      ? [
+          input.spec.repo_intelligence.scale ? `scale:${input.spec.repo_intelligence.scale}` : null,
+          input.spec.repo_intelligence.indexes?.length ? `indexes:${input.spec.repo_intelligence.indexes.length}` : null,
+          input.spec.repo_intelligence.scope_control?.require_scope_before_edit ? "scoped" : null,
+        ].filter(Boolean).join(" ") || "configured"
       : undefined,
   }
 }

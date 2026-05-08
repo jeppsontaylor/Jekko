@@ -31,6 +31,7 @@ import * as Clipboard from "../../util/clipboard"
 import type { AssistantMessage, FilePart, UserMessage } from "@opencode-ai/sdk/v2"
 import { TuiEvent } from "../../event"
 import { detectOcal } from "@/agent-script/activation"
+import { setOcalFlashSource } from "@tui/context/ocal-flash"
 import { iife } from "@/util/iife"
 import { Locale } from "@/util/locale"
 import { formatDuration } from "@/util/format"
@@ -354,6 +355,12 @@ export function Prompt(props: PromptProps) {
     if (!text.startsWith("<<<OCAL v1:daemon id=")) return { kind: "none" as const }
     return detectOcal(store.prompt.input)
   })
+
+  // Flash the TUI gold when the user is composing an OCAL block.
+  createEffect(() => {
+    setOcalFlashSource("prompt", daemonDraft().kind !== "none")
+  })
+  onCleanup(() => setOcalFlashSource("prompt", false))
 
   createEffect(
     on(

@@ -328,6 +328,11 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
   assertMemoryNestedKeys(input)
   assertEvidenceNestedKeys(input)
   assertApprovalsNestedKeys(input)
+  // v2 wave 2 blocks
+  assertSkillsNestedKeys(input)
+  assertSandboxNestedKeys(input)
+  assertSecurityNestedKeys(input)
+  assertObservabilityNestedKeys(input)
 
   const incubator = input.incubator
   if (incubator === undefined) return
@@ -552,6 +557,92 @@ function assertApprovalsNestedKeys(input: Record<string, unknown>) {
   }
 }
 
+// ─── v2 wave 2: skills ──────────────────────────────────────────────────────
+function assertSkillsNestedKeys(input: Record<string, unknown>) {
+  if (input.skills === undefined) return
+  const skills = expectRecord(input.skills, "skills")
+  assertKeys("skills", skills, ["registry", "allow_creation", "max_skills"])
+  if (skills.registry !== undefined) {
+    const registry = expectRecord(skills.registry, "skills.registry")
+    for (const [name, skill] of Object.entries(registry)) {
+      const record = expectRecord(skill, `skills.registry.${name}`)
+      assertKeys(`skills.registry.${name}`, record, [
+        "description", "agent", "tools", "mcp_profile", "writes", "trust", "timeout",
+      ])
+    }
+  }
+}
+
+// ─── v2 wave 2: sandbox ─────────────────────────────────────────────────────
+function assertSandboxNestedKeys(input: Record<string, unknown>) {
+  if (input.sandbox === undefined) return
+  const sandbox = expectRecord(input.sandbox, "sandbox")
+  assertKeys("sandbox", sandbox, ["paths", "network", "resources", "env_inherit", "env_deny"])
+  if (sandbox.paths !== undefined) {
+    if (!Array.isArray(sandbox.paths)) throw new OcalParseError("sandbox.paths must be a list")
+    sandbox.paths.forEach((rule, i) => {
+      const record = expectRecord(rule, `sandbox.paths[${i}]`)
+      assertKeys(`sandbox.paths[${i}]`, record, ["path", "access"])
+    })
+  }
+  if (sandbox.network !== undefined) {
+    const network = expectRecord(sandbox.network, "sandbox.network")
+    assertKeys("sandbox.network", network, ["outbound", "allowlist"])
+  }
+  if (sandbox.resources !== undefined) {
+    const resources = expectRecord(sandbox.resources, "sandbox.resources")
+    assertKeys("sandbox.resources", resources, ["max_file_size", "max_total_disk", "max_memory", "max_processes"])
+  }
+}
+
+// ─── v2 wave 2: security ────────────────────────────────────────────────────
+function assertSecurityNestedKeys(input: Record<string, unknown>) {
+  if (input.security === undefined) return
+  const security = expectRecord(input.security, "security")
+  assertKeys("security", security, ["trust_zones", "injection", "secrets"])
+  if (security.trust_zones !== undefined) {
+    const zones = expectRecord(security.trust_zones, "security.trust_zones")
+    for (const [name, zone] of Object.entries(zones)) {
+      const record = expectRecord(zone, `security.trust_zones.${name}`)
+      assertKeys(`security.trust_zones.${name}`, record, ["paths", "require_approval", "max_risk_score"])
+    }
+  }
+  if (security.injection !== undefined) {
+    const injection = expectRecord(security.injection, "security.injection")
+    assertKeys("security.injection", injection, ["scan_inputs", "scan_outputs", "deny_patterns", "on_detect"])
+  }
+  if (security.secrets !== undefined) {
+    const secrets = expectRecord(security.secrets, "security.secrets")
+    assertKeys("security.secrets", secrets, ["allowed_env", "redact_from_logs", "rotate_after"])
+  }
+}
+
+// ─── v2 wave 2: observability ───────────────────────────────────────────────
+function assertObservabilityNestedKeys(input: Record<string, unknown>) {
+  if (input.observability === undefined) return
+  const obs = expectRecord(input.observability, "observability")
+  assertKeys("observability", obs, ["spans", "metrics", "cost", "report"])
+  if (obs.spans !== undefined) {
+    const spans = expectRecord(obs.spans, "observability.spans")
+    assertKeys("observability.spans", spans, ["emit", "include_tool_calls", "include_model_calls"])
+  }
+  if (obs.metrics !== undefined) {
+    if (!Array.isArray(obs.metrics)) throw new OcalParseError("observability.metrics must be a list")
+    obs.metrics.forEach((metric, i) => {
+      const record = expectRecord(metric, `observability.metrics[${i}]`)
+      assertKeys(`observability.metrics[${i}]`, record, ["name", "type", "source"])
+    })
+  }
+  if (obs.cost !== undefined) {
+    const cost = expectRecord(obs.cost, "observability.cost")
+    assertKeys("observability.cost", cost, ["budget", "currency", "alert_at_percent", "on_budget_exceeded"])
+  }
+  if (obs.report !== undefined) {
+    const report = expectRecord(obs.report, "observability.report")
+    assertKeys("observability.report", report, ["format", "on_complete", "on_checkpoint", "include"])
+  }
+}
+
 function validateOcalSemantics(spec: OcalScript) {
   // ─── Incubator validation ─────────────────────────────────────────────
   const incubator = spec.incubator
@@ -747,6 +838,65 @@ function validateOcalSemantics(spec: OcalScript) {
         throw new OcalParseError(`evidence.require_before_promote[${i}].type '${req.type}' is duplicated`)
       }
       types.add(req.type)
+    }
+  }
+
+  // ─── v2 wave 2: sandbox ─────────────────────────────────────────────
+  if (spec.sandbox) {
+    // Network allowlist requires outbound=allowlist
+    if (spec.sandbox.network?.allowlist?.length && spec.sandbox.network.outbound !== "allowlist") {
+      throw new OcalParseError("sandbox.network.allowlist requires outbound: allowlist")
+    }
+    // Path rules must have non-empty paths
+    if (spec.sandbox.paths) {
+      for (const [i, rule] of spec.sandbox.paths.entries()) {
+        if (!rule.path.trim()) {
+          throw new OcalParseError(`sandbox.paths[${i}].path must not be empty`)
+        }
+      }
+    }
+  }
+
+  // ─── v2 wave 2: security ────────────────────────────────────────────
+  if (spec.security?.injection?.deny_patterns) {
+    for (const [i, pattern] of spec.security.injection.deny_patterns.entries()) {
+      if (!pattern.trim()) {
+        throw new OcalParseError(`security.injection.deny_patterns[${i}] must not be empty`)
+      }
+    }
+  }
+
+  // ─── v2 wave 2: observability ─────────────────────────────────────────
+  if (spec.observability?.metrics) {
+    const names = new Set<string>()
+    for (const [i, metric] of spec.observability.metrics.entries()) {
+      if (!metric.name.trim()) {
+        throw new OcalParseError(`observability.metrics[${i}].name must not be empty`)
+      }
+      if (names.has(metric.name)) {
+        throw new OcalParseError(`observability.metrics[${i}].name '${metric.name}' is duplicated`)
+      }
+      names.add(metric.name)
+      if (!metric.source.trim()) {
+        throw new OcalParseError(`observability.metrics[${i}].source must not be empty`)
+      }
+    }
+  }
+  if (spec.observability?.cost) {
+    if (spec.observability.cost.budget !== undefined && spec.observability.cost.budget <= 0) {
+      throw new OcalParseError("observability.cost.budget must be positive")
+    }
+    if (spec.observability.cost.alert_at_percent !== undefined) {
+      if (spec.observability.cost.alert_at_percent <= 0 || spec.observability.cost.alert_at_percent > 100) {
+        throw new OcalParseError("observability.cost.alert_at_percent must be in (0, 100]")
+      }
+    }
+  }
+
+  // ─── v2 wave 2: skills ──────────────────────────────────────────────
+  if (spec.skills) {
+    if (spec.skills.max_skills !== undefined && spec.skills.max_skills <= 0) {
+      throw new OcalParseError("skills.max_skills must be positive")
     }
   }
 }
