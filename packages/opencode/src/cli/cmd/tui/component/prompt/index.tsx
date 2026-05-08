@@ -30,6 +30,7 @@ import { useExit } from "../../context/exit"
 import * as Clipboard from "../../util/clipboard"
 import type { AssistantMessage, FilePart, UserMessage } from "@opencode-ai/sdk/v2"
 import { TuiEvent } from "../../event"
+import { detectOcal } from "@/agent-script/activation"
 import { iife } from "@/util/iife"
 import { Locale } from "@/util/locale"
 import { formatDuration } from "@/util/format"
@@ -37,6 +38,7 @@ import { createColors, createFrames } from "../../ui/spinner.ts"
 import { useDialog } from "@tui/ui/dialog"
 import { DialogProvider as DialogProviderConnect } from "../dialog-provider"
 import { DialogAlert } from "../../ui/dialog-alert"
+import { DialogConfirm } from "../../ui/dialog-confirm"
 import { useToast } from "../../ui/toast"
 import { useKV } from "../../context/kv"
 import { createFadeIn } from "../../util/signal"
@@ -137,7 +139,7 @@ export function Prompt(props: PromptProps) {
   const command = useCommandDialog()
   const renderer = useRenderer()
   const dimensions = useTerminalDimensions()
-  const { theme, syntax } = useTheme()
+  const { theme, syntax, setOverlay } = useTheme()
   const kv = useKV()
   const animationsEnabled = createMemo(() => kv.get("animations_enabled", true))
   const list = createMemo(() => props.placeholders?.normal ?? [])
@@ -345,6 +347,12 @@ export function Prompt(props: PromptProps) {
     mode: "normal",
     extmarkToPartIndex: new Map(),
     interrupt: 0,
+  })
+
+  const daemonDraft = createMemo(() => {
+    const text = store.prompt.input.trim()
+    if (!text.startsWith("<<<OCAL v1:daemon id=")) return { kind: "none" as const }
+    return detectOcal(store.prompt.input)
   })
 
   createEffect(
@@ -833,6 +841,35 @@ export function Prompt(props: PromptProps) {
       return false
     }
 
+    let daemonMode: ReturnType<typeof daemonDraft> = daemonDraft()
+    if (daemonMode.kind === "invalid") {
+      const sendAsPlainText = await DialogConfirm.show(dialog, "Invalid OCAL", daemonMode.error, "send as plain text")
+      if (!sendAsPlainText) return false
+      daemonMode = { kind: "none" }
+    } else if (daemonMode.kind === "preview") {
+      const summary = [
+        `Objective: ${daemonMode.preview.objective}`,
+        `Loop: ${daemonMode.preview.loop_policy ?? "forever"}`,
+        `Stop: ${daemonMode.preview.stop_checks.join(", ") || "(none)"}`,
+        `Workers: ${daemonMode.preview.worker_count}`,
+        `Incubator: ${daemonMode.preview.incubator_enabled ? "enabled" : "disabled"}`,
+        ...(daemonMode.preview.incubator_enabled
+          ? [
+              `Passes: ${daemonMode.preview.incubator_passes.length}`,
+              `Max passes: ${daemonMode.preview.incubator_budget?.max_passes_per_task ?? "(none)"}`,
+              `Promotion: ${daemonMode.preview.promotion_threshold ?? "(none)"}`,
+              `Exclude: ${daemonMode.preview.exclusion_summary ?? "(none)"}`,
+              `Cleanup: ${daemonMode.preview.cleanup_summary ?? "(none)"}`,
+              `Readiness: ${daemonMode.preview.readiness_summary ?? "(none)"}`,
+              `Write risks: ${daemonMode.preview.incubator_risks.join(", ") || "(none)"}`,
+            ]
+          : []),
+        `Risks: ${daemonMode.preview.risks.join(", ") || "(none)"}`,
+      ].join("\n")
+      const startDaemon = await DialogConfirm.show(dialog, "Start daemon", summary, "start daemon")
+      if (!startDaemon) return false
+    }
+
     const workspaceSession = props.sessionID ? sync.session.get(props.sessionID) : undefined
     const workspaceID = workspaceSession?.workspaceID
     const workspaceStatus = workspaceID ? (project.workspace.status(workspaceID) ?? "error") : undefined
@@ -934,7 +971,26 @@ export function Prompt(props: PromptProps) {
           ]
         : []
 
-    if (store.mode === "shell") {
+    if (daemonMode.kind === "preview") {
+      if (!sessionID) return false
+      const response = await sdk.fetch(new URL(`/session/${sessionID}/daemon/start`, sdk.url), {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          parts: [{ type: "text", text: inputText }],
+        }),
+      })
+      if (!response.ok) {
+        toast.show({
+          message: `Failed to start daemon: ${await response.text()}`,
+          variant: "error",
+        })
+        return false
+      }
+      setOverlay("opencode-gold")
+    } else if (store.mode === "shell") {
       void sdk.client.session.shell({
         sessionID,
         agent: agent.name,
@@ -1127,7 +1183,10 @@ export function Prompt(props: PromptProps) {
     () => !!local.agent.current() && store.mode === "normal" && showVariant(),
     animationsEnabled,
   )
-  const borderHighlight = createMemo(() => tint(theme.border, highlight(), agentMetaAlpha()))
+  const borderHighlight = createMemo(() => {
+    const base = tint(theme.border, highlight(), agentMetaAlpha())
+    return daemonDraft().kind === "preview" ? tint(base, theme.warning, 0.55) : base
+  })
 
   const placeholderText = createMemo(() => {
     if (props.showPlaceholder === false) return undefined

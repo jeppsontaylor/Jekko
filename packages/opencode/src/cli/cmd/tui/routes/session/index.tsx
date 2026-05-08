@@ -7,6 +7,7 @@ import {
   For,
   Match,
   on,
+  onCleanup,
   onMount,
   Show,
   Switch,
@@ -62,6 +63,8 @@ import type { PromptInfo } from "../../component/prompt/history"
 import { DialogConfirm } from "@tui/ui/dialog-confirm"
 import { DialogTimeline } from "./dialog-timeline"
 import { DialogForkFromTimeline } from "./dialog-fork-from-timeline"
+import { DialogDaemon } from "./dialog-daemon"
+import { DaemonBanner } from "./daemon-banner"
 import { DialogSessionRename } from "../../component/dialog-session-rename"
 import { Sidebar } from "./sidebar"
 import { SubagentFooter } from "./subagent-footer.tsx"
@@ -125,7 +128,7 @@ export function Session() {
   const project = useProject()
   const tuiConfig = useTuiConfig()
   const kv = useKV()
-  const { theme } = useTheme()
+  const { theme, setOverlay } = useTheme()
   const promptRef = usePromptRef()
   const session = createMemo(() => sync.session.get(route.sessionID))
   const children = createMemo(() => {
@@ -182,6 +185,7 @@ export function Session() {
   const toast = useToast()
   const sdk = useSDK()
   const editor = useEditorContext()
+  const [daemonRun, setDaemonRun] = createSignal<any>()
 
   createEffect(() => {
     const sessionID = route.sessionID
@@ -220,6 +224,37 @@ export function Session() {
         duration: 5000,
       })
       navigate({ type: "home" })
+    })
+  })
+
+  createEffect(() => {
+    const sessionID = route.sessionID
+    let alive = true
+    const refresh = async () => {
+      try {
+        const response = await sdk.fetch(new URL("/daemon", sdk.url))
+        if (!response.ok) return
+        const runs = (await response.json()) as any[]
+        const run = runs.find((item) => item.active_session_id === sessionID || item.root_session_id === sessionID)
+        if (!alive) return
+        setDaemonRun(run)
+        if (run && !["satisfied", "aborted", "failed"].includes(String(run.status))) {
+          setOverlay("opencode-gold")
+        } else {
+          setOverlay(undefined)
+        }
+      } catch {
+        if (!alive) return
+        setDaemonRun(undefined)
+        setOverlay(undefined)
+      }
+    }
+    void refresh()
+    const timer = setInterval(refresh, 1000)
+    onCleanup(() => {
+      alive = false
+      clearInterval(timer)
+      setOverlay(undefined)
     })
   })
 
@@ -514,6 +549,25 @@ export function Session() {
           providerID: selectedModel.providerID,
         })
         dialog.clear()
+      },
+    },
+    {
+      title: "Daemon library",
+      value: "daemon.library",
+      category: "Prompt",
+      slash: {
+        name: "daemon",
+        aliases: ["forever"],
+      },
+      onSelect: (dialog) => {
+        dialog.replace(() => (
+          <DialogDaemon
+            onSelect={(text) => {
+              prompt?.set({ input: text, parts: [] })
+              prompt?.focus()
+            }}
+          />
+        ))
       },
     },
     {
@@ -1174,6 +1228,9 @@ export function Session() {
               </For>
             </scrollbox>
             <box flexShrink={0}>
+              <Show when={daemonRun()}>
+                {(run) => <DaemonBanner run={run()} />}
+              </Show>
               <Show when={permissions().length > 0}>
                 <PermissionPrompt request={permissions()[0]} />
               </Show>

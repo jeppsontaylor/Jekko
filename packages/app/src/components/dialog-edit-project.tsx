@@ -65,7 +65,8 @@ export function DialogEditProject(props: { project: LocalProject }) {
   }
 
   function handleInputChange(e: Event) {
-    const input = e.target as HTMLInputElement
+    const input = e.target
+    if (!(input instanceof HTMLInputElement)) return
     const file = input.files?.[0]
     if (file) handleFileSelect(file)
   }

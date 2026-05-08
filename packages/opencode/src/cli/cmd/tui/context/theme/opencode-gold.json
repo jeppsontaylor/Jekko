@@ -1,0 +1,21 @@
+{
+  "theme": {
+    "background": "#1a1600",
+    "backgroundElement": "#2a2400",
+    "backgroundHover": "#3a3200",
+    "foreground": "#ffeeaa",
+    "foregroundMuted": "#ccaa66",
+    "primary": "#ffd700",
+    "primaryForeground": "#000000",
+    "danger": "#ff4444",
+    "dangerForeground": "#ffffff",
+    "warning": "#ffaa00",
+    "warningForeground": "#000000",
+    "success": "#44ff44",
+    "successForeground": "#000000",
+    "info": "#44aaff",
+    "infoForeground": "#ffffff",
+    "selectedListItemText": "#ffd700",
+    "thinkingOpacity": 0.8
+  }
+}

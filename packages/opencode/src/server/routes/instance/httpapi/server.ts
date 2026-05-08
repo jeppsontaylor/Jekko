@@ -28,6 +28,10 @@ import { Pty } from "@/pty"
 import { PtyTicket } from "@/pty/ticket"
 import { Question } from "@/question"
 import { Session } from "@/session/session"
+import { Daemon } from "@/session/daemon"
+import { DaemonCheckpoint } from "@/session/daemon-checkpoint"
+import { DaemonChecks } from "@/session/daemon-checks"
+import { DaemonStore } from "@/session/daemon-store"
 import { SessionCompaction } from "@/session/compaction"
 import { SessionPrompt } from "@/session/prompt"
 import { SessionRevert } from "@/session/revert"
@@ -52,6 +56,7 @@ import { InstanceHttpApi, RootHttpApi } from "./api"
 import { authorizationLayer, authorizationRouterMiddleware } from "./middleware/authorization"
 import { EventApi, eventHandlers } from "./event"
 import { configHandlers } from "./handlers/config"
+import { daemonHandlers } from "./handlers/daemon"
 import { controlHandlers } from "./handlers/control"
 import { experimentalHandlers } from "./handlers/experimental"
 import { fileHandlers } from "./handlers/file"
@@ -108,6 +113,7 @@ const eventApiRoutes = HttpApiBuilder.layer(EventApi).pipe(
 const instanceApiRoutes = HttpApiBuilder.layer(InstanceHttpApi).pipe(
   Layer.provide([
     configHandlers,
+    daemonHandlers,
     experimentalHandlers,
     fileHandlers,
     instanceHandlers,
@@ -170,6 +176,9 @@ export function createRoutes(corsOptions?: CorsOptions) {
       Question.defaultLayer,
       Ripgrep.defaultLayer,
       Session.defaultLayer,
+      DaemonStore.defaultLayer,
+      DaemonChecks.defaultLayer,
+      DaemonCheckpoint.defaultLayer,
       SessionCompaction.defaultLayer,
       SessionPrompt.defaultLayer,
       SessionRevert.defaultLayer,
@@ -177,6 +186,7 @@ export function createRoutes(corsOptions?: CorsOptions) {
       SessionRunState.defaultLayer,
       SessionStatus.defaultLayer,
       SessionSummary.defaultLayer,
+      Daemon.defaultLayer,
       ShareNext.defaultLayer,
       Snapshot.defaultLayer,
       SyncEvent.defaultLayer,
@@ -194,7 +204,7 @@ export function createRoutes(corsOptions?: CorsOptions) {
     Layer.provideMerge(Layer.succeed(CorsConfig)(corsOptions)),
     Layer.provideMerge(InstanceLayer.layer),
     Layer.provideMerge(Observability.layer),
-  )
+  ) as any
 }
 
 export const routes = createRoutes()

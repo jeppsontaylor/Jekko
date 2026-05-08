@@ -25,6 +25,7 @@ import nord from "./theme/nord.json" with { type: "json" }
 import osakaJade from "./theme/osaka-jade.json" with { type: "json" }
 import onedark from "./theme/one-dark.json" with { type: "json" }
 import opencode from "./theme/opencode.json" with { type: "json" }
+import opencodeGold from "./theme/opencode-gold.json" with { type: "json" }
 import orng from "./theme/orng.json" with { type: "json" }
 import lucentOrng from "./theme/lucent-orng.json" with { type: "json" }
 import palenight from "./theme/palenight.json" with { type: "json" }
@@ -108,6 +109,7 @@ export const DEFAULT_THEMES: Record<string, ThemeJson> = {
   ["one-dark"]: onedark,
   ["osaka-jade"]: osakaJade,
   opencode,
+  ["opencode-gold"]: opencodeGold as any,
   orng,
   ["lucent-orng"]: lucentOrng,
   palenight,
@@ -126,6 +128,7 @@ type State = {
   mode: "dark" | "light"
   lock: "dark" | "light" | undefined
   active: string
+  overlay: string | undefined
   ready: boolean
 }
 
@@ -156,6 +159,7 @@ const [store, setStore] = createStore<State>({
   mode: "dark",
   lock: undefined,
   active: "opencode",
+  overlay: undefined,
   ready: false,
 })
 
@@ -415,7 +419,8 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
     })
 
     const values = createMemo(() => {
-      const active = store.themes[store.active]
+      const activeName = store.overlay ?? store.active
+      const active = store.themes[activeName]
       if (active) {
         return resolveTheme(active, store.mode)
       }
@@ -475,6 +480,11 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
         if (!hasTheme(theme)) return false
         setStore("active", theme)
         kv.set("theme", theme)
+        return true
+      },
+      setOverlay(theme: string | undefined) {
+        if (theme && !hasTheme(theme)) return false
+        setStore("overlay", theme)
         return true
       },
       get ready() {

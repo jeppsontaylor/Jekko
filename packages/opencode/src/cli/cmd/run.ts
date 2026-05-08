@@ -263,6 +263,22 @@ export const RunCommand = effectCmd({
         array: true,
         describe: "file(s) to attach to message",
       })
+      .option("daemon", {
+        type: "boolean",
+        describe: "run as a daemon that continues until host stop checks pass",
+        default: false,
+      })
+      .option("daemonFile", {
+        alias: ["daemon-file"],
+        type: "string",
+        describe: "OCAL file to use when --daemon is enabled",
+      })
+      .option("daemonArm", {
+        alias: ["daemon-arm"],
+        type: "string",
+        describe: "required OCAL arm sentinel for daemon mode",
+        default: "RUN_FOREVER",
+      })
       .option("title", {
         type: "string",
         describe: "title for the session (uses truncated prompt if no value provided)",
@@ -634,6 +650,62 @@ export const RunCommand = effectCmd({
           process.exit(1)
         }
         await share(sdk, sessionID)
+
+        if (args.daemon) {
+          const daemonFile = args.daemonFile ?? args.file?.[0]
+          if (!daemonFile) {
+            UI.error("--daemon requires --daemon-file (or --file)")
+            process.exit(1)
+          }
+          if (args.daemonArm !== "RUN_FOREVER") {
+            UI.error(`Unsupported daemon arm: ${args.daemonArm}`)
+            process.exit(1)
+          }
+
+          const resolved = path.resolve(process.cwd(), daemonFile)
+          const daemonText = await Bun.file(resolved).text()
+          const client = (sdk as any)._client
+          const preview = await client.request({
+            method: "POST",
+            url: "/daemon/preview",
+            body: JSON.stringify({ text: daemonText }),
+            headers: { "Content-Type": "application/json" },
+          })
+          if (preview.error) {
+            UI.error(JSON.stringify(preview.error))
+            process.exit(1)
+          }
+
+          const started = await client.request({
+            method: "POST",
+            url: `/session/${sessionID}/daemon/start`,
+            body: JSON.stringify({ parts: [{ type: "text", text: daemonText }] }),
+            headers: { "Content-Type": "application/json" },
+          })
+          if (started.error || !started.data) {
+            UI.error(JSON.stringify(started.error ?? "failed to start daemon"))
+            process.exit(1)
+          }
+
+          const runID = started.data.id
+          while (true) {
+            const poll = await client.request({
+              method: "GET",
+              url: `/daemon/${runID}`,
+            })
+            if (poll.error || !poll.data) {
+              UI.error(JSON.stringify(poll.error ?? "failed to poll daemon"))
+              process.exit(1)
+            }
+            const run = poll.data as { status?: string; phase?: string; iteration?: number; last_error?: string | null }
+            UI.println(
+              `∞ ${run.status ?? "running"} · ${run.phase ?? "running"} · iter ${run.iteration ?? 0}${run.last_error ? ` · ${run.last_error}` : ""}`,
+            )
+            if (["satisfied", "aborted", "failed"].includes(String(run.status))) break
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+          }
+          return
+        }
 
         loop().catch((e) => {
           console.error(e)

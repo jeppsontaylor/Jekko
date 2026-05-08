@@ -1,6 +1,7 @@
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 import { RunCommand } from "./cli/cmd/run"
+import { DaemonCommand } from "./cli/cmd/daemon"
 import { GenerateCommand } from "./cli/cmd/generate"
 import * as Log from "@opencode-ai/core/util/log"
 import { ConsoleCommand } from "./cli/cmd/account"
@@ -161,6 +162,7 @@ const cli = yargs(args)
   .command(TuiThreadCommand)
   .command(AttachCommand)
   .command(RunCommand)
+  .command(DaemonCommand)
   .command(GenerateCommand)
   .command(DebugCommand)
   .command(ConsoleCommand)

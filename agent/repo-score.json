@@ -1,6 +1,6 @@
 {
-  "report_fingerprint": "sha256:2d6d3cf2cc3cb6bd3a19e3af0c295b168e32d7d34c796667458e2190a47aea83",
-  "input_fingerprint": "sha256:6d312e40fcf31898dbedfe8fe413764fbca72f8ebb10389c291da0143acfc357",
+  "report_fingerprint": "sha256:b621a0eb5133da0a2f87babb02b43ebaae7427a3ecfbdba0b8fdb498099ccfb0",
+  "input_fingerprint": "sha256:64ec0132b71c04ae2598f85ddf6cc0aa399a468a78a0a52961ff79e9d29083b2",
   "policy_fingerprint": "sha256:1344c6682471353eb10a07a55a14e5fdd73676dd9aafd00b9f60dffd43c8b443",
   "manifest_fingerprints": {
     "owner_map": "sha256:3dc2c6c4946eaa406f7022da1ef9bbec852e7db8c386d6a93f53a1cc800f5150",
@@ -10,8 +10,8 @@
     "proof_lanes": "sha256:87630d6fe9b678ce7cfeff446c6e1bf1cdf75bc48c8669929914d2fb5d7e07e8",
     "standard_version": "sha256:1cd68066b6d7a406eaa9bf5687a77df1a4c0c6c3f0cd35db18a43826688bbacb"
   },
-  "dirty_worktree": false,
-  "generated_at": "1778188870",
+  "dirty_worktree": true,
+  "generated_at": "1778252944",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -79,6 +79,10 @@
     "HLT-001-DEAD-MARKER on .opencode/plugins/tui-smoke.tsx",
     "HLT-031-TYPESCRIPT-BAD-BEHAVIOR on .opencode/plugins/tui-smoke.tsx",
     "HLT-023-INPUT-BOUNDARY-GAP on .opencode/plugins/tui-smoke.tsx",
+    "HLT-003-OWNERLESS-PATH on agent/owner-map.json",
+    "HLT-003-OWNERLESS-PATH on agent/owner-map.json",
+    "HLT-004-UNMAPPED-PROOF on agent/test-map.json",
+    "HLT-004-UNMAPPED-PROOF on agent/test-map.json",
     "HLT-013-RENDERED-UX-GAP on apps/web",
     "HLT-008-FALSE-GREEN-RISK on crates/",
     "HLT-001-DEAD-MARKER on github/index.ts",
@@ -90,7 +94,6 @@
     "HLT-001-DEAD-MARKER on packages/app/src/app.tsx",
     "HLT-001-DEAD-MARKER on packages/app/src/app.tsx",
     "HLT-001-DEAD-MARKER on packages/app/src/app.tsx",
-    "HLT-031-TYPESCRIPT-BAD-BEHAVIOR on packages/app/src/components/dialog-edit-project.tsx",
     "HLT-001-DEAD-MARKER on packages/app/src/components/dialog-edit-project.tsx",
     "HLT-031-TYPESCRIPT-BAD-BEHAVIOR on packages/app/src/components/dialog-select-directory.tsx",
     "HLT-001-DEAD-MARKER on packages/app/src/components/dialog-select-file.tsx",
@@ -235,6 +238,7 @@
     "HLT-031-TYPESCRIPT-BAD-BEHAVIOR on packages/console/function/src/auth.ts",
     "HLT-031-TYPESCRIPT-BAD-BEHAVIOR on packages/console/function/sst-env.d.ts",
     "HLT-031-TYPESCRIPT-BAD-BEHAVIOR on packages/console/mail/emails/components.tsx",
+    "HLT-031-TYPESCRIPT-BAD-BEHAVIOR on packages/console/mail/emails/styles.ts",
     "HLT-001-DEAD-MARKER on packages/enterprise/src/routes/share/[shareID].tsx",
     "HLT-039-WEB-SECURITY-BAD-BEHAVIOR on packages/enterprise/vite.config.ts",
     "HLT-039-WEB-SECURITY-BAD-BEHAVIOR on packages/enterprise/vite.config.ts",
@@ -255,6 +259,19 @@
     "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260427172553_slow_nightmare/migration.sql",
     "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507054800_memory_os/migration.sql",
     "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507054800_memory_os/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+    "HLT-030-SQL-BAD-BEHAVIOR on packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
     "HLT-001-DEAD-MARKER on packages/opencode/script/httpapi-exercise.ts",
     "HLT-001-DEAD-MARKER on packages/opencode/script/httpapi-exercise.ts",
     "HLT-001-DEAD-MARKER on packages/opencode/src/acp/agent.ts",
@@ -337,6 +354,21 @@
     "HLT-001-DEAD-MARKER on packages/opencode/src/server/routes/instance/session.ts",
     "HLT-001-DEAD-MARKER on packages/opencode/src/server/routes/instance/session.ts",
     "HLT-001-DEAD-MARKER on packages/opencode/src/server/routes/instance/session.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-pass.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-pass.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-pass.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-retry.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-task-router.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-task-router.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-task-router.ts",
+    "HLT-001-DEAD-MARKER on packages/opencode/src/session/daemon-task-router.ts",
     "HLT-001-DEAD-MARKER on packages/opencode/src/session/llm.ts",
     "HLT-001-DEAD-MARKER on packages/opencode/src/session/pending.ts",
     "HLT-001-DEAD-MARKER on packages/opencode/src/session/pending.ts",
@@ -446,9 +478,9 @@
     "HLT-001-DEAD-MARKER on packages/web/src/components/share/part.tsx"
   ],
   "repo": ".",
-  "run_id": "1778188870",
-  "started_at": "1778188870",
-  "elapsed_ms": 40159,
+  "run_id": "1778252944",
+  "started_at": "1778252944",
+  "elapsed_ms": 36847,
   "scope": {
     "mode": "full",
     "paths": []
@@ -459,7 +491,7 @@
     "status": "advisory",
     "minimum_score": 85,
     "passed": true,
-    "hard_findings": 420,
+    "hard_findings": 452,
     "soft_findings": 31,
     "ratchet": {
       "baseline_score": 60,
@@ -475,11 +507,11 @@
     }
   },
   "git": {
-    "head": "5b9bb2077",
+    "head": "010cccac7",
     "base": null,
     "changed_files": 0,
     "mode": "full",
-    "dirty_worktree": false
+    "dirty_worktree": true
   },
   "policy": {
     "path": "./agent/audit-policy.toml",
@@ -730,8 +762,6 @@
         "reference-profile cell `ops` is canonical",
         "reference-profile cell `ops` has local AGENTS.md guidance",
         "root `README.md` routes to workspace layout",
-        "owner map covers audited paths",
-        "test map covers audited paths",
         "authored code file exceeds 500 LOC",
         "authored code file exceeds 1000 LOC"
       ],
@@ -789,7 +819,7 @@
         "canonical security lane wrapper present",
         "agent-readiness audit gate found in CI",
         "rust bad-behavior advisory signals: 507",
-        "sql bad-behavior hard findings: 19",
+        "sql bad-behavior hard findings: 32",
         "typescript bad-behavior hard findings: 50",
         "docker bad-behavior hard findings: 2",
         "ci bad-behavior hard findings: 50",
@@ -816,7 +846,7 @@
         "future-hostile/dead-language marker found",
         "IO markers found in domain/core files",
         "rust bad-behavior advisory signals: 507",
-        "sql bad-behavior hard findings: 19",
+        "sql bad-behavior hard findings: 32",
         "typescript bad-behavior hard findings: 50",
         "docker bad-behavior hard findings: 2",
         "ci bad-behavior hard findings: 50",
@@ -1477,7 +1507,7 @@
     "artifact": {
       "path": "target/jankurai/security/evidence.json",
       "envelope_exit_code": 0,
-      "elapsed_ms": 17,
+      "elapsed_ms": 15,
       "wrapper_strict": false,
       "profile": "local",
       "commands_ran": 1,
@@ -1486,8 +1516,8 @@
       "required_commands_skipped": 0,
       "required_commands_failed": 0,
       "blocking_commands": [],
-      "generated_at": "1778187842",
-      "git_head": "c8af3c8eb48005615e6ab47e083bf69fdc9bd15e"
+      "generated_at": "1778190961",
+      "git_head": "c6afabf16308d5a6708c3a353573e8718dddede8"
     }
   },
   "boundaries": {
@@ -3412,6 +3442,48 @@
       "owner": "workspace"
     },
     {
+      "severity": "high",
+      "category": "context",
+      "path": "agent/owner-map.json",
+      "problem": "path `OCAL_MISSION.md` has no owner-map route",
+      "agent_fix": "add the narrowest stable prefix for this path to `agent/owner-map.json`",
+      "evidence": [
+        "OCAL_MISSION.md"
+      ],
+      "check_id": "HLT-003-OWNERLESS-PATH:context",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:f64b051ff7f83fd0f473f250d0a9d148aaadccff67be6328558c429fc66b8b11",
+      "rule_id": "HLT-003-OWNERLESS-PATH",
+      "tlr": "Context/setup",
+      "lane": "fast",
+      "docs_url": "agent/JANKURAI_STANDARD.md#ownership-boundaries",
+      "owner": "agent"
+    },
+    {
+      "severity": "high",
+      "category": "context",
+      "path": "agent/owner-map.json",
+      "problem": "path `test_parse.ts` has no owner-map route",
+      "agent_fix": "add the narrowest stable prefix for this path to `agent/owner-map.json`",
+      "evidence": [
+        "test_parse.ts"
+      ],
+      "check_id": "HLT-003-OWNERLESS-PATH:context",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:104cdfa3e5562c7458cf3cbaff4a81458a34d6bdc5deb5287515c48c80726686",
+      "rule_id": "HLT-003-OWNERLESS-PATH",
+      "tlr": "Context/setup",
+      "lane": "fast",
+      "docs_url": "agent/JANKURAI_STANDARD.md#ownership-boundaries",
+      "owner": "agent"
+    },
+    {
       "severity": "medium",
       "category": "proof",
       "path": "agent/test-map.json",
@@ -3429,6 +3501,48 @@
       "evidence_kind": "policy-manifest",
       "rerun_command": "just fast",
       "fingerprint": "sha256:4c32cd60475fd4c803e64a568543f5c081a156b33b97fa688f83b5a578024262",
+      "rule_id": "HLT-004-UNMAPPED-PROOF",
+      "tlr": "Verification",
+      "lane": "fast",
+      "docs_url": "agent/JANKURAI_STANDARD.md#proof-lanes",
+      "owner": "agent"
+    },
+    {
+      "severity": "high",
+      "category": "proof",
+      "path": "agent/test-map.json",
+      "problem": "path `OCAL_MISSION.md` has no test-map proof route",
+      "agent_fix": "add the narrowest stable prefix and runnable proof command to `agent/test-map.json`",
+      "evidence": [
+        "OCAL_MISSION.md"
+      ],
+      "check_id": "HLT-004-UNMAPPED-PROOF:proof",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:1bb2e7843192848594adb58a63c0d9e0e1270a76ad92c7d436a3c801183e2eed",
+      "rule_id": "HLT-004-UNMAPPED-PROOF",
+      "tlr": "Verification",
+      "lane": "fast",
+      "docs_url": "agent/JANKURAI_STANDARD.md#proof-lanes",
+      "owner": "agent"
+    },
+    {
+      "severity": "high",
+      "category": "proof",
+      "path": "agent/test-map.json",
+      "problem": "path `test_parse.ts` has no test-map proof route",
+      "agent_fix": "add the narrowest stable prefix and runnable proof command to `agent/test-map.json`",
+      "evidence": [
+        "test_parse.ts"
+      ],
+      "check_id": "HLT-004-UNMAPPED-PROOF:proof",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:7fe34b9c1df8ee623b5583f859e543ffa81d9359116e451dcce0c7a37959709e",
       "rule_id": "HLT-004-UNMAPPED-PROOF",
       "tlr": "Verification",
       "lane": "fast",
@@ -3808,39 +3922,12 @@
     },
     {
       "severity": "high",
-      "category": "boundary",
-      "path": "packages/app/src/components/dialog-edit-project.tsx",
-      "problem": "unchecked boundary cast or parse result crosses a trust boundary",
-      "agent_fix": "validate the value first, then narrow it with a proof-aware decoder",
-      "evidence": [
-        "detector=typescript.types.any-boundary",
-        "path=packages/app/src/components/dialog-edit-project.tsx",
-        "line=68",
-        "snippet=const input = e.target as HTMLInputElement"
-      ],
-      "check_id": "HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary",
-      "hardness": "hard",
-      "confidence": 0.95,
-      "evidence_kind": "repository-scan",
-      "rerun_command": "just fast",
-      "fingerprint": "sha256:3f8fa05bb593c98f6d8c7c05bd84b85cb7787826f2f8b45f6eb04bc5b68c6311",
-      "rule_id": "HLT-031-TYPESCRIPT-BAD-BEHAVIOR",
-      "tlr": "Contracts/data",
-      "lane": "fast",
-      "docs_url": "docs/testing.md",
-      "owner": "tools",
-      "line": 68,
-      "matched_term": "typescript.types.any-boundary",
-      "reason": "value shape is not proven before the cast"
-    },
-    {
-      "severity": "high",
       "category": "vibe",
       "path": "packages/app/src/components/dialog-edit-project.tsx",
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/app/src/components/dialog-edit-project.tsx:155",
+        "packages/app/src/components/dialog-edit-project.tsx:156",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -3848,13 +3935,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:bb962caa68a755d037323dca6176206c1e20d12702643323428e1fb8f73868c1",
+      "fingerprint": "sha256:46b2ebbf4ecee0b0ecfabc3bdf74bb30c4b01c3e55a6f1440ada2bf4117d188d",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 155
+      "line": 156
     },
     {
       "severity": "high",
@@ -7466,6 +7553,33 @@
       "reason": "broad suppression is hard to audit"
     },
     {
+      "severity": "high",
+      "category": "boundary",
+      "path": "packages/console/mail/emails/styles.ts",
+      "problem": "TypeScript suppression comment hides type checking or lint evidence",
+      "agent_fix": "remove the broad suppression or scope it to a single justified line",
+      "evidence": [
+        "detector=typescript.suppress.ts-nocheck",
+        "path=packages/console/mail/emails/styles.ts",
+        "line=1",
+        "snippet=// @ts-nocheck"
+      ],
+      "check_id": "HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:aed31ac272ebf925fc42d27bcd5238537f5246f0453ca6857505accfca1a61de",
+      "rule_id": "HLT-031-TYPESCRIPT-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "fast",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 1,
+      "matched_term": "typescript.suppress.ts-nocheck",
+      "reason": "broad suppression is hard to audit"
+    },
+    {
       "severity": "medium",
       "category": "context",
       "path": "packages/desktop/scripts/copy-bundles.ts",
@@ -8179,6 +8293,344 @@
     },
     {
       "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`root_session_id` text NOT NULL REFERENCES `session`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:339b292cfcb965e03573e0234e5fc7f167454a3e2625adcbbb55648d6d6ddf0a",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 3,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`active_session_id` text NOT NULL REFERENCES `session`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:c29212e72a3fee121a7db0ecba66bd4ee93671a5d9d4fd0700834aa6ccd4c925",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 4,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 25,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`session_id` text NOT NULL REFERENCES `session`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:1c12e873037ce355c14e4a3d7312398e2d5127cc3c582840da503e4f58881e62",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 27,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 42,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 54,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 91,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`task_id` text NOT NULL REFERENCES `daemon_task`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:4c5be5474db6e622acdf4cb32a1f67abb5005c851ce6519446624f521c876c0a",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 92,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 117,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`task_id` text NOT NULL REFERENCES `daemon_task`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:4c5be5474db6e622acdf4cb32a1f67abb5005c851ce6519446624f521c876c0a",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 118,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 136,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`run_id` text NOT NULL REFERENCES `daemon_run`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:a32251e67b254068c7a00695fd152303d67682630289ac8eac62502942ecc238",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 152,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
+      "category": "data",
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "problem": "destructive migration appears without nearby rollback or backup proof",
+      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "evidence": [
+        "detector=sql.migration.destructive-no-proof",
+        "proof-window=nearby-proof",
+        "snippet=`task_id` text REFERENCES `daemon_task`(`id`) ON DELETE cascade,"
+      ],
+      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
+      "hardness": "hard",
+      "confidence": 0.95,
+      "evidence_kind": "sql",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:ef3ef1c7d57b6976440d37fb873bd345a5e8658d8b681fbedd3838338a59f2ad",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 153,
+      "matched_term": "drop table",
+      "reason": "the migration can remove or rewrite data without local evidence of recovery"
+    },
+    {
+      "severity": "high",
       "category": "vibe",
       "path": "packages/opencode/script/httpapi-exercise.ts",
       "problem": "future-hostile/dead-language term `deprecated` appears in product/runtime code",
@@ -8483,7 +8935,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1441",
+        "packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1500",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -8491,13 +8943,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:775e71175a0abf6c9fc41f020db5ed9bc27e0dc25ea29225c6e63b6d0eb6ffc9",
+      "fingerprint": "sha256:25f79036d838b5ea46d128b5b6c77b1c4805868eb909d190538e375eac8c3104",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1441
+      "line": 1500
     },
     {
       "severity": "high",
@@ -8506,7 +8958,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1516",
+        "packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx:1575",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -8514,13 +8966,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:daec80b4bb79ce40e8b2e4c7d66bd21474fdfb1b41bd1761737403ce6a58a0fb",
+      "fingerprint": "sha256:c03c9d46c2b5a437e6b47b2c9d5a8fde60b6cfb7048c672f20951b65be37b27a",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1516
+      "line": 1575
     },
     {
       "severity": "high",
@@ -8828,7 +9280,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/context/theme.tsx:299",
+        "packages/opencode/src/cli/cmd/tui/context/theme.tsx:303",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -8836,13 +9288,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:32762b8076ecbf4b5be69728a8524a2349f1e1e85841108c4a0bce62e257b8ea",
+      "fingerprint": "sha256:3500a7923da7795ff163b86e030d5a5da9d50ef425e9da6dabd468c018785f76",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 299
+      "line": 303
     },
     {
       "severity": "high",
@@ -9012,7 +9464,7 @@
       "problem": "future-hostile/dead-language term `todo` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:43",
+        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:44",
         "future-hostile/dead-language term `todo` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9020,13 +9472,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:125dff6b3b427b08340d4860ab81dc3e3a04ed480772398f2a2b45d21985117e",
+      "fingerprint": "sha256:a964c7dc41077b8e92100f60db8db8da2fdbd2aad3734ad2928a02811d87abbd",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 43
+      "line": 44
     },
     {
       "severity": "high",
@@ -9035,7 +9487,7 @@
       "problem": "future-hostile/dead-language term `todo` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:59",
+        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:60",
         "future-hostile/dead-language term `todo` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9043,13 +9495,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:9f557041588dbec7cb51ccaad1753143bbeef54600ee642e508032ae8529f3b3",
+      "fingerprint": "sha256:b7522c58c8ff9c86fbf24992a514df5509efb9f2784b0c9ccefda486f17a559e",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 59
+      "line": 60
     },
     {
       "severity": "high",
@@ -9058,7 +9510,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1323",
+        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1380",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9066,13 +9518,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:bf68e74d123b12cc354ffdb176abd1f76595dd95332e086de1cd8124b063bd3a",
+      "fingerprint": "sha256:94cf0f3a4ec8182e8b051898a67cd14223c2d984ade0acf5f5c80268cda62982",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1323
+      "line": 1380
     },
     {
       "severity": "high",
@@ -9081,7 +9533,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1627",
+        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1684",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9089,13 +9541,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:1755f72591d69349bfdb82ceb05098f62804daaa5b1566adb7207ba62569bd3c",
+      "fingerprint": "sha256:900bef6f5a66e08df555f0a15864810f804f323444cba61fe147ca504b072a0e",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1627
+      "line": 1684
     },
     {
       "severity": "high",
@@ -9104,7 +9556,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1728",
+        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1785",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9112,13 +9564,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:cb6b912450e5cbfa09ef591d07b0e42d1c666da5841854f895f15be8b49d5876",
+      "fingerprint": "sha256:570ebb51326f25ff39c1b7ff5cf8c085d196c50bd3bdd3681bfec7ebfb69b5ee",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1728
+      "line": 1785
     },
     {
       "severity": "high",
@@ -9127,7 +9579,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1772",
+        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:1829",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9135,13 +9587,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:fd3a59bab79ab1bb9ead1dc87523878e505f62eef1e34146446c58d22e2cb6ce",
+      "fingerprint": "sha256:3e877bae17efffe4144699500a9a6d8c812cadf79debe07d353d70b877a92d37",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1772
+      "line": 1829
     },
     {
       "severity": "high",
@@ -9150,7 +9602,7 @@
       "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:2135",
+        "packages/opencode/src/cli/cmd/tui/routes/session/index.tsx:2192",
         "future-hostile/dead-language term `fallback` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9158,13 +9610,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:9b0edc66c42f8eac4c2fed65a8d63782fddc18f2b8f8ce4466d0280b92674ed1",
+      "fingerprint": "sha256:d9ca123f2c95a79b0024208d7d016b30ab8e13ea263dcd2ddf9fde1a12980c58",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 2135
+      "line": 2192
     },
     {
       "severity": "high",
@@ -9776,7 +10228,7 @@
       "problem": "future-hostile/dead-language term `todo` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/server/routes/instance/httpapi/server.ts:37",
+        "packages/opencode/src/server/routes/instance/httpapi/server.ts:41",
         "future-hostile/dead-language term `todo` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -9784,13 +10236,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:fa41d8f91b70ff6dfab5d84806c3c56f2aede95c96a48751e98c2f0e7b2d6037",
+      "fingerprint": "sha256:b237e8ddd4590363490dac99ffcd24c7047c567878e943107fb7ee4885283dd9",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 37
+      "line": 41
     },
     {
       "severity": "high",
@@ -10090,6 +10542,351 @@
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
       "line": 1119
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-pass.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-pass.ts:57",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:f8fc2e7561291ec4edd313c54e35f6398ae7df2d3c50aedc7a82e3d48726df00",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 57
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-pass.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-pass.ts:74",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:d7c5eeb89cfc7aee4885dd7fd48f0d531df4fe8bc9bf72ada361ef93064bce00",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 74
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-pass.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-pass.ts:75",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:dfe3338649ebd3ca6274baa7f6c55abd4330449219ffb29c7424ce9d698df96d",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 75
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:12",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:56331b594dd598f29f16eb489ba3ee449e2fdf5e9653b8966aa4ddb323a53ce5",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 12
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:18",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:add6272455810018deedd6dec25265ce2834324de1960ea581c6aa848fa4c2b3",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 18
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:26",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:f78fdef1a2f2dc134b7bc5900c1b85a9b646e72e5588b2974de67a90c7bf2c40",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 26
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:32",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:58190261141196a462fe26206a4a3395d3ca3acd3fe1f509e5dc1c827e0d22b7",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 32
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:33",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:e5d54338e2eb755cd5b4fc3a58d465e3025f2b0ee7758a21c0666a63dab1050e",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 33
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:34",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:bd53098b94f4451fba66659364c708f92c75a1741e7b670c681e1ecaacd353a1",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 34
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:35",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:e37a8c3f3e6dd59834b3b32b1168880510e1ca3866026b5a11047e47c0e6e1d1",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 35
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-retry.ts:36",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:0fe81c0f08f9fc476aaf9282614884c4af828f7d06f53ecc119a3bb7b6b9844a",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 36
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-task-router.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-task-router.ts:68",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:da11ee408ceec7059dc2cee6248a2f650846cf363c69bf7f906ca88b99c848bc",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 68
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-task-router.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-task-router.ts:84",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:ba9255a0773fbc55f3488cf5b655f4e5ac9f9ba8c4c2ee71f9384028194fbaa7",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 84
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-task-router.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-task-router.ts:88",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:bc84663d7f420f2a66fdb98bc36a9afdcd9f533b8c04d6994a3635719e372e03",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 88
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "packages/opencode/src/session/daemon-task-router.ts",
+      "problem": "future-hostile/dead-language term `fallback` appears in product/runtime code",
+      "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "evidence": [
+        "packages/opencode/src/session/daemon-task-router.ts:89",
+        "future-hostile/dead-language term `fallback` appears"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:bef3e870679e3d7b563f7537c158387bc689720418a01e0026ccf81ed271ae13",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 89
     },
     {
       "severity": "high",
@@ -10517,7 +11314,7 @@
       "problem": "future-hostile/dead-language term `temporary` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/session/prompt.ts:1351",
+        "packages/opencode/src/session/prompt.ts:1355",
         "future-hostile/dead-language term `temporary` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -10525,13 +11322,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:9a4e6131c537cd91c573f785cd585f77297fbb3b1faf21558590650b6cbd7b5d",
+      "fingerprint": "sha256:a30233cf911baf0ac59f04cfc0bbc216899fe0573b4c1e878857f57c30559e08",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1351
+      "line": 1355
     },
     {
       "severity": "high",
@@ -10540,7 +11337,7 @@
       "problem": "future-hostile/dead-language term `temporary` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/session/prompt.ts:1362",
+        "packages/opencode/src/session/prompt.ts:1366",
         "future-hostile/dead-language term `temporary` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -10548,13 +11345,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:30a6c306800550ba03900dd86d37e64852945a9b7bdb8ff4d51ba818350237f7",
+      "fingerprint": "sha256:12e396b0ea207601e5971207a2d0b684a763f99ebd5c5bc0e000684e6b0e040c",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 1362
+      "line": 1366
     },
     {
       "severity": "high",
@@ -10701,7 +11498,7 @@
       "problem": "future-hostile/dead-language term `todo` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/tool/registry.ts:42",
+        "packages/opencode/src/tool/registry.ts:43",
         "future-hostile/dead-language term `todo` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -10709,13 +11506,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:d1042d08f1fb00023f44022d75d4c6e4fceaadd7077d23b31cf62b5c6af34c6e",
+      "fingerprint": "sha256:aba52cdde60531c2d0045fa0916b8852071904ecac7306fe55eaaa36b837f723",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 42
+      "line": 43
     },
     {
       "severity": "high",
@@ -10724,7 +11521,7 @@
       "problem": "future-hostile/dead-language term `todo` appears in product/runtime code",
       "agent_fix": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "evidence": [
-        "packages/opencode/src/tool/registry.ts:320",
+        "packages/opencode/src/tool/registry.ts:324",
         "future-hostile/dead-language term `todo` appears"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
@@ -10732,13 +11529,13 @@
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:cdb93438e41ae4680d7ceea15ced34933eb39aa87227bb9985385733adebd644",
+      "fingerprint": "sha256:8d88178c2ae29c1c2a64911f62839c0ed685b91f0f815aa52abfc5403f250e6b",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "tools",
-      "line": 320
+      "line": 324
     },
     {
       "severity": "high",
@@ -12832,16 +13629,6 @@
       "why": "raw shell or SQL text is built from untrusted TypeScript input"
     },
     {
-      "path": "packages/app/src/components/dialog-edit-project.tsx",
-      "priority": "high",
-      "rule_id": "HLT-031-TYPESCRIPT-BAD-BEHAVIOR",
-      "tlr": "Contracts/data",
-      "lane": "fast",
-      "owner": "tools",
-      "task": "validate the value first, then narrow it with a proof-aware decoder",
-      "why": "unchecked boundary cast or parse result crosses a trust boundary"
-    },
-    {
       "path": "packages/app/src/components/dialog-select-directory.tsx",
       "priority": "high",
       "rule_id": "HLT-031-TYPESCRIPT-BAD-BEHAVIOR",
@@ -13112,6 +13899,16 @@
       "why": "TypeScript suppression comment hides type checking or lint evidence"
     },
     {
+      "path": "packages/console/mail/emails/styles.ts",
+      "priority": "high",
+      "rule_id": "HLT-031-TYPESCRIPT-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "fast",
+      "owner": "tools",
+      "task": "remove the broad suppression or scope it to a single justified line",
+      "why": "TypeScript suppression comment hides type checking or lint evidence"
+    },
+    {
       "path": "packages/opencode/migration/20260127222353_familiar_lady_ursula/migration.sql",
       "priority": "high",
       "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
@@ -13182,6 +13979,16 @@
       "why": "destructive migration appears without nearby rollback or backup proof"
     },
     {
+      "path": "packages/opencode/migration/20260507224841_daemon_runtime/migration.sql",
+      "priority": "high",
+      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
+      "tlr": "Contracts/data",
+      "lane": "db",
+      "owner": "tools",
+      "task": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
+      "why": "destructive migration appears without nearby rollback or backup proof"
+    },
+    {
       "path": "packages/sdk/js/src/gen/client/client.gen.ts",
       "priority": "high",
       "rule_id": "HLT-002-GENERATED-MUTATION",
@@ -13190,6 +13997,16 @@
       "owner": "tools",
       "task": "add `agent/generated-zones.toml`, require generated/do-not-edit markers, and route repairs to the source contract",
       "why": "generated zone is not protected strongly enough against hand edits"
+    },
+    {
+      "path": "agent/test-map.json",
+      "priority": "high",
+      "rule_id": "HLT-004-UNMAPPED-PROOF",
+      "tlr": "Verification",
+      "lane": "fast",
+      "owner": "agent",
+      "task": "add the narrowest stable prefix and runnable proof command to `agent/test-map.json`",
+      "why": "path `OCAL_MISSION.md` has no test-map proof route"
     },
     {
       "path": "crates/",
@@ -13250,6 +14067,16 @@
       "owner": "tools",
       "task": "attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries",
       "why": "human review or proof claim lacks reproducible evidence"
+    },
+    {
+      "path": "agent/owner-map.json",
+      "priority": "high",
+      "rule_id": "HLT-003-OWNERLESS-PATH",
+      "tlr": "Context/setup",
+      "lane": "fast",
+      "owner": "agent",
+      "task": "add the narrowest stable prefix for this path to `agent/owner-map.json`",
+      "why": "path `OCAL_MISSION.md` has no owner-map route"
     },
     {
       "path": "packages/app/public/oc-theme-preload.js",
@@ -14628,6 +15455,36 @@
       "owner": "tools",
       "task": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
       "why": "future-hostile/dead-language term `todo` appears in product/runtime code"
+    },
+    {
+      "path": "packages/opencode/src/session/daemon-pass.ts",
+      "priority": "high",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "owner": "tools",
+      "task": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "why": "future-hostile/dead-language term `fallback` appears in product/runtime code"
+    },
+    {
+      "path": "packages/opencode/src/session/daemon-retry.ts",
+      "priority": "high",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "owner": "tools",
+      "task": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "why": "future-hostile/dead-language term `fallback` appears in product/runtime code"
+    },
+    {
+      "path": "packages/opencode/src/session/daemon-task-router.ts",
+      "priority": "high",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "owner": "tools",
+      "task": "remove or rename the marker, implement the intended behavior, model a typed unsupported state, or move docs/generated/vendor/product-copy text into an allowlisted context",
+      "why": "future-hostile/dead-language term `fallback` appears in product/runtime code"
     },
     {
       "path": "packages/opencode/src/session/llm.ts",

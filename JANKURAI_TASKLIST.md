@@ -3549,10 +3549,10 @@ Summary:
 - Proof receipt: `just fast` passed at 2026-05-07T10:46:44.246Z; replaced live-feed placeholder attribute with aria-label in jnoccio-fusion/web/src/main.tsx.
 
 ### JK-0097 - [high] UNKNOWN - packages/app/public/oc-theme-preload.js
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
+- Status: Complete
+- Assignee: opencode
+- Started: 2026-05-08T15:00:00Z
+- Completed: 2026-05-08T15:05:00Z
 - Source packet: `97`
 - Fingerprint: `sha256:139c59be93ae16bacd0a8718f1a15dcf6146bda8f4c66065769a29f3c2e62f0a`
 - Check: `HLT-000-SCORE-DIMENSION:stack`
@@ -3582,14 +3582,14 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
+- Touched files: `packages/app/public/oc-theme-preload.js`
+- Proof receipt: `just fast` passed at 2026-05-08T15:05:00Z; removed dead oc-1 migration marker from oc-theme-preload.js.
 
 ### JK-0098 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/dialog-edit-project.tsx
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
+- Status: Complete
+- Assignee: opencode
+- Started: 2026-05-08T15:10:00Z
+- Completed: 2026-05-08T15:12:00Z
 - Source packet: `98`
 - Fingerprint: `sha256:3f8fa05bb593c98f6d8c7c05bd84b85cb7787826f2f8b45f6eb04bc5b68c6311`
 - Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
@@ -3619,8 +3619,8 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
+- Touched files: `packages/app/src/components/dialog-edit-project.tsx`
+- Proof receipt: `just fast` passed at 2026-05-08T15:12:00Z; replaced unsafe cast with instanceof guard at line 68.
 
 ### JK-0099 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/dialog-select-directory.tsx
 - Status: Pending

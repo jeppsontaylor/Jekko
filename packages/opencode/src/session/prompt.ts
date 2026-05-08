@@ -78,11 +78,13 @@ const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `IMPORTANT: The user has requested struc
 
 const log = Log.create({ service: "session.prompt" })
 const elog = EffectLogger.create({ service: "session.prompt" })
+const RESERVED_TOOL_VISIBILITY_KEYS = new Set(["*", "builtin:*", "mcp:*", "daemon:*"])
 
 export interface Interface {
   readonly cancel: (sessionID: SessionID) => Effect.Effect<void>
   readonly prompt: (input: PromptInput) => Effect.Effect<MessageV2.WithParts>
   readonly loop: (input: LoopInput) => Effect.Effect<MessageV2.WithParts>
+  readonly loopResult: (input: LoopInput) => Effect.Effect<LoopResult>
   readonly shell: (input: ShellInput) => Effect.Effect<MessageV2.WithParts>
   readonly command: (input: CommandInput) => Effect.Effect<MessageV2.WithParts>
   readonly resolvePromptParts: (template: string) => Effect.Effect<PromptInput["parts"]>
@@ -419,6 +421,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         providerID: input.model.providerID,
         agent: input.agent,
       })) {
+        if (!isBuiltinToolVisible(item, input.tools)) continue
         const schema = ProviderTransform.schema(input.model, EffectZod.toJsonSchema(item.parameters))
         tools[item.id] = tool({
           description: item.description,
@@ -458,6 +461,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
       }
 
       for (const [key, item] of Object.entries(yield* mcp.tools())) {
+        if (!isMcpToolVisible(key, input.tools)) continue
         const execute = item.execute
         if (!execute) continue
 
@@ -1379,6 +1383,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
 
         const permissions: Permission.Ruleset = []
         for (const [t, enabled] of Object.entries(input.tools ?? {})) {
+          if (isReservedToolVisibilityKey(t)) continue
           permissions.push({ permission: t, action: enabled ? "allow" : "deny", pattern: "*" })
         }
         if (permissions.length > 0) {
@@ -1641,8 +1646,18 @@ NOTE: At any point in time through this workflow you should feel free to ask the
     const loop: (input: LoopInput) => Effect.Effect<MessageV2.WithParts> = Effect.fn("SessionPrompt.loop")(function* (
       input: LoopInput,
     ) {
-      return yield* state.ensureRunning(input.sessionID, lastAssistant(input.sessionID), runLoop(input.sessionID))
+      return yield* loopResult(input).pipe(Effect.map((result) => result.message))
     })
+
+    const loopResult: (input: LoopInput) => Effect.Effect<LoopResult> = Effect.fn("SessionPrompt.loopResult")(
+      function* (input: LoopInput) {
+        const message = yield* state.ensureRunning(input.sessionID, lastAssistant(input.sessionID), runLoop(input.sessionID))
+        return {
+          message,
+          terminal: classifyLoopTerminal(message),
+        }
+      },
+    )
 
     const shell: (input: ShellInput) => Effect.Effect<MessageV2.WithParts> = Effect.fn("SessionPrompt.shell")(
       function* (input: ShellInput) {
@@ -1773,6 +1788,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
       cancel,
       prompt,
       loop,
+      loopResult,
       shell,
       command,
       resolvePromptParts,
@@ -1812,6 +1828,29 @@ export const defaultLayer = Layer.suspend(() =>
     ),
   ),
 )
+
+function isReservedToolVisibilityKey(key: string) {
+  return RESERVED_TOOL_VISIBILITY_KEYS.has(key)
+}
+
+function isBuiltinToolVisible(item: Tool.Def, visibility?: Record<string, boolean>) {
+  const explicit = visibility?.[item.id]
+  if (explicit === false) return false
+  if (explicit === true) return true
+  if (visibility?.["*"] === false || visibility?.["builtin:*"] === false) return false
+  const daemonTool = item.id.startsWith("daemon_")
+  if (daemonTool && visibility?.["daemon:*"] === true) return true
+  if (daemonTool && visibility?.["daemon:*"] === false) return false
+  if (item.enabledByDefault === false) return false
+  return true
+}
+
+function isMcpToolVisible(key: string, visibility?: Record<string, boolean>) {
+  if (visibility?.[key] === false || visibility?.[`mcp:${key}`] === false) return false
+  if (visibility?.[key] === true || visibility?.[`mcp:${key}`] === true) return true
+  if (visibility?.["*"] === false || visibility?.["mcp:*"] === false) return false
+  return true
+}
 const ModelRef = Schema.Struct({
   providerID: ProviderID,
   modelID: ModelID,
@@ -1840,6 +1879,21 @@ export const PromptInput = Schema.Struct({
   ),
 }).pipe(withStatics((s) => ({ zod: zod(s) })))
 export type PromptInput = Schema.Schema.Type<typeof PromptInput>
+
+export type LoopTerminal =
+  | "assistant_stop"
+  | "tool_calls_done"
+  | "max_steps"
+  | "structured_output"
+  | "compaction_stop"
+  | "permission_denied"
+  | "error"
+  | "cancelled"
+
+export type LoopResult = {
+  readonly message: MessageV2.WithParts
+  readonly terminal: LoopTerminal
+}
 
 export class LoopInput extends Schema.Class<LoopInput>("SessionPrompt.LoopInput")({
   sessionID: SessionID,
@@ -1883,6 +1937,26 @@ export const CommandInput = Schema.Struct({
   ),
 }).pipe(withStatics((s) => ({ zod: zod(s) })))
 export type CommandInput = Schema.Schema.Type<typeof CommandInput>
+
+function classifyLoopTerminal(message: MessageV2.WithParts): LoopTerminal {
+  if (message.info.role !== "assistant") return "assistant_stop"
+  if (message.info.error) {
+    if (String(message.info.error.name).includes("Abort")) return "cancelled"
+    if (String(message.info.error.name).includes("Permission")) return "permission_denied"
+    return "error"
+  }
+  switch (message.info.finish) {
+    case "tool-calls":
+      return "tool_calls_done"
+    case "length":
+    case "max_tokens":
+      return "max_steps"
+    case "stop":
+      return "assistant_stop"
+    default:
+      return message.info.summary ? "compaction_stop" : "assistant_stop"
+  }
+}
 
 /** @internal Exported for testing */
 export function createStructuredOutputTool(input: {

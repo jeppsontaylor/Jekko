@@ -27,6 +27,7 @@ import * as Log from "@opencode-ai/core/util/log"
 import { LspTool } from "./lsp"
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
+import { DaemonTools } from "./daemon"
 import { PatchVmModule } from "../patch/vm"
 import { Glob } from "@opencode-ai/core/util/glob"
 import path from "path"
@@ -94,6 +95,7 @@ export const layer = Layer.effect(
     const greptool = yield* GrepTool
     const patchtool = yield* ApplyPatchTool
     const skilltool = yield* SkillTool
+    const daemontools = yield* Effect.all(DaemonTools)
     const agent = yield* Agent.Service
 
     const state = yield* InstanceState.make<State>(
@@ -191,6 +193,7 @@ export const layer = Layer.effect(
           question: Tool.init(question),
           lsp: Tool.init(lsptool),
           plan: Tool.init(plan),
+          daemon: Effect.forEach(daemontools, (item) => Tool.init(item), { concurrency: "unbounded" }),
         })
 
         return {
@@ -210,6 +213,7 @@ export const layer = Layer.effect(
             tool.search,
             tool.skill,
             tool.patch,
+            ...tool.daemon,
             ...(Flag.OPENCODE_EXPERIMENTAL_LSP_TOOL ? [tool.lsp] : []),
             ...(Flag.OPENCODE_EXPERIMENTAL_PLAN_MODE && Flag.OPENCODE_CLIENT === "cli" ? [tool.plan] : []),
           ],

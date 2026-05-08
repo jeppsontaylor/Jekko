@@ -37,6 +37,7 @@ export interface Def<
 > {
   id: string
   description: string
+  enabledByDefault?: boolean
   parameters: Parameters
   execute(args: Schema.Schema.Type<Parameters>, ctx: Context): Effect.Effect<ExecuteResult<M>>
   formatValidationError?(error: unknown): string

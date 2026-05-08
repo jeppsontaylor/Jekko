@@ -1,0 +1,820 @@
+# OCAL — OpenCode Agent Language
+
+## Vision
+
+OCAL is the **host-enforced daemon control language** for OpenCode. It is a strict, declarative YAML runbook that lets the host — not the model — own the lifecycle of long-running agentic work. Every daemon run is bounded, observable, durable, and subject to human approval at critical gates.
+
+OCAL solves a fundamental problem in agentic AI: **how do you let a model work autonomously for hours without losing control?** The answer is a typed control surface where the host defines what the model may do (permissions), how long it may run (budgets), what must be true before work is committed (stop conditions, guardrails, constraints), and what happens when things go wrong (circuit breakers, on-handlers, retry policies).
+
+### Core Principles
+
+1. **Host owns the loop.** The model never decides when to start, stop, or promote. The host evaluates stop conditions, gates promotions with evidence, and enforces budgets.
+2. **Preview before arming.** Every OCAL block can be previewed without execution. The `OCAL_ARM RUN_FOREVER` sentinel is a deliberate, separate human action.
+3. **SQLite is truth.** All daemon state — runs, tasks, passes, iterations, events — lives in SQLite. The `.opencode/daemon/` mirror is generated output for human inspection.
+4. **Bounded by design.** Every loop has a circuit breaker. Every incubator has a budget. Every pass has a write scope. There are no unbounded swarms.
+5. **Safety is structural.** Guardrails, constraints, and permissions are enforced by the runtime, not by asking the model to remember rules.
+
+### What OCAL Is Not
+
+- Not a prompt trick or hidden chain-of-thought store
+- Not an unbounded swarm launcher
+- Not a model-owned completion signal
+- Not a path for assistant output to start or stop the daemon
+
+---
+
+## Block Structure
+
+Every OCAL script is wrapped in sentinels:
+
+```
+<<<OCAL v1:daemon id=my-script>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+# ... YAML body ...
+<<<END_OCAL id=my-script>>>
+OCAL_ARM RUN_FOREVER id=my-script
+```
+
+- The opening `<<<OCAL v1:daemon id=...>>>` and closing `<<<END_OCAL id=...>>>` delimit the YAML body. IDs must match.
+- The trailing `OCAL_ARM RUN_FOREVER id=...` sentinel arms the script for execution. Without it, the script is preview-only.
+- Code fences (`` ``` ``) around the block are rejected — the sentinels are the format.
+
+---
+
+## Complete Syntax Reference
+
+### Required Keys
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `version` | `"v1"` | Schema version. Always `v1`. |
+| `intent` | `"daemon"` | Execution mode. Always `daemon`. |
+| `confirm` | `"RUN_FOREVER"` | Arming confirmation. Must match the ARM sentinel. |
+| `job` | object | **`name`** (string): human-readable name. **`objective`** (string): what the daemon should accomplish. **`risk`** (string[], optional): known risks. |
+| `stop` | object | **`all`** (list): conditions that must ALL be true to stop. **`any`** (list, optional): at least ONE must be true. Each condition is either `git_clean: {allow_untracked: bool}` or `shell: {command, timeout, assert: {exit_code, stdout_contains, stdout_regex, json}}`. |
+
+### Optional Keys (21 total top-level keys)
+
+#### `loop` — Iteration Policy
+```yaml
+loop:
+  policy: forever          # once | bounded | forever
+  sleep: 5s                # delay between iterations
+  continue_on:             # signals that don't count as errors
+    - assistant_stop
+    - compaction
+  pause_on:                # signals that pause the daemon
+    - permission_denied
+  circuit_breaker:
+    max_consecutive_errors: 5
+    on_trip: pause          # pause | abort
+```
+
+#### `context` — Context Window Management
+```yaml
+context:
+  strategy: hybrid         # soft | hard | hybrid
+  compact_every: 10        # compact context every N iterations
+  hard_clear_every: 20     # rotate session every N iterations
+  preserve:                # keys to preserve across rotations
+    - "objective"
+    - "progress"
+```
+
+#### `checkpoint` — Git Commit Gating
+```yaml
+checkpoint:
+  when: after_verified_change  # after_verified_change | on_error | manual
+  noop_if_clean: true
+  verify:
+    - command: "bun test --timeout 30000"
+      timeout: 60s
+      assert:
+        exit_code: 0
+  git:
+    add: ["."]
+    commit_message: "daemon: checkpoint iteration {{iteration}}"
+    push: ask              # ask | allow | deny
+```
+
+#### `tasks` — Task Discovery
+```yaml
+tasks:
+  ledger: sqlite
+  discover:
+    - command: "cat TODO.md | grep '- \\[ \\]'"
+      timeout: 5s
+```
+
+#### `agents` — Multi-Agent Configuration
+```yaml
+agents:
+  supervisor:
+    agent: plan
+  workers:
+    - id: builder
+      count: 2
+      agent: build
+      isolation: git_worktree  # git_worktree | same_session
+```
+
+#### `mcp` — MCP Server Profiles
+```yaml
+mcp:
+  profiles:
+    full:
+      servers: ["filesystem", "github"]
+      tools: ["read_file", "write_file", "create_pr"]
+    readonly:
+      servers: ["filesystem"]
+      tools: ["read_file", "list_dir"]
+      resources: ["repo://main"]
+```
+
+#### `permissions` — Tool Access Control
+```yaml
+permissions:
+  shell: ask               # ask | allow | deny
+  edit: allow
+  git_commit: ask
+  git_push: deny
+  workers: allow
+  mcp: ask
+```
+
+#### `ui` — TUI Customization
+```yaml
+ui:
+  theme: opencode-gold
+  banner: forever
+```
+
+#### `on` — Conditional Event Handlers
+React to runtime signals with declarative actions. Signals: `assistant_stop`, `max_steps`, `compaction`, `permission_denied`, `checkpoint_failed`, `no_progress`, `tool_calls_done`, `structured_output`, `error`, `cancelled`.
+
+```yaml
+on:
+  - signal: no_progress
+    count_gte: 3           # fire only after 3+ occurrences
+    do:
+      - switch_agent: plan
+      - run: "bun test --reporter=json > /tmp/diag.json"
+  - signal: error
+    message_contains: "ENOMEM"
+    do:
+      - pause: true
+      - notify: "Out of memory detected"
+  - signal: checkpoint_failed
+    do:
+      - incubate_current_task: true
+  - signal: tool_calls_done
+    if:                    # optional shell guard
+      command: "git diff --stat --exit-code"
+      assert:
+        exit_code: 1       # diff exists
+    do:
+      - checkpoint: true
+```
+
+**Actions:** `switch_agent`, `run`, `incubate_current_task`, `checkpoint`, `pause`, `abort`, `notify`, `set_context`.
+
+#### `fan_out` — Parallel Map-Reduce
+```yaml
+fan_out:
+  strategy: map_reduce     # map_reduce | scatter_gather
+  split:
+    items: ["auth", "database", "api"]
+    # OR dynamic: shell: "cat tasks.json | jq -r '.[].id'"
+  worker:
+    agent: build
+    isolation: git_worktree
+    timeout: 10m
+    max_parallel: 3
+  reduce:
+    strategy: merge_all    # merge_all | best_score | vote | custom_shell
+    # score_key: "$.readiness_score"   (for best_score)
+    # command: "node merge.js"         (for custom_shell)
+  on_partial_failure: continue  # continue | abort | pause
+```
+
+#### `guardrails` — Safety Validation
+```yaml
+guardrails:
+  input:                   # block dangerous commands before execution
+    - name: no-force-push
+      deny_patterns: ["git push --force", "git push -f"]
+      action: block        # block | retry | pause | abort | warn
+    - name: no-secrets
+      deny_patterns: ["sk-[a-zA-Z0-9]{20,}", "AKIA[A-Z0-9]{16}"]
+      scope: tool_output   # tool_input | tool_output | file_diff | commit_message
+      action: block
+  output:                  # validate model output
+    - name: type-safety
+      shell: "npx tsgo --noEmit 2>&1 | tail -1"
+      on_fail: retry
+      max_retries: 3
+  iteration:               # check between iterations
+    - name: diff-size
+      shell: "git diff --stat | wc -l"
+      assert:
+        exit_code: 0
+      on_fail: warn
+```
+
+#### `assertions` — Structured Output Contracts
+```yaml
+assertions:
+  require_structured_output: true
+  schema:
+    type: object
+    properties:
+      files_changed: { type: array, items: { type: string } }
+      confidence: { type: number, minimum: 0, maximum: 1 }
+      summary: { type: string }
+    required: [files_changed, confidence, summary]
+  on_invalid: retry        # retry | pause | abort | warn
+  max_retries: 2
+```
+
+#### `retry` — Backoff Policies
+```yaml
+retry:
+  default:
+    max_attempts: 3
+    backoff: exponential   # none | linear | exponential
+    initial_delay: 2s
+    max_delay: 30s
+    jitter: true
+  overrides:
+    shell_checks:
+      max_attempts: 5
+      backoff: linear
+      initial_delay: 1s
+    checkpoint:
+      max_attempts: 2
+      backoff: none
+    worker_spawn:
+      max_attempts: 3
+      backoff: exponential
+      initial_delay: 5s
+    stop_evaluation:
+      max_attempts: 2
+```
+
+#### `hooks` — Lifecycle Commands
+```yaml
+hooks:
+  on_start:
+    - run: "git fetch origin main"
+    - run: "bun install"
+  before_iteration:
+    - run: "git rebase origin/main --autostash"
+      on_fail: pause       # pause | abort | warn | block_promotion | continue
+  after_iteration:
+    - run: "echo done >> .opencode/daemon/log.txt"
+  before_checkpoint:
+    - run: "bun run lint --fix"
+  after_checkpoint:
+    - run: "curl -X POST $SLACK_WEBHOOK -d '{\"text\":\"Checkpoint\"}'"
+      on_fail: warn
+  on_promote:
+    - run: "bun test --timeout 60000"
+      assert: { exit_code: 0 }
+      on_fail: block_promotion
+  on_exhaust:
+    - run: "echo 'Budget exhausted'"
+  on_stop:
+    - run: "echo 'Daemon stopped' | mail -s 'Alert' $EMAIL"
+      on_fail: warn
+```
+
+#### `constraints` — Runtime Invariants
+```yaml
+constraints:
+  - name: test-count-stable
+    check:
+      shell: "bun test --dry-run 2>&1 | grep -c test"
+      timeout: 10s
+    baseline: capture_on_start  # capture_on_start | capture_on_checkpoint
+    invariant: gte_baseline     # gte_baseline | lte_baseline | equals_baseline | equals_zero | non_zero
+    on_violation: pause         # abort | pause | block | warn | retry
+  - name: no-binary-files
+    check:
+      shell: "git diff --cached --diff-filter=A --name-only | xargs file 2>/dev/null | grep -c binary || echo 0"
+    invariant: equals_zero
+    on_violation: block
+```
+
+#### `incubator` — Hard Task Maturation
+The incubator routes hard tasks through bounded strengthening passes. Each pass has a type, context mode, and write scope. Tasks are promoted only when host evidence meets the threshold.
+
+```yaml
+incubator:
+  enabled: true
+  strategy: generate_pool_strengthen  # generate_pool_strengthen | bounded_passes
+  route_when:
+    any:
+      - repeated_attempts_gte: 3
+      - no_progress_iterations_gte: 5
+      - risk_score_gte: 0.7
+  exclude_when:
+    any:
+      - readiness_score_lt: 0.2
+  budget:
+    max_passes_per_task: 7
+    max_rounds_per_task: 3
+    max_active_tasks: 5
+    max_parallel_idea_passes: 3
+  scratch:
+    storage: sqlite
+    mirror: true
+    cleanup: summarize_and_archive  # summarize_and_archive | archive | keep
+  cleanup:
+    summarize_to_task_memory: true
+    archive_artifacts: true
+    delete_scratch: true
+    delete_unmerged_worktrees: true
+  readiness:
+    promote_at: 0.7
+    tests_identified_gte: 1
+    scope_bounded_gte: 1
+    plan_reviewed_gte: 1
+    prototype_validated_gte: 1
+    rollback_known_gte: 1
+    affected_files_known_gte: 1
+    critical_objections_resolved_gte: 0
+    model_confidence_cap: 0.6
+  passes:
+    - id: scout
+      type: scout
+      context: blind
+      writes: scratch_only
+    - id: ideas
+      type: idea
+      context: inherit
+      writes: scratch_only
+      count: 3
+      agent: plan
+    - id: strengthen
+      type: strengthen
+      context: strengthen
+      writes: scratch_only
+      mcp_profile: full
+    - id: critic
+      type: critic
+      context: critic
+      writes: scratch_only
+    - id: synthesize
+      type: synthesize
+      context: pool
+      writes: scratch_only
+    - id: prototype
+      type: prototype
+      context: inherit
+      writes: isolated_worktree
+      agent: build
+      mcp_profile: full
+    - id: review
+      type: promotion_review
+      context: promotion
+      writes: scratch_only
+    - id: compress
+      type: compress
+      context: ledger_only
+      writes: scratch_only
+  promotion:
+    promote_at: 0.78
+    require: ["tests_identified", "scope_bounded", "plan_reviewed"]
+    block_on:
+      unresolved_critical_objections_gte: 1
+    on_promote: move_to_ready_queue
+    on_exhausted: park_with_summary  # park_with_summary | block_with_summary
+```
+
+**Pass types:** `scout`, `idea`, `strengthen`, `critic`, `synthesize`, `prototype`, `promotion_review`, `compress`.
+**Context modes:** `blind`, `inherit`, `strengthen`, `critic`, `pool`, `promotion`, `ledger_only`.
+**Write scopes:** `scratch_only`, `isolated_worktree`.
+
+---
+
+## Durable State & Mirror
+
+All runtime state is persisted in SQLite. The filesystem mirror at `.opencode/daemon/` is generated for human inspection:
+
+```
+.opencode/daemon/<runID>/
+├── ledger.jsonl          # append-only event log
+├── STATE.md              # human-readable run summary
+└── tasks/<taskID>/
+    ├── CAPSULE.md         # task context capsule
+    ├── SCORE.json         # readiness scores
+    └── PASSES/
+        ├── 001-scout.md
+        ├── 002-idea.md
+        └── 003-strengthen.md
+```
+
+---
+
+## Example 1: Fix Until Tests Pass
+
+The simplest useful daemon — loop until `bun test` passes, commit each fix.
+
+```yaml
+<<<OCAL v1:daemon id=fix-tests>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: Fix failing tests
+  objective: Make all tests pass without removing or skipping any.
+
+loop:
+  policy: forever
+  sleep: 5s
+  circuit_breaker:
+    max_consecutive_errors: 5
+    on_trip: pause
+
+stop:
+  all:
+    - shell:
+        command: "bun test --timeout 30000"
+        timeout: 60s
+        assert:
+          exit_code: 0
+
+checkpoint:
+  when: after_verified_change
+  noop_if_clean: true
+  verify:
+    - command: "bun test --timeout 30000"
+      timeout: 60s
+      assert:
+        exit_code: 0
+  git:
+    add: ["."]
+    push: ask
+
+permissions:
+  shell: ask
+  edit: allow
+  git_commit: ask
+<<<END_OCAL id=fix-tests>>>
+OCAL_ARM RUN_FOREVER id=fix-tests
+```
+
+## Example 2: Multi-Worker Audit with Guardrails
+
+Parallel workers lint, typecheck, and test — with guardrails preventing dangerous operations.
+
+```yaml
+<<<OCAL v1:daemon id=guarded-audit>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: Guarded multi-worker audit
+  objective: Fix all lint, type, and test errors across the codebase.
+  risk:
+    - Parallel workers may create merge conflicts
+    - Force-push could destroy history
+
+agents:
+  supervisor:
+    agent: plan
+  workers:
+    - id: lint-fixer
+      count: 1
+      agent: build
+      isolation: git_worktree
+    - id: type-fixer
+      count: 1
+      agent: build
+      isolation: git_worktree
+
+stop:
+  all:
+    - shell:
+        command: "bun run lint && npx tsgo --noEmit && bun test"
+        timeout: 120s
+        assert:
+          exit_code: 0
+
+guardrails:
+  input:
+    - name: no-force-push
+      deny_patterns: ["git push --force", "git push -f"]
+      action: block
+    - name: no-secrets
+      deny_patterns: ["sk-[a-zA-Z0-9]{20,}", "AKIA"]
+      scope: tool_output
+      action: block
+  output:
+    - name: type-safety
+      shell: "npx tsgo --noEmit 2>&1 | grep -c 'error TS' || echo 0"
+      on_fail: retry
+      max_retries: 2
+
+constraints:
+  - name: test-count-stable
+    check:
+      shell: "bun test --dry-run 2>&1 | grep -c test"
+    baseline: capture_on_start
+    invariant: gte_baseline
+    on_violation: pause
+
+permissions:
+  shell: ask
+  edit: allow
+  git_commit: ask
+  git_push: deny
+  workers: allow
+<<<END_OCAL id=guarded-audit>>>
+OCAL_ARM RUN_FOREVER id=guarded-audit
+```
+
+## Example 3: Hard Task Incubator with Full Lifecycle
+
+Routes hard tasks through 8 strengthening passes with readiness scoring and promotion gating.
+
+```yaml
+<<<OCAL v1:daemon id=incubator-full>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: Hard task incubator
+  objective: Mature complex tasks through structured investigation before touching production code.
+
+loop:
+  policy: forever
+  sleep: 10s
+  circuit_breaker:
+    max_consecutive_errors: 3
+    on_trip: pause
+
+stop:
+  all:
+    - git_clean:
+        allow_untracked: false
+
+on:
+  - signal: no_progress
+    count_gte: 5
+    do:
+      - switch_agent: plan
+      - notify: "Switching to plan agent after 5 stalls"
+  - signal: checkpoint_failed
+    do:
+      - incubate_current_task: true
+
+hooks:
+  on_start:
+    - run: "git fetch origin main"
+  before_iteration:
+    - run: "git rebase origin/main --autostash"
+      on_fail: warn
+  on_promote:
+    - run: "bun test --timeout 60000"
+      assert: { exit_code: 0 }
+      on_fail: block_promotion
+
+retry:
+  default:
+    max_attempts: 3
+    backoff: exponential
+    initial_delay: 2s
+    jitter: true
+
+incubator:
+  enabled: true
+  strategy: generate_pool_strengthen
+  route_when:
+    any:
+      - repeated_attempts_gte: 3
+      - risk_score_gte: 0.7
+  budget:
+    max_passes_per_task: 7
+    max_rounds_per_task: 3
+    max_parallel_idea_passes: 3
+  scratch:
+    storage: sqlite
+    mirror: true
+    cleanup: summarize_and_archive
+  cleanup:
+    summarize_to_task_memory: true
+    archive_artifacts: true
+    delete_scratch: true
+    delete_unmerged_worktrees: true
+  readiness:
+    promote_at: 0.7
+    tests_identified_gte: 1
+    scope_bounded_gte: 1
+    model_confidence_cap: 0.6
+  passes:
+    - { id: scout, type: scout, context: blind, writes: scratch_only }
+    - { id: ideas, type: idea, context: inherit, writes: scratch_only, count: 3 }
+    - { id: strengthen, type: strengthen, context: strengthen, writes: scratch_only }
+    - { id: critic, type: critic, context: critic, writes: scratch_only }
+    - { id: synthesize, type: synthesize, context: pool, writes: scratch_only }
+    - { id: prototype, type: prototype, context: inherit, writes: isolated_worktree, agent: build }
+    - { id: review, type: promotion_review, context: promotion, writes: scratch_only }
+    - { id: compress, type: compress, context: ledger_only, writes: scratch_only }
+  promotion:
+    promote_at: 0.78
+    require: ["tests_identified", "scope_bounded", "plan_reviewed"]
+    block_on:
+      unresolved_critical_objections_gte: 1
+    on_promote: move_to_ready_queue
+    on_exhausted: park_with_summary
+
+permissions:
+  shell: ask
+  edit: allow
+  git_commit: ask
+<<<END_OCAL id=incubator-full>>>
+OCAL_ARM RUN_FOREVER id=incubator-full
+```
+
+## Example 4: Fan-Out Parallel Audit
+
+Decompose an audit into 4 parallel subtasks, each in its own worktree, and merge results.
+
+```yaml
+<<<OCAL v1:daemon id=fan-out-audit>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: Parallel audit sweep
+  objective: Run lint, typecheck, unit tests, and integration tests in parallel, merge results.
+
+stop:
+  all:
+    - git_clean:
+        allow_untracked: false
+
+fan_out:
+  strategy: map_reduce
+  split:
+    items: ["lint", "typecheck", "unit-tests", "integration-tests"]
+  worker:
+    agent: build
+    isolation: git_worktree
+    timeout: 10m
+    max_parallel: 4
+  reduce:
+    strategy: merge_all
+  on_partial_failure: continue
+
+hooks:
+  on_start:
+    - run: "bun install"
+  on_stop:
+    - run: "echo 'Audit complete'"
+
+permissions:
+  shell: allow
+  edit: allow
+  workers: allow
+<<<END_OCAL id=fan-out-audit>>>
+OCAL_ARM RUN_FOREVER id=fan-out-audit
+```
+
+## Example 5: Guardrailed CI Daemon with Structured Assertions
+
+Automated CI fixer that requires structured JSON output from the model and enforces migration stability.
+
+```yaml
+<<<OCAL v1:daemon id=safe-ci-fixer>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: Safe CI fixer
+  objective: Fix CI failures with guardrails preventing dangerous operations.
+
+loop:
+  policy: forever
+  sleep: 10s
+
+stop:
+  all:
+    - shell:
+        command: "bun test --timeout 30000"
+        timeout: 60s
+        assert:
+          exit_code: 0
+
+guardrails:
+  input:
+    - name: no-force-push
+      deny_patterns: ["git push --force", "git push -f"]
+      action: block
+    - name: no-drop-table
+      deny_patterns: ["DROP TABLE", "DROP DATABASE"]
+      action: block
+    - name: no-secrets
+      deny_patterns: ["sk-", "AKIA"]
+      scope: tool_output
+      action: block
+  output:
+    - name: lint-check
+      shell: "bun run lint 2>&1 | tail -1"
+      on_fail: retry
+      max_retries: 2
+  iteration:
+    - name: diff-size-check
+      shell: "git diff --stat | wc -l"
+      on_fail: warn
+
+assertions:
+  require_structured_output: true
+  schema:
+    type: object
+    properties:
+      files_changed: { type: array }
+      confidence: { type: number, minimum: 0, maximum: 1 }
+      summary: { type: string }
+    required: [files_changed, confidence, summary]
+  on_invalid: retry
+  max_retries: 2
+
+constraints:
+  - name: migration-stability
+    check:
+      shell: "ls packages/opencode/migration/ 2>/dev/null | wc -l"
+    baseline: capture_on_start
+    invariant: gte_baseline
+    on_violation: abort
+  - name: no-binaries
+    check:
+      shell: "find src/ -name '*.bin' -o -name '*.exe' | wc -l"
+    invariant: equals_zero
+    on_violation: block
+
+retry:
+  default:
+    max_attempts: 3
+    backoff: exponential
+    initial_delay: 2s
+    max_delay: 30s
+    jitter: true
+
+permissions:
+  shell: ask
+  edit: allow
+  git_commit: ask
+<<<END_OCAL id=safe-ci-fixer>>>
+OCAL_ARM RUN_FOREVER id=safe-ci-fixer
+```
+
+---
+
+## Safety Invariants
+
+These are enforced structurally by the runtime, not by the model:
+
+1. **Preview is separate from arming.** The `OCAL_ARM` sentinel is a distinct human action.
+2. **Runs are finite and host-checked.** Circuit breakers, budgets, and stop conditions are runtime-enforced.
+3. **SQLite is the source of truth.** All state is durable. Mirror files are regenerated.
+4. **Prototype work writes only in isolated worktrees.** `writes: isolated_worktree` is enforced for `prototype` passes.
+5. **Promotion requires host evidence.** A high `readiness_score` alone cannot promote — the host checks `require` evidence fields and `block_on` conditions.
+6. **Model confidence is capped.** `model_confidence_cap` prevents the model from inflating its own readiness score past a threshold.
+7. **Cleanup is deliberate and recorded.** Every cleanup action is logged as a daemon event.
+8. **Guardrails and constraints are runtime-enforced.** Pattern matching and invariant checks happen in the host, not in the prompt.
+9. **On-handlers do not cascade.** A handler action cannot trigger another handler (max depth 1), preventing infinite loops.
+10. **All daemon tools stay hidden** unless an active daemon pass explicitly allows them.
+
+## CLI Surface
+
+```sh
+opencode daemon status          # Show active daemon runs
+opencode daemon tasks <runID>   # List tasks for a run
+opencode daemon pause <runID>   # Pause a running daemon
+opencode daemon resume <runID>  # Resume a paused daemon
+opencode daemon abort <runID>   # Abort a daemon run
+```
+
+## API Surface
+
+The daemon is fully observable via the HTTP API:
+
+- `GET /daemon/runs` — List all runs
+- `GET /daemon/runs/:id` — Get run details
+- `GET /daemon/runs/:id/events` — Event stream
+- `GET /daemon/runs/:id/tasks` — Task list
+- `GET /daemon/runs/:id/tasks/:taskID/passes` — Pass history
+- `POST /daemon/runs/:id/tasks/:taskID/promote` — Manual promotion
+- `POST /daemon/runs/:id/tasks/:taskID/block` — Block a task
+- `POST /daemon/runs/:id/pause` — Pause
+- `POST /daemon/runs/:id/resume` — Resume
+- `POST /daemon/runs/:id/abort` — Abort
