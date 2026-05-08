@@ -5,7 +5,7 @@ import { Effect, Layer, Context } from "effect"
 import { and, asc, desc, eq, isNull, lt, max, or } from "drizzle-orm"
 import { InstanceState } from "@/effect/instance-state"
 import { Database } from "@/storage/db"
-import type { OcalScript } from "@/agent-script/schema"
+import type { ZyalScript } from "@/agent-script/schema"
 import { SessionID } from "./schema"
 import {
   DaemonArtifactTable,
@@ -43,7 +43,7 @@ export interface Interface {
   readonly createRun: (input: {
     rootSessionID: string
     activeSessionID: string
-    spec: OcalScript
+    spec: ZyalScript
     specHash: string
   }) => Effect.Effect<RunInfo, any, any>
   readonly listRuns: () => Effect.Effect<RunInfo[], any, any>
@@ -231,7 +231,7 @@ export const layer = Layer.effect(
     const createRun = Effect.fn("DaemonStore.createRun")(function* (input: {
       rootSessionID: string
       activeSessionID: string
-      spec: OcalScript
+      spec: ZyalScript
       specHash: string
     }) {
       const id = ulid()
@@ -846,7 +846,7 @@ export const layer = Layer.effect(
 export const defaultLayer = layer
 
 function renderStateMarkdown(run: RunInfo, iterations: IterationInfo[], events: EventInfo[]) {
-  const spec = run.spec_json as OcalScript
+  const spec = run.spec_json as ZyalScript
   const lastIteration = iterations.at(-1)
   return [
     `# ${spec.job.name}`,

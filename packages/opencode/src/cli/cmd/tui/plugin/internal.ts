@@ -1,7 +1,7 @@
 import HomeFooter from "../feature-plugins/home/footer"
 import HomeTips from "../feature-plugins/home/tips"
 import SidebarContext from "../feature-plugins/sidebar/context"
-import SidebarOcal from "../feature-plugins/sidebar/ocal"
+import SidebarZyal from "../feature-plugins/sidebar/zyal"
 import SidebarMcp from "../feature-plugins/sidebar/mcp"
 import SidebarLsp from "../feature-plugins/sidebar/lsp"
 import SidebarTodo from "../feature-plugins/sidebar/todo"
@@ -21,7 +21,7 @@ export const INTERNAL_TUI_PLUGINS: InternalTuiPlugin[] = [
   HomeFooter,
   HomeTips,
   SidebarContext,
-  SidebarOcal,
+  SidebarZyal,
   SidebarMcp,
   SidebarLsp,
   SidebarTodo,

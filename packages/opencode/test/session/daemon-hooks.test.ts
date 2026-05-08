@@ -5,10 +5,10 @@ import {
   countHooks,
   activeHookPhases,
 } from "@/session/daemon-hooks"
-import type { OcalHooks } from "@/agent-script/schema"
+import type { ZyalHooks } from "@/agent-script/schema"
 
 describe("daemon hooks", () => {
-  const hooks: OcalHooks = {
+  const hooks: ZyalHooks = {
     on_start: [
       { run: "git fetch origin main" },
       { run: "bun install" },

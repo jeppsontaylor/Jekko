@@ -1,4 +1,4 @@
-import type { OcalOnHandler, OcalScript, OcalSignal } from "@/agent-script/schema"
+import type { ZyalOnHandler, ZyalScript, ZyalSignal } from "@/agent-script/schema"
 
 /**
  * Evaluates `on` handlers against a signal event.
@@ -23,11 +23,11 @@ export function incrementSignalCounter(counters: SignalCounters, signal: string)
 }
 
 export function evaluateOnHandlers(input: {
-  handlers: readonly OcalOnHandler[]
-  signal: OcalSignal
+  handlers: readonly ZyalOnHandler[]
+  signal: ZyalSignal
   counters: SignalCounters
   message?: string
-  shellGuardFn?: (check: OcalOnHandler["if"]) => boolean
+  shellGuardFn?: (check: ZyalOnHandler["if"]) => boolean
 }): OnAction[] {
   const { handlers, signal, counters, message, shellGuardFn } = input
   const count = counters[signal] ?? 0
@@ -54,7 +54,7 @@ export function evaluateOnHandlers(input: {
   return actions
 }
 
-/** Extract all on handlers from an OCAL spec, returns empty array if none */
-export function getOnHandlers(spec: OcalScript): readonly OcalOnHandler[] {
+/** Extract all on handlers from a ZYAL spec, returns empty array if none */
+export function getOnHandlers(spec: ZyalScript): readonly ZyalOnHandler[] {
   return spec.on ?? []
 }

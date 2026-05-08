@@ -1,4 +1,4 @@
-import type { OcalFanOutReduce } from "@/agent-script/schema"
+import type { ZyalFanOutReduce } from "@/agent-script/schema"
 import type { FanOutWorkerResult } from "./daemon-fanout"
 import { walkJsonPath } from "./daemon-checks"
 
@@ -17,7 +17,7 @@ export type ReduceResult = {
  * Apply the configured reduce strategy to a set of worker results.
  */
 export function reduceResults(
-  spec: OcalFanOutReduce,
+  spec: ZyalFanOutReduce,
   results: readonly FanOutWorkerResult[],
   shellRunner?: (command: string) => string,
 ): ReduceResult {

@@ -1,4 +1,4 @@
-import type { OcalFanOut, OcalFanOutSplit, OcalFanOutReduce } from "@/agent-script/schema"
+import type { ZyalFanOut, ZyalFanOutSplit, ZyalFanOutReduce } from "@/agent-script/schema"
 
 /**
  * Fan-out orchestrator.
@@ -32,7 +32,7 @@ export type FanOutResult = {
  * For shell-based splits, the caller provides a shellRunner.
  */
 export function resolveSplitItems(
-  split: OcalFanOutSplit,
+  split: ZyalFanOutSplit,
   shellRunner?: (command: string) => string[],
 ): FanOutItem[] {
   if ("items" in split) {
@@ -48,7 +48,7 @@ export function resolveSplitItems(
 /**
  * Compute the effective concurrency cap.
  */
-export function effectiveParallelism(spec: OcalFanOut, itemCount: number): number {
+export function effectiveParallelism(spec: ZyalFanOut, itemCount: number): number {
   const maxParallel = spec.worker.max_parallel ?? itemCount
   return Math.min(maxParallel, itemCount)
 }
@@ -57,7 +57,7 @@ export function effectiveParallelism(spec: OcalFanOut, itemCount: number): numbe
  * Determine the fan-out action given partial failures and the on_partial_failure policy.
  */
 export function resolvePartialFailureAction(
-  spec: OcalFanOut,
+  spec: ZyalFanOut,
   results: readonly FanOutWorkerResult[],
 ): "completed" | "aborted" | "paused" {
   const failures = results.filter((r) => !r.success)

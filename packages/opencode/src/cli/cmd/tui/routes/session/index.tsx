@@ -22,7 +22,14 @@ import { useEvent } from "@tui/context/event"
 import { SplitBorder } from "@tui/component/border"
 import { Spinner } from "@tui/component/spinner"
 import { selectedForeground, useTheme } from "@tui/context/theme"
-import { setOcalFlashSource, textHasOcalSentinel, updateOcalMetrics, resetOcalMetrics } from "@tui/context/ocal-flash"
+import {
+  daemonRunJnoccioConfig,
+  daemonRunToZyalMetrics,
+  resetZyalMetrics,
+  setZyalFlashSource,
+  textHasZyalSentinel,
+  updateZyalMetrics,
+} from "@tui/context/zyal-flash"
 import { connectJnoccio, disconnectJnoccio } from "@tui/context/jnoccio-ws"
 import { BoxRenderable, ScrollBoxRenderable, addDefaultParsers, TextAttributes, RGBA } from "@opentui/core"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
@@ -101,6 +108,11 @@ addDefaultParsers(parsers.parsers)
 const GO_UPSELL_LAST_SEEN_AT = "go_upsell_last_seen_at"
 const GO_UPSELL_DONT_SHOW = "go_upsell_dont_show"
 const GO_UPSELL_WINDOW = 86_400_000 // 24 hrs
+const DAEMON_TERMINAL_STATUSES = new Set(["satisfied", "aborted", "failed"])
+
+function daemonRunIsLive(run: any) {
+  return !!run && !DAEMON_TERMINAL_STATUSES.has(String(run.status))
+}
 
 const context = createContext<{
   width: number
@@ -159,26 +171,26 @@ export function Session() {
     return messages().findLast((x) => x.role === "assistant")
   })
 
-  // OCAL gold flash: detect OCAL sentinels in the latest assistant message
+  // ZYAL gold flash: detect ZYAL sentinels in the latest assistant message
   // and any active daemon run, then toggle the gold theme overlay.
-  const ocalInAssistant = createMemo(() => {
+  const zyalInAssistant = createMemo(() => {
     const last = lastAssistant()
     if (!last) return false
     const parts = sync.data.part[last.id] ?? []
     for (const part of parts) {
-      if (part.type === "text" && textHasOcalSentinel(part.text)) return true
+      if (part.type === "text" && textHasZyalSentinel(part.text)) return true
     }
     return false
   })
   createEffect(() => {
-    setOcalFlashSource("session:assistant", ocalInAssistant())
+    setZyalFlashSource("session:assistant", zyalInAssistant())
   })
   createEffect(() => {
-    setOcalFlashSource("session:daemon", daemonRun() !== undefined)
+    setZyalFlashSource("session:daemon", daemonRunIsLive(daemonRun()))
   })
   onCleanup(() => {
-    setOcalFlashSource("session:assistant", false)
-    setOcalFlashSource("session:daemon", false)
+    setZyalFlashSource("session:assistant", false)
+    setZyalFlashSource("session:daemon", false)
   })
 
   const dimensions = useTerminalDimensions()
@@ -262,47 +274,22 @@ export function Session() {
         const run = runs.find((item) => item.active_session_id === sessionID || item.root_session_id === sessionID)
         if (!alive) return
         setDaemonRun(run)
-        const isLiveRun = !!run && !["satisfied", "aborted", "failed"].includes(String(run.status))
+        const isLiveRun = daemonRunIsLive(run)
         if (isLiveRun) {
           setOverlay("opencode-gold")
-          // Push live fleet metrics from the daemon run into the OCAL panel.
-          const tokens = run.token_usage ?? run.tokens ?? {}
-          const fleet = run.fleet ?? run.spec?.fleet ?? {}
-          const fleetMaxRaw = Number(fleet?.max_workers ?? 0)
-          updateOcalMetrics({
-            runId: String(run.id ?? run.run_id ?? sessionID),
-            status: String(run.status ?? "active"),
-            workersActive: Number(run.workers_active ?? run.active_workers ?? 0),
-            workersMax: Number.isFinite(fleetMaxRaw) && fleetMaxRaw > 0 ? Math.min(20, fleetMaxRaw) : undefined,
-            inputTokens: Number(tokens.input ?? tokens.inputTokens ?? 0),
-            outputTokens: Number(tokens.output ?? tokens.outputTokens ?? 0),
-            cacheTokens: Number(tokens.cache?.read ?? 0) + Number(tokens.cache?.write ?? 0) + Number(tokens.reasoning ?? 0),
-            totalTokens: Number(tokens.total ?? tokens.totalTokens ?? 0) ||
-              Number(tokens.input ?? 0) + Number(tokens.output ?? 0) + Number(tokens.reasoning ?? 0),
-            costUsd: Number(run.cost_usd ?? run.cost ?? 0),
-            loopsCompleted: Number(run.iteration_count ?? run.iterations ?? 0),
-            tasksCompleted: Number(run.tasks_completed ?? 0),
-            tasksIncubated: Number(run.tasks_incubated ?? 0),
-          })
+          updateZyalMetrics(daemonRunToZyalMetrics(run, sessionID))
           // Open a direct WebSocket to jnoccio-fusion if the run declares it.
           // Idempotent — connectJnoccio reuses an open socket on the same key.
-          const jn = fleet?.jnoccio
-          const baseUrl = typeof jn?.base_url === "string" ? jn.base_url : null
-          if (jn?.enabled !== false && baseUrl) {
-            connectJnoccio({
-              baseUrl,
-              metricsWsPath: typeof jn?.metrics_ws === "string" ? jn.metrics_ws : undefined,
-              runId: String(run.id ?? run.run_id ?? sessionID),
-            })
+          const jnoccio = daemonRunJnoccioConfig(run)
+          if (jnoccio) {
+            connectJnoccio(jnoccio)
           } else {
             disconnectJnoccio()
           }
         } else {
           setOverlay(undefined)
-          if (!run) {
-            resetOcalMetrics()
-            disconnectJnoccio()
-          }
+          resetZyalMetrics()
+          disconnectJnoccio()
         }
       } catch {
         if (!alive) return
@@ -316,7 +303,7 @@ export function Session() {
       alive = false
       clearInterval(timer)
       setOverlay(undefined)
-      resetOcalMetrics()
+      resetZyalMetrics()
       disconnectJnoccio()
     })
   })
@@ -1332,7 +1319,7 @@ export function Session() {
         <Show when={sidebarVisible()}>
           <Switch>
             <Match when={wide()}>
-              <Sidebar sessionID={route.sessionID} daemonRun={daemonRun()} />
+              <Sidebar sessionID={route.sessionID} />
             </Match>
             <Match when={!wide()}>
               <box
@@ -1344,7 +1331,7 @@ export function Session() {
                 alignItems="flex-end"
                 backgroundColor={RGBA.fromInts(0, 0, 0, 70)}
               >
-                <Sidebar sessionID={route.sessionID} daemonRun={daemonRun()} />
+                <Sidebar sessionID={route.sessionID} />
               </box>
             </Match>
           </Switch>

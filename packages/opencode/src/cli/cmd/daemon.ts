@@ -113,14 +113,14 @@ export const DaemonCommand = cmd({
 
 export const DaemonPreviewCommand = effectCmd({
   command: "preview",
-  describe: "preview an OCAL daemon file",
+  describe: "preview an ZYAL daemon file",
   instance: false,
   builder: (yargs) =>
     yargs.option("file", {
       alias: "f",
       type: "string",
       demandOption: true,
-      describe: "OCAL file to preview",
+      describe: "ZYAL file to preview",
     }),
   handler: Effect.fn("Cli.daemon.preview")(function* (args) {
     const input = target(args)
@@ -137,7 +137,7 @@ export const DaemonPreviewCommand = effectCmd({
 
 export const DaemonStartCommand = effectCmd({
   command: "start",
-  describe: "start a daemon run from an OCAL file",
+  describe: "start a daemon run from a ZYAL file",
   instance: false,
   builder: (yargs) =>
     yargs
@@ -145,7 +145,7 @@ export const DaemonStartCommand = effectCmd({
         alias: "f",
         type: "string",
         demandOption: true,
-        describe: "OCAL file to start",
+        describe: "ZYAL file to start",
       })
       .option("session", {
         alias: "s",
@@ -191,7 +191,7 @@ export const DaemonStartCommand = effectCmd({
         requestJson(input, "/session", {
           method: "POST",
           body: JSON.stringify({
-            title: (preview as any)?.spec?.job?.name ?? "OCAL daemon",
+            title: (preview as any)?.spec?.job?.name ?? "ZYAL daemon",
           }),
         }),
       )

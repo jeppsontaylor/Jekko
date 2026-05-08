@@ -1,4 +1,4 @@
-<<<OCAL v1:daemon id=jankurai-master-loop>>>
+<<<ZYAL v1:daemon id=jankurai-master-loop>>>
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
@@ -403,5 +403,5 @@ permissions:
   git_push: allow
   workers: ask
   mcp: ask
-<<<END_OCAL id=jankurai-master-loop>>>
-OCAL_ARM RUN_FOREVER id=jankurai-master-loop
+<<<END_ZYAL id=jankurai-master-loop>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-master-loop

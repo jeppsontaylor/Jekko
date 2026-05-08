@@ -42,7 +42,7 @@ export function buildContextPacket(input: {
   const capsule = buildTaskCapsule(input)
   const objective = taskObjective(input.task)
   const header = [
-    "<ocal-incubator-task>",
+    "<zyal-incubator-task>",
     `Task: ${input.task.id}`,
     `Title: ${input.task.title}`,
     `Lane: ${input.task.lane}`,
@@ -51,7 +51,7 @@ export function buildContextPacket(input: {
     `Context mode: ${input.mode}`,
     `Readiness: ${input.task.readiness_score.toFixed(3)}`,
     `Risk: ${input.task.risk_score.toFixed(3)}`,
-    "</ocal-incubator-task>",
+    "</zyal-incubator-task>",
   ]
 
   if (input.mode === "blind") {

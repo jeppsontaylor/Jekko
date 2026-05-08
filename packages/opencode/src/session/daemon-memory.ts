@@ -1,8 +1,8 @@
-import type { OcalMemory, OcalMemoryStore, OcalMemoryRedaction } from "@/agent-script/schema"
+import type { ZyalMemory, ZyalMemoryStore, ZyalMemoryRedaction } from "@/agent-script/schema"
 import { createHash } from "crypto"
 
 /**
- * Governed agent memory manager for OCAL v2.
+ * Governed agent memory manager for ZYAL v2.
  *
  * Manages typed memory stores with scoping, retention, write policies,
  * redaction, compression triggers, and provenance tracking.
@@ -20,7 +20,7 @@ export type MemoryEntry = {
 
 export type MemoryStoreState = {
   readonly name: string
-  readonly config: OcalMemoryStore
+  readonly config: ZyalMemoryStore
   readonly entries: MemoryEntry[]
   readonly entryCount: number
   readonly needsCompression: boolean
@@ -29,7 +29,7 @@ export type MemoryStoreState = {
 /**
  * Initialize store states from memory config.
  */
-export function initializeStores(memory: OcalMemory | undefined): Map<string, MemoryStoreState> {
+export function initializeStores(memory: ZyalMemory | undefined): Map<string, MemoryStoreState> {
   const result = new Map<string, MemoryStoreState>()
   if (!memory?.stores) return result
   for (const [name, config] of Object.entries(memory.stores)) {
@@ -105,7 +105,7 @@ export function readEntries(store: MemoryStoreState, filter?: { key?: string }):
 /**
  * Apply redaction patterns to a value.
  */
-export function redactValue(value: string, redaction: OcalMemoryRedaction | undefined): string {
+export function redactValue(value: string, redaction: ZyalMemoryRedaction | undefined): string {
   if (!redaction?.patterns?.length) return value
   let result = value
   for (const pattern of redaction.patterns) {
@@ -139,7 +139,7 @@ export function getInjectionEntries(stores: Map<string, MemoryStoreState>): Memo
  */
 export function getStoresByScope(
   stores: Map<string, MemoryStoreState>,
-  scope: OcalMemoryStore["scope"],
+  scope: ZyalMemoryStore["scope"],
 ): MemoryStoreState[] {
   return Array.from(stores.values()).filter((s) => s.config.scope === scope)
 }
@@ -162,7 +162,7 @@ export function shouldRetain(store: MemoryStoreState, event: "promotion" | "arch
   }
 }
 
-function checkCompressionTrigger(config: OcalMemoryStore, count: number): boolean {
+function checkCompressionTrigger(config: ZyalMemoryStore, count: number): boolean {
   if (!config.compression) return false
   const match = config.compression.match(/summarize_after_(\d+)/)
   if (match) return count >= parseInt(match[1], 10)

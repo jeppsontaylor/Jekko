@@ -5,10 +5,10 @@ import {
   resolvePartialFailureAction,
   type FanOutWorkerResult,
 } from "@/session/daemon-fanout"
-import type { OcalFanOut } from "@/agent-script/schema"
+import type { ZyalFanOut } from "@/agent-script/schema"
 
 describe("daemon fanout", () => {
-  const makeFanOut = (overrides: Partial<OcalFanOut> = {}): OcalFanOut => ({
+  const makeFanOut = (overrides: Partial<ZyalFanOut> = {}): ZyalFanOut => ({
     split: { items: ["a", "b", "c"] },
     worker: { max_parallel: 3 },
     reduce: { strategy: "merge_all" },

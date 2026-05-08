@@ -1,7 +1,7 @@
-import type { OcalObservability } from "@/agent-script/schema"
+import type { ZyalObservability } from "@/agent-script/schema"
 
 /**
- * Observability engine for OCAL v2.
+ * Observability engine for ZYAL v2.
  *
  * Collects spans, metrics, and cost data. Generates structured reports
  * for daemon runs with budget enforcement.
@@ -44,7 +44,7 @@ export type ObservabilityState = {
 /**
  * Initialize observability state.
  */
-export function initializeObservability(config: OcalObservability | undefined): ObservabilityState {
+export function initializeObservability(config: ZyalObservability | undefined): ObservabilityState {
   return {
     spans: [],
     metrics: [],
@@ -152,7 +152,7 @@ export function recordCost(
  */
 export function checkBudgetAlert(
   state: ObservabilityState,
-  config: OcalObservability | undefined,
+  config: ZyalObservability | undefined,
 ): { alert: boolean; percent: number; action: string } {
   if (!config?.cost?.budget || !config.cost.alert_at_percent) {
     return { alert: false, percent: 0, action: "none" }
@@ -169,7 +169,7 @@ export function checkBudgetAlert(
  */
 export function filterSpans(
   state: ObservabilityState,
-  config: OcalObservability | undefined,
+  config: ZyalObservability | undefined,
 ): Span[] {
   if (!config?.spans?.emit || config.spans.emit === "all") {
     return state.spans
@@ -205,7 +205,7 @@ export function getCounterTotal(state: ObservabilityState, name: string): number
  */
 export function generateReport(
   state: ObservabilityState,
-  config: OcalObservability | undefined,
+  config: ZyalObservability | undefined,
 ): Record<string, unknown> {
   const report: Record<string, unknown> = {
     generated_at: new Date().toISOString(),

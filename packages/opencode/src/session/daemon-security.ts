@@ -1,7 +1,7 @@
-import type { OcalSecurity, OcalSecurityTrustZone } from "@/agent-script/schema"
+import type { ZyalSecurity, ZyalSecurityTrustZone } from "@/agent-script/schema"
 
 /**
- * Security engine for OCAL v2.
+ * Security engine for ZYAL v2.
  *
  * Manages trust zones, injection scanning, secret scoping,
  * and provides path-level security policies.
@@ -30,7 +30,7 @@ export type InjectionDetection = {
  * Check if a path falls within a trust zone.
  */
 export function checkTrustZone(
-  security: OcalSecurity | undefined,
+  security: ZyalSecurity | undefined,
   filePath: string,
 ): SecurityCheckResult {
   if (!security?.trust_zones) {
@@ -57,7 +57,7 @@ export function checkTrustZone(
  * Check if a file modification is allowed given the risk score.
  */
 export function checkRiskThreshold(
-  security: OcalSecurity | undefined,
+  security: ZyalSecurity | undefined,
   filePath: string,
   riskScore: number,
 ): { allowed: boolean; reason: string } {
@@ -83,7 +83,7 @@ export function checkRiskThreshold(
  * Scan text for injection patterns.
  */
 export function scanForInjection(
-  security: OcalSecurity | undefined,
+  security: ZyalSecurity | undefined,
   text: string,
   direction: "input" | "output",
 ): InjectionScanResult {
@@ -124,7 +124,7 @@ export function scanForInjection(
  * Apply injection stripping to text.
  */
 export function stripInjections(
-  security: OcalSecurity | undefined,
+  security: ZyalSecurity | undefined,
   text: string,
 ): string {
   if (!security?.injection?.deny_patterns) return text
@@ -140,7 +140,7 @@ export function stripInjections(
  * Check if an environment variable is allowed for secret access.
  */
 export function checkSecretAccess(
-  security: OcalSecurity | undefined,
+  security: ZyalSecurity | undefined,
   envVar: string,
 ): { allowed: boolean; reason: string } {
   if (!security?.secrets) {
@@ -158,14 +158,14 @@ export function checkSecretAccess(
 /**
  * Check if a value should be redacted from logs.
  */
-export function shouldRedactFromLogs(security: OcalSecurity | undefined): boolean {
+export function shouldRedactFromLogs(security: ZyalSecurity | undefined): boolean {
   return security?.secrets?.redact_from_logs === true
 }
 
 /**
  * Get all trust zone names.
  */
-export function getTrustZoneNames(security: OcalSecurity | undefined): string[] {
+export function getTrustZoneNames(security: ZyalSecurity | undefined): string[] {
   if (!security?.trust_zones) return []
   return Object.keys(security.trust_zones)
 }
@@ -173,13 +173,13 @@ export function getTrustZoneNames(security: OcalSecurity | undefined): string[] 
 /**
  * Get paths protected by a trust zone.
  */
-export function getZonePaths(security: OcalSecurity | undefined, zoneName: string): string[] {
+export function getZonePaths(security: ZyalSecurity | undefined, zoneName: string): string[] {
   if (!security?.trust_zones) return []
   const zone = security.trust_zones[zoneName]
   return [...(zone?.paths ?? [])]
 }
 
-function pathInZone(filePath: string, zone: OcalSecurityTrustZone): boolean {
+function pathInZone(filePath: string, zone: ZyalSecurityTrustZone): boolean {
   if (!zone.paths?.length) return false
   return zone.paths.some((zp) => {
     if (filePath === zp) return true

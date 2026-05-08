@@ -1,6 +1,6 @@
 import { Effect, Layer, Context, Scope } from "effect"
-import { parseOcal } from "@/agent-script/parser"
-import { type OcalParsed, type OcalPreview, type OcalScript, type OcalSignal } from "@/agent-script/schema"
+import { parseZyal } from "@/agent-script/parser"
+import { type ZyalParsed, type ZyalPreview, type ZyalScript, type ZyalSignal } from "@/agent-script/schema"
 import { Bus } from "@/bus"
 import { InstanceState } from "@/effect/instance-state"
 import { AppFileSystem } from "@opencode-ai/core/filesystem"
@@ -13,7 +13,7 @@ import { SessionPrompt } from "./prompt"
 import { SessionStatus } from "./status"
 import { DaemonStore } from "./daemon-store"
 import { Database } from "@/storage/db"
-import { DaemonIterationTable } from "./daemon.sql"
+import { DaemonIterationTable, DaemonTaskTable, DaemonWorkerTable } from "./daemon.sql"
 import { eq, sum, count } from "drizzle-orm"
 import { DaemonChecks } from "./daemon-checks"
 import { DaemonCheckpoint } from "./daemon-checkpoint"
@@ -34,7 +34,7 @@ export type StartPayload = {
   readonly prompt: Omit<SessionPrompt.PromptInput, "sessionID">
 }
 
-export type PreviewResult = OcalParsed
+export type PreviewResult = ZyalParsed
 
 export interface Interface {
   readonly preview: (input: { text: string }) => Effect.Effect<PreviewResult, any, any>
@@ -103,7 +103,7 @@ export const layer = Layer.effect(
     })
 
     const preview = Effect.fn("Daemon.preview")(function* (input: { text: string }) {
-      return yield* parseOcal(input.text, { requireArm: false })
+      return yield* parseZyal(input.text, { requireArm: false })
     })
 
     const start = Effect.fn("Daemon.start")(function* (input: StartPayload) {
@@ -113,7 +113,7 @@ export const layer = Layer.effect(
         .join("\n")
       const parsed = yield* preview({ text })
       if (!parsed.arm) {
-        throw new Error("OCAL daemon start requires the trailing OCAL_ARM RUN_FOREVER sentinel")
+        throw new Error("ZYAL daemon start requires the trailing ZYAL_ARM RUN_FOREVER sentinel")
       }
       const run = yield* store.createRun({
         rootSessionID: input.sessionID,
@@ -154,7 +154,42 @@ export const layer = Layer.effect(
       return yield* store.getRun(run.id).pipe(Effect.map((value) => value ?? run))
     })
 
-    function enrichRun(run: DaemonStore.RunInfo): DaemonStore.RunInfo & { _stats: { iteration_count: number; total_tokens: number; total_cost: number } } {
+    function tokenNumber(value: unknown): number {
+      const next = Number(value)
+      return Number.isFinite(next) ? next : 0
+    }
+
+    function summarizeTokenUsage(usage: unknown) {
+      if (!usage || typeof usage !== "object" || Array.isArray(usage)) {
+        return { input: 0, output: 0, cache: 0, total: 0 }
+      }
+      const record = usage as Record<string, any>
+      const cache = record.cache ?? {}
+      const input = tokenNumber(record.input ?? record.inputTokens)
+      const output = tokenNumber(record.output ?? record.outputTokens)
+      const cacheTotal = tokenNumber(record.cache_tokens ?? record.cacheTokens) +
+        tokenNumber(cache.read) +
+        tokenNumber(cache.write) +
+        tokenNumber(record.reasoning ?? record.reasoningTokens)
+      const total = tokenNumber(record.total ?? record.totalTokens) || input + output + cacheTotal
+      return { input, output, cache: cacheTotal, total }
+    }
+
+    function enrichRun(run: DaemonStore.RunInfo): DaemonStore.RunInfo & {
+      _stats: {
+        iteration_count: number
+        input_tokens: number
+        output_tokens: number
+        cache_tokens: number
+        total_tokens: number
+        total_cost: number
+        cost_usd: number
+        active_workers: number
+        worker_count: number
+        completed_tasks: number
+        incubated_tasks: number
+      }
+    } {
       const row = Database.use((db) =>
         db
           .select({
@@ -172,21 +207,35 @@ export const layer = Layer.effect(
           .where(eq(DaemonIterationTable.run_id, run.id))
           .all(),
       )
+      const workers = Database.use((db) => db.select().from(DaemonWorkerTable).where(eq(DaemonWorkerTable.run_id, run.id)).all())
+      const tasks = Database.use((db) => db.select().from(DaemonTaskTable).where(eq(DaemonTaskTable.run_id, run.id)).all())
+      let inputTokens = 0
+      let outputTokens = 0
+      let cacheTokens = 0
       let totalTokens = 0
       for (const iter of iterations) {
-        const usage = iter.token_usage_json as Record<string, unknown> | null
-        if (usage) {
-          const input = typeof usage.inputTokens === "number" ? usage.inputTokens : 0
-          const output = typeof usage.outputTokens === "number" ? usage.outputTokens : 0
-          const total = typeof usage.totalTokens === "number" ? usage.totalTokens : input + output
-          totalTokens += total
-        }
+        const usage = summarizeTokenUsage(iter.token_usage_json)
+        inputTokens += usage.input
+        outputTokens += usage.output
+        cacheTokens += usage.cache
+        totalTokens += usage.total
       }
+      const totalCost = row?.total_cost ? Number(row.total_cost) : 0
       return Object.assign({}, run, {
         _stats: {
           iteration_count: row?.iteration_count ?? 0,
+          input_tokens: inputTokens,
+          output_tokens: outputTokens,
+          cache_tokens: cacheTokens,
           total_tokens: totalTokens,
-          total_cost: row?.total_cost ? Number(row.total_cost) : 0,
+          total_cost: totalCost,
+          cost_usd: totalCost,
+          active_workers: workers.filter((worker) => ["active", "running", "leased"].includes(String(worker.status))).length,
+          worker_count: workers.length,
+          completed_tasks: tasks.filter((task) =>
+            ["done", "archived"].includes(String(task.status)) || task.incubator_status === "promoted"
+          ).length,
+          incubated_tasks: tasks.filter((task) => task.lane === "incubator" || task.status === "incubating").length,
         },
       })
     }
@@ -259,7 +308,7 @@ export const layer = Layer.effect(
     const incubator = Effect.fn("Daemon.incubator")(function* (runID: string) {
       const run = yield* store.getRun(runID)
       if (!run) return
-      const spec = run.spec_json as OcalScript
+      const spec = run.spec_json as ZyalScript
       const tasks = yield* store.listTasks(runID)
       return {
         enabled: spec.incubator?.enabled === true,
@@ -339,7 +388,7 @@ export const defaultLayer = layer
 
 function runDaemon(input: {
   runID: string
-  parsed: OcalParsed
+  parsed: ZyalParsed
   sessions: Session.Interface
   store: DaemonStore.Interface
   prompt: SessionPrompt.Interface
@@ -437,7 +486,7 @@ function runDaemon(input: {
       yield* input.store.updateRun(input.runID, { iteration })
 
       // ─── v1.1: Track signal and evaluate on-handlers ──────────────────
-      const terminalSignal = loop.terminal as OcalSignal | undefined
+      const terminalSignal = loop.terminal as ZyalSignal | undefined
       if (terminalSignal) {
         signalCounters = incrementSignalCounter(signalCounters, terminalSignal)
         if (onHandlers.length > 0) {
@@ -675,7 +724,7 @@ function runDaemon(input: {
 
 function evaluateStop(input: {
   cwd: string
-  spec: OcalScript
+  spec: ZyalScript
   checks: DaemonChecks.Interface
 }) {
   return Effect.gen(function* () {

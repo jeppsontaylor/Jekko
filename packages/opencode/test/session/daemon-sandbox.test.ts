@@ -7,9 +7,9 @@ import {
   checkResourceLimits,
   describeSandbox,
 } from "../../src/session/daemon-sandbox"
-import type { OcalSandbox } from "../../src/agent-script/schema"
+import type { ZyalSandbox } from "../../src/agent-script/schema"
 
-const testSandbox: OcalSandbox = {
+const testSandbox: ZyalSandbox = {
   paths: [
     { path: "/Users/ben/project/src", access: "write" },
     { path: "/Users/ben/project/docs", access: "read" },
@@ -82,12 +82,12 @@ describe("daemon sandbox", () => {
   })
 
   test("checkNetworkAccess allows when outbound is allow", () => {
-    const sandbox: OcalSandbox = { network: { outbound: "allow" } }
+    const sandbox: ZyalSandbox = { network: { outbound: "allow" } }
     expect(checkNetworkAccess(sandbox, "anything.com").allowed).toBe(true)
   })
 
   test("checkNetworkAccess denies when outbound is deny", () => {
-    const sandbox: OcalSandbox = { network: { outbound: "deny" } }
+    const sandbox: ZyalSandbox = { network: { outbound: "deny" } }
     expect(checkNetworkAccess(sandbox, "anything.com").allowed).toBe(false)
   })
 

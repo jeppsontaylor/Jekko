@@ -1,4 +1,4 @@
-import type { OcalMcp, OcalIncubatorPass } from "@/agent-script/schema"
+import type { ZyalMcp, ZyalIncubatorPass } from "@/agent-script/schema"
 
 export type McpGateResult = {
   ok: boolean
@@ -6,7 +6,7 @@ export type McpGateResult = {
   blocked: { server: string; status: string }[]
 }
 
-export function buildMcpToolAllowMap(input: { mcp?: OcalMcp; pass?: OcalIncubatorPass }) {
+export function buildMcpToolAllowMap(input: { mcp?: ZyalMcp; pass?: ZyalIncubatorPass }) {
   const profileName = input.pass?.mcp_profile
   if (!profileName) return {}
   const profile = input.mcp?.profiles?.[profileName]
@@ -15,7 +15,7 @@ export function buildMcpToolAllowMap(input: { mcp?: OcalMcp; pass?: OcalIncubato
 }
 
 export function checkRequiredProfiles(input: {
-  mcp?: OcalMcp
+  mcp?: ZyalMcp
   profile?: string
   status: Record<string, { status: string }>
 }): McpGateResult {

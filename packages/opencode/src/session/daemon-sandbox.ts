@@ -1,18 +1,18 @@
-import type { OcalSandbox, OcalSandboxPathRule } from "@/agent-script/schema"
+import type { ZyalSandbox, ZyalSandboxPathRule } from "@/agent-script/schema"
 import { resolve, relative, isAbsolute } from "path"
 
 /**
- * Sandbox enforcement engine for OCAL v2.
+ * Sandbox enforcement engine for ZYAL v2.
  *
  * Validates file paths, network requests, and resource usage against
- * the sandbox policy defined in the OCAL script.
+ * the sandbox policy defined in the ZYAL script.
  */
 
 export type PathCheckResult = {
   readonly allowed: boolean
   readonly access: "read" | "write" | "deny" | "unrestricted"
   readonly reason: string
-  readonly matchedRule?: OcalSandboxPathRule
+  readonly matchedRule?: ZyalSandboxPathRule
 }
 
 export type NetworkCheckResult = {
@@ -30,7 +30,7 @@ export type ResourceState = {
  * Check if a file path is allowed under the sandbox policy.
  */
 export function checkPathAccess(
-  sandbox: OcalSandbox | undefined,
+  sandbox: ZyalSandbox | undefined,
   filePath: string,
   operation: "read" | "write",
   workdir?: string,
@@ -61,7 +61,7 @@ export function checkPathAccess(
  * Check if an outbound network request is allowed.
  */
 export function checkNetworkAccess(
-  sandbox: OcalSandbox | undefined,
+  sandbox: ZyalSandbox | undefined,
   destination: string,
 ): NetworkCheckResult {
   if (!sandbox?.network) {
@@ -92,7 +92,7 @@ export function checkNetworkAccess(
  * Check if an environment variable is allowed.
  */
 export function checkEnvAccess(
-  sandbox: OcalSandbox | undefined,
+  sandbox: ZyalSandbox | undefined,
   envVar: string,
 ): { allowed: boolean; reason: string } {
   if (!sandbox) return { allowed: true, reason: "no sandbox" }
@@ -133,7 +133,7 @@ export function parseResourceLimit(limit: string): number {
  * Check resource usage against limits.
  */
 export function checkResourceLimits(
-  sandbox: OcalSandbox | undefined,
+  sandbox: ZyalSandbox | undefined,
   state: ResourceState,
 ): { violations: string[] } {
   if (!sandbox?.resources) return { violations: [] }
@@ -158,7 +158,7 @@ export function checkResourceLimits(
 /**
  * Get summary of sandbox configuration.
  */
-export function describeSandbox(sandbox: OcalSandbox | undefined): string {
+export function describeSandbox(sandbox: ZyalSandbox | undefined): string {
   if (!sandbox) return "no sandbox"
   const parts: string[] = []
   if (sandbox.paths?.length) parts.push(`${sandbox.paths.length} path rules`)

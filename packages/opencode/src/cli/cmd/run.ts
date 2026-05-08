@@ -271,12 +271,12 @@ export const RunCommand = effectCmd({
       .option("daemonFile", {
         alias: ["daemon-file"],
         type: "string",
-        describe: "OCAL file to use when --daemon is enabled",
+        describe: "ZYAL file to use when --daemon is enabled",
       })
       .option("daemonArm", {
         alias: ["daemon-arm"],
         type: "string",
-        describe: "required OCAL arm sentinel for daemon mode",
+        describe: "required ZYAL arm sentinel for daemon mode",
         default: "RUN_FOREVER",
       })
       .option("title", {

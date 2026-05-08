@@ -5,7 +5,7 @@ import { withStatics } from "@/util/schema"
 const DaemonAction = Schema.Literal("daemon")
 const ArmAction = Schema.Literal("RUN_FOREVER")
 
-export const OcalSignal = Schema.Union([
+export const ZyalSignal = Schema.Union([
   Schema.Literal("assistant_stop"),
   Schema.Literal("max_steps"),
   Schema.Literal("compaction"),
@@ -17,89 +17,89 @@ export const OcalSignal = Schema.Union([
   Schema.Literal("error"),
   Schema.Literal("cancelled"),
 ])
-export type OcalSignal = Schema.Schema.Type<typeof OcalSignal>
+export type ZyalSignal = Schema.Schema.Type<typeof ZyalSignal>
 
-export const OcalShellAssert = Schema.Struct({
+export const ZyalShellAssert = Schema.Struct({
   exit_code: Schema.optional(Schema.Number),
   stdout_contains: Schema.optional(Schema.Array(Schema.String)),
   stdout_regex: Schema.optional(Schema.Array(Schema.String)),
   json: Schema.optional(Schema.Record(Schema.String, Schema.Any)),
 })
 
-export type OcalShellAssert = Schema.Schema.Type<typeof OcalShellAssert>
+export type ZyalShellAssert = Schema.Schema.Type<typeof ZyalShellAssert>
 
-export const OcalShellCheck = Schema.Struct({
+export const ZyalShellCheck = Schema.Struct({
   command: Schema.String,
   timeout: Schema.optional(Schema.String),
   cwd: Schema.optional(Schema.String),
-  assert: Schema.optional(OcalShellAssert),
+  assert: Schema.optional(ZyalShellAssert),
 })
 
-export type OcalShellCheck = Schema.Schema.Type<typeof OcalShellCheck>
+export type ZyalShellCheck = Schema.Schema.Type<typeof ZyalShellCheck>
 
-export const OcalGitCleanCheck = Schema.Struct({
+export const ZyalGitCleanCheck = Schema.Struct({
   allow_untracked: Schema.optional(Schema.Boolean),
 })
 
-export type OcalGitCleanCheck = Schema.Schema.Type<typeof OcalGitCleanCheck>
+export type ZyalGitCleanCheck = Schema.Schema.Type<typeof ZyalGitCleanCheck>
 
-export const OcalStopCondition = Schema.Union([
+export const ZyalStopCondition = Schema.Union([
   Schema.Struct({
-    shell: OcalShellCheck,
+    shell: ZyalShellCheck,
   }),
   Schema.Struct({
-    git_clean: OcalGitCleanCheck,
+    git_clean: ZyalGitCleanCheck,
   }),
 ])
-export type OcalStopCondition = Schema.Schema.Type<typeof OcalStopCondition>
+export type ZyalStopCondition = Schema.Schema.Type<typeof ZyalStopCondition>
 
-export const OcalJob = Schema.Struct({
+export const ZyalJob = Schema.Struct({
   name: Schema.String,
   objective: Schema.String,
   risk: Schema.optional(Schema.Array(Schema.String)),
 })
 
-export type OcalJob = Schema.Schema.Type<typeof OcalJob>
+export type ZyalJob = Schema.Schema.Type<typeof ZyalJob>
 
-export const OcalLoopBreaker = Schema.Struct({
+export const ZyalLoopBreaker = Schema.Struct({
   max_consecutive_errors: Schema.optional(Schema.Number),
   on_trip: Schema.optional(Schema.Union([Schema.Literal("pause"), Schema.Literal("abort")])),
 })
 
-export type OcalLoopBreaker = Schema.Schema.Type<typeof OcalLoopBreaker>
+export type ZyalLoopBreaker = Schema.Schema.Type<typeof ZyalLoopBreaker>
 
-export const OcalLoop = Schema.Struct({
+export const ZyalLoop = Schema.Struct({
   policy: Schema.optional(Schema.Union([Schema.Literal("once"), Schema.Literal("bounded"), Schema.Literal("forever")])),
   sleep: Schema.optional(Schema.String),
-  continue_on: Schema.optional(Schema.Array(OcalSignal)),
-  pause_on: Schema.optional(Schema.Array(OcalSignal)),
-  circuit_breaker: Schema.optional(OcalLoopBreaker),
+  continue_on: Schema.optional(Schema.Array(ZyalSignal)),
+  pause_on: Schema.optional(Schema.Array(ZyalSignal)),
+  circuit_breaker: Schema.optional(ZyalLoopBreaker),
 })
 
-export type OcalLoop = Schema.Schema.Type<typeof OcalLoop>
+export type ZyalLoop = Schema.Schema.Type<typeof ZyalLoop>
 
-export const OcalStop = Schema.Struct({
-  all: Schema.Array(OcalStopCondition),
-  any: Schema.optional(Schema.Array(OcalStopCondition)),
+export const ZyalStop = Schema.Struct({
+  all: Schema.Array(ZyalStopCondition),
+  any: Schema.optional(Schema.Array(ZyalStopCondition)),
 })
 
-export type OcalStop = Schema.Schema.Type<typeof OcalStop>
+export type ZyalStop = Schema.Schema.Type<typeof ZyalStop>
 
-export const OcalContext = Schema.Struct({
+export const ZyalContext = Schema.Struct({
   strategy: Schema.optional(Schema.Union([Schema.Literal("soft"), Schema.Literal("hard"), Schema.Literal("hybrid")])),
   compact_every: Schema.optional(Schema.Number),
   hard_clear_every: Schema.optional(Schema.Number),
   preserve: Schema.optional(Schema.Array(Schema.String)),
 })
 
-export type OcalContext = Schema.Schema.Type<typeof OcalContext>
+export type ZyalContext = Schema.Schema.Type<typeof ZyalContext>
 
-export const OcalCheckpoint = Schema.Struct({
+export const ZyalCheckpoint = Schema.Struct({
   when: Schema.optional(
     Schema.Union([Schema.Literal("after_verified_change"), Schema.Literal("on_error"), Schema.Literal("manual")]),
   ),
   noop_if_clean: Schema.optional(Schema.Boolean),
-  verify: Schema.optional(Schema.Array(OcalShellCheck)),
+  verify: Schema.optional(Schema.Array(ZyalShellCheck)),
   git: Schema.optional(
     Schema.Struct({
       add: Schema.Array(Schema.String),
@@ -109,16 +109,16 @@ export const OcalCheckpoint = Schema.Struct({
   ),
 })
 
-export type OcalCheckpoint = Schema.Schema.Type<typeof OcalCheckpoint>
+export type ZyalCheckpoint = Schema.Schema.Type<typeof ZyalCheckpoint>
 
-export const OcalTasks = Schema.Struct({
+export const ZyalTasks = Schema.Struct({
   ledger: Schema.optional(Schema.Literal("sqlite")),
-  discover: Schema.optional(Schema.Array(OcalShellCheck)),
+  discover: Schema.optional(Schema.Array(ZyalShellCheck)),
 })
 
-export type OcalTasks = Schema.Schema.Type<typeof OcalTasks>
+export type ZyalTasks = Schema.Schema.Type<typeof ZyalTasks>
 
-export const OcalIncubatorPassType = Schema.Union([
+export const ZyalIncubatorPassType = Schema.Union([
   Schema.Literal("scout"),
   Schema.Literal("idea"),
   Schema.Literal("strengthen"),
@@ -128,9 +128,9 @@ export const OcalIncubatorPassType = Schema.Union([
   Schema.Literal("promotion_review"),
   Schema.Literal("compress"),
 ])
-export type OcalIncubatorPassType = Schema.Schema.Type<typeof OcalIncubatorPassType>
+export type ZyalIncubatorPassType = Schema.Schema.Type<typeof ZyalIncubatorPassType>
 
-export const OcalIncubatorContextMode = Schema.Union([
+export const ZyalIncubatorContextMode = Schema.Union([
   Schema.Literal("blind"),
   Schema.Literal("inherit"),
   Schema.Literal("strengthen"),
@@ -139,38 +139,38 @@ export const OcalIncubatorContextMode = Schema.Union([
   Schema.Literal("promotion"),
   Schema.Literal("ledger_only"),
 ])
-export type OcalIncubatorContextMode = Schema.Schema.Type<typeof OcalIncubatorContextMode>
+export type ZyalIncubatorContextMode = Schema.Schema.Type<typeof ZyalIncubatorContextMode>
 
-export const OcalIncubatorWriteScope = Schema.Union([
+export const ZyalIncubatorWriteScope = Schema.Union([
   Schema.Literal("scratch_only"),
   Schema.Literal("isolated_worktree"),
 ])
-export type OcalIncubatorWriteScope = Schema.Schema.Type<typeof OcalIncubatorWriteScope>
+export type ZyalIncubatorWriteScope = Schema.Schema.Type<typeof ZyalIncubatorWriteScope>
 
-export const OcalIncubatorRouteCondition = Schema.Struct({
+export const ZyalIncubatorRouteCondition = Schema.Struct({
   repeated_attempts_gte: Schema.optional(Schema.Number),
   no_progress_iterations_gte: Schema.optional(Schema.Number),
   risk_score_gte: Schema.optional(Schema.Number),
   readiness_score_lt: Schema.optional(Schema.Number),
   touches_paths: Schema.optional(Schema.Array(Schema.String)),
 })
-export type OcalIncubatorRouteCondition = Schema.Schema.Type<typeof OcalIncubatorRouteCondition>
+export type ZyalIncubatorRouteCondition = Schema.Schema.Type<typeof ZyalIncubatorRouteCondition>
 
-export const OcalIncubatorRouteWhen = Schema.Struct({
-  any: Schema.optional(Schema.Array(OcalIncubatorRouteCondition)),
-  all: Schema.optional(Schema.Array(OcalIncubatorRouteCondition)),
+export const ZyalIncubatorRouteWhen = Schema.Struct({
+  any: Schema.optional(Schema.Array(ZyalIncubatorRouteCondition)),
+  all: Schema.optional(Schema.Array(ZyalIncubatorRouteCondition)),
 })
-export type OcalIncubatorRouteWhen = Schema.Schema.Type<typeof OcalIncubatorRouteWhen>
+export type ZyalIncubatorRouteWhen = Schema.Schema.Type<typeof ZyalIncubatorRouteWhen>
 
-export const OcalIncubatorCleanup = Schema.Struct({
+export const ZyalIncubatorCleanup = Schema.Struct({
   summarize_to_task_memory: Schema.optional(Schema.Boolean),
   archive_artifacts: Schema.optional(Schema.Boolean),
   delete_scratch: Schema.optional(Schema.Boolean),
   delete_unmerged_worktrees: Schema.optional(Schema.Boolean),
 })
-export type OcalIncubatorCleanup = Schema.Schema.Type<typeof OcalIncubatorCleanup>
+export type ZyalIncubatorCleanup = Schema.Schema.Type<typeof ZyalIncubatorCleanup>
 
-export const OcalIncubatorReadiness = Schema.Struct({
+export const ZyalIncubatorReadiness = Schema.Struct({
   promote_at: Schema.optional(Schema.Number),
   tests_identified_gte: Schema.optional(Schema.Number),
   scope_bounded_gte: Schema.optional(Schema.Number),
@@ -181,17 +181,17 @@ export const OcalIncubatorReadiness = Schema.Struct({
   critical_objections_resolved_gte: Schema.optional(Schema.Number),
   model_confidence_cap: Schema.optional(Schema.Number),
 })
-export type OcalIncubatorReadiness = Schema.Schema.Type<typeof OcalIncubatorReadiness>
+export type ZyalIncubatorReadiness = Schema.Schema.Type<typeof ZyalIncubatorReadiness>
 
-export const OcalIncubatorBudget = Schema.Struct({
+export const ZyalIncubatorBudget = Schema.Struct({
   max_passes_per_task: Schema.Number,
   max_rounds_per_task: Schema.Number,
   max_active_tasks: Schema.optional(Schema.Number),
   max_parallel_idea_passes: Schema.optional(Schema.Number),
 })
-export type OcalIncubatorBudget = Schema.Schema.Type<typeof OcalIncubatorBudget>
+export type ZyalIncubatorBudget = Schema.Schema.Type<typeof ZyalIncubatorBudget>
 
-export const OcalIncubatorScratch = Schema.Struct({
+export const ZyalIncubatorScratch = Schema.Struct({
   storage: Schema.optional(Schema.Literal("sqlite")),
   mirror: Schema.optional(Schema.Boolean),
   cleanup: Schema.optional(
@@ -202,21 +202,21 @@ export const OcalIncubatorScratch = Schema.Struct({
     ]),
   ),
 })
-export type OcalIncubatorScratch = Schema.Schema.Type<typeof OcalIncubatorScratch>
+export type ZyalIncubatorScratch = Schema.Schema.Type<typeof ZyalIncubatorScratch>
 
-export const OcalIncubatorPass = Schema.Struct({
+export const ZyalIncubatorPass = Schema.Struct({
   id: Schema.String,
-  type: OcalIncubatorPassType,
-  context: OcalIncubatorContextMode,
+  type: ZyalIncubatorPassType,
+  context: ZyalIncubatorContextMode,
   reads: Schema.optional(Schema.Array(Schema.String)),
-  writes: OcalIncubatorWriteScope,
+  writes: ZyalIncubatorWriteScope,
   count: Schema.optional(Schema.Number),
   agent: Schema.optional(Schema.String),
   mcp_profile: Schema.optional(Schema.String),
 })
-export type OcalIncubatorPass = Schema.Schema.Type<typeof OcalIncubatorPass>
+export type ZyalIncubatorPass = Schema.Schema.Type<typeof ZyalIncubatorPass>
 
-export const OcalIncubatorPromotion = Schema.Struct({
+export const ZyalIncubatorPromotion = Schema.Struct({
   promote_at: Schema.Number,
   require: Schema.optional(Schema.Array(Schema.String)),
   block_on: Schema.optional(
@@ -227,53 +227,53 @@ export const OcalIncubatorPromotion = Schema.Struct({
   on_promote: Schema.optional(Schema.Literal("move_to_ready_queue")),
   on_exhausted: Schema.optional(Schema.Union([Schema.Literal("park_with_summary"), Schema.Literal("block_with_summary")])),
 })
-export type OcalIncubatorPromotion = Schema.Schema.Type<typeof OcalIncubatorPromotion>
+export type ZyalIncubatorPromotion = Schema.Schema.Type<typeof ZyalIncubatorPromotion>
 
-export const OcalIncubator = Schema.Struct({
+export const ZyalIncubator = Schema.Struct({
   enabled: Schema.Boolean,
   strategy: Schema.optional(Schema.Union([Schema.Literal("generate_pool_strengthen"), Schema.Literal("bounded_passes")])),
-  route_when: Schema.optional(OcalIncubatorRouteWhen),
-  exclude_when: Schema.optional(OcalIncubatorRouteWhen),
-  budget: OcalIncubatorBudget,
-  scratch: Schema.optional(OcalIncubatorScratch),
-  cleanup: Schema.optional(OcalIncubatorCleanup),
-  readiness: Schema.optional(OcalIncubatorReadiness),
-  passes: Schema.Array(OcalIncubatorPass),
-  promotion: OcalIncubatorPromotion,
+  route_when: Schema.optional(ZyalIncubatorRouteWhen),
+  exclude_when: Schema.optional(ZyalIncubatorRouteWhen),
+  budget: ZyalIncubatorBudget,
+  scratch: Schema.optional(ZyalIncubatorScratch),
+  cleanup: Schema.optional(ZyalIncubatorCleanup),
+  readiness: Schema.optional(ZyalIncubatorReadiness),
+  passes: Schema.Array(ZyalIncubatorPass),
+  promotion: ZyalIncubatorPromotion,
 })
-export type OcalIncubator = Schema.Schema.Type<typeof OcalIncubator>
+export type ZyalIncubator = Schema.Schema.Type<typeof ZyalIncubator>
 
-export const OcalWorkerSpec = Schema.Struct({
+export const ZyalWorkerSpec = Schema.Struct({
   id: Schema.String,
   count: Schema.Number,
   agent: Schema.String,
   isolation: Schema.optional(Schema.Union([Schema.Literal("git_worktree"), Schema.Literal("same_session")])),
 })
 
-export type OcalWorkerSpec = Schema.Schema.Type<typeof OcalWorkerSpec>
+export type ZyalWorkerSpec = Schema.Schema.Type<typeof ZyalWorkerSpec>
 
-export const OcalAgents = Schema.Struct({
+export const ZyalAgents = Schema.Struct({
   supervisor: Schema.optional(Schema.Struct({ agent: Schema.String })),
-  workers: Schema.optional(Schema.Array(OcalWorkerSpec)),
+  workers: Schema.optional(Schema.Array(ZyalWorkerSpec)),
 })
 
-export type OcalAgents = Schema.Schema.Type<typeof OcalAgents>
+export type ZyalAgents = Schema.Schema.Type<typeof ZyalAgents>
 
-export const OcalMcpProfile = Schema.Struct({
+export const ZyalMcpProfile = Schema.Struct({
   servers: Schema.optional(Schema.Array(Schema.String)),
   tools: Schema.optional(Schema.Array(Schema.String)),
   resources: Schema.optional(Schema.Array(Schema.String)),
 })
 
-export type OcalMcpProfile = Schema.Schema.Type<typeof OcalMcpProfile>
+export type ZyalMcpProfile = Schema.Schema.Type<typeof ZyalMcpProfile>
 
-export const OcalMcp = Schema.Struct({
-  profiles: Schema.optional(Schema.Record(Schema.String, OcalMcpProfile)),
+export const ZyalMcp = Schema.Struct({
+  profiles: Schema.optional(Schema.Record(Schema.String, ZyalMcpProfile)),
 })
 
-export type OcalMcp = Schema.Schema.Type<typeof OcalMcp>
+export type ZyalMcp = Schema.Schema.Type<typeof ZyalMcp>
 
-export const OcalPermissionMode = Schema.Struct({
+export const ZyalPermissionMode = Schema.Struct({
   shell: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   edit: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   git_commit: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
@@ -282,18 +282,18 @@ export const OcalPermissionMode = Schema.Struct({
   mcp: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
 })
 
-export type OcalPermissionMode = Schema.Schema.Type<typeof OcalPermissionMode>
+export type ZyalPermissionMode = Schema.Schema.Type<typeof ZyalPermissionMode>
 
-export const OcalUi = Schema.Struct({
+export const ZyalUi = Schema.Struct({
   theme: Schema.optional(Schema.String),
   banner: Schema.optional(Schema.String),
 })
 
-export type OcalUi = Schema.Schema.Type<typeof OcalUi>
+export type ZyalUi = Schema.Schema.Type<typeof ZyalUi>
 
 // ─── On: Conditional Event Handlers ────────────────────────────────────────
 
-export const OcalOnAction = Schema.Union([
+export const ZyalOnAction = Schema.Union([
   Schema.Struct({ switch_agent: Schema.String }),
   Schema.Struct({ run: Schema.String }),
   Schema.Struct({ incubate_current_task: Schema.Literal(true) }),
@@ -303,46 +303,46 @@ export const OcalOnAction = Schema.Union([
   Schema.Struct({ notify: Schema.String }),
   Schema.Struct({ set_context: Schema.Record(Schema.String, Schema.Unknown) }),
 ])
-export type OcalOnAction = Schema.Schema.Type<typeof OcalOnAction>
+export type ZyalOnAction = Schema.Schema.Type<typeof ZyalOnAction>
 
-export const OcalOnHandler = Schema.Struct({
-  signal: OcalSignal,
+export const ZyalOnHandler = Schema.Struct({
+  signal: ZyalSignal,
   count_gte: Schema.optional(Schema.Number),
   message_contains: Schema.optional(Schema.String),
-  if: Schema.optional(OcalShellCheck),
-  do: Schema.Array(OcalOnAction),
+  if: Schema.optional(ZyalShellCheck),
+  do: Schema.Array(ZyalOnAction),
 })
-export type OcalOnHandler = Schema.Schema.Type<typeof OcalOnHandler>
+export type ZyalOnHandler = Schema.Schema.Type<typeof ZyalOnHandler>
 
 // ─── Fan-Out: Parallel Task Decomposition ──────────────────────────────────
 
-export const OcalFanOutSplit = Schema.Union([
+export const ZyalFanOutSplit = Schema.Union([
   Schema.Struct({ shell: Schema.String }),
   Schema.Struct({ items: Schema.Array(Schema.String) }),
 ])
-export type OcalFanOutSplit = Schema.Schema.Type<typeof OcalFanOutSplit>
+export type ZyalFanOutSplit = Schema.Schema.Type<typeof ZyalFanOutSplit>
 
-export const OcalFanOutReduceStrategy = Schema.Union([
+export const ZyalFanOutReduceStrategy = Schema.Union([
   Schema.Literal("merge_all"),
   Schema.Literal("best_score"),
   Schema.Literal("vote"),
   Schema.Literal("custom_shell"),
 ])
-export type OcalFanOutReduceStrategy = Schema.Schema.Type<typeof OcalFanOutReduceStrategy>
+export type ZyalFanOutReduceStrategy = Schema.Schema.Type<typeof ZyalFanOutReduceStrategy>
 
-export const OcalFanOutReduce = Schema.Struct({
-  strategy: OcalFanOutReduceStrategy,
+export const ZyalFanOutReduce = Schema.Struct({
+  strategy: ZyalFanOutReduceStrategy,
   score_key: Schema.optional(Schema.String),
   command: Schema.optional(Schema.String),
 })
-export type OcalFanOutReduce = Schema.Schema.Type<typeof OcalFanOutReduce>
+export type ZyalFanOutReduce = Schema.Schema.Type<typeof ZyalFanOutReduce>
 
-export const OcalFanOut = Schema.Struct({
+export const ZyalFanOut = Schema.Struct({
   strategy: Schema.optional(Schema.Union([
     Schema.Literal("map_reduce"),
     Schema.Literal("scatter_gather"),
   ])),
-  split: OcalFanOutSplit,
+  split: ZyalFanOutSplit,
   worker: Schema.Struct({
     agent: Schema.optional(Schema.String),
     isolation: Schema.optional(Schema.Union([
@@ -352,27 +352,27 @@ export const OcalFanOut = Schema.Struct({
     timeout: Schema.optional(Schema.String),
     max_parallel: Schema.optional(Schema.Number),
   }),
-  reduce: OcalFanOutReduce,
+  reduce: ZyalFanOutReduce,
   on_partial_failure: Schema.optional(Schema.Union([
     Schema.Literal("continue"),
     Schema.Literal("abort"),
     Schema.Literal("pause"),
   ])),
 })
-export type OcalFanOut = Schema.Schema.Type<typeof OcalFanOut>
+export type ZyalFanOut = Schema.Schema.Type<typeof ZyalFanOut>
 
 // ─── Guardrails: Input/Output Validation Middleware ────────────────────────
 
-export const OcalGuardrailAction = Schema.Union([
+export const ZyalGuardrailAction = Schema.Union([
   Schema.Literal("block"),
   Schema.Literal("retry"),
   Schema.Literal("pause"),
   Schema.Literal("abort"),
   Schema.Literal("warn"),
 ])
-export type OcalGuardrailAction = Schema.Schema.Type<typeof OcalGuardrailAction>
+export type ZyalGuardrailAction = Schema.Schema.Type<typeof ZyalGuardrailAction>
 
-export const OcalPatternGuardrail = Schema.Struct({
+export const ZyalPatternGuardrail = Schema.Struct({
   name: Schema.String,
   deny_patterns: Schema.Array(Schema.String),
   scope: Schema.optional(Schema.Union([
@@ -381,29 +381,29 @@ export const OcalPatternGuardrail = Schema.Struct({
     Schema.Literal("file_diff"),
     Schema.Literal("commit_message"),
   ])),
-  action: OcalGuardrailAction,
+  action: ZyalGuardrailAction,
 })
-export type OcalPatternGuardrail = Schema.Schema.Type<typeof OcalPatternGuardrail>
+export type ZyalPatternGuardrail = Schema.Schema.Type<typeof ZyalPatternGuardrail>
 
-export const OcalShellGuardrail = Schema.Struct({
+export const ZyalShellGuardrail = Schema.Struct({
   name: Schema.String,
   shell: Schema.String,
-  assert: Schema.optional(OcalShellAssert),
-  on_fail: Schema.optional(OcalGuardrailAction),
+  assert: Schema.optional(ZyalShellAssert),
+  on_fail: Schema.optional(ZyalGuardrailAction),
   max_retries: Schema.optional(Schema.Number),
 })
-export type OcalShellGuardrail = Schema.Schema.Type<typeof OcalShellGuardrail>
+export type ZyalShellGuardrail = Schema.Schema.Type<typeof ZyalShellGuardrail>
 
-export const OcalGuardrails = Schema.Struct({
-  input: Schema.optional(Schema.Array(OcalPatternGuardrail)),
-  output: Schema.optional(Schema.Array(Schema.Union([OcalPatternGuardrail, OcalShellGuardrail]))),
-  iteration: Schema.optional(Schema.Array(OcalShellGuardrail)),
+export const ZyalGuardrails = Schema.Struct({
+  input: Schema.optional(Schema.Array(ZyalPatternGuardrail)),
+  output: Schema.optional(Schema.Array(Schema.Union([ZyalPatternGuardrail, ZyalShellGuardrail]))),
+  iteration: Schema.optional(Schema.Array(ZyalShellGuardrail)),
 })
-export type OcalGuardrails = Schema.Schema.Type<typeof OcalGuardrails>
+export type ZyalGuardrails = Schema.Schema.Type<typeof ZyalGuardrails>
 
 // ─── Assertions: Structured Output Contracts ───────────────────────────────
 
-export const OcalAssertions = Schema.Struct({
+export const ZyalAssertions = Schema.Struct({
   require_structured_output: Schema.optional(Schema.Boolean),
   schema: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
   on_invalid: Schema.optional(Schema.Union([
@@ -414,42 +414,42 @@ export const OcalAssertions = Schema.Struct({
   ])),
   max_retries: Schema.optional(Schema.Number),
 })
-export type OcalAssertions = Schema.Schema.Type<typeof OcalAssertions>
+export type ZyalAssertions = Schema.Schema.Type<typeof ZyalAssertions>
 
 // ─── Retry: Per-Step Backoff Policies ──────────────────────────────────────
 
-export const OcalRetryBackoff = Schema.Union([
+export const ZyalRetryBackoff = Schema.Union([
   Schema.Literal("none"),
   Schema.Literal("linear"),
   Schema.Literal("exponential"),
 ])
-export type OcalRetryBackoff = Schema.Schema.Type<typeof OcalRetryBackoff>
+export type ZyalRetryBackoff = Schema.Schema.Type<typeof ZyalRetryBackoff>
 
-export const OcalRetryPolicy = Schema.Struct({
+export const ZyalRetryPolicy = Schema.Struct({
   max_attempts: Schema.optional(Schema.Number),
-  backoff: Schema.optional(OcalRetryBackoff),
+  backoff: Schema.optional(ZyalRetryBackoff),
   initial_delay: Schema.optional(Schema.String),
   max_delay: Schema.optional(Schema.String),
   jitter: Schema.optional(Schema.Boolean),
 })
-export type OcalRetryPolicy = Schema.Schema.Type<typeof OcalRetryPolicy>
+export type ZyalRetryPolicy = Schema.Schema.Type<typeof ZyalRetryPolicy>
 
-export const OcalRetry = Schema.Struct({
-  default: Schema.optional(OcalRetryPolicy),
+export const ZyalRetry = Schema.Struct({
+  default: Schema.optional(ZyalRetryPolicy),
   overrides: Schema.optional(Schema.Struct({
-    shell_checks: Schema.optional(OcalRetryPolicy),
-    checkpoint: Schema.optional(OcalRetryPolicy),
-    worker_spawn: Schema.optional(OcalRetryPolicy),
-    stop_evaluation: Schema.optional(OcalRetryPolicy),
+    shell_checks: Schema.optional(ZyalRetryPolicy),
+    checkpoint: Schema.optional(ZyalRetryPolicy),
+    worker_spawn: Schema.optional(ZyalRetryPolicy),
+    stop_evaluation: Schema.optional(ZyalRetryPolicy),
   })),
 })
-export type OcalRetry = Schema.Schema.Type<typeof OcalRetry>
+export type ZyalRetry = Schema.Schema.Type<typeof ZyalRetry>
 
 // ─── Hooks: Lifecycle Hooks ────────────────────────────────────────────────
 
-export const OcalHookStep = Schema.Struct({
+export const ZyalHookStep = Schema.Struct({
   run: Schema.String,
-  assert: Schema.optional(OcalShellAssert),
+  assert: Schema.optional(ZyalShellAssert),
   on_fail: Schema.optional(Schema.Union([
     Schema.Literal("pause"),
     Schema.Literal("abort"),
@@ -459,32 +459,32 @@ export const OcalHookStep = Schema.Struct({
   ])),
   timeout: Schema.optional(Schema.String),
 })
-export type OcalHookStep = Schema.Schema.Type<typeof OcalHookStep>
+export type ZyalHookStep = Schema.Schema.Type<typeof ZyalHookStep>
 
-export const OcalHooks = Schema.Struct({
-  on_start: Schema.optional(Schema.Array(OcalHookStep)),
-  before_iteration: Schema.optional(Schema.Array(OcalHookStep)),
-  after_iteration: Schema.optional(Schema.Array(OcalHookStep)),
-  before_checkpoint: Schema.optional(Schema.Array(OcalHookStep)),
-  after_checkpoint: Schema.optional(Schema.Array(OcalHookStep)),
-  on_promote: Schema.optional(Schema.Array(OcalHookStep)),
-  on_exhaust: Schema.optional(Schema.Array(OcalHookStep)),
-  on_stop: Schema.optional(Schema.Array(OcalHookStep)),
+export const ZyalHooks = Schema.Struct({
+  on_start: Schema.optional(Schema.Array(ZyalHookStep)),
+  before_iteration: Schema.optional(Schema.Array(ZyalHookStep)),
+  after_iteration: Schema.optional(Schema.Array(ZyalHookStep)),
+  before_checkpoint: Schema.optional(Schema.Array(ZyalHookStep)),
+  after_checkpoint: Schema.optional(Schema.Array(ZyalHookStep)),
+  on_promote: Schema.optional(Schema.Array(ZyalHookStep)),
+  on_exhaust: Schema.optional(Schema.Array(ZyalHookStep)),
+  on_stop: Schema.optional(Schema.Array(ZyalHookStep)),
 })
-export type OcalHooks = Schema.Schema.Type<typeof OcalHooks>
+export type ZyalHooks = Schema.Schema.Type<typeof ZyalHooks>
 
 // ─── Constraints: Runtime Invariants ───────────────────────────────────────
 
-export const OcalConstraintInvariant = Schema.Union([
+export const ZyalConstraintInvariant = Schema.Union([
   Schema.Literal("gte_baseline"),
   Schema.Literal("lte_baseline"),
   Schema.Literal("equals_baseline"),
   Schema.Literal("equals_zero"),
   Schema.Literal("non_zero"),
 ])
-export type OcalConstraintInvariant = Schema.Schema.Type<typeof OcalConstraintInvariant>
+export type ZyalConstraintInvariant = Schema.Schema.Type<typeof ZyalConstraintInvariant>
 
-export const OcalConstraint = Schema.Struct({
+export const ZyalConstraint = Schema.Struct({
   name: Schema.String,
   check: Schema.Struct({
     shell: Schema.String,
@@ -494,7 +494,7 @@ export const OcalConstraint = Schema.Struct({
     Schema.Literal("capture_on_start"),
     Schema.Literal("capture_on_checkpoint"),
   ])),
-  invariant: OcalConstraintInvariant,
+  invariant: ZyalConstraintInvariant,
   on_violation: Schema.optional(Schema.Union([
     Schema.Literal("abort"),
     Schema.Literal("pause"),
@@ -503,28 +503,28 @@ export const OcalConstraint = Schema.Struct({
     Schema.Literal("retry"),
   ])),
 })
-export type OcalConstraint = Schema.Schema.Type<typeof OcalConstraint>
+export type ZyalConstraint = Schema.Schema.Type<typeof ZyalConstraint>
 
 // ─── Workflow: Durable Graph Execution ─────────────────────────────────────
 
-export const OcalWorkflowTransitionCondition = Schema.Struct({
+export const ZyalWorkflowTransitionCondition = Schema.Struct({
   evidence_exists: Schema.optional(Schema.String),
   risk_score_gte: Schema.optional(Schema.Number),
   approval_granted: Schema.optional(Schema.String),
   all_checks_pass: Schema.optional(Schema.Boolean),
   checks_failed: Schema.optional(Schema.Boolean),
   constraint_violated: Schema.optional(Schema.Boolean),
-  shell: Schema.optional(OcalShellCheck),
+  shell: Schema.optional(ZyalShellCheck),
 })
-export type OcalWorkflowTransitionCondition = Schema.Schema.Type<typeof OcalWorkflowTransitionCondition>
+export type ZyalWorkflowTransitionCondition = Schema.Schema.Type<typeof ZyalWorkflowTransitionCondition>
 
-export const OcalWorkflowTransition = Schema.Struct({
+export const ZyalWorkflowTransition = Schema.Struct({
   to: Schema.String,
-  when: OcalWorkflowTransitionCondition,
+  when: ZyalWorkflowTransitionCondition,
 })
-export type OcalWorkflowTransition = Schema.Schema.Type<typeof OcalWorkflowTransition>
+export type ZyalWorkflowTransition = Schema.Schema.Type<typeof ZyalWorkflowTransition>
 
-export const OcalWorkflowState = Schema.Struct({
+export const ZyalWorkflowState = Schema.Struct({
   agent: Schema.optional(Schema.String),
   writes: Schema.optional(Schema.Union([
     Schema.Literal("none"),
@@ -538,21 +538,21 @@ export const OcalWorkflowState = Schema.Struct({
   terminal: Schema.optional(Schema.Boolean),
   timeout: Schema.optional(Schema.String),
   hooks: Schema.optional(Schema.Struct({
-    on_enter: Schema.optional(Schema.Array(OcalHookStep)),
-    on_exit: Schema.optional(Schema.Array(OcalHookStep)),
+    on_enter: Schema.optional(Schema.Array(ZyalHookStep)),
+    on_exit: Schema.optional(Schema.Array(ZyalHookStep)),
   })),
-  transitions: Schema.optional(Schema.Array(OcalWorkflowTransition)),
+  transitions: Schema.optional(Schema.Array(ZyalWorkflowTransition)),
 })
-export type OcalWorkflowState = Schema.Schema.Type<typeof OcalWorkflowState>
+export type ZyalWorkflowState = Schema.Schema.Type<typeof ZyalWorkflowState>
 
-export const OcalWorkflow = Schema.Struct({
+export const ZyalWorkflow = Schema.Struct({
   type: Schema.Union([
     Schema.Literal("state_machine"),
     Schema.Literal("dag"),
     Schema.Literal("pipeline"),
   ]),
   initial: Schema.String,
-  states: Schema.Record(Schema.String, OcalWorkflowState),
+  states: Schema.Record(Schema.String, ZyalWorkflowState),
   on_stuck: Schema.optional(Schema.Union([
     Schema.Literal("pause"),
     Schema.Literal("abort"),
@@ -560,11 +560,11 @@ export const OcalWorkflow = Schema.Struct({
   ])),
   max_total_time: Schema.optional(Schema.String),
 })
-export type OcalWorkflow = Schema.Schema.Type<typeof OcalWorkflow>
+export type ZyalWorkflow = Schema.Schema.Type<typeof ZyalWorkflow>
 
 // ─── Memory: Governed Agent Memory ─────────────────────────────────────────
 
-export const OcalMemoryStore = Schema.Struct({
+export const ZyalMemoryStore = Schema.Struct({
   scope: Schema.Union([
     Schema.Literal("task"),
     Schema.Literal("run"),
@@ -591,9 +591,9 @@ export const OcalMemoryStore = Schema.Struct({
   ])),
   searchable: Schema.optional(Schema.Boolean),
 })
-export type OcalMemoryStore = Schema.Schema.Type<typeof OcalMemoryStore>
+export type ZyalMemoryStore = Schema.Schema.Type<typeof ZyalMemoryStore>
 
-export const OcalMemoryRedaction = Schema.Struct({
+export const ZyalMemoryRedaction = Schema.Struct({
   patterns: Schema.Array(Schema.String),
   action: Schema.Union([
     Schema.Literal("mask"),
@@ -601,31 +601,31 @@ export const OcalMemoryRedaction = Schema.Struct({
     Schema.Literal("hash"),
   ]),
 })
-export type OcalMemoryRedaction = Schema.Schema.Type<typeof OcalMemoryRedaction>
+export type ZyalMemoryRedaction = Schema.Schema.Type<typeof ZyalMemoryRedaction>
 
-export const OcalMemory = Schema.Struct({
-  stores: Schema.optional(Schema.Record(Schema.String, OcalMemoryStore)),
-  redaction: Schema.optional(OcalMemoryRedaction),
+export const ZyalMemory = Schema.Struct({
+  stores: Schema.optional(Schema.Record(Schema.String, ZyalMemoryStore)),
+  redaction: Schema.optional(ZyalMemoryRedaction),
   provenance: Schema.optional(Schema.Struct({
     track_source: Schema.optional(Schema.Boolean),
     hash_chain: Schema.optional(Schema.Boolean),
   })),
 })
-export type OcalMemory = Schema.Schema.Type<typeof OcalMemory>
+export type ZyalMemory = Schema.Schema.Type<typeof ZyalMemory>
 
 // ─── Evidence: Typed Proof Bundles ─────────────────────────────────────────
 
-export const OcalEvidenceRequirement = Schema.Struct({
+export const ZyalEvidenceRequirement = Schema.Struct({
   type: Schema.String,
   must_pass: Schema.optional(Schema.Boolean),
   must_be_known: Schema.optional(Schema.Boolean),
   must_exist: Schema.optional(Schema.Boolean),
   max_increase: Schema.optional(Schema.Number),
 })
-export type OcalEvidenceRequirement = Schema.Schema.Type<typeof OcalEvidenceRequirement>
+export type ZyalEvidenceRequirement = Schema.Schema.Type<typeof ZyalEvidenceRequirement>
 
-export const OcalEvidence = Schema.Struct({
-  require_before_promote: Schema.optional(Schema.Array(OcalEvidenceRequirement)),
+export const ZyalEvidence = Schema.Struct({
+  require_before_promote: Schema.optional(Schema.Array(ZyalEvidenceRequirement)),
   bundle_format: Schema.optional(Schema.Union([
     Schema.Literal("json"),
     Schema.Literal("markdown"),
@@ -636,19 +636,19 @@ export const OcalEvidence = Schema.Struct({
   ])),
   archive: Schema.optional(Schema.Boolean),
 })
-export type OcalEvidence = Schema.Schema.Type<typeof OcalEvidence>
+export type ZyalEvidence = Schema.Schema.Type<typeof ZyalEvidence>
 
 // ─── Approvals: First-Class Human Decisions ────────────────────────────────
 
-export const OcalApprovalDecision = Schema.Union([
+export const ZyalApprovalDecision = Schema.Union([
   Schema.Literal("approve"),
   Schema.Literal("reject"),
   Schema.Literal("edit"),
   Schema.Literal("escalate"),
 ])
-export type OcalApprovalDecision = Schema.Schema.Type<typeof OcalApprovalDecision>
+export type ZyalApprovalDecision = Schema.Schema.Type<typeof ZyalApprovalDecision>
 
-export const OcalApprovalGate = Schema.Struct({
+export const ZyalApprovalGate = Schema.Struct({
   required_role: Schema.optional(Schema.String),
   timeout: Schema.optional(Schema.String),
   on_timeout: Schema.optional(Schema.Union([
@@ -656,30 +656,30 @@ export const OcalApprovalGate = Schema.Struct({
     Schema.Literal("abort"),
     Schema.Literal("escalate"),
   ])),
-  decisions: Schema.optional(Schema.Array(OcalApprovalDecision)),
+  decisions: Schema.optional(Schema.Array(ZyalApprovalDecision)),
   require_evidence: Schema.optional(Schema.Array(Schema.String)),
   auto_approve_if: Schema.optional(Schema.Struct({
     risk_score_lt: Schema.optional(Schema.Number),
     all_checks_pass: Schema.optional(Schema.Boolean),
   })),
 })
-export type OcalApprovalGate = Schema.Schema.Type<typeof OcalApprovalGate>
+export type ZyalApprovalGate = Schema.Schema.Type<typeof ZyalApprovalGate>
 
-export const OcalApprovalEscalation = Schema.Struct({
+export const ZyalApprovalEscalation = Schema.Struct({
   chain: Schema.optional(Schema.Array(Schema.String)),
   auto_escalate_after: Schema.optional(Schema.String),
 })
-export type OcalApprovalEscalation = Schema.Schema.Type<typeof OcalApprovalEscalation>
+export type ZyalApprovalEscalation = Schema.Schema.Type<typeof ZyalApprovalEscalation>
 
-export const OcalApprovals = Schema.Struct({
-  gates: Schema.optional(Schema.Record(Schema.String, OcalApprovalGate)),
-  escalation: Schema.optional(OcalApprovalEscalation),
+export const ZyalApprovals = Schema.Struct({
+  gates: Schema.optional(Schema.Record(Schema.String, ZyalApprovalGate)),
+  escalation: Schema.optional(ZyalApprovalEscalation),
 })
-export type OcalApprovals = Schema.Schema.Type<typeof OcalApprovals>
+export type ZyalApprovals = Schema.Schema.Type<typeof ZyalApprovals>
 
 // ─── Skills: Agent Skill Registry ──────────────────────────────────────────
 
-export const OcalSkillDefinition = Schema.Struct({
+export const ZyalSkillDefinition = Schema.Struct({
   description: Schema.optional(Schema.String),
   agent: Schema.optional(Schema.String),
   tools: Schema.optional(Schema.Array(Schema.String)),
@@ -698,18 +698,18 @@ export const OcalSkillDefinition = Schema.Struct({
   ])),
   timeout: Schema.optional(Schema.String),
 })
-export type OcalSkillDefinition = Schema.Schema.Type<typeof OcalSkillDefinition>
+export type ZyalSkillDefinition = Schema.Schema.Type<typeof ZyalSkillDefinition>
 
-export const OcalSkills = Schema.Struct({
-  registry: Schema.optional(Schema.Record(Schema.String, OcalSkillDefinition)),
+export const ZyalSkills = Schema.Struct({
+  registry: Schema.optional(Schema.Record(Schema.String, ZyalSkillDefinition)),
   allow_creation: Schema.optional(Schema.Boolean),
   max_skills: Schema.optional(Schema.Number),
 })
-export type OcalSkills = Schema.Schema.Type<typeof OcalSkills>
+export type ZyalSkills = Schema.Schema.Type<typeof ZyalSkills>
 
 // ─── Sandbox: Execution Boundaries ─────────────────────────────────────────
 
-export const OcalSandboxPathRule = Schema.Struct({
+export const ZyalSandboxPathRule = Schema.Struct({
   path: Schema.String,
   access: Schema.Union([
     Schema.Literal("read"),
@@ -717,9 +717,9 @@ export const OcalSandboxPathRule = Schema.Struct({
     Schema.Literal("deny"),
   ]),
 })
-export type OcalSandboxPathRule = Schema.Schema.Type<typeof OcalSandboxPathRule>
+export type ZyalSandboxPathRule = Schema.Schema.Type<typeof ZyalSandboxPathRule>
 
-export const OcalSandboxNetworkPolicy = Schema.Struct({
+export const ZyalSandboxNetworkPolicy = Schema.Struct({
   outbound: Schema.optional(Schema.Union([
     Schema.Literal("allow"),
     Schema.Literal("deny"),
@@ -727,35 +727,35 @@ export const OcalSandboxNetworkPolicy = Schema.Struct({
   ])),
   allowlist: Schema.optional(Schema.Array(Schema.String)),
 })
-export type OcalSandboxNetworkPolicy = Schema.Schema.Type<typeof OcalSandboxNetworkPolicy>
+export type ZyalSandboxNetworkPolicy = Schema.Schema.Type<typeof ZyalSandboxNetworkPolicy>
 
-export const OcalSandboxResources = Schema.Struct({
+export const ZyalSandboxResources = Schema.Struct({
   max_file_size: Schema.optional(Schema.String),
   max_total_disk: Schema.optional(Schema.String),
   max_memory: Schema.optional(Schema.String),
   max_processes: Schema.optional(Schema.Number),
 })
-export type OcalSandboxResources = Schema.Schema.Type<typeof OcalSandboxResources>
+export type ZyalSandboxResources = Schema.Schema.Type<typeof ZyalSandboxResources>
 
-export const OcalSandbox = Schema.Struct({
-  paths: Schema.optional(Schema.Array(OcalSandboxPathRule)),
-  network: Schema.optional(OcalSandboxNetworkPolicy),
-  resources: Schema.optional(OcalSandboxResources),
+export const ZyalSandbox = Schema.Struct({
+  paths: Schema.optional(Schema.Array(ZyalSandboxPathRule)),
+  network: Schema.optional(ZyalSandboxNetworkPolicy),
+  resources: Schema.optional(ZyalSandboxResources),
   env_inherit: Schema.optional(Schema.Array(Schema.String)),
   env_deny: Schema.optional(Schema.Array(Schema.String)),
 })
-export type OcalSandbox = Schema.Schema.Type<typeof OcalSandbox>
+export type ZyalSandbox = Schema.Schema.Type<typeof ZyalSandbox>
 
 // ─── Security: Trust Zones & Injection Defense ─────────────────────────────
 
-export const OcalSecurityTrustZone = Schema.Struct({
+export const ZyalSecurityTrustZone = Schema.Struct({
   paths: Schema.optional(Schema.Array(Schema.String)),
   require_approval: Schema.optional(Schema.Boolean),
   max_risk_score: Schema.optional(Schema.Number),
 })
-export type OcalSecurityTrustZone = Schema.Schema.Type<typeof OcalSecurityTrustZone>
+export type ZyalSecurityTrustZone = Schema.Schema.Type<typeof ZyalSecurityTrustZone>
 
-export const OcalSecurityInjection = Schema.Struct({
+export const ZyalSecurityInjection = Schema.Struct({
   scan_inputs: Schema.optional(Schema.Boolean),
   scan_outputs: Schema.optional(Schema.Boolean),
   deny_patterns: Schema.optional(Schema.Array(Schema.String)),
@@ -766,25 +766,25 @@ export const OcalSecurityInjection = Schema.Struct({
     Schema.Literal("strip"),
   ])),
 })
-export type OcalSecurityInjection = Schema.Schema.Type<typeof OcalSecurityInjection>
+export type ZyalSecurityInjection = Schema.Schema.Type<typeof ZyalSecurityInjection>
 
-export const OcalSecuritySecrets = Schema.Struct({
+export const ZyalSecuritySecrets = Schema.Struct({
   allowed_env: Schema.optional(Schema.Array(Schema.String)),
   redact_from_logs: Schema.optional(Schema.Boolean),
   rotate_after: Schema.optional(Schema.String),
 })
-export type OcalSecuritySecrets = Schema.Schema.Type<typeof OcalSecuritySecrets>
+export type ZyalSecuritySecrets = Schema.Schema.Type<typeof ZyalSecuritySecrets>
 
-export const OcalSecurity = Schema.Struct({
-  trust_zones: Schema.optional(Schema.Record(Schema.String, OcalSecurityTrustZone)),
-  injection: Schema.optional(OcalSecurityInjection),
-  secrets: Schema.optional(OcalSecuritySecrets),
+export const ZyalSecurity = Schema.Struct({
+  trust_zones: Schema.optional(Schema.Record(Schema.String, ZyalSecurityTrustZone)),
+  injection: Schema.optional(ZyalSecurityInjection),
+  secrets: Schema.optional(ZyalSecuritySecrets),
 })
-export type OcalSecurity = Schema.Schema.Type<typeof OcalSecurity>
+export type ZyalSecurity = Schema.Schema.Type<typeof ZyalSecurity>
 
 // ─── Observability: Spans, Metrics & Cost Tracking ─────────────────────────
 
-export const OcalObservabilitySpan = Schema.Struct({
+export const ZyalObservabilitySpan = Schema.Struct({
   emit: Schema.optional(Schema.Union([
     Schema.Literal("all"),
     Schema.Literal("errors_only"),
@@ -793,9 +793,9 @@ export const OcalObservabilitySpan = Schema.Struct({
   include_tool_calls: Schema.optional(Schema.Boolean),
   include_model_calls: Schema.optional(Schema.Boolean),
 })
-export type OcalObservabilitySpan = Schema.Schema.Type<typeof OcalObservabilitySpan>
+export type ZyalObservabilitySpan = Schema.Schema.Type<typeof ZyalObservabilitySpan>
 
-export const OcalObservabilityMetric = Schema.Struct({
+export const ZyalObservabilityMetric = Schema.Struct({
   name: Schema.String,
   type: Schema.Union([
     Schema.Literal("counter"),
@@ -804,9 +804,9 @@ export const OcalObservabilityMetric = Schema.Struct({
   ]),
   source: Schema.String,
 })
-export type OcalObservabilityMetric = Schema.Schema.Type<typeof OcalObservabilityMetric>
+export type ZyalObservabilityMetric = Schema.Schema.Type<typeof ZyalObservabilityMetric>
 
-export const OcalObservabilityCost = Schema.Struct({
+export const ZyalObservabilityCost = Schema.Struct({
   budget: Schema.optional(Schema.Number),
   currency: Schema.optional(Schema.String),
   alert_at_percent: Schema.optional(Schema.Number),
@@ -816,9 +816,9 @@ export const OcalObservabilityCost = Schema.Struct({
     Schema.Literal("warn"),
   ])),
 })
-export type OcalObservabilityCost = Schema.Schema.Type<typeof OcalObservabilityCost>
+export type ZyalObservabilityCost = Schema.Schema.Type<typeof ZyalObservabilityCost>
 
-export const OcalObservabilityReport = Schema.Struct({
+export const ZyalObservabilityReport = Schema.Struct({
   format: Schema.optional(Schema.Union([
     Schema.Literal("json"),
     Schema.Literal("markdown"),
@@ -827,41 +827,41 @@ export const OcalObservabilityReport = Schema.Struct({
   on_checkpoint: Schema.optional(Schema.Boolean),
   include: Schema.optional(Schema.Array(Schema.String)),
 })
-export type OcalObservabilityReport = Schema.Schema.Type<typeof OcalObservabilityReport>
+export type ZyalObservabilityReport = Schema.Schema.Type<typeof ZyalObservabilityReport>
 
-export const OcalObservability = Schema.Struct({
-  spans: Schema.optional(OcalObservabilitySpan),
-  metrics: Schema.optional(Schema.Array(OcalObservabilityMetric)),
-  cost: Schema.optional(OcalObservabilityCost),
-  report: Schema.optional(OcalObservabilityReport),
+export const ZyalObservability = Schema.Struct({
+  spans: Schema.optional(ZyalObservabilitySpan),
+  metrics: Schema.optional(Schema.Array(ZyalObservabilityMetric)),
+  cost: Schema.optional(ZyalObservabilityCost),
+  report: Schema.optional(ZyalObservabilityReport),
 })
-export type OcalObservability = Schema.Schema.Type<typeof OcalObservability>
+export type ZyalObservability = Schema.Schema.Type<typeof ZyalObservability>
 
 // ─── v2.1: Arming (origin-aware, hash-bound) ──────────────────────────────
 
-export const OcalArmingOrigin = Schema.Union([
+export const ZyalArmingOrigin = Schema.Union([
   Schema.Literal("trusted_user_message"),
   Schema.Literal("signed_cli_input"),
   Schema.Literal("signed_api_request"),
   Schema.Literal("host_ui_button"),
 ])
-export type OcalArmingOrigin = Schema.Schema.Type<typeof OcalArmingOrigin>
+export type ZyalArmingOrigin = Schema.Schema.Type<typeof ZyalArmingOrigin>
 
-export const OcalArmingPolicy = Schema.Struct({
+export const ZyalArmingPolicy = Schema.Struct({
   preview_hash_required: Schema.optional(Schema.Boolean),
   host_nonce_required: Schema.optional(Schema.Boolean),
   reject_inside_code_fence: Schema.optional(Schema.Boolean),
   reject_from: Schema.optional(Schema.Array(Schema.String)),
-  accepted_origins: Schema.optional(Schema.Array(OcalArmingOrigin)),
+  accepted_origins: Schema.optional(Schema.Array(ZyalArmingOrigin)),
   preview_expires_after: Schema.optional(Schema.String),
   arm_token_single_use: Schema.optional(Schema.Boolean),
   bound_to: Schema.optional(Schema.Array(Schema.String)),
 })
-export type OcalArmingPolicy = Schema.Schema.Type<typeof OcalArmingPolicy>
+export type ZyalArmingPolicy = Schema.Schema.Type<typeof ZyalArmingPolicy>
 
 // ─── v2.1: Capabilities (least-privilege leases) ──────────────────────────
 
-export const OcalCapabilityRule = Schema.Struct({
+export const ZyalCapabilityRule = Schema.Struct({
   id: Schema.String,
   tool: Schema.optional(Schema.String),
   paths: Schema.optional(Schema.Array(Schema.String)),
@@ -871,20 +871,20 @@ export const OcalCapabilityRule = Schema.Struct({
   expires: Schema.optional(Schema.String),
   reason: Schema.optional(Schema.String),
 })
-export type OcalCapabilityRule = Schema.Schema.Type<typeof OcalCapabilityRule>
+export type ZyalCapabilityRule = Schema.Schema.Type<typeof ZyalCapabilityRule>
 
-export const OcalCapabilities = Schema.Struct({
+export const ZyalCapabilities = Schema.Struct({
   default: Schema.optional(Schema.Union([Schema.Literal("deny"), Schema.Literal("ask"), Schema.Literal("allow")])),
-  rules: Schema.optional(Schema.Array(OcalCapabilityRule)),
+  rules: Schema.optional(Schema.Array(ZyalCapabilityRule)),
   command_floor: Schema.optional(Schema.Struct({
     always_block: Schema.Array(Schema.String),
   })),
 })
-export type OcalCapabilities = Schema.Schema.Type<typeof OcalCapabilities>
+export type ZyalCapabilities = Schema.Schema.Type<typeof ZyalCapabilities>
 
 // ─── v2.1: Quality / anti-vibe ────────────────────────────────────────────
 
-export const OcalQualityCheck = Schema.Struct({
+export const ZyalQualityCheck = Schema.Struct({
   name: Schema.String,
   pattern: Schema.optional(Schema.String),
   shell: Schema.optional(Schema.String),
@@ -902,9 +902,9 @@ export const OcalQualityCheck = Schema.Struct({
     Schema.Literal("require_approval"),
   ]),
 })
-export type OcalQualityCheck = Schema.Schema.Type<typeof OcalQualityCheck>
+export type ZyalQualityCheck = Schema.Schema.Type<typeof ZyalQualityCheck>
 
-export const OcalQuality = Schema.Struct({
+export const ZyalQuality = Schema.Struct({
   anti_vibe: Schema.optional(Schema.Struct({
     enabled: Schema.optional(Schema.Boolean),
     fail_closed: Schema.optional(Schema.Boolean),
@@ -926,13 +926,13 @@ export const OcalQuality = Schema.Struct({
       Schema.Literal("warn"),
     ])),
   })),
-  checks: Schema.optional(Schema.Array(OcalQualityCheck)),
+  checks: Schema.optional(Schema.Array(ZyalQualityCheck)),
 })
-export type OcalQuality = Schema.Schema.Type<typeof OcalQuality>
+export type ZyalQuality = Schema.Schema.Type<typeof ZyalQuality>
 
 // ─── v2.1: Experiments (hypothesis tournament) ────────────────────────────
 
-export const OcalExperimentLane = Schema.Struct({
+export const ZyalExperimentLane = Schema.Struct({
   id: Schema.String,
   hypothesis: Schema.String,
   prompt_strategy: Schema.optional(Schema.String),
@@ -946,9 +946,9 @@ export const OcalExperimentLane = Schema.Struct({
     max_cost_usd: Schema.optional(Schema.Number),
   })),
 })
-export type OcalExperimentLane = Schema.Schema.Type<typeof OcalExperimentLane>
+export type ZyalExperimentLane = Schema.Schema.Type<typeof ZyalExperimentLane>
 
-export const OcalExperiments = Schema.Struct({
+export const ZyalExperiments = Schema.Struct({
   strategy: Schema.optional(Schema.Union([
     Schema.Literal("disjoint_tournament"),
     Schema.Literal("parallel_distill_refine"),
@@ -960,7 +960,7 @@ export const OcalExperiments = Schema.Struct({
     min_plan_distance: Schema.optional(Schema.Number),
     axes: Schema.optional(Schema.Array(Schema.String)),
   })),
-  lanes: Schema.Array(OcalExperimentLane),
+  lanes: Schema.Array(ZyalExperimentLane),
   fork_from: Schema.optional(Schema.Union([
     Schema.Literal("last_green_checkpoint"),
     Schema.Literal("current_head"),
@@ -992,21 +992,21 @@ export const OcalExperiments = Schema.Struct({
   ])),
   preserve_failed_lanes_as_negative_memory: Schema.optional(Schema.Boolean),
 })
-export type OcalExperiments = Schema.Schema.Type<typeof OcalExperiments>
+export type ZyalExperiments = Schema.Schema.Type<typeof ZyalExperiments>
 
 // ─── v2.1: Models (routing + fallback + critic discipline) ────────────────
 
-export const OcalModelProfile = Schema.Struct({
+export const ZyalModelProfile = Schema.Struct({
   provider: Schema.optional(Schema.String),
   model: Schema.optional(Schema.String),
   temperature: Schema.optional(Schema.Number),
   reasoning: Schema.optional(Schema.Boolean),
   budget_usd: Schema.optional(Schema.Number),
 })
-export type OcalModelProfile = Schema.Schema.Type<typeof OcalModelProfile>
+export type ZyalModelProfile = Schema.Schema.Type<typeof ZyalModelProfile>
 
-export const OcalModels = Schema.Struct({
-  profiles: Schema.optional(Schema.Record(Schema.String, OcalModelProfile)),
+export const ZyalModels = Schema.Struct({
+  profiles: Schema.optional(Schema.Record(Schema.String, ZyalModelProfile)),
   routes: Schema.optional(Schema.Record(Schema.String, Schema.String)),
   critic: Schema.optional(Schema.Struct({
     must_differ_from_builder: Schema.optional(Schema.Boolean),
@@ -1020,11 +1020,11 @@ export const OcalModels = Schema.Struct({
   })),
   confidence_cap: Schema.optional(Schema.Number),
 })
-export type OcalModels = Schema.Schema.Type<typeof OcalModels>
+export type ZyalModels = Schema.Schema.Type<typeof ZyalModels>
 
 // ─── v2.1: Budgets (multi-scope, on_exhaust policy) ───────────────────────
 
-export const OcalBudgetScope = Schema.Struct({
+export const ZyalBudgetScope = Schema.Struct({
   wall_clock: Schema.optional(Schema.String),
   iterations: Schema.optional(Schema.Number),
   tokens: Schema.optional(Schema.Number),
@@ -1038,19 +1038,19 @@ export const OcalBudgetScope = Schema.Struct({
     Schema.Literal("renew_with_approval"),
   ])),
 })
-export type OcalBudgetScope = Schema.Schema.Type<typeof OcalBudgetScope>
+export type ZyalBudgetScope = Schema.Schema.Type<typeof ZyalBudgetScope>
 
-export const OcalBudgets = Schema.Struct({
-  run: Schema.optional(OcalBudgetScope),
-  task: Schema.optional(OcalBudgetScope),
-  iteration: Schema.optional(OcalBudgetScope),
-  experiment_lane: Schema.optional(OcalBudgetScope),
+export const ZyalBudgets = Schema.Struct({
+  run: Schema.optional(ZyalBudgetScope),
+  task: Schema.optional(ZyalBudgetScope),
+  iteration: Schema.optional(ZyalBudgetScope),
+  experiment_lane: Schema.optional(ZyalBudgetScope),
 })
-export type OcalBudgets = Schema.Schema.Type<typeof OcalBudgets>
+export type ZyalBudgets = Schema.Schema.Type<typeof ZyalBudgets>
 
 // ─── v2.1: Triggers (manual/cron/github/ci/webhook) ───────────────────────
 
-export const OcalTrigger = Schema.Struct({
+export const ZyalTrigger = Schema.Struct({
   id: Schema.String,
   kind: Schema.Union([
     Schema.Literal("manual"),
@@ -1067,17 +1067,17 @@ export const OcalTrigger = Schema.Struct({
   max_runs_per_sha: Schema.optional(Schema.Number),
   allow_create_more_cron: Schema.optional(Schema.Boolean),
 })
-export type OcalTrigger = Schema.Schema.Type<typeof OcalTrigger>
+export type ZyalTrigger = Schema.Schema.Type<typeof ZyalTrigger>
 
-export const OcalTriggers = Schema.Struct({
-  list: Schema.Array(OcalTrigger),
+export const ZyalTriggers = Schema.Struct({
+  list: Schema.Array(ZyalTrigger),
   anti_recursion: Schema.optional(Schema.Boolean),
 })
-export type OcalTriggers = Schema.Schema.Type<typeof OcalTriggers>
+export type ZyalTriggers = Schema.Schema.Type<typeof ZyalTriggers>
 
 // ─── v2.1: Rollback (first-class) ─────────────────────────────────────────
 
-export const OcalRollback = Schema.Struct({
+export const ZyalRollback = Schema.Struct({
   required_when: Schema.optional(Schema.Struct({
     touches_paths: Schema.optional(Schema.Array(Schema.String)),
     risk_score_gte: Schema.optional(Schema.Number),
@@ -1091,19 +1091,19 @@ export const OcalRollback = Schema.Struct({
     Schema.Literal("manual"),
   ])),
 })
-export type OcalRollback = Schema.Schema.Type<typeof OcalRollback>
+export type ZyalRollback = Schema.Schema.Type<typeof ZyalRollback>
 
 // ─── v2.1: Done definition (host-evaluated) ───────────────────────────────
 
-export const OcalDone = Schema.Struct({
+export const ZyalDone = Schema.Struct({
   require: Schema.optional(Schema.Array(Schema.String)),
   forbid: Schema.optional(Schema.Array(Schema.String)),
 })
-export type OcalDone = Schema.Schema.Type<typeof OcalDone>
+export type ZyalDone = Schema.Schema.Type<typeof ZyalDone>
 
 // ─── v2.1: Repo intelligence (indexes, scope, blast radius) ───────────────
 
-export const OcalRepoIntelligence = Schema.Struct({
+export const ZyalRepoIntelligence = Schema.Struct({
   scale: Schema.optional(Schema.Union([
     Schema.Literal("small"),
     Schema.Literal("medium"),
@@ -1122,15 +1122,15 @@ export const OcalRepoIntelligence = Schema.Struct({
     pause_when_score_gte: Schema.optional(Schema.Number),
   })),
 })
-export type OcalRepoIntelligence = Schema.Schema.Type<typeof OcalRepoIntelligence>
+export type ZyalRepoIntelligence = Schema.Schema.Type<typeof ZyalRepoIntelligence>
 
 // ─── v2.2: Fleet (single-session multi-worker orchestration, capped at 20) ─
 
-export const OCAL_FLEET_MAX_WORKERS = 20
+export const ZYAL_FLEET_MAX_WORKERS = 20
 
-export const OcalFleetTelemetryHeaders = Schema.Record(Schema.String, Schema.String)
+export const ZyalFleetTelemetryHeaders = Schema.Record(Schema.String, Schema.String)
 
-export const OcalFleetJnoccio = Schema.Struct({
+export const ZyalFleetJnoccio = Schema.Struct({
   enabled: Schema.optional(Schema.Boolean),
   base_url: Schema.optional(Schema.String),
   metrics_ws: Schema.optional(Schema.String),
@@ -1140,99 +1140,313 @@ export const OcalFleetJnoccio = Schema.Struct({
   heartbeat_interval: Schema.optional(Schema.String),
   max_instances: Schema.optional(Schema.Number),
 })
-export type OcalFleetJnoccio = Schema.Schema.Type<typeof OcalFleetJnoccio>
+export type ZyalFleetJnoccio = Schema.Schema.Type<typeof ZyalFleetJnoccio>
 
-export const OcalFleetTelemetry = Schema.Struct({
+export const ZyalFleetTelemetry = Schema.Struct({
   publish_to: Schema.optional(Schema.Union([
     Schema.Literal("jnoccio"),
     Schema.Literal("opentelemetry"),
     Schema.Literal("none"),
   ])),
-  headers: Schema.optional(OcalFleetTelemetryHeaders),
+  headers: Schema.optional(ZyalFleetTelemetryHeaders),
 })
-export type OcalFleetTelemetry = Schema.Schema.Type<typeof OcalFleetTelemetry>
+export type ZyalFleetTelemetry = Schema.Schema.Type<typeof ZyalFleetTelemetry>
 
-export const OcalFleet = Schema.Struct({
+export const ZyalFleet = Schema.Struct({
   max_workers: Schema.Number,
   isolation: Schema.optional(Schema.Union([
     Schema.Literal("same_session"),
     Schema.Literal("git_worktree"),
     Schema.Literal("hybrid"),
   ])),
-  jnoccio: Schema.optional(OcalFleetJnoccio),
-  telemetry: Schema.optional(OcalFleetTelemetry),
+  jnoccio: Schema.optional(ZyalFleetJnoccio),
+  telemetry: Schema.optional(ZyalFleetTelemetry),
 })
-export type OcalFleet = Schema.Schema.Type<typeof OcalFleet>
+export type ZyalFleet = Schema.Schema.Type<typeof ZyalFleet>
+
+// ─── Preview-only control plane blocks ────────────────────────────────────
+
+export const ZyalInteropProtocol = Schema.Struct({
+  name: Schema.String,
+  target: Schema.optional(Schema.String),
+  version: Schema.optional(Schema.String),
+  notes: Schema.optional(Schema.String),
+})
+export type ZyalInteropProtocol = Schema.Schema.Type<typeof ZyalInteropProtocol>
+
+export const ZyalInterop = Schema.Struct({
+  protocols: Schema.optional(Schema.Array(ZyalInteropProtocol)),
+  adapters: Schema.optional(Schema.Array(Schema.String)),
+  compile_to: Schema.optional(Schema.Array(Schema.String)),
+  notes: Schema.optional(Schema.String),
+})
+export type ZyalInterop = Schema.Schema.Type<typeof ZyalInterop>
+
+export const ZyalRuntimeResources = Schema.Struct({
+  cpu: Schema.optional(Schema.String),
+  memory: Schema.optional(Schema.String),
+  disk: Schema.optional(Schema.String),
+  processes: Schema.optional(Schema.Number),
+})
+export type ZyalRuntimeResources = Schema.Schema.Type<typeof ZyalRuntimeResources>
+
+export const ZyalRuntime = Schema.Struct({
+  mode: Schema.optional(Schema.Union([Schema.Literal("preview"), Schema.Literal("host_enforced")])),
+  image: Schema.optional(Schema.String),
+  workspace: Schema.optional(Schema.String),
+  network: Schema.optional(Schema.Union([Schema.Literal("allow"), Schema.Literal("deny"), Schema.Literal("allowlist")])),
+  env: Schema.optional(Schema.Array(Schema.String)),
+  resources: Schema.optional(ZyalRuntimeResources),
+})
+export type ZyalRuntime = Schema.Schema.Type<typeof ZyalRuntime>
+
+export const ZyalCapabilityNegotiation = Schema.Struct({
+  host: Schema.optional(Schema.String),
+  required: Schema.optional(Schema.Array(Schema.String)),
+  optional: Schema.optional(Schema.Array(Schema.String)),
+  fail_closed: Schema.optional(Schema.Boolean),
+  degrade_to: Schema.optional(Schema.String),
+})
+export type ZyalCapabilityNegotiation = Schema.Schema.Type<typeof ZyalCapabilityNegotiation>
+
+export const ZyalMemoryKernelStore = Schema.Struct({
+  scope: Schema.String,
+  retention: Schema.String,
+  searchable: Schema.optional(Schema.Boolean),
+})
+export type ZyalMemoryKernelStore = Schema.Schema.Type<typeof ZyalMemoryKernelStore>
+
+export const ZyalMemoryKernelRedaction = Schema.Struct({
+  patterns: Schema.Array(Schema.String),
+  action: Schema.Union([
+    Schema.Literal("mask"),
+    Schema.Literal("remove"),
+    Schema.Literal("hash"),
+  ]),
+})
+export type ZyalMemoryKernelRedaction = Schema.Schema.Type<typeof ZyalMemoryKernelRedaction>
+
+export const ZyalMemoryKernel = Schema.Struct({
+  stores: Schema.optional(Schema.Record(Schema.String, ZyalMemoryKernelStore)),
+  redaction: Schema.optional(ZyalMemoryKernelRedaction),
+  provenance: Schema.optional(Schema.Struct({
+    track_source: Schema.optional(Schema.Boolean),
+    hash_chain: Schema.optional(Schema.Boolean),
+  })),
+})
+export type ZyalMemoryKernel = Schema.Schema.Type<typeof ZyalMemoryKernel>
+
+export const ZyalEvidenceGraphNode = Schema.Struct({
+  type: Schema.String,
+  required: Schema.optional(Schema.Boolean),
+})
+export type ZyalEvidenceGraphNode = Schema.Schema.Type<typeof ZyalEvidenceGraphNode>
+
+export const ZyalEvidenceGraphEdge = Schema.Struct({
+  from: Schema.String,
+  to: Schema.String,
+  kind: Schema.optional(Schema.String),
+})
+export type ZyalEvidenceGraphEdge = Schema.Schema.Type<typeof ZyalEvidenceGraphEdge>
+
+export const ZyalEvidenceGraph = Schema.Struct({
+  nodes: Schema.optional(Schema.Record(Schema.String, ZyalEvidenceGraphNode)),
+  edges: Schema.optional(Schema.Array(ZyalEvidenceGraphEdge)),
+  merge_witness: Schema.optional(Schema.String),
+})
+export type ZyalEvidenceGraph = Schema.Schema.Type<typeof ZyalEvidenceGraph>
+
+export const ZyalTrustZonePolicy = Schema.Struct({
+  paths: Schema.optional(Schema.Array(Schema.String)),
+  taint: Schema.optional(Schema.Union([
+    Schema.Literal("clean"),
+    Schema.Literal("tainted"),
+    Schema.Literal("quarantined"),
+  ])),
+  require_approval: Schema.optional(Schema.Boolean),
+})
+export type ZyalTrustZonePolicy = Schema.Schema.Type<typeof ZyalTrustZonePolicy>
+
+export const ZyalTrustPolicy = Schema.Struct({
+  zones: Schema.optional(Schema.Record(Schema.String, ZyalTrustZonePolicy)),
+  on_taint: Schema.optional(Schema.Union([
+    Schema.Literal("abort"),
+    Schema.Literal("pause"),
+    Schema.Literal("warn"),
+  ])),
+  notes: Schema.optional(Schema.String),
+})
+export type ZyalTrustPolicy = Schema.Schema.Type<typeof ZyalTrustPolicy>
+
+export const ZyalRequirements = Schema.Struct({
+  must: Schema.optional(Schema.Array(Schema.String)),
+  should: Schema.optional(Schema.Array(Schema.String)),
+  avoid: Schema.optional(Schema.Array(Schema.String)),
+})
+export type ZyalRequirements = Schema.Schema.Type<typeof ZyalRequirements>
+
+export const ZyalEvaluationMetric = Schema.Struct({
+  name: Schema.String,
+  command: Schema.optional(Schema.String),
+  threshold: Schema.optional(Schema.Number),
+})
+export type ZyalEvaluationMetric = Schema.Schema.Type<typeof ZyalEvaluationMetric>
+
+export const ZyalEvaluation = Schema.Struct({
+  metrics: Schema.optional(Schema.Array(ZyalEvaluationMetric)),
+  compare: Schema.optional(Schema.String),
+})
+export type ZyalEvaluation = Schema.Schema.Type<typeof ZyalEvaluation>
+
+export const ZyalRelease = Schema.Struct({
+  channel: Schema.optional(Schema.String),
+  version: Schema.optional(Schema.String),
+  gates: Schema.optional(Schema.Array(Schema.String)),
+  notes: Schema.optional(Schema.String),
+})
+export type ZyalRelease = Schema.Schema.Type<typeof ZyalRelease>
+
+export const ZyalRole = Schema.Struct({
+  id: Schema.String,
+  agent: Schema.optional(Schema.String),
+  permissions: Schema.optional(Schema.Array(Schema.String)),
+  description: Schema.optional(Schema.String),
+})
+export type ZyalRole = Schema.Schema.Type<typeof ZyalRole>
+
+export const ZyalRoles = Schema.Struct({
+  list: Schema.optional(Schema.Array(ZyalRole)),
+})
+export type ZyalRoles = Schema.Schema.Type<typeof ZyalRoles>
+
+export const ZyalChannel = Schema.Struct({
+  id: Schema.String,
+  kind: Schema.optional(Schema.String),
+  route: Schema.optional(Schema.String),
+  approval: Schema.optional(Schema.String),
+})
+export type ZyalChannel = Schema.Schema.Type<typeof ZyalChannel>
+
+export const ZyalChannels = Schema.Struct({
+  list: Schema.optional(Schema.Array(ZyalChannel)),
+})
+export type ZyalChannels = Schema.Schema.Type<typeof ZyalChannels>
+
+export const ZyalImportSource = Schema.Struct({
+  source: Schema.String,
+  optional: Schema.optional(Schema.Boolean),
+  pin: Schema.optional(Schema.String),
+})
+export type ZyalImportSource = Schema.Schema.Type<typeof ZyalImportSource>
+
+export const ZyalImports = Schema.Struct({
+  list: Schema.optional(Schema.Array(ZyalImportSource)),
+})
+export type ZyalImports = Schema.Schema.Type<typeof ZyalImports>
+
+export const ZyalReasoningPrivacy = Schema.Struct({
+  store_reasoning: Schema.optional(Schema.Boolean),
+  redact_chain_of_thought: Schema.optional(Schema.Boolean),
+  summaries_only: Schema.optional(Schema.Boolean),
+})
+export type ZyalReasoningPrivacy = Schema.Schema.Type<typeof ZyalReasoningPrivacy>
+
+export const ZyalUnsupportedFeaturePolicy = Schema.Struct({
+  required: Schema.optional(Schema.Array(Schema.String)),
+  optional: Schema.optional(Schema.Array(Schema.String)),
+  fail_closed: Schema.optional(Schema.Boolean),
+  on_missing: Schema.optional(Schema.Union([
+    Schema.Literal("reject"),
+    Schema.Literal("warn"),
+    Schema.Literal("degrade"),
+  ])),
+})
+export type ZyalUnsupportedFeaturePolicy = Schema.Schema.Type<typeof ZyalUnsupportedFeaturePolicy>
 
 // ─── Core Types ────────────────────────────────────────────────────────────
 
-export const OcalArm = Schema.Struct({
+export const ZyalArm = Schema.Struct({
   action: ArmAction,
   id: Schema.String,
 })
 
-export type OcalArm = Schema.Schema.Type<typeof OcalArm>
+export type ZyalArm = Schema.Schema.Type<typeof ZyalArm>
 
-export const OcalSpec = Schema.Struct({
+export const ZyalSpec = Schema.Struct({
   version: Schema.Literal("v1"),
   intent: DaemonAction,
   confirm: ArmAction,
   id: Schema.String,
-  job: OcalJob,
-  loop: Schema.optional(OcalLoop),
-  stop: OcalStop,
-  context: Schema.optional(OcalContext),
-  checkpoint: Schema.optional(OcalCheckpoint),
-  tasks: Schema.optional(OcalTasks),
-  incubator: Schema.optional(OcalIncubator),
-  agents: Schema.optional(OcalAgents),
-  mcp: Schema.optional(OcalMcp),
-  permissions: Schema.optional(OcalPermissionMode),
-  ui: Schema.optional(OcalUi),
-  on: Schema.optional(Schema.Array(OcalOnHandler)),
-  fan_out: Schema.optional(OcalFanOut),
-  guardrails: Schema.optional(OcalGuardrails),
-  assertions: Schema.optional(OcalAssertions),
-  retry: Schema.optional(OcalRetry),
-  hooks: Schema.optional(OcalHooks),
-  constraints: Schema.optional(Schema.Array(OcalConstraint)),
+  job: ZyalJob,
+  loop: Schema.optional(ZyalLoop),
+  stop: ZyalStop,
+  context: Schema.optional(ZyalContext),
+  checkpoint: Schema.optional(ZyalCheckpoint),
+  tasks: Schema.optional(ZyalTasks),
+  incubator: Schema.optional(ZyalIncubator),
+  agents: Schema.optional(ZyalAgents),
+  mcp: Schema.optional(ZyalMcp),
+  permissions: Schema.optional(ZyalPermissionMode),
+  ui: Schema.optional(ZyalUi),
+  on: Schema.optional(Schema.Array(ZyalOnHandler)),
+  fan_out: Schema.optional(ZyalFanOut),
+  guardrails: Schema.optional(ZyalGuardrails),
+  assertions: Schema.optional(ZyalAssertions),
+  retry: Schema.optional(ZyalRetry),
+  hooks: Schema.optional(ZyalHooks),
+  constraints: Schema.optional(Schema.Array(ZyalConstraint)),
   // v2 blocks
-  workflow: Schema.optional(OcalWorkflow),
-  memory: Schema.optional(OcalMemory),
-  evidence: Schema.optional(OcalEvidence),
-  approvals: Schema.optional(OcalApprovals),
+  workflow: Schema.optional(ZyalWorkflow),
+  memory: Schema.optional(ZyalMemory),
+  evidence: Schema.optional(ZyalEvidence),
+  approvals: Schema.optional(ZyalApprovals),
   // v2 wave 2 blocks
-  skills: Schema.optional(OcalSkills),
-  sandbox: Schema.optional(OcalSandbox),
-  security: Schema.optional(OcalSecurity),
-  observability: Schema.optional(OcalObservability),
+  skills: Schema.optional(ZyalSkills),
+  sandbox: Schema.optional(ZyalSandbox),
+  security: Schema.optional(ZyalSecurity),
+  observability: Schema.optional(ZyalObservability),
   // v2.1 power blocks
-  arming: Schema.optional(OcalArmingPolicy),
-  capabilities: Schema.optional(OcalCapabilities),
-  quality: Schema.optional(OcalQuality),
-  experiments: Schema.optional(OcalExperiments),
-  models: Schema.optional(OcalModels),
-  budgets: Schema.optional(OcalBudgets),
-  triggers: Schema.optional(OcalTriggers),
-  rollback: Schema.optional(OcalRollback),
-  done: Schema.optional(OcalDone),
-  repo_intelligence: Schema.optional(OcalRepoIntelligence),
+  arming: Schema.optional(ZyalArmingPolicy),
+  capabilities: Schema.optional(ZyalCapabilities),
+  quality: Schema.optional(ZyalQuality),
+  experiments: Schema.optional(ZyalExperiments),
+  models: Schema.optional(ZyalModels),
+  budgets: Schema.optional(ZyalBudgets),
+  triggers: Schema.optional(ZyalTriggers),
+  rollback: Schema.optional(ZyalRollback),
+  done: Schema.optional(ZyalDone),
+  repo_intelligence: Schema.optional(ZyalRepoIntelligence),
   // v2.2 fleet
-  fleet: Schema.optional(OcalFleet),
+  fleet: Schema.optional(ZyalFleet),
+  // preview-only control plane blocks
+  interop: Schema.optional(ZyalInterop),
+  runtime: Schema.optional(ZyalRuntime),
+  capability_negotiation: Schema.optional(ZyalCapabilityNegotiation),
+  memory_kernel: Schema.optional(ZyalMemoryKernel),
+  evidence_graph: Schema.optional(ZyalEvidenceGraph),
+  trust: Schema.optional(ZyalTrustPolicy),
+  requirements: Schema.optional(ZyalRequirements),
+  evaluation: Schema.optional(ZyalEvaluation),
+  release: Schema.optional(ZyalRelease),
+  roles: Schema.optional(ZyalRoles),
+  channels: Schema.optional(ZyalChannels),
+  imports: Schema.optional(ZyalImports),
+  reasoning_privacy: Schema.optional(ZyalReasoningPrivacy),
+  unsupported_feature_policy: Schema.optional(ZyalUnsupportedFeaturePolicy),
 })
 
-export type OcalSpec = Schema.Schema.Type<typeof OcalSpec>
+export type ZyalSpec = Schema.Schema.Type<typeof ZyalSpec>
 
-export const OcalScriptSchema = OcalSpec.pipe(withStatics((schema) => ({ zod: zod(schema) })))
-export type OcalScript = Schema.Schema.Type<typeof OcalScriptSchema>
+export const ZyalScriptSchema = ZyalSpec.pipe(withStatics((schema) => ({ zod: zod(schema) })))
+export type ZyalScript = Schema.Schema.Type<typeof ZyalScriptSchema>
 
-export const OcalParseMeta = Schema.Struct({
+export const ZyalParseMeta = Schema.Struct({
   openedId: Schema.String,
   armed: Schema.Boolean,
 })
-export type OcalParseMeta = Schema.Schema.Type<typeof OcalParseMeta>
+export type ZyalParseMeta = Schema.Schema.Type<typeof ZyalParseMeta>
 
-export const OcalPreview = Schema.Struct({
+export const ZyalPreview = Schema.Struct({
   id: Schema.String,
   armed: Schema.Boolean,
   objective: Schema.String,
@@ -1306,18 +1520,47 @@ export const OcalPreview = Schema.Struct({
   fleet_enabled: Schema.Boolean,
   fleet_max_workers: Schema.Number,
   fleet_summary: Schema.optional(Schema.String),
+  // preview-only control plane blocks
+  interop_enabled: Schema.Boolean,
+  interop_summary: Schema.optional(Schema.String),
+  runtime_enabled: Schema.Boolean,
+  runtime_summary: Schema.optional(Schema.String),
+  capability_negotiation_enabled: Schema.Boolean,
+  capability_negotiation_summary: Schema.optional(Schema.String),
+  memory_kernel_enabled: Schema.Boolean,
+  memory_kernel_summary: Schema.optional(Schema.String),
+  evidence_graph_enabled: Schema.Boolean,
+  evidence_graph_summary: Schema.optional(Schema.String),
+  trust_enabled: Schema.Boolean,
+  trust_summary: Schema.optional(Schema.String),
+  requirements_enabled: Schema.Boolean,
+  requirements_summary: Schema.optional(Schema.String),
+  evaluation_enabled: Schema.Boolean,
+  evaluation_summary: Schema.optional(Schema.String),
+  release_enabled: Schema.Boolean,
+  release_summary: Schema.optional(Schema.String),
+  roles_count: Schema.Number,
+  roles_summary: Schema.optional(Schema.String),
+  channels_count: Schema.Number,
+  channels_summary: Schema.optional(Schema.String),
+  imports_count: Schema.Number,
+  imports_summary: Schema.optional(Schema.String),
+  reasoning_privacy_enabled: Schema.Boolean,
+  reasoning_privacy_summary: Schema.optional(Schema.String),
+  unsupported_feature_policy_enabled: Schema.Boolean,
+  unsupported_feature_policy_summary: Schema.optional(Schema.String),
 })
 
-export type OcalPreview = Schema.Schema.Type<typeof OcalPreview>
+export type ZyalPreview = Schema.Schema.Type<typeof ZyalPreview>
 
-export type OcalParsed = {
-  readonly spec: OcalScript
-  readonly arm: OcalArm | undefined
+export type ZyalParsed = {
+  readonly spec: ZyalScript
+  readonly arm: ZyalArm | undefined
   readonly specHash: string
-  readonly preview: OcalPreview
+  readonly preview: ZyalPreview
 }
 
-export function assertOcalTopLevelKeys(input: Record<string, unknown>) {
+export function assertZyalTopLevelKeys(input: Record<string, unknown>) {
   const allowed = new Set([
     "version",
     "intent",
@@ -1362,17 +1605,32 @@ export function assertOcalTopLevelKeys(input: Record<string, unknown>) {
     "rollback",
     "done",
     "repo_intelligence",
-    // v2.2
-    "fleet",
+  // v2.2
+  "fleet",
+    // preview-only control plane blocks
+    "interop",
+    "runtime",
+    "capability_negotiation",
+    "memory_kernel",
+    "evidence_graph",
+    "trust",
+    "requirements",
+    "evaluation",
+    "release",
+    "roles",
+    "channels",
+    "imports",
+    "reasoning_privacy",
+    "unsupported_feature_policy",
   ])
   for (const key of Object.keys(input)) {
     if (!allowed.has(key)) {
-      throw new Error(`Unknown OCAL top-level key: ${key}`)
+      throw new Error(`Unknown ZYAL top-level key: ${key}`)
     }
   }
 }
 
-export function buildOcalPreview(input: { spec: OcalScript; arm?: OcalArm }): OcalPreview {
+export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): ZyalPreview {
   const stopChecks = input.spec.stop.all.map(describeCondition)
   const checkpointChecks = input.spec.checkpoint?.verify?.map(describeShellCheck) ?? []
   const workers = input.spec.agents?.workers ?? []
@@ -1597,19 +1855,121 @@ export function buildOcalPreview(input: { spec: OcalScript; arm?: OcalArm }): Oc
           input.spec.fleet.telemetry?.publish_to ? `telem:${input.spec.fleet.telemetry.publish_to}` : null,
         ].filter(Boolean).join(" ")
       : undefined,
+    // preview-only control plane blocks
+    interop_enabled: input.spec.interop !== undefined,
+    interop_summary: input.spec.interop
+      ? [
+          input.spec.interop.protocols?.length ? `protocols:${input.spec.interop.protocols.length}` : null,
+          input.spec.interop.adapters?.length ? `adapters:${input.spec.interop.adapters.length}` : null,
+          input.spec.interop.compile_to?.length ? `compile_to:${input.spec.interop.compile_to.length}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    runtime_enabled: input.spec.runtime !== undefined,
+    runtime_summary: input.spec.runtime
+      ? [
+          `mode:${input.spec.runtime.mode ?? "preview"}`,
+          input.spec.runtime.image ? `image:${input.spec.runtime.image}` : null,
+          input.spec.runtime.workspace ? `workspace:${input.spec.runtime.workspace}` : null,
+          input.spec.runtime.network ? `network:${input.spec.runtime.network}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    capability_negotiation_enabled: input.spec.capability_negotiation !== undefined,
+    capability_negotiation_summary: input.spec.capability_negotiation
+      ? [
+          input.spec.capability_negotiation.host ? `host:${input.spec.capability_negotiation.host}` : null,
+          input.spec.capability_negotiation.required?.length ? `required:${input.spec.capability_negotiation.required.length}` : null,
+          input.spec.capability_negotiation.optional?.length ? `optional:${input.spec.capability_negotiation.optional.length}` : null,
+          input.spec.capability_negotiation.fail_closed ? "fail_closed" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    memory_kernel_enabled: input.spec.memory_kernel !== undefined,
+    memory_kernel_summary: input.spec.memory_kernel
+      ? [
+          input.spec.memory_kernel.stores ? `stores:${Object.keys(input.spec.memory_kernel.stores).length}` : null,
+          input.spec.memory_kernel.redaction ? "redaction" : null,
+          input.spec.memory_kernel.provenance?.track_source ? "provenance" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    evidence_graph_enabled: input.spec.evidence_graph !== undefined,
+    evidence_graph_summary: input.spec.evidence_graph
+      ? [
+          input.spec.evidence_graph.nodes ? `nodes:${Object.keys(input.spec.evidence_graph.nodes).length}` : null,
+          input.spec.evidence_graph.edges?.length ? `edges:${input.spec.evidence_graph.edges.length}` : null,
+          input.spec.evidence_graph.merge_witness ? "merge_witness" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    trust_enabled: input.spec.trust !== undefined,
+    trust_summary: input.spec.trust
+      ? [
+          input.spec.trust.zones ? `zones:${Object.keys(input.spec.trust.zones).length}` : null,
+          input.spec.trust.on_taint ? `on_taint:${input.spec.trust.on_taint}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    requirements_enabled: input.spec.requirements !== undefined,
+    requirements_summary: input.spec.requirements
+      ? [
+          input.spec.requirements.must?.length ? `must:${input.spec.requirements.must.length}` : null,
+          input.spec.requirements.should?.length ? `should:${input.spec.requirements.should.length}` : null,
+          input.spec.requirements.avoid?.length ? `avoid:${input.spec.requirements.avoid.length}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    evaluation_enabled: input.spec.evaluation !== undefined,
+    evaluation_summary: input.spec.evaluation
+      ? [
+          input.spec.evaluation.metrics?.length ? `metrics:${input.spec.evaluation.metrics.length}` : null,
+          input.spec.evaluation.compare ? `compare:${input.spec.evaluation.compare}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    release_enabled: input.spec.release !== undefined,
+    release_summary: input.spec.release
+      ? [
+          input.spec.release.channel ? `channel:${input.spec.release.channel}` : null,
+          input.spec.release.version ? `version:${input.spec.release.version}` : null,
+          input.spec.release.gates?.length ? `gates:${input.spec.release.gates.length}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    roles_count: input.spec.roles?.list?.length ?? 0,
+    roles_summary: input.spec.roles?.list?.length
+      ? input.spec.roles.list.map((role) => role.id).join(", ")
+      : undefined,
+    channels_count: input.spec.channels?.list?.length ?? 0,
+    channels_summary: input.spec.channels?.list?.length
+      ? input.spec.channels.list.map((channel) => `${channel.id}${channel.kind ? `:${channel.kind}` : ""}`).join(", ")
+      : undefined,
+    imports_count: input.spec.imports?.list?.length ?? 0,
+    imports_summary: input.spec.imports?.list?.length
+      ? input.spec.imports.list.map((item) => item.source).join(", ")
+      : undefined,
+    reasoning_privacy_enabled: input.spec.reasoning_privacy !== undefined,
+    reasoning_privacy_summary: input.spec.reasoning_privacy
+      ? [
+          input.spec.reasoning_privacy.store_reasoning ? "store_reasoning" : null,
+          input.spec.reasoning_privacy.redact_chain_of_thought ? "redact_chain_of_thought" : null,
+          input.spec.reasoning_privacy.summaries_only ? "summaries_only" : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
+    unsupported_feature_policy_enabled: input.spec.unsupported_feature_policy !== undefined,
+    unsupported_feature_policy_summary: input.spec.unsupported_feature_policy
+      ? [
+          input.spec.unsupported_feature_policy.required?.length ? `required:${input.spec.unsupported_feature_policy.required.length}` : null,
+          input.spec.unsupported_feature_policy.optional?.length ? `optional:${input.spec.unsupported_feature_policy.optional.length}` : null,
+          input.spec.unsupported_feature_policy.fail_closed ? "fail_closed" : null,
+          input.spec.unsupported_feature_policy.on_missing ? `on_missing:${input.spec.unsupported_feature_policy.on_missing}` : null,
+        ].filter(Boolean).join(" ") || "configured"
+      : undefined,
   }
 }
 
-function describeCondition(condition: OcalStopCondition) {
+function describeCondition(condition: ZyalStopCondition) {
   if ("shell" in condition) return `shell:${condition.shell.command}`
   return `git_clean${condition.git_clean.allow_untracked ? ":allow_untracked" : ""}`
 }
 
-function describeShellCheck(check: OcalShellCheck) {
+function describeShellCheck(check: ZyalShellCheck) {
   return check.command
 }
 
-function describeRouteWhen(route: OcalIncubatorRouteWhen) {
+function describeRouteWhen(route: ZyalIncubatorRouteWhen) {
   const any = route.any?.length ?? 0
   const all = route.all?.length ?? 0
   return [`any:${any}`, `all:${all}`].join(" ")

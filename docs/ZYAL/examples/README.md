@@ -1,0 +1,27 @@
+# ZYAL Powerful Examples
+
+Nine flagship runbooks that show what ZYAL v2.1 makes possible. Each is a complete `<<<ZYAL v1:daemon>>>` block — paste any of them into a trusted OpenCode prompt to preview the runtime plan, then explicitly arm to execute.
+
+| File | Demonstrates | Power blocks |
+|---|---|---|
+| [`01-fix-until-green.zyal.yml`](01-fix-until-green.zyal.yml) | Bug-fix discipline with anti-vibe gates, capability leases, rollback, done | `quality`, `capabilities`, `rollback`, `done`, `models`, `budgets` |
+| [`02-hypothesis-tournament.zyal.yml`](02-hypothesis-tournament.zyal.yml) | Disjoint experiments in isolated worktrees, blind cross-provider judging, negative-memory learning | `experiments`, `models`, `memory`, `budgets`, `evidence` |
+| [`03-billion-loc-monorepo.zyal.yml`](03-billion-loc-monorepo.zyal.yml) | Repo intelligence + scope control + blast radius for massive codebases | `repo_intelligence`, `capabilities`, `experiments`, `quality`, `evidence` |
+| [`04-fleet-portfolio.zyal.yml`](04-fleet-portfolio.zyal.yml) | Multi-issue dispatcher with cron, GitHub triggers, Jnoccio live metrics, budgets, anti-recursion, leases | `triggers`, `fleet.jnoccio`, `budgets`, `models`, `done`, `observability` |
+| [`05-secure-mcp-lockdown.zyal.yml`](05-secure-mcp-lockdown.zyal.yml) | Capability leases, command floor, brokered secrets, sandbox isolation, MCP rug-pull defense | `capabilities`, `sandbox`, `security`, `mcp`, `arming` |
+| [`06-evidence-graph-merge.zyal.yml`](06-evidence-graph-merge.zyal.yml) | Proof lanes + merge witness + rollback verify + workflow-driven approvals | `workflow`, `evidence`, `approvals`, `rollback`, `done` |
+| [`07-self-improving-skills.zyal.yml`](07-self-improving-skills.zyal.yml) | Governed skill quarantine → human review → repo registry promotion | `skills`, `memory`, `approvals`, `quality`, `observability` |
+| [`08-full-power-runbook.zyal.yml`](08-full-power-runbook.zyal.yml) | Every v2.1 power block in one runbook | All |
+| [`09-control-plane-preview.zyal.yml`](09-control-plane-preview.zyal.yml) | Preview-only control-plane contract with interop, runtime, trust, and release metadata | `interop`, `runtime`, `capability_negotiation`, `memory_kernel`, `evidence_graph`, `trust`, `requirements`, `evaluation`, `release`, `roles`, `channels`, `imports`, `reasoning_privacy`, `unsupported_feature_policy` |
+
+## Running an example
+
+1. Copy the YAML block (including sentinels) into the OpenCode prompt.
+2. The TUI flips to the **opencode-gold** theme, signalling daemon-arm mode.
+3. The host renders the **Run Card**: capabilities granted, budgets, risk score, unsupported features.
+4. Type `ZYAL_ARM RUN_FOREVER id=<run-id>` only after reviewing the Run Card.
+5. Watch the run stream events; pause/abort/inspect via `opencode daemon ...` CLI.
+
+## Safety reminder
+
+These examples grant real capabilities. Read the `capabilities`, `permissions`, `rollback`, and `done` blocks before arming. The current runtime parses and previews `arming` policies, but the shipped start path still accepts the simple `ZYAL_ARM RUN_FOREVER id=<run-id>` sentinel; host nonce/hash arming is a preview contract until the start API is extended.

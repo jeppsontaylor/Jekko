@@ -3,7 +3,7 @@ import { Effect, Layer, Schema } from "effect"
 import fs from "fs/promises"
 import path from "path"
 import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { OcalScriptSchema } from "../../src/agent-script/schema"
+import { ZyalScriptSchema } from "../../src/agent-script/schema"
 import { DaemonStore } from "../../src/session/daemon-store"
 import { ProjectTable } from "../../src/project/project.sql"
 import { ProjectID } from "../../src/project/schema"
@@ -14,7 +14,7 @@ import { testEffect } from "../lib/effect"
 import { provideTmpdirInstance } from "../fixture/fixture"
 
 function spec() {
-  return Schema.decodeUnknownSync(OcalScriptSchema)({
+  return Schema.decodeUnknownSync(ZyalScriptSchema)({
     version: "v1",
     intent: "daemon",
     confirm: "RUN_FOREVER",

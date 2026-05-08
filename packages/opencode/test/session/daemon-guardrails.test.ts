@@ -5,10 +5,10 @@ import {
   getIterationShellGuardrails,
   getOutputShellGuardrails,
 } from "@/session/daemon-guardrails"
-import type { OcalGuardrails } from "@/agent-script/schema"
+import type { ZyalGuardrails } from "@/agent-script/schema"
 
 describe("daemon guardrails", () => {
-  const guardrails: OcalGuardrails = {
+  const guardrails: ZyalGuardrails = {
     input: [
       {
         name: "no-force-push",

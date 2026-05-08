@@ -4,10 +4,10 @@ import {
   incrementSignalCounter,
   type SignalCounters,
 } from "@/session/daemon-on-handler"
-import type { OcalOnHandler } from "@/agent-script/schema"
+import type { ZyalOnHandler } from "@/agent-script/schema"
 
 describe("daemon on-handler", () => {
-  const handler = (overrides: Partial<OcalOnHandler> = {}): OcalOnHandler => ({
+  const handler = (overrides: Partial<ZyalOnHandler> = {}): ZyalOnHandler => ({
     signal: "no_progress",
     do: [{ pause: true as const }],
     ...overrides,

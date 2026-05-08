@@ -10,9 +10,9 @@ import {
   hasRequiredEvidence,
   getAvailableDecisions,
 } from "../../src/session/daemon-approvals"
-import type { OcalApprovals, OcalApprovalGate } from "../../src/agent-script/schema"
+import type { ZyalApprovals, ZyalApprovalGate } from "../../src/agent-script/schema"
 
-const testGate: OcalApprovalGate = {
+const testGate: ZyalApprovalGate = {
   required_role: "tech_lead",
   timeout: "24h",
   on_timeout: "pause",
@@ -24,7 +24,7 @@ const testGate: OcalApprovalGate = {
   },
 }
 
-const testApprovals: OcalApprovals = {
+const testApprovals: ZyalApprovals = {
   gates: {
     plan_review: testGate,
     merge_review: {

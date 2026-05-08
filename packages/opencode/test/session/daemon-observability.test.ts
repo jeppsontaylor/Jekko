@@ -13,9 +13,9 @@ import {
   getCounterTotal,
   generateReport,
 } from "../../src/session/daemon-observability"
-import type { OcalObservability } from "../../src/agent-script/schema"
+import type { ZyalObservability } from "../../src/agent-script/schema"
 
-const testConfig: OcalObservability = {
+const testConfig: ZyalObservability = {
   spans: {
     emit: "all",
     include_tool_calls: true,
@@ -142,7 +142,7 @@ describe("daemon observability", () => {
   })
 
   test("filterSpans returns only errors for errors_only", () => {
-    const config: OcalObservability = { spans: { emit: "errors_only" } }
+    const config: ZyalObservability = { spans: { emit: "errors_only" } }
     let state = initializeObservability(config)
     const { state: s1, spanId: id1 } = startSpan(state, "ok")
     state = endSpan(s1, id1, "ok")
@@ -152,7 +152,7 @@ describe("daemon observability", () => {
   })
 
   test("filterSpans returns empty for emit=none", () => {
-    const config: OcalObservability = { spans: { emit: "none" } }
+    const config: ZyalObservability = { spans: { emit: "none" } }
     let state = initializeObservability(config)
     const { state: s1 } = startSpan(state, "test")
     state = s1

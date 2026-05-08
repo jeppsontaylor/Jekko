@@ -1,4 +1,4 @@
-import { setOcalFlashSource, updateOcalMetrics } from "./ocal-flash"
+import { setZyalFlashSource, updateZyalMetrics, useZyalMetrics } from "./zyal-flash"
 
 /**
  * Jnoccio Fusion live-metrics WebSocket subscriber.
@@ -6,7 +6,7 @@ import { setOcalFlashSource, updateOcalMetrics } from "./ocal-flash"
  * When a daemon run declares `fleet.jnoccio.enabled` plus a `base_url`, the
  * TUI opens a single WebSocket to `<base_url>/v1/jnoccio/metrics/ws` and
  * funnels DashboardSnapshot / RequestEvent / Heartbeat messages directly
- * into the OCAL fleet metrics signal so the right-pane panel reflects
+ * into the ZYAL fleet metrics signal so the right-pane panel reflects
  * cross-instance totals without round-tripping through the daemon endpoint.
  *
  * The wire format is the canonical Jnoccio one (see jnoccio-fusion/src/fusion.rs):
@@ -45,7 +45,7 @@ type ActiveConnection = {
 
 let active: ActiveConnection | null = null
 
-function buildWsUrl(baseUrl: string, path: string): string | null {
+export function buildJnoccioWsUrl(baseUrl: string, path: string): string | null {
   try {
     const trimmed = baseUrl.trim().replace(/\/+$/, "")
     if (!trimmed) return null
@@ -86,13 +86,13 @@ function armHeartbeatWatchdog(conn: ActiveConnection) {
   }, HEARTBEAT_TIMEOUT_MS)
 }
 
-function applySnapshot(snapshot: any) {
+export function applyJnoccioSnapshot(snapshot: any) {
   if (!snapshot || typeof snapshot !== "object") return
   const totals = snapshot.totals ?? {}
   const promptTokens = Number(totals.prompt_tokens ?? 0)
   const completionTokens = Number(totals.completion_tokens ?? 0)
   const totalTokens = Number(totals.total_tokens ?? 0) || promptTokens + completionTokens
-  updateOcalMetrics({
+  updateZyalMetrics({
     jnoccioConnected: true,
     jnoccioInstances: Number(snapshot.instance_count ?? 0),
     jnoccioMaxInstances: Number(snapshot.max_instances ?? 0),
@@ -109,7 +109,7 @@ function applySnapshot(snapshot: any) {
   })
 }
 
-function applyRequestEvent(event: any) {
+export function applyJnoccioRequestEvent(event: any) {
   // Per-event tokens are already rolled into the next snapshot, so we only
   // bump the running counters by the delta to keep the UI feeling live
   // between snapshot polls (5s). Snapshots overwrite when they arrive.
@@ -117,28 +117,33 @@ function applyRequestEvent(event: any) {
   const dPrompt = Number(event.prompt_tokens ?? 0)
   const dCompletion = Number(event.completion_tokens ?? 0)
   const dTotal = Number(event.total_tokens ?? 0) || dPrompt + dCompletion
-  if (!dPrompt && !dCompletion && !dTotal) return
-  // We can't read the existing value cheaply from the signal here without an
-  // accessor, so just pass deltas through update — the worker on the other
-  // side merges by replacement, so we instead push known-monotone running
-  // totals via snapshot. For events between snapshots we increment the
-  // win/call counters which are monotonic.
-  updateOcalMetrics({
-    jnoccioCalls: undefined, // reserved — counters handled in snapshot
+  const status = typeof event.status === "string" ? event.status : ""
+  const current = useZyalMetrics()()
+  const callsDelta = status === "success" || status === "failure" ? 1 : 0
+  const winsDelta = status === "winner" || event.winner_model_id ? 1 : 0
+  const failuresDelta = status === "failure" ? 1 : 0
+  const latencyMs = event.latency_ms == null ? null : Number(event.latency_ms)
+  updateZyalMetrics({
     jnoccioConnected: true,
+    jnoccioPromptTokens: (current.jnoccioPromptTokens ?? 0) + dPrompt,
+    jnoccioCompletionTokens: (current.jnoccioCompletionTokens ?? 0) + dCompletion,
+    jnoccioTotalTokens: (current.jnoccioTotalTokens ?? 0) + dTotal,
+    jnoccioCalls: (current.jnoccioCalls ?? 0) + callsDelta,
+    jnoccioWins: (current.jnoccioWins ?? 0) + winsDelta,
+    jnoccioFailures: (current.jnoccioFailures ?? 0) + failuresDelta,
+    jnoccioAvgLatencyMs: Number.isFinite(latencyMs) ? latencyMs : undefined,
   })
-  void dTotal
 }
 
 function applyHeartbeat(timestamp: number) {
-  updateOcalMetrics({
+  updateZyalMetrics({
     jnoccioConnected: true,
     jnoccioLastHeartbeat: Number.isFinite(timestamp) ? timestamp * 1000 : Date.now(),
   })
 }
 
 function clearJnoccioMetrics() {
-  updateOcalMetrics({
+  updateZyalMetrics({
     jnoccioConnected: false,
     jnoccioInstances: null,
     jnoccioMaxInstances: null,
@@ -158,10 +163,10 @@ function clearJnoccioMetrics() {
 
 function open(conn: ActiveConnection) {
   if (conn.closed) return
-  const url = buildWsUrl(conn.baseUrl, conn.metricsWsPath)
+  const url = buildJnoccioWsUrl(conn.baseUrl, conn.metricsWsPath)
   if (!url) {
     // Bad config — give up and drop the source flag.
-    setOcalFlashSource(SOURCE_ID, false)
+    setZyalFlashSource(SOURCE_ID, false)
     return
   }
 
@@ -182,7 +187,7 @@ function open(conn: ActiveConnection) {
       return
     }
     conn.reconnectMs = RECONNECT_INITIAL_MS
-    setOcalFlashSource(SOURCE_ID, true)
+    setZyalFlashSource(SOURCE_ID, true)
     armHeartbeatWatchdog(conn)
   })
 
@@ -199,10 +204,10 @@ function open(conn: ActiveConnection) {
     armHeartbeatWatchdog(conn)
     switch (parsed.type) {
       case "snapshot":
-        applySnapshot(parsed.snapshot)
+        applyJnoccioSnapshot(parsed.snapshot)
         break
       case "request_event":
-        applyRequestEvent(parsed.event)
+        applyJnoccioRequestEvent(parsed.event)
         break
       case "heartbeat":
         applyHeartbeat(Number(parsed.timestamp ?? 0))
@@ -232,7 +237,7 @@ function scheduleReconnect(conn: ActiveConnection) {
   if (conn.closed) return
   const delay = conn.reconnectMs
   conn.reconnectMs = Math.min(RECONNECT_MAX_MS, conn.reconnectMs * 2)
-  setOcalFlashSource(SOURCE_ID, false)
+  setZyalFlashSource(SOURCE_ID, false)
   // Don't wipe metrics on transient drop — keep last-known until reconnect.
   cancelReconnect(conn)
   conn.reconnectTimer = setTimeout(() => {
@@ -251,7 +256,7 @@ function teardown(conn: ActiveConnection) {
     } catch {}
     conn.socket = null
   }
-  setOcalFlashSource(SOURCE_ID, false)
+  setZyalFlashSource(SOURCE_ID, false)
   clearJnoccioMetrics()
 }
 
@@ -269,6 +274,12 @@ export function connectJnoccio(input: ConnectInput): void {
   const key = makeKey(input)
   if (active && active.key === key) return
   if (active) teardown(active)
+  if (!buildJnoccioWsUrl(input.baseUrl, input.metricsWsPath ?? "/v1/jnoccio/metrics/ws")) {
+    active = null
+    setZyalFlashSource(SOURCE_ID, false)
+    clearJnoccioMetrics()
+    return
+  }
   const conn: ActiveConnection = {
     key,
     baseUrl: input.baseUrl,

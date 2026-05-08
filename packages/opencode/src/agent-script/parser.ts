@@ -2,32 +2,90 @@ import { Effect, Schema } from "effect"
 import * as yaml from "yaml"
 import { createHash } from "crypto"
 import {
-  assertOcalTopLevelKeys,
-  buildOcalPreview,
-  OcalArm,
-  OcalScriptSchema,
-  type OcalParsed,
-  type OcalScript,
+  assertZyalTopLevelKeys,
+  buildZyalPreview,
+  ZyalArm,
+  ZyalScriptSchema,
+  type ZyalParsed,
+  type ZyalScript,
 } from "./schema"
 
-const OPEN_RE = /^<<<OCAL v(?<version>1):daemon id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*\n/
-const ARM_RE = /^OCAL_ARM RUN_FOREVER id=(?<id>[A-Za-z0-9._-]+)[ \t]*$/m
-const CLOSE_RE = /\n<<<END_OCAL id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*/m
+const OPEN_RE = /^<<<ZYAL v(?<version>1):daemon id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*\n/
+const CLOSE_RE = /\n<<<END_ZYAL id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*/m
+const ZYAL_OPEN_SENTINEL_RE = /^<<<ZYAL v1:daemon id=[A-Za-z0-9._-]+>>>[ \t]*$/
+const SUPPORTED_FEATURE_KEYS = new Set([
+  "version",
+  "intent",
+  "confirm",
+  "id",
+  "job",
+  "loop",
+  "stop",
+  "context",
+  "checkpoint",
+  "tasks",
+  "incubator",
+  "agents",
+  "mcp",
+  "permissions",
+  "ui",
+  "on",
+  "fan_out",
+  "guardrails",
+  "assertions",
+  "retry",
+  "hooks",
+  "constraints",
+  "workflow",
+  "memory",
+  "evidence",
+  "approvals",
+  "skills",
+  "sandbox",
+  "security",
+  "observability",
+  "arming",
+  "capabilities",
+  "quality",
+  "experiments",
+  "models",
+  "budgets",
+  "triggers",
+  "rollback",
+  "done",
+  "repo_intelligence",
+  "fleet",
+  "interop",
+  "runtime",
+  "capability_negotiation",
+  "memory_kernel",
+  "evidence_graph",
+  "trust",
+  "requirements",
+  "evaluation",
+  "release",
+  "roles",
+  "channels",
+  "imports",
+  "reasoning_privacy",
+  "unsupported_feature_policy",
+])
 
-export class OcalParseError extends Error {
-  readonly _tag = "OcalParseError"
+export class ZyalParseError extends Error {
+  readonly _tag = "ZyalParseError"
   constructor(message: string) {
     super(message)
-    this.name = "OcalParseError"
+    this.name = "ZyalParseError"
   }
 }
 
-export function extractOcalBlock(text: string): string | null {
-  const trimmed = text.trimStart()
-  if (!trimmed.startsWith("<<<OCAL v1:daemon id=")) return null
+export function extractZyalBlock(text: string): string | null {
+  const trimmed = stripCommentPreamble(text)
+  if (!trimmed?.startsWith("<<<ZYAL v1:daemon id=")) return null
   if (trimmed.includes("```")) return null
   const open = trimmed.match(OPEN_RE)
   if (!open) return null
+  if ((trimmed.match(/<<<ZYAL v1:daemon id=/g) ?? []).length !== 1) return null
   const close = trimmed.match(CLOSE_RE)
   if (!close) return null
   if (open.groups?.id !== close.groups?.id) return null
@@ -35,64 +93,77 @@ export function extractOcalBlock(text: string): string | null {
   const afterClose = trimmed.slice(closeIndex + close[0].length)
   const afterCloseTrimmed = afterClose.trim()
   if (afterCloseTrimmed.length > 0) {
-    const arm = afterCloseTrimmed.match(/^OCAL_ARM RUN_FOREVER id=(?<id>[A-Za-z0-9._-]+)$/)
+    const arm = afterCloseTrimmed.match(/^ZYAL_ARM RUN_FOREVER id=(?<id>[A-Za-z0-9._-]+)$/)
     if (!arm?.groups?.id || arm.groups.id !== open.groups?.id) return null
   }
   return trimmed
 }
 
-export function parseOcal(
+function stripCommentPreamble(text: string): string | null {
+  const normalized = text.replace(/^\uFEFF/, "")
+  const lines = normalized.split(/\r?\n/)
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!
+    const trimmed = line.trim()
+    if (trimmed === "" || trimmed.startsWith("#")) continue
+    if (!ZYAL_OPEN_SENTINEL_RE.test(line)) return null
+    return lines.slice(i).join("\n")
+  }
+  return null
+}
+
+export function parseZyal(
   text: string,
   options: { source?: string; requireArm?: boolean } = {},
-): Effect.Effect<OcalParsed, OcalParseError, never> {
+): Effect.Effect<ZyalParsed, ZyalParseError, never> {
   return Effect.try({
-    try: () => parseOcalSync(text, options),
-    catch: (error) => (error instanceof OcalParseError ? error : new OcalParseError(String(error))),
+    try: () => parseZyalSync(text, options),
+    catch: (error) => (error instanceof ZyalParseError ? error : new ZyalParseError(String(error))),
   })
 }
 
-function parseOcalSync(text: string, options: { source?: string; requireArm?: boolean }): OcalParsed {
-  if (text.includes("```")) throw new OcalParseError("OCAL blocks cannot be wrapped in code fences")
-  const block = extractOcalBlock(text)
-  if (!block) throw new OcalParseError("No valid OCAL block found")
+function parseZyalSync(text: string, options: { source?: string; requireArm?: boolean }): ZyalParsed {
+  if (text.includes("```")) throw new ZyalParseError("ZYAL blocks cannot be wrapped in code fences")
+  const block = extractZyalBlock(text)
+  if (!block) throw new ZyalParseError("No valid ZYAL block found")
 
   const open = block.match(OPEN_RE)
-  if (!open?.groups?.id) throw new OcalParseError("Missing OCAL open sentinel")
+  if (!open?.groups?.id) throw new ZyalParseError("Missing ZYAL open sentinel")
   const close = block.match(CLOSE_RE)
-  if (!close?.groups?.id) throw new OcalParseError("Missing OCAL close sentinel")
+  if (!close?.groups?.id) throw new ZyalParseError("Missing ZYAL close sentinel")
   if (open.groups.id !== close.groups.id) {
-    throw new OcalParseError(`OCAL close id ${close.groups.id} does not match open id ${open.groups.id}`)
+    throw new ZyalParseError(`ZYAL close id ${close.groups.id} does not match open id ${open.groups.id}`)
   }
 
   const bodyStart = open[0].length
   const bodyEnd = close.index ?? block.length - close[0].length
   const body = block.slice(bodyStart, bodyEnd).trim()
-  if (!body) throw new OcalParseError("OCAL body is empty")
+  if (!body) throw new ZyalParseError("ZYAL body is empty")
 
   const parsed = yaml.parse(body) as unknown
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-    throw new OcalParseError("OCAL body must be a YAML mapping")
+    throw new ZyalParseError("ZYAL body must be a YAML mapping")
   }
-  assertOcalTopLevelKeys(parsed as Record<string, unknown>)
-  assertOcalNestedKeys(parsed as Record<string, unknown>)
+  assertZyalTopLevelKeys(parsed as Record<string, unknown>)
+  assertZyalNestedKeys(parsed as Record<string, unknown>)
   const withMeta = { ...parsed, id: open.groups.id }
   const arm = parseArm(block)
-  if (options.requireArm !== false && !arm) throw new OcalParseError("Missing trailing OCAL_ARM RUN_FOREVER sentinel")
-  let spec: OcalScript
+  if (options.requireArm !== false && !arm) throw new ZyalParseError("Missing trailing ZYAL_ARM RUN_FOREVER sentinel")
+  let spec: ZyalScript
   try {
-    spec = Schema.decodeUnknownSync(OcalScriptSchema)(withMeta)
+    spec = Schema.decodeUnknownSync(ZyalScriptSchema)(withMeta)
   } catch (error) {
-    if (error instanceof OcalParseError) throw error
+    if (error instanceof ZyalParseError) throw error
     const message = error instanceof Error ? error.message : String(error)
-    throw new OcalParseError(`OCAL schema validation failed: ${message}`)
+    throw new ZyalParseError(`ZYAL schema validation failed: ${message}`)
   }
-  validateOcalSemantics(spec)
-  const preview = buildOcalPreview({ spec, arm: arm ?? undefined })
+  validateZyalSemantics(spec)
+  const preview = buildZyalPreview({ spec, arm: arm ?? undefined })
   const specHash = hashSpec(spec)
   return { spec, arm: arm ?? undefined, specHash, preview }
 }
 
-function assertOcalNestedKeys(input: Record<string, unknown>) {
+function assertZyalNestedKeys(input: Record<string, unknown>) {
   if (input.job !== undefined) {
     const job = expectRecord(input.job, "job")
     assertKeys("job", job, ["name", "objective", "risk"])
@@ -115,7 +186,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     for (const mode of ["all", "any"] as const) {
       const value = stop[mode]
       if (value === undefined) continue
-      if (!Array.isArray(value)) throw new OcalParseError(`stop.${mode} must be a list`)
+      if (!Array.isArray(value)) throw new ZyalParseError(`stop.${mode} must be a list`)
       value.forEach((condition, index) => {
         const record = expectRecord(condition, `stop.${mode}[${index}]`)
         assertStopConditionKeys(record, `stop.${mode}[${index}]`)
@@ -132,7 +203,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     const checkpoint = expectRecord(input.checkpoint, "checkpoint")
     assertKeys("checkpoint", checkpoint, ["when", "noop_if_clean", "verify", "git"])
     if (checkpoint.verify !== undefined) {
-      if (!Array.isArray(checkpoint.verify)) throw new OcalParseError("checkpoint.verify must be a list")
+      if (!Array.isArray(checkpoint.verify)) throw new ZyalParseError("checkpoint.verify must be a list")
       checkpoint.verify.forEach((check, index) => {
         const record = expectRecord(check, `checkpoint.verify[${index}]`)
         assertShellCheckKeys(record, `checkpoint.verify[${index}]`)
@@ -157,7 +228,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
       assertKeys("agents.supervisor", supervisor, ["agent"])
     }
     if (agents.workers !== undefined) {
-      if (!Array.isArray(agents.workers)) throw new OcalParseError("agents.workers must be a list")
+      if (!Array.isArray(agents.workers)) throw new ZyalParseError("agents.workers must be a list")
       agents.workers.forEach((worker, index) => {
         const record = expectRecord(worker, `agents.workers[${index}]`)
         assertKeys(`agents.workers[${index}]`, record, ["id", "count", "agent", "isolation"])
@@ -189,14 +260,14 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
 
   // ─── v1.1 blocks ─────────────────────────────────────────────────────────
   if (input.on !== undefined) {
-    if (!Array.isArray(input.on)) throw new OcalParseError("on must be a list")
+    if (!Array.isArray(input.on)) throw new ZyalParseError("on must be a list")
     input.on.forEach((handler, index) => {
       const record = expectRecord(handler, `on[${index}]`)
       assertKeys(`on[${index}]`, record, ["signal", "count_gte", "message_contains", "if", "do"])
       if (record.if !== undefined) {
         assertShellCheckKeys(expectRecord(record.if, `on[${index}].if`), `on[${index}].if`)
       }
-      if (!Array.isArray(record.do)) throw new OcalParseError(`on[${index}].do must be a list`)
+      if (!Array.isArray(record.do)) throw new ZyalParseError(`on[${index}].do must be a list`)
       record.do.forEach((action, ai) => {
         const act = expectRecord(action, `on[${index}].do[${ai}]`)
         assertKeys(`on[${index}].do[${ai}]`, act, [
@@ -230,7 +301,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     const gr = expectRecord(input.guardrails, "guardrails")
     assertKeys("guardrails", gr, ["input", "output", "iteration"])
     if (gr.input !== undefined) {
-      if (!Array.isArray(gr.input)) throw new OcalParseError("guardrails.input must be a list")
+      if (!Array.isArray(gr.input)) throw new ZyalParseError("guardrails.input must be a list")
       gr.input.forEach((rail, i) => {
         assertKeys(`guardrails.input[${i}]`, expectRecord(rail, `guardrails.input[${i}]`), [
           "name", "deny_patterns", "scope", "action",
@@ -238,7 +309,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
       })
     }
     if (gr.output !== undefined) {
-      if (!Array.isArray(gr.output)) throw new OcalParseError("guardrails.output must be a list")
+      if (!Array.isArray(gr.output)) throw new ZyalParseError("guardrails.output must be a list")
       gr.output.forEach((rail, i) => {
         const rec = expectRecord(rail, `guardrails.output[${i}]`)
         assertKeys(`guardrails.output[${i}]`, rec, [
@@ -253,7 +324,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
       })
     }
     if (gr.iteration !== undefined) {
-      if (!Array.isArray(gr.iteration)) throw new OcalParseError("guardrails.iteration must be a list")
+      if (!Array.isArray(gr.iteration)) throw new ZyalParseError("guardrails.iteration must be a list")
       gr.iteration.forEach((rail, i) => {
         const rec = expectRecord(rail, `guardrails.iteration[${i}]`)
         assertKeys(`guardrails.iteration[${i}]`, rec, [
@@ -298,7 +369,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     ])
     for (const [key, value] of Object.entries(hooks)) {
       if (value === undefined) continue
-      if (!Array.isArray(value)) throw new OcalParseError(`hooks.${key} must be a list`)
+      if (!Array.isArray(value)) throw new ZyalParseError(`hooks.${key} must be a list`)
       value.forEach((step, i) => {
         assertKeys(`hooks.${key}[${i}]`, expectRecord(step, `hooks.${key}[${i}]`), [
           "run", "assert", "on_fail", "timeout",
@@ -313,7 +384,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
   }
 
   if (input.constraints !== undefined) {
-    if (!Array.isArray(input.constraints)) throw new OcalParseError("constraints must be a list")
+    if (!Array.isArray(input.constraints)) throw new ZyalParseError("constraints must be a list")
     input.constraints.forEach((constraint, i) => {
       const rec = expectRecord(constraint, `constraints[${i}]`)
       assertKeys(`constraints[${i}]`, rec, ["name", "check", "baseline", "invariant", "on_violation"])
@@ -333,6 +404,8 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
   assertSandboxNestedKeys(input)
   assertSecurityNestedKeys(input)
   assertObservabilityNestedKeys(input)
+  // v2.1 power blocks
+  assertPowerBlockNestedKeys(input)
   // v2.2 fleet
   assertFleetNestedKeys(input)
 
@@ -351,7 +424,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     "passes",
     "promotion",
   ])
-  if ("allow_unbounded" in root) throw new OcalParseError("incubator.allow_unbounded is not supported")
+  if ("allow_unbounded" in root) throw new ZyalParseError("incubator.allow_unbounded is not supported")
 
   if (root.route_when !== undefined) {
     const route = expectRecord(root.route_when, "incubator.route_when")
@@ -359,7 +432,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     for (const mode of ["any", "all"] as const) {
       const value = route[mode]
       if (value === undefined) continue
-      if (!Array.isArray(value)) throw new OcalParseError(`incubator.route_when.${mode} must be a list`)
+      if (!Array.isArray(value)) throw new ZyalParseError(`incubator.route_when.${mode} must be a list`)
       value.forEach((condition, index) => {
         const record = expectRecord(condition, `incubator.route_when.${mode}[${index}]`)
         assertKeys(`incubator.route_when.${mode}[${index}]`, record, [
@@ -379,7 +452,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     for (const mode of ["any", "all"] as const) {
       const value = route[mode]
       if (value === undefined) continue
-      if (!Array.isArray(value)) throw new OcalParseError(`incubator.exclude_when.${mode} must be a list`)
+      if (!Array.isArray(value)) throw new ZyalParseError(`incubator.exclude_when.${mode} must be a list`)
       value.forEach((condition, index) => {
         const record = expectRecord(condition, `incubator.exclude_when.${mode}[${index}]`)
         assertKeys(`incubator.exclude_when.${mode}[${index}]`, record, [
@@ -429,7 +502,7 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     ])
   }
 
-  if (!Array.isArray(root.passes)) throw new OcalParseError("incubator.passes must be a list")
+  if (!Array.isArray(root.passes)) throw new ZyalParseError("incubator.passes must be a list")
   root.passes.forEach((pass, index) => {
     assertKeys(`incubator.passes[${index}]`, expectRecord(pass, `incubator.passes[${index}]`), [
       "id",
@@ -473,7 +546,7 @@ function assertWorkflowNestedKeys(input: Record<string, unknown>) {
       }
       if (record.transitions !== undefined) {
         if (!Array.isArray(record.transitions)) {
-          throw new OcalParseError(`workflow.states.${stateName}.transitions must be a list`)
+          throw new ZyalParseError(`workflow.states.${stateName}.transitions must be a list`)
         }
         record.transitions.forEach((t, i) => {
           const tr = expectRecord(t, `workflow.states.${stateName}.transitions[${i}]`)
@@ -523,7 +596,7 @@ function assertEvidenceNestedKeys(input: Record<string, unknown>) {
   assertKeys("evidence", evidence, ["require_before_promote", "bundle_format", "sign", "archive"])
   if (evidence.require_before_promote !== undefined) {
     if (!Array.isArray(evidence.require_before_promote)) {
-      throw new OcalParseError("evidence.require_before_promote must be a list")
+      throw new ZyalParseError("evidence.require_before_promote must be a list")
     }
     evidence.require_before_promote.forEach((req, i) => {
       const record = expectRecord(req, `evidence.require_before_promote[${i}]`)
@@ -581,7 +654,7 @@ function assertSandboxNestedKeys(input: Record<string, unknown>) {
   const sandbox = expectRecord(input.sandbox, "sandbox")
   assertKeys("sandbox", sandbox, ["paths", "network", "resources", "env_inherit", "env_deny"])
   if (sandbox.paths !== undefined) {
-    if (!Array.isArray(sandbox.paths)) throw new OcalParseError("sandbox.paths must be a list")
+    if (!Array.isArray(sandbox.paths)) throw new ZyalParseError("sandbox.paths must be a list")
     sandbox.paths.forEach((rule, i) => {
       const record = expectRecord(rule, `sandbox.paths[${i}]`)
       assertKeys(`sandbox.paths[${i}]`, record, ["path", "access"])
@@ -629,7 +702,7 @@ function assertObservabilityNestedKeys(input: Record<string, unknown>) {
     assertKeys("observability.spans", spans, ["emit", "include_tool_calls", "include_model_calls"])
   }
   if (obs.metrics !== undefined) {
-    if (!Array.isArray(obs.metrics)) throw new OcalParseError("observability.metrics must be a list")
+    if (!Array.isArray(obs.metrics)) throw new ZyalParseError("observability.metrics must be a list")
     obs.metrics.forEach((metric, i) => {
       const record = expectRecord(metric, `observability.metrics[${i}]`)
       assertKeys(`observability.metrics[${i}]`, record, ["name", "type", "source"])
@@ -645,7 +718,430 @@ function assertObservabilityNestedKeys(input: Record<string, unknown>) {
   }
 }
 
-function validateOcalSemantics(spec: OcalScript) {
+// ─── v2.1 power blocks ────────────────────────────────────────────────────
+function assertPowerBlockNestedKeys(input: Record<string, unknown>) {
+  if (input.arming !== undefined) {
+    assertKeys("arming", expectRecord(input.arming, "arming"), [
+      "preview_hash_required",
+      "host_nonce_required",
+      "reject_inside_code_fence",
+      "reject_from",
+      "accepted_origins",
+      "preview_expires_after",
+      "arm_token_single_use",
+      "bound_to",
+    ])
+  }
+
+  if (input.capabilities !== undefined) {
+    const capabilities = expectRecord(input.capabilities, "capabilities")
+    assertKeys("capabilities", capabilities, ["default", "rules", "command_floor"])
+    if (capabilities.rules !== undefined) {
+      if (!Array.isArray(capabilities.rules)) throw new ZyalParseError("capabilities.rules must be a list")
+      capabilities.rules.forEach((rule, i) => {
+        assertKeys(`capabilities.rules[${i}]`, expectRecord(rule, `capabilities.rules[${i}]`), [
+          "id",
+          "tool",
+          "paths",
+          "command_regex",
+          "decision",
+          "require_gate",
+          "expires",
+          "reason",
+        ])
+      })
+    }
+    if (capabilities.command_floor !== undefined) {
+      assertKeys(
+        "capabilities.command_floor",
+        expectRecord(capabilities.command_floor, "capabilities.command_floor"),
+        ["always_block"],
+      )
+    }
+  }
+
+  if (input.quality !== undefined) {
+    const quality = expectRecord(input.quality, "quality")
+    assertKeys("quality", quality, ["anti_vibe", "diff_budget", "checks"])
+    if (quality.anti_vibe !== undefined) {
+      assertKeys("quality.anti_vibe", expectRecord(quality.anti_vibe, "quality.anti_vibe"), [
+        "enabled",
+        "fail_closed",
+        "block_test_deletion",
+        "block_assertion_weakening",
+        "block_silent_catch",
+        "block_fake_data_fallback",
+        "block_ts_ignore",
+        "require_root_cause_for_bugfix",
+        "require_failing_test_first_for_bugfix",
+      ])
+    }
+    if (quality.diff_budget !== undefined) {
+      assertKeys("quality.diff_budget", expectRecord(quality.diff_budget, "quality.diff_budget"), [
+        "max_files_changed",
+        "max_added_lines",
+        "max_deleted_lines",
+        "on_violation",
+      ])
+    }
+    if (quality.checks !== undefined) {
+      if (!Array.isArray(quality.checks)) throw new ZyalParseError("quality.checks must be a list")
+      quality.checks.forEach((check, i) => {
+        assertKeys(`quality.checks[${i}]`, expectRecord(check, `quality.checks[${i}]`), [
+          "name",
+          "pattern",
+          "shell",
+          "scope",
+          "on_violation",
+        ])
+      })
+    }
+  }
+
+  if (input.experiments !== undefined) {
+    const experiments = expectRecord(input.experiments, "experiments")
+    assertKeys("experiments", experiments, [
+      "strategy",
+      "diversity",
+      "lanes",
+      "fork_from",
+      "max_parallel",
+      "scoring",
+      "reduce",
+      "on_partial_failure",
+      "preserve_failed_lanes_as_negative_memory",
+    ])
+    if (experiments.diversity !== undefined) {
+      assertKeys("experiments.diversity", expectRecord(experiments.diversity, "experiments.diversity"), [
+        "require_distinct_plan",
+        "min_plan_distance",
+        "axes",
+      ])
+    }
+    if (experiments.lanes !== undefined) {
+      if (!Array.isArray(experiments.lanes)) throw new ZyalParseError("experiments.lanes must be a list")
+      experiments.lanes.forEach((lane, i) => {
+        const record = expectRecord(lane, `experiments.lanes[${i}]`)
+        assertKeys(`experiments.lanes[${i}]`, record, [
+          "id",
+          "hypothesis",
+          "prompt_strategy",
+          "agent",
+          "model",
+          "isolation",
+          "timeout",
+          "budget",
+        ])
+        if (record.budget !== undefined) {
+          assertKeys(`experiments.lanes[${i}].budget`, expectRecord(record.budget, `experiments.lanes[${i}].budget`), [
+            "max_iterations",
+            "max_diff_lines",
+            "max_cost_usd",
+          ])
+        }
+      })
+    }
+    if (experiments.scoring !== undefined) {
+      const scoring = expectRecord(experiments.scoring, "experiments.scoring")
+      assertKeys("experiments.scoring", scoring, ["weights", "command", "judge"])
+      if (scoring.judge !== undefined) {
+        assertKeys("experiments.scoring.judge", expectRecord(scoring.judge, "experiments.scoring.judge"), [
+          "agent",
+          "blind",
+          "must_use_different_provider",
+        ])
+      }
+    }
+    if (experiments.reduce !== undefined) {
+      assertKeys("experiments.reduce", expectRecord(experiments.reduce, "experiments.reduce"), [
+        "strategy",
+        "require_final_verification",
+      ])
+    }
+  }
+
+  if (input.models !== undefined) {
+    const models = expectRecord(input.models, "models")
+    assertKeys("models", models, ["profiles", "routes", "critic", "fallback", "confidence_cap"])
+    if (models.profiles !== undefined) {
+      const profiles = expectRecord(models.profiles, "models.profiles")
+      for (const [name, profile] of Object.entries(profiles)) {
+        assertKeys(`models.profiles.${name}`, expectRecord(profile, `models.profiles.${name}`), [
+          "provider",
+          "model",
+          "temperature",
+          "reasoning",
+          "budget_usd",
+        ])
+      }
+    }
+    if (models.critic !== undefined) {
+      assertKeys("models.critic", expectRecord(models.critic, "models.critic"), [
+        "must_differ_from_builder",
+        "must_use_different_provider",
+      ])
+    }
+    if (models.fallback !== undefined) {
+      assertKeys("models.fallback", expectRecord(models.fallback, "models.fallback"), [
+        "on_rate_limit",
+        "on_context_overflow",
+        "chain",
+        "cooldown",
+      ])
+    }
+  }
+
+  if (input.budgets !== undefined) {
+    const budgets = expectRecord(input.budgets, "budgets")
+    assertKeys("budgets", budgets, ["run", "task", "iteration", "experiment_lane"])
+    for (const key of ["run", "task", "iteration", "experiment_lane"] as const) {
+      if (budgets[key] !== undefined) {
+        assertKeys(`budgets.${key}`, expectRecord(budgets[key], `budgets.${key}`), [
+          "wall_clock",
+          "iterations",
+          "tokens",
+          "cost_usd",
+          "tool_calls",
+          "diff_lines",
+          "on_exhaust",
+        ])
+      }
+    }
+  }
+
+  if (input.triggers !== undefined) {
+    const triggers = expectRecord(input.triggers, "triggers")
+    assertKeys("triggers", triggers, ["list", "anti_recursion"])
+    if (triggers.list !== undefined) {
+      if (!Array.isArray(triggers.list)) throw new ZyalParseError("triggers.list must be a list")
+      triggers.list.forEach((trigger, i) => {
+        assertKeys(`triggers.list[${i}]`, expectRecord(trigger, `triggers.list[${i}]`), [
+          "id",
+          "kind",
+          "schedule",
+          "filter",
+          "idempotency_key_template",
+          "max_runs_per_sha",
+          "allow_create_more_cron",
+        ])
+      })
+    }
+  }
+
+  if (input.rollback !== undefined) {
+    const rollback = expectRecord(input.rollback, "rollback")
+    assertKeys("rollback", rollback, ["required_when", "plan_required", "verify_command", "on_failure_after_merge"])
+    if (rollback.required_when !== undefined) {
+      assertKeys("rollback.required_when", expectRecord(rollback.required_when, "rollback.required_when"), [
+        "touches_paths",
+        "risk_score_gte",
+      ])
+    }
+  }
+
+  if (input.done !== undefined) {
+    assertKeys("done", expectRecord(input.done, "done"), ["require", "forbid"])
+  }
+
+  if (input.repo_intelligence !== undefined) {
+    const repo = expectRecord(input.repo_intelligence, "repo_intelligence")
+    assertKeys("repo_intelligence", repo, ["scale", "indexes", "generated_zones", "scope_control", "blast_radius"])
+    if (repo.scope_control !== undefined) {
+      assertKeys("repo_intelligence.scope_control", expectRecord(repo.scope_control, "repo_intelligence.scope_control"), [
+        "require_scope_before_edit",
+        "max_initial_scope_files",
+        "expand_scope_requires_evidence",
+      ])
+    }
+    if (repo.blast_radius !== undefined) {
+      assertKeys("repo_intelligence.blast_radius", expectRecord(repo.blast_radius, "repo_intelligence.blast_radius"), [
+        "compute_on",
+        "pause_when_score_gte",
+      ])
+    }
+  }
+
+  if (input.interop !== undefined) {
+    const interop = expectRecord(input.interop, "interop")
+    assertKeys("interop", interop, ["protocols", "adapters", "compile_to", "notes"])
+    if (interop.protocols !== undefined) {
+      if (!Array.isArray(interop.protocols)) throw new ZyalParseError("interop.protocols must be a list")
+      interop.protocols.forEach((protocol, index) => {
+        assertKeys(`interop.protocols[${index}]`, expectRecord(protocol, `interop.protocols[${index}]`), [
+          "name",
+          "target",
+          "version",
+          "notes",
+        ])
+      })
+    }
+  }
+
+  if (input.runtime !== undefined) {
+    const runtime = expectRecord(input.runtime, "runtime")
+    assertKeys("runtime", runtime, ["mode", "image", "workspace", "network", "env", "resources"])
+    if (runtime.resources !== undefined) {
+      assertKeys("runtime.resources", expectRecord(runtime.resources, "runtime.resources"), [
+        "cpu",
+        "memory",
+        "disk",
+        "processes",
+      ])
+    }
+  }
+
+  if (input.capability_negotiation !== undefined) {
+    const negotiation = expectRecord(input.capability_negotiation, "capability_negotiation")
+    assertKeys("capability_negotiation", negotiation, ["host", "required", "optional", "fail_closed", "degrade_to"])
+  }
+
+  if (input.memory_kernel !== undefined) {
+    const memory = expectRecord(input.memory_kernel, "memory_kernel")
+    assertKeys("memory_kernel", memory, ["stores", "redaction", "provenance"])
+    if (memory.stores !== undefined) {
+      const stores = expectRecord(memory.stores, "memory_kernel.stores")
+      for (const [storeName, store] of Object.entries(stores)) {
+        assertKeys(`memory_kernel.stores.${storeName}`, expectRecord(store, `memory_kernel.stores.${storeName}`), [
+          "scope",
+          "retention",
+          "searchable",
+        ])
+      }
+    }
+    if (memory.redaction !== undefined) {
+      assertKeys("memory_kernel.redaction", expectRecord(memory.redaction, "memory_kernel.redaction"), ["patterns", "action"])
+    }
+    if (memory.provenance !== undefined) {
+      assertKeys("memory_kernel.provenance", expectRecord(memory.provenance, "memory_kernel.provenance"), [
+        "track_source",
+        "hash_chain",
+      ])
+    }
+  }
+
+  if (input.evidence_graph !== undefined) {
+    const evidenceGraph = expectRecord(input.evidence_graph, "evidence_graph")
+    assertKeys("evidence_graph", evidenceGraph, ["nodes", "edges", "merge_witness"])
+    if (evidenceGraph.nodes !== undefined) {
+      const nodes = expectRecord(evidenceGraph.nodes, "evidence_graph.nodes")
+      for (const [nodeName, node] of Object.entries(nodes)) {
+        assertKeys(`evidence_graph.nodes.${nodeName}`, expectRecord(node, `evidence_graph.nodes.${nodeName}`), [
+          "type",
+          "required",
+        ])
+      }
+    }
+    if (evidenceGraph.edges !== undefined) {
+      if (!Array.isArray(evidenceGraph.edges)) throw new ZyalParseError("evidence_graph.edges must be a list")
+      evidenceGraph.edges.forEach((edge, index) => {
+        assertKeys(`evidence_graph.edges[${index}]`, expectRecord(edge, `evidence_graph.edges[${index}]`), [
+          "from",
+          "to",
+          "kind",
+        ])
+      })
+    }
+  }
+
+  if (input.trust !== undefined) {
+    const trust = expectRecord(input.trust, "trust")
+    assertKeys("trust", trust, ["zones", "on_taint", "notes"])
+    if (trust.zones !== undefined) {
+      const zones = expectRecord(trust.zones, "trust.zones")
+      for (const [zoneName, zone] of Object.entries(zones)) {
+        assertKeys(`trust.zones.${zoneName}`, expectRecord(zone, `trust.zones.${zoneName}`), [
+          "paths",
+          "taint",
+          "require_approval",
+        ])
+      }
+    }
+  }
+
+  if (input.requirements !== undefined) {
+    const requirements = expectRecord(input.requirements, "requirements")
+    assertKeys("requirements", requirements, ["must", "should", "avoid"])
+  }
+
+  if (input.evaluation !== undefined) {
+    const evaluation = expectRecord(input.evaluation, "evaluation")
+    assertKeys("evaluation", evaluation, ["metrics", "compare"])
+    if (evaluation.metrics !== undefined) {
+      if (!Array.isArray(evaluation.metrics)) throw new ZyalParseError("evaluation.metrics must be a list")
+      evaluation.metrics.forEach((metric, index) => {
+        assertKeys(`evaluation.metrics[${index}]`, expectRecord(metric, `evaluation.metrics[${index}]`), [
+          "name",
+          "command",
+          "threshold",
+        ])
+      })
+    }
+  }
+
+  if (input.release !== undefined) {
+    const release = expectRecord(input.release, "release")
+    assertKeys("release", release, ["channel", "version", "gates", "notes"])
+  }
+
+  if (input.roles !== undefined) {
+    const roles = expectRecord(input.roles, "roles")
+    assertKeys("roles", roles, ["list"])
+    if (roles.list !== undefined) {
+      if (!Array.isArray(roles.list)) throw new ZyalParseError("roles.list must be a list")
+      roles.list.forEach((role, index) => {
+        assertKeys(`roles.list[${index}]`, expectRecord(role, `roles.list[${index}]`), [
+          "id",
+          "agent",
+          "permissions",
+          "description",
+        ])
+      })
+    }
+  }
+
+  if (input.channels !== undefined) {
+    const channels = expectRecord(input.channels, "channels")
+    assertKeys("channels", channels, ["list"])
+    if (channels.list !== undefined) {
+      if (!Array.isArray(channels.list)) throw new ZyalParseError("channels.list must be a list")
+      channels.list.forEach((channel, index) => {
+        assertKeys(`channels.list[${index}]`, expectRecord(channel, `channels.list[${index}]`), [
+          "id",
+          "kind",
+          "route",
+          "approval",
+        ])
+      })
+    }
+  }
+
+  if (input.imports !== undefined) {
+    const imports = expectRecord(input.imports, "imports")
+    assertKeys("imports", imports, ["list"])
+    if (imports.list !== undefined) {
+      if (!Array.isArray(imports.list)) throw new ZyalParseError("imports.list must be a list")
+      imports.list.forEach((source, index) => {
+        assertKeys(`imports.list[${index}]`, expectRecord(source, `imports.list[${index}]`), [
+          "source",
+          "optional",
+          "pin",
+        ])
+      })
+    }
+  }
+
+  if (input.reasoning_privacy !== undefined) {
+    const privacy = expectRecord(input.reasoning_privacy, "reasoning_privacy")
+    assertKeys("reasoning_privacy", privacy, ["store_reasoning", "redact_chain_of_thought", "summaries_only"])
+  }
+
+  if (input.unsupported_feature_policy !== undefined) {
+    const policy = expectRecord(input.unsupported_feature_policy, "unsupported_feature_policy")
+    assertKeys("unsupported_feature_policy", policy, ["required", "optional", "fail_closed", "on_missing"])
+  }
+}
+
+function validateZyalSemantics(spec: ZyalScript) {
   // ─── Incubator validation ─────────────────────────────────────────────
   const incubator = spec.incubator
   if (incubator?.enabled) {
@@ -667,7 +1163,7 @@ function validateOcalSemantics(spec: OcalScript) {
     if (incubator.cleanup) {
       for (const [key, value] of Object.entries(incubator.cleanup)) {
         if (value !== undefined && typeof value !== "boolean") {
-          throw new OcalParseError(`incubator.cleanup.${key} must be boolean`)
+          throw new ZyalParseError(`incubator.cleanup.${key} must be boolean`)
         }
       }
     }
@@ -677,16 +1173,16 @@ function validateOcalSemantics(spec: OcalScript) {
     for (const [index, pass] of incubator.passes.entries()) {
       if (pass.count !== undefined) requirePositiveInteger(pass.count, `incubator.passes[${index}].count`)
       if (pass.writes === "isolated_worktree" && pass.type !== "prototype") {
-        throw new OcalParseError(`incubator pass ${pass.id} can use isolated_worktree only for prototype`)
+        throw new ZyalParseError(`incubator pass ${pass.id} can use isolated_worktree only for prototype`)
       }
       if (pass.type === "prototype" && !["isolated_worktree", "scratch_only"].includes(pass.writes)) {
-        throw new OcalParseError(`incubator prototype pass ${pass.id} must write to isolated_worktree or scratch_only`)
+        throw new ZyalParseError(`incubator prototype pass ${pass.id} must write to isolated_worktree or scratch_only`)
       }
       if (pass.type === "idea" && (pass.count ?? 1) > maxIdeas) {
-        throw new OcalParseError(`incubator idea pass ${pass.id} count exceeds max_parallel_idea_passes`)
+        throw new ZyalParseError(`incubator idea pass ${pass.id} count exceeds max_parallel_idea_passes`)
       }
       if (pass.mcp_profile && !availableProfiles.has(pass.mcp_profile)) {
-        throw new OcalParseError(`incubator pass ${pass.id} references unknown mcp_profile ${pass.mcp_profile}`)
+        throw new ZyalParseError(`incubator pass ${pass.id} references unknown mcp_profile ${pass.mcp_profile}`)
       }
     }
   }
@@ -695,10 +1191,10 @@ function validateOcalSemantics(spec: OcalScript) {
   if (spec.on) {
     for (const [i, handler] of spec.on.entries()) {
       if (!handler.do || handler.do.length === 0) {
-        throw new OcalParseError(`on[${i}].do must have at least one action`)
+        throw new ZyalParseError(`on[${i}].do must have at least one action`)
       }
       if (handler.count_gte !== undefined && handler.count_gte < 1) {
-        throw new OcalParseError(`on[${i}].count_gte must be >= 1`)
+        throw new ZyalParseError(`on[${i}].count_gte must be >= 1`)
       }
     }
   }
@@ -710,10 +1206,10 @@ function validateOcalSemantics(spec: OcalScript) {
       requirePositiveInteger(fo.worker.max_parallel, "fan_out.worker.max_parallel")
     }
     if (fo.reduce.strategy === "best_score" && !fo.reduce.score_key) {
-      throw new OcalParseError("fan_out.reduce.score_key is required when strategy is best_score")
+      throw new ZyalParseError("fan_out.reduce.score_key is required when strategy is best_score")
     }
     if (fo.reduce.strategy === "custom_shell" && !fo.reduce.command) {
-      throw new OcalParseError("fan_out.reduce.command is required when strategy is custom_shell")
+      throw new ZyalParseError("fan_out.reduce.command is required when strategy is custom_shell")
     }
   }
 
@@ -723,14 +1219,14 @@ function validateOcalSemantics(spec: OcalScript) {
     if (gr.input) {
       for (const [i, rail] of gr.input.entries()) {
         if (!rail.deny_patterns.length) {
-          throw new OcalParseError(`guardrails.input[${i}].deny_patterns must not be empty`)
+          throw new ZyalParseError(`guardrails.input[${i}].deny_patterns must not be empty`)
         }
       }
     }
     if (gr.output) {
       for (const [i, rail] of gr.output.entries()) {
         if ("deny_patterns" in rail && !rail.deny_patterns.length) {
-          throw new OcalParseError(`guardrails.output[${i}].deny_patterns must not be empty`)
+          throw new ZyalParseError(`guardrails.output[${i}].deny_patterns must not be empty`)
         }
         if ("max_retries" in rail && rail.max_retries !== undefined) {
           requirePositiveInteger(rail.max_retries, `guardrails.output[${i}].max_retries`)
@@ -774,14 +1270,14 @@ function validateOcalSemantics(spec: OcalScript) {
     const names = new Set<string>()
     for (const [i, constraint] of spec.constraints.entries()) {
       if (names.has(constraint.name)) {
-        throw new OcalParseError(`constraints[${i}].name '${constraint.name}' is duplicated`)
+        throw new ZyalParseError(`constraints[${i}].name '${constraint.name}' is duplicated`)
       }
       names.add(constraint.name)
       if (!constraint.check.shell.trim()) {
-        throw new OcalParseError(`constraints[${i}].check.shell must not be empty`)
+        throw new ZyalParseError(`constraints[${i}].check.shell must not be empty`)
       }
       if (constraint.baseline && (constraint.invariant === "equals_zero" || constraint.invariant === "non_zero")) {
-        throw new OcalParseError(`constraints[${i}] baseline is incompatible with ${constraint.invariant}`)
+        throw new ZyalParseError(`constraints[${i}] baseline is incompatible with ${constraint.invariant}`)
       }
     }
   }
@@ -790,14 +1286,14 @@ function validateOcalSemantics(spec: OcalScript) {
   if (spec.workflow) {
     const stateNames = new Set(Object.keys(spec.workflow.states))
     if (!stateNames.has(spec.workflow.initial)) {
-      throw new OcalParseError(`workflow.initial '${spec.workflow.initial}' is not a defined state`)
+      throw new ZyalParseError(`workflow.initial '${spec.workflow.initial}' is not a defined state`)
     }
     // Validate transitions reference valid states
     for (const [stateName, state] of Object.entries(spec.workflow.states)) {
       if (state.transitions) {
         for (const [i, t] of state.transitions.entries()) {
           if (!stateNames.has(t.to)) {
-            throw new OcalParseError(
+            throw new ZyalParseError(
               `workflow.states.${stateName}.transitions[${i}].to '${t.to}' is not a defined state`,
             )
           }
@@ -807,13 +1303,13 @@ function validateOcalSemantics(spec: OcalScript) {
     // Terminal states should not have transitions
     for (const [stateName, state] of Object.entries(spec.workflow.states)) {
       if (state.terminal && state.transitions?.length) {
-        throw new OcalParseError(`workflow.states.${stateName} is terminal but has transitions`)
+        throw new ZyalParseError(`workflow.states.${stateName} is terminal but has transitions`)
       }
     }
     // Must have at least one terminal state
     const hasTerminal = Object.values(spec.workflow.states).some((s) => s.terminal)
     if (!hasTerminal) {
-      throw new OcalParseError("workflow must have at least one terminal state")
+      throw new ZyalParseError("workflow must have at least one terminal state")
     }
   }
 
@@ -822,7 +1318,7 @@ function validateOcalSemantics(spec: OcalScript) {
     // Validate that approval gates referenced in workflow states exist
     for (const [stateName, state] of Object.entries(spec.workflow.states)) {
       if (state.approval && !spec.approvals.gates[state.approval]) {
-        throw new OcalParseError(
+        throw new ZyalParseError(
           `workflow.states.${stateName}.approval '${state.approval}' is not defined in approvals.gates`,
         )
       }
@@ -834,10 +1330,10 @@ function validateOcalSemantics(spec: OcalScript) {
     const types = new Set<string>()
     for (const [i, req] of spec.evidence.require_before_promote.entries()) {
       if (!req.type.trim()) {
-        throw new OcalParseError(`evidence.require_before_promote[${i}].type must not be empty`)
+        throw new ZyalParseError(`evidence.require_before_promote[${i}].type must not be empty`)
       }
       if (types.has(req.type)) {
-        throw new OcalParseError(`evidence.require_before_promote[${i}].type '${req.type}' is duplicated`)
+        throw new ZyalParseError(`evidence.require_before_promote[${i}].type '${req.type}' is duplicated`)
       }
       types.add(req.type)
     }
@@ -847,13 +1343,13 @@ function validateOcalSemantics(spec: OcalScript) {
   if (spec.sandbox) {
     // Network allowlist requires outbound=allowlist
     if (spec.sandbox.network?.allowlist?.length && spec.sandbox.network.outbound !== "allowlist") {
-      throw new OcalParseError("sandbox.network.allowlist requires outbound: allowlist")
+      throw new ZyalParseError("sandbox.network.allowlist requires outbound: allowlist")
     }
     // Path rules must have non-empty paths
     if (spec.sandbox.paths) {
       for (const [i, rule] of spec.sandbox.paths.entries()) {
         if (!rule.path.trim()) {
-          throw new OcalParseError(`sandbox.paths[${i}].path must not be empty`)
+          throw new ZyalParseError(`sandbox.paths[${i}].path must not be empty`)
         }
       }
     }
@@ -863,7 +1359,7 @@ function validateOcalSemantics(spec: OcalScript) {
   if (spec.security?.injection?.deny_patterns) {
     for (const [i, pattern] of spec.security.injection.deny_patterns.entries()) {
       if (!pattern.trim()) {
-        throw new OcalParseError(`security.injection.deny_patterns[${i}] must not be empty`)
+        throw new ZyalParseError(`security.injection.deny_patterns[${i}] must not be empty`)
       }
     }
   }
@@ -873,24 +1369,24 @@ function validateOcalSemantics(spec: OcalScript) {
     const names = new Set<string>()
     for (const [i, metric] of spec.observability.metrics.entries()) {
       if (!metric.name.trim()) {
-        throw new OcalParseError(`observability.metrics[${i}].name must not be empty`)
+        throw new ZyalParseError(`observability.metrics[${i}].name must not be empty`)
       }
       if (names.has(metric.name)) {
-        throw new OcalParseError(`observability.metrics[${i}].name '${metric.name}' is duplicated`)
+        throw new ZyalParseError(`observability.metrics[${i}].name '${metric.name}' is duplicated`)
       }
       names.add(metric.name)
       if (!metric.source.trim()) {
-        throw new OcalParseError(`observability.metrics[${i}].source must not be empty`)
+        throw new ZyalParseError(`observability.metrics[${i}].source must not be empty`)
       }
     }
   }
   if (spec.observability?.cost) {
     if (spec.observability.cost.budget !== undefined && spec.observability.cost.budget <= 0) {
-      throw new OcalParseError("observability.cost.budget must be positive")
+      throw new ZyalParseError("observability.cost.budget must be positive")
     }
     if (spec.observability.cost.alert_at_percent !== undefined) {
       if (spec.observability.cost.alert_at_percent <= 0 || spec.observability.cost.alert_at_percent > 100) {
-        throw new OcalParseError("observability.cost.alert_at_percent must be in (0, 100]")
+        throw new ZyalParseError("observability.cost.alert_at_percent must be in (0, 100]")
       }
     }
   }
@@ -898,32 +1394,189 @@ function validateOcalSemantics(spec: OcalScript) {
   // ─── v2 wave 2: skills ──────────────────────────────────────────────
   if (spec.skills) {
     if (spec.skills.max_skills !== undefined && spec.skills.max_skills <= 0) {
-      throw new OcalParseError("skills.max_skills must be positive")
+      throw new ZyalParseError("skills.max_skills must be positive")
     }
+  }
+
+  if (spec.unsupported_feature_policy) {
+    const required = spec.unsupported_feature_policy.required ?? []
+    const failClosed = spec.unsupported_feature_policy.fail_closed !== false
+    for (const [i, feature] of required.entries()) {
+      if (!feature.trim()) throw new ZyalParseError(`unsupported_feature_policy.required[${i}] must not be empty`)
+      if (failClosed && !SUPPORTED_FEATURE_KEYS.has(feature)) {
+        throw new ZyalParseError(`unsupported_feature_policy.required[${i}] '${feature}' is not supported`)
+      }
+    }
+    for (const [i, feature] of (spec.unsupported_feature_policy.optional ?? []).entries()) {
+      if (!feature.trim()) throw new ZyalParseError(`unsupported_feature_policy.optional[${i}] must not be empty`)
+    }
+  }
+
+  // ─── v2.1: arming/capabilities/quality/experiments/etc. ──────────────
+  if (spec.arming) {
+    if (spec.arming.accepted_origins?.length === 0) {
+      throw new ZyalParseError("arming.accepted_origins must not be empty")
+    }
+    if (spec.arming.bound_to?.some((item) => !item.trim())) {
+      throw new ZyalParseError("arming.bound_to entries must not be empty")
+    }
+  }
+
+  if (spec.capabilities) {
+    const ids = new Set<string>()
+    for (const [i, rule] of (spec.capabilities.rules ?? []).entries()) {
+      if (!rule.id.trim()) throw new ZyalParseError(`capabilities.rules[${i}].id must not be empty`)
+      if (ids.has(rule.id)) throw new ZyalParseError(`capabilities.rules[${i}].id '${rule.id}' is duplicated`)
+      ids.add(rule.id)
+      if (rule.command_regex) {
+        try {
+          new RegExp(rule.command_regex)
+        } catch {
+          throw new ZyalParseError(`capabilities.rules[${i}].command_regex is not a valid regex`)
+        }
+      }
+    }
+    for (const [i, command] of (spec.capabilities.command_floor?.always_block ?? []).entries()) {
+      if (!command.trim()) throw new ZyalParseError(`capabilities.command_floor.always_block[${i}] must not be empty`)
+    }
+  }
+
+  if (spec.quality) {
+    if (spec.quality.diff_budget?.max_files_changed !== undefined) {
+      requirePositiveInteger(spec.quality.diff_budget.max_files_changed, "quality.diff_budget.max_files_changed")
+    }
+    if (spec.quality.diff_budget?.max_added_lines !== undefined) {
+      requirePositiveInteger(spec.quality.diff_budget.max_added_lines, "quality.diff_budget.max_added_lines")
+    }
+    if (spec.quality.diff_budget?.max_deleted_lines !== undefined) {
+      requirePositiveInteger(spec.quality.diff_budget.max_deleted_lines, "quality.diff_budget.max_deleted_lines")
+    }
+    const names = new Set<string>()
+    for (const [i, check] of (spec.quality.checks ?? []).entries()) {
+      if (!check.name.trim()) throw new ZyalParseError(`quality.checks[${i}].name must not be empty`)
+      if (names.has(check.name)) throw new ZyalParseError(`quality.checks[${i}].name '${check.name}' is duplicated`)
+      names.add(check.name)
+      if (check.pattern) {
+        try {
+          new RegExp(check.pattern)
+        } catch {
+          throw new ZyalParseError(`quality.checks[${i}].pattern is not a valid regex`)
+        }
+      }
+    }
+  }
+
+  if (spec.experiments) {
+    if (spec.experiments.lanes.length === 0) throw new ZyalParseError("experiments.lanes must not be empty")
+    if (spec.experiments.max_parallel !== undefined) {
+      requirePositiveInteger(spec.experiments.max_parallel, "experiments.max_parallel")
+    }
+    if (spec.experiments.diversity?.min_plan_distance !== undefined) {
+      requireScore(spec.experiments.diversity.min_plan_distance, "experiments.diversity.min_plan_distance")
+    }
+    const lanes = new Set<string>()
+    for (const [i, lane] of spec.experiments.lanes.entries()) {
+      if (!lane.id.trim()) throw new ZyalParseError(`experiments.lanes[${i}].id must not be empty`)
+      if (lanes.has(lane.id)) throw new ZyalParseError(`experiments.lanes[${i}].id '${lane.id}' is duplicated`)
+      lanes.add(lane.id)
+      if (!lane.hypothesis.trim()) throw new ZyalParseError(`experiments.lanes[${i}].hypothesis must not be empty`)
+      if (lane.budget?.max_iterations !== undefined) {
+        requirePositiveInteger(lane.budget.max_iterations, `experiments.lanes[${i}].budget.max_iterations`)
+      }
+      if (lane.budget?.max_diff_lines !== undefined) {
+        requirePositiveInteger(lane.budget.max_diff_lines, `experiments.lanes[${i}].budget.max_diff_lines`)
+      }
+      if (lane.budget?.max_cost_usd !== undefined && lane.budget.max_cost_usd <= 0) {
+        throw new ZyalParseError(`experiments.lanes[${i}].budget.max_cost_usd must be positive`)
+      }
+    }
+  }
+
+  if (spec.models) {
+    if (spec.models.confidence_cap !== undefined) requireScore(spec.models.confidence_cap, "models.confidence_cap")
+    const profiles = spec.models.profiles ?? {}
+    for (const [route, profile] of Object.entries(spec.models.routes ?? {})) {
+      if (profiles[profile] === undefined) {
+        throw new ZyalParseError(`models.routes.${route} references unknown profile ${profile}`)
+      }
+    }
+    if (spec.models.critic?.must_use_different_provider && profiles.builder?.provider && profiles.critic?.provider) {
+      if (profiles.builder.provider === profiles.critic.provider) {
+        throw new ZyalParseError("models.critic.must_use_different_provider requires distinct builder and critic providers")
+      }
+    }
+  }
+
+  if (spec.budgets) {
+    for (const [scope, budget] of Object.entries(spec.budgets)) {
+      if (!budget) continue
+      if (budget.iterations !== undefined) requirePositiveInteger(budget.iterations, `budgets.${scope}.iterations`)
+      if (budget.tokens !== undefined) requirePositiveInteger(budget.tokens, `budgets.${scope}.tokens`)
+      if (budget.tool_calls !== undefined) requirePositiveInteger(budget.tool_calls, `budgets.${scope}.tool_calls`)
+      if (budget.diff_lines !== undefined) requirePositiveInteger(budget.diff_lines, `budgets.${scope}.diff_lines`)
+      if (budget.cost_usd !== undefined && budget.cost_usd <= 0) {
+        throw new ZyalParseError(`budgets.${scope}.cost_usd must be positive`)
+      }
+    }
+  }
+
+  if (spec.triggers) {
+    const ids = new Set<string>()
+    for (const [i, trigger] of spec.triggers.list.entries()) {
+      if (!trigger.id.trim()) throw new ZyalParseError(`triggers.list[${i}].id must not be empty`)
+      if (ids.has(trigger.id)) throw new ZyalParseError(`triggers.list[${i}].id '${trigger.id}' is duplicated`)
+      ids.add(trigger.id)
+      if (trigger.max_runs_per_sha !== undefined) {
+        requirePositiveInteger(trigger.max_runs_per_sha, `triggers.list[${i}].max_runs_per_sha`)
+      }
+    }
+  }
+
+  if (spec.rollback?.required_when?.risk_score_gte !== undefined) {
+    requireScore(spec.rollback.required_when.risk_score_gte, "rollback.required_when.risk_score_gte")
+  }
+
+  if (spec.done) {
+    for (const [i, item] of (spec.done.require ?? []).entries()) {
+      if (!item.trim()) throw new ZyalParseError(`done.require[${i}] must not be empty`)
+    }
+    for (const [i, item] of (spec.done.forbid ?? []).entries()) {
+      if (!item.trim()) throw new ZyalParseError(`done.forbid[${i}] must not be empty`)
+    }
+  }
+
+  if (spec.repo_intelligence?.scope_control?.max_initial_scope_files !== undefined) {
+    requirePositiveInteger(
+      spec.repo_intelligence.scope_control.max_initial_scope_files,
+      "repo_intelligence.scope_control.max_initial_scope_files",
+    )
+  }
+  if (spec.repo_intelligence?.blast_radius?.pause_when_score_gte !== undefined) {
+    requireScore(spec.repo_intelligence.blast_radius.pause_when_score_gte, "repo_intelligence.blast_radius.pause_when_score_gte")
   }
 
   // ─── v2.2: fleet — single-session worker cap of 20 ─────────────────
   if (spec.fleet) {
     const max = spec.fleet.max_workers
     if (!Number.isInteger(max) || max < 1 || max > 20) {
-      throw new OcalParseError(
+      throw new ZyalParseError(
         `fleet.max_workers must be an integer in [1, 20]; got ${max}`,
       )
     }
     // Enforce that downstream worker counts respect the fleet cap.
     const workerCount = (spec.agents?.workers ?? []).reduce((s, w) => s + (w.count ?? 0), 0)
     if (workerCount > max) {
-      throw new OcalParseError(
+      throw new ZyalParseError(
         `agents.workers total count (${workerCount}) exceeds fleet.max_workers (${max})`,
       )
     }
     if (spec.fan_out?.worker.max_parallel !== undefined && spec.fan_out.worker.max_parallel > max) {
-      throw new OcalParseError(
+      throw new ZyalParseError(
         `fan_out.worker.max_parallel (${spec.fan_out.worker.max_parallel}) exceeds fleet.max_workers (${max})`,
       )
     }
     if (spec.experiments?.max_parallel !== undefined && spec.experiments.max_parallel > max) {
-      throw new OcalParseError(
+      throw new ZyalParseError(
         `experiments.max_parallel (${spec.experiments.max_parallel}) exceeds fleet.max_workers (${max})`,
       )
     }
@@ -931,7 +1584,7 @@ function validateOcalSemantics(spec: OcalScript) {
       const ideaParallel = spec.incubator.budget.max_parallel_idea_passes ?? 1
       const activeTasks = spec.incubator.budget.max_active_tasks ?? 1
       if (ideaParallel * activeTasks > max) {
-        throw new OcalParseError(
+        throw new ZyalParseError(
           `incubator concurrency (${ideaParallel} × ${activeTasks} = ${ideaParallel * activeTasks}) exceeds fleet.max_workers (${max})`,
         )
       }
@@ -939,24 +1592,24 @@ function validateOcalSemantics(spec: OcalScript) {
     if (spec.fleet.jnoccio?.max_instances !== undefined) {
       const ji = spec.fleet.jnoccio.max_instances
       if (!Number.isInteger(ji) || ji < 1 || ji > 20) {
-        throw new OcalParseError(`fleet.jnoccio.max_instances must be in [1, 20]; got ${ji}`)
+        throw new ZyalParseError(`fleet.jnoccio.max_instances must be in [1, 20]; got ${ji}`)
       }
     }
   } else {
     // No fleet block — keep legacy behaviour but still cap worker totals at 20.
     const workerCount = (spec.agents?.workers ?? []).reduce((s, w) => s + (w.count ?? 0), 0)
     if (workerCount > 20) {
-      throw new OcalParseError(
+      throw new ZyalParseError(
         `agents.workers total count (${workerCount}) exceeds default fleet cap (20). Add a fleet block to declare an explicit cap.`,
       )
     }
     if (spec.fan_out?.worker.max_parallel !== undefined && spec.fan_out.worker.max_parallel > 20) {
-      throw new OcalParseError(
+      throw new ZyalParseError(
         `fan_out.worker.max_parallel (${spec.fan_out.worker.max_parallel}) exceeds default fleet cap (20)`,
       )
     }
     if (spec.experiments?.max_parallel !== undefined && spec.experiments.max_parallel > 20) {
-      throw new OcalParseError(
+      throw new ZyalParseError(
         `experiments.max_parallel (${spec.experiments.max_parallel}) exceeds default fleet cap (20)`,
       )
     }
@@ -982,7 +1635,7 @@ function assertFleetNestedKeys(input: Record<string, unknown>) {
       const headers = expectRecord(tl.headers, "fleet.telemetry.headers")
       for (const [k, v] of Object.entries(headers)) {
         if (typeof v !== "string") {
-          throw new OcalParseError(`fleet.telemetry.headers.${k} must be a string`)
+          throw new ZyalParseError(`fleet.telemetry.headers.${k} must be a string`)
         }
       }
     }
@@ -993,33 +1646,33 @@ function assertFleetNestedKeys(input: Record<string, unknown>) {
 function assertKeys(path: string, value: Record<string, unknown>, allowed: string[]) {
   const set = new Set(allowed)
   for (const key of Object.keys(value)) {
-    if (!set.has(key)) throw new OcalParseError(`Unknown OCAL key: ${path}.${key}`)
+    if (!set.has(key)) throw new ZyalParseError(`Unknown ZYAL key: ${path}.${key}`)
   }
 }
 
 function expectRecord(value: unknown, path: string): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new OcalParseError(`${path} must be a YAML mapping`)
+    throw new ZyalParseError(`${path} must be a YAML mapping`)
   }
   return value as Record<string, unknown>
 }
 
 function requirePositiveInteger(value: number, path: string) {
   if (!Number.isFinite(value) || value <= 0 || !Number.isInteger(value)) {
-    throw new OcalParseError(`${path} must be a finite positive integer`)
+    throw new ZyalParseError(`${path} must be a finite positive integer`)
   }
 }
 
 function requireScore(value: number, path: string) {
   if (!Number.isFinite(value) || value <= 0 || value > 1) {
-    throw new OcalParseError(`${path} must be a finite score in (0, 1]`)
+    throw new ZyalParseError(`${path} must be a finite score in (0, 1]`)
   }
 }
 
 function assertSignalList(value: unknown, path: string) {
-  if (!Array.isArray(value)) throw new OcalParseError(`${path} must be a list`)
+  if (!Array.isArray(value)) throw new ZyalParseError(`${path} must be a list`)
   value.forEach((item, index) => {
-    if (typeof item !== "string") throw new OcalParseError(`${path}[${index}] must be a string`)
+    if (typeof item !== "string") throw new ZyalParseError(`${path}[${index}] must be a string`)
   })
 }
 
@@ -1036,7 +1689,7 @@ function assertStopConditionKeys(record: Record<string, unknown>, path: string) 
   const hasShell = record.shell !== undefined
   const hasGitClean = record.git_clean !== undefined
   if (hasShell === hasGitClean) {
-    throw new OcalParseError(`${path} must contain exactly one of shell or git_clean`)
+    throw new ZyalParseError(`${path} must contain exactly one of shell or git_clean`)
   }
   if (hasShell) assertShellCheckKeys(expectRecord(record.shell, `${path}.shell`), `${path}.shell`)
   if (hasGitClean) {
@@ -1045,8 +1698,11 @@ function assertStopConditionKeys(record: Record<string, unknown>, path: string) 
   }
 }
 
-function parseArm(text: string): OcalArm | null {
-  const match = text.match(ARM_RE)
+function parseArm(text: string): ZyalArm | null {
+  const close = text.match(CLOSE_RE)
+  if (!close) return null
+  const afterClose = text.slice((close.index ?? 0) + close[0].length).trim()
+  const match = afterClose.match(/^ZYAL_ARM RUN_FOREVER id=(?<id>[A-Za-z0-9._-]+)$/)
   if (!match?.groups?.id) return null
   return {
     action: "RUN_FOREVER",
@@ -1054,7 +1710,7 @@ function parseArm(text: string): OcalArm | null {
   }
 }
 
-function hashSpec(spec: OcalScript) {
+function hashSpec(spec: ZyalScript) {
   const stable = stableStringify(spec)
   return createHash("sha256").update(stable).digest("hex")
 }

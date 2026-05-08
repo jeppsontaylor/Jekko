@@ -5,10 +5,10 @@ import {
   captureBaselines,
   type ConstraintBaselines,
 } from "@/session/daemon-constraints"
-import type { OcalConstraint } from "@/agent-script/schema"
+import type { ZyalConstraint } from "@/agent-script/schema"
 
 describe("daemon constraints", () => {
-  const makeConstraint = (overrides: Partial<OcalConstraint> = {}): OcalConstraint => ({
+  const makeConstraint = (overrides: Partial<ZyalConstraint> = {}): ZyalConstraint => ({
     name: "test-constraint",
     check: { shell: "echo 5" },
     invariant: "gte_baseline",
@@ -75,7 +75,7 @@ describe("daemon constraints", () => {
   })
 
   test("captureBaselines captures values from shellRunner", () => {
-    const constraints: OcalConstraint[] = [
+    const constraints: ZyalConstraint[] = [
       makeConstraint({ name: "a", baseline: "capture_on_start" }),
       makeConstraint({ name: "b", baseline: "capture_on_checkpoint" }),
       makeConstraint({ name: "c", baseline: "capture_on_start" }),
@@ -92,7 +92,7 @@ describe("daemon constraints", () => {
   })
 
   test("evaluateAllConstraints returns first violation", () => {
-    const constraints: OcalConstraint[] = [
+    const constraints: ZyalConstraint[] = [
       makeConstraint({ name: "ok", invariant: "equals_zero" }),
       makeConstraint({ name: "bad", invariant: "equals_zero" }),
     ]
@@ -110,7 +110,7 @@ describe("daemon constraints", () => {
   })
 
   test("evaluateAllConstraints passes when all constraints pass", () => {
-    const constraints: OcalConstraint[] = [
+    const constraints: ZyalConstraint[] = [
       makeConstraint({ name: "a", invariant: "equals_zero" }),
       makeConstraint({ name: "b", invariant: "equals_zero" }),
     ]

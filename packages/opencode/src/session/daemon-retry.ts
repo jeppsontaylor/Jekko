@@ -1,4 +1,4 @@
-import type { OcalRetryPolicy, OcalRetry } from "@/agent-script/schema"
+import type { ZyalRetryPolicy, ZyalRetry } from "@/agent-script/schema"
 
 /**
  * Retry policy engine.
@@ -12,10 +12,10 @@ export type RetryCategory = "shell_checks" | "checkpoint" | "worker_spawn" | "st
  * Override takes precedence, then default, then hardcoded fallback.
  */
 export function resolveRetryPolicy(
-  retry: OcalRetry | undefined,
+  retry: ZyalRetry | undefined,
   category: RetryCategory,
-): Required<OcalRetryPolicy> {
-  const fallback: Required<OcalRetryPolicy> = {
+): Required<ZyalRetryPolicy> {
+  const fallback: Required<ZyalRetryPolicy> = {
     max_attempts: 1,
     backoff: "none",
     initial_delay: "0s",
@@ -41,7 +41,7 @@ export function resolveRetryPolicy(
  * Compute the delay in milliseconds for a given attempt number.
  * attempt is 0-indexed (0 = first retry after initial failure).
  */
-export function computeRetryDelay(policy: Required<OcalRetryPolicy>, attempt: number): number {
+export function computeRetryDelay(policy: Required<ZyalRetryPolicy>, attempt: number): number {
   const initialMs = parseDuration(policy.initial_delay)
   const maxMs = parseDuration(policy.max_delay)
 
@@ -72,7 +72,7 @@ export function computeRetryDelay(policy: Required<OcalRetryPolicy>, attempt: nu
 /**
  * Check if another retry attempt is allowed.
  */
-export function canRetry(policy: Required<OcalRetryPolicy>, currentAttempt: number): boolean {
+export function canRetry(policy: Required<ZyalRetryPolicy>, currentAttempt: number): boolean {
   return currentAttempt < policy.max_attempts
 }
 

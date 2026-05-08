@@ -8,9 +8,9 @@ import {
   getStoresByScope,
   shouldRetain,
 } from "../../src/session/daemon-memory"
-import type { OcalMemory } from "../../src/agent-script/schema"
+import type { ZyalMemory } from "../../src/agent-script/schema"
 
-const testMemory: OcalMemory = {
+const testMemory: ZyalMemory = {
   stores: {
     task_context: {
       scope: "task",

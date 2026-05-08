@@ -1,5 +1,5 @@
 import { DialogSelect, type DialogSelectOption } from "@tui/ui/dialog-select"
-import { getOcalExample, listOcalExamples } from "@/agent-script/examples"
+import { getZyalExample, listZyalExamples } from "@/agent-script/examples"
 import { useDialog } from "@tui/ui/dialog"
 
 export type DialogDaemonProps = {
@@ -7,7 +7,7 @@ export type DialogDaemonProps = {
 }
 
 export function buildDaemonLibraryOptions() {
-  return listOcalExamples().map((example) => ({
+  return listZyalExamples().map((example) => ({
     title: example.title,
     description: example.description,
     value: example.id,
@@ -19,7 +19,7 @@ export function DialogDaemon(props: DialogDaemonProps) {
   const options: DialogSelectOption<string>[] = buildDaemonLibraryOptions().map((option) => ({
     ...option,
     onSelect: () => {
-      const next = getOcalExample(option.value)
+      const next = getZyalExample(option.value)
       if (next) props.onSelect(next.text)
       dialog.clear()
     },

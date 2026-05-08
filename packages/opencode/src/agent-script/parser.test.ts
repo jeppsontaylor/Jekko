@@ -1,34 +1,75 @@
 import { describe, expect, test } from "bun:test"
 import { Effect } from "effect"
-import { detectOcal } from "./activation"
-import { getOcalExample, listOcalExamples } from "./examples"
-import { extractOcalBlock, parseOcal } from "./parser"
+import fs from "fs"
+import path from "path"
+import { detectZyal } from "./activation"
+import { getZyalExample, listZyalExamples } from "./examples"
+import { extractZyalBlock, parseZyal } from "./parser"
 
-describe("OCAL parser", () => {
+describe("ZYAL parser", () => {
   test("accepts a valid example", async () => {
-    const example = getOcalExample("jankurai-clean-worktree")
+    const example = getZyalExample("jankurai-clean-worktree")
     expect(example).toBeDefined()
-    const parsed = await Effect.runPromise(parseOcal(example!.text))
+    const parsed = await Effect.runPromise(parseZyal(example!.text))
     expect(parsed.spec.intent).toBe("daemon")
     expect(parsed.spec.confirm).toBe("RUN_FOREVER")
     expect(parsed.preview.armed).toBe(true)
   })
 
   test("detects draft ocals without arm", () => {
-    const example = getOcalExample("fix-until-tests-pass")!
-    const draft = example.text.replace(/OCAL_ARM RUN_FOREVER id=.*\n?$/, "")
-    const detected = detectOcal(draft)
+    const example = getZyalExample("fix-until-tests-pass")!
+    const draft = example.text.replace(/ZYAL_ARM RUN_FOREVER id=.*\n?$/, "")
+    const detected = detectZyal(draft)
     expect(detected.kind).toBe("preview")
     if (detected.kind === "preview") expect(detected.preview.armed).toBe(false)
   })
 
   test("rejects missing open block", async () => {
-    const result = await Effect.runPromiseExit(parseOcal("hello"))
+    const result = await Effect.runPromiseExit(parseZyal("hello"))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts leading blank and comment-only preambles", async () => {
+    const text = `# generated example
+# safe comment
+
+<<<ZYAL v1:daemon id=test>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+job:
+  name: test
+  objective: test
+stop:
+  all:
+    - git_clean: {}
+<<<END_ZYAL id=test>>>
+ZYAL_ARM RUN_FOREVER id=test`
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.id).toBe("test")
+    expect(detectZyal(text).kind).toBe("preview")
+  })
+
+  test("rejects arbitrary prose before the ZYAL sentinel", async () => {
+    const text = `This is not a comment.
+<<<ZYAL v1:daemon id=test>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+job:
+  name: test
+  objective: test
+stop:
+  all:
+    - git_clean: {}
+<<<END_ZYAL id=test>>>
+ZYAL_ARM RUN_FOREVER id=test`
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects unknown top-level keys", async () => {
-    const text = `<<<OCAL v1:daemon id=test>>>
+    const text = `<<<ZYAL v1:daemon id=test>>>
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
@@ -39,14 +80,14 @@ bogus: true
 stop:
   all:
     - git_clean: {}
-<<<END_OCAL id=test>>>
-OCAL_ARM RUN_FOREVER id=test`
-    const result = await Effect.runPromiseExit(parseOcal(text))
+<<<END_ZYAL id=test>>>
+ZYAL_ARM RUN_FOREVER id=test`
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects unknown nested keys outside incubator", async () => {
-    const text = `<<<OCAL v1:daemon id=test>>>
+    const text = `<<<ZYAL v1:daemon id=test>>>
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
@@ -57,20 +98,15 @@ job:
 stop:
   all:
     - git_clean: {}
-<<<END_OCAL id=test>>>
-OCAL_ARM RUN_FOREVER id=test`
-    const result = await Effect.runPromiseExit(parseOcal(text))
+<<<END_ZYAL id=test>>>
+ZYAL_ARM RUN_FOREVER id=test`
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
-  test("rejects code fences", async () => {
-    const text = "```yaml\n<<<OCAL v1:daemon id=test>>>\nversion: v1\nintent: daemon\nconfirm: RUN_FOREVER\njob:\n  name: test\n  objective: test\nstop:\n  all:\n    - git_clean: {}\n<<<END_OCAL id=test>>>\nOCAL_ARM RUN_FOREVER id=test\n```"
-    const result = await Effect.runPromiseExit(parseOcal(text))
-    expect(result._tag).toBe("Failure")
-  })
-
-  test("rejects mismatched block ids", async () => {
-    const text = `<<<OCAL v1:daemon id=one>>>
+  test("rejects old legacy sentinels and arm markers", async () => {
+    const legacy = ["O", "CAL"].join("")
+    const text = `<<<${legacy} v1:daemon id=test>>>
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
@@ -80,19 +116,108 @@ job:
 stop:
   all:
     - git_clean: {}
-<<<END_OCAL id=two>>>
-OCAL_ARM RUN_FOREVER id=one`
-    const result = await Effect.runPromiseExit(parseOcal(text))
+<<<END_${legacy} id=test>>>
+${legacy}_ARM RUN_FOREVER id=test`
+    expect(extractZyalBlock(text)).toBeNull()
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
+  test("rejects code fences", async () => {
+    const text = "```yaml\n<<<ZYAL v1:daemon id=test>>>\nversion: v1\nintent: daemon\nconfirm: RUN_FOREVER\njob:\n  name: test\n  objective: test\nstop:\n  all:\n    - git_clean: {}\n<<<END_ZYAL id=test>>>\nZYAL_ARM RUN_FOREVER id=test\n```"
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects mismatched block ids", async () => {
+    const text = `<<<ZYAL v1:daemon id=one>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+job:
+  name: test
+  objective: test
+stop:
+  all:
+    - git_clean: {}
+<<<END_ZYAL id=two>>>
+ZYAL_ARM RUN_FOREVER id=one`
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects duplicate ZYAL blocks and trailing content", async () => {
+    const first = makeZyal("")
+    const duplicate = `${first}\n${first}`
+    const duplicateResult = await Effect.runPromiseExit(parseZyal(duplicate))
+    expect(duplicateResult._tag).toBe("Failure")
+
+    const trailing = `${first}\n# unsafe trailing text`
+    const trailingResult = await Effect.runPromiseExit(parseZyal(trailing))
+    expect(trailingResult._tag).toBe("Failure")
+  })
+
   test("lists bundled examples", () => {
-    expect(listOcalExamples().length).toBeGreaterThan(0)
-    expect(extractOcalBlock(getOcalExample("multi-worker-audit")!.text)).toBeTruthy()
+    expect(listZyalExamples().length).toBeGreaterThan(0)
+    expect(extractZyalBlock(getZyalExample("multi-worker-audit")!.text)).toBeTruthy()
+  })
+
+  test("parses full docs ZYAL examples and wow.yml", async () => {
+    const examplesDir = path.resolve(import.meta.dir, "../../../../docs/ZYAL/examples")
+    const files = fs.readdirSync(examplesDir).filter((file) => file.endsWith(".zyal.yml")).sort()
+    expect(files).toEqual([
+      "01-fix-until-green.zyal.yml",
+      "02-hypothesis-tournament.zyal.yml",
+      "03-billion-loc-monorepo.zyal.yml",
+      "04-fleet-portfolio.zyal.yml",
+      "05-secure-mcp-lockdown.zyal.yml",
+      "06-evidence-graph-merge.zyal.yml",
+      "07-self-improving-skills.zyal.yml",
+      "08-full-power-runbook.zyal.yml",
+      "09-control-plane-preview.zyal.yml",
+    ])
+    const paths = files.map((file) => path.join(examplesDir, file))
+    paths.push(path.resolve(import.meta.dir, "../../../../wow.yml"))
+
+    for (const file of paths) {
+      const text = fs.readFileSync(file, "utf8")
+      const parsed = await Effect.runPromise(parseZyal(text))
+      expect(parsed.spec.intent).toBe("daemon")
+      expect(parsed.preview.id).toBe(parsed.spec.id)
+    }
+  })
+
+  test("accepts the control-plane preview example", async () => {
+    const parsed = await Effect.runPromise(parseZyal(getZyalExample("control-plane-preview")!.text))
+    expect(parsed.preview.interop_enabled).toBe(true)
+    expect(parsed.preview.runtime_enabled).toBe(true)
+    expect(parsed.preview.capability_negotiation_enabled).toBe(true)
+    expect(parsed.preview.memory_kernel_enabled).toBe(true)
+    expect(parsed.preview.evidence_graph_enabled).toBe(true)
+    expect(parsed.preview.trust_enabled).toBe(true)
+    expect(parsed.preview.requirements_enabled).toBe(true)
+    expect(parsed.preview.evaluation_enabled).toBe(true)
+    expect(parsed.preview.release_enabled).toBe(true)
+    expect(parsed.preview.roles_count).toBe(2)
+    expect(parsed.preview.channels_count).toBe(3)
+    expect(parsed.preview.imports_count).toBe(2)
+    expect(parsed.preview.reasoning_privacy_enabled).toBe(true)
+    expect(parsed.preview.unsupported_feature_policy_enabled).toBe(true)
+    expect(parsed.preview.unsupported_feature_policy_summary).toContain("required:13")
+  })
+
+  test("rejects unsupported required features in fail-closed preview policy", async () => {
+    const text = makeZyal(`
+unsupported_feature_policy:
+  required: [totally_unknown_feature]
+  fail_closed: true
+  on_missing: reject`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid incubator block", async () => {
-    const parsed = await Effect.runPromise(parseOcal(getOcalExample("hard-task-incubator")!.text))
+    const parsed = await Effect.runPromise(parseZyal(getZyalExample("hard-task-incubator")!.text))
     expect(parsed.spec.incubator?.enabled).toBe(true)
     expect(parsed.preview.incubator_enabled).toBe(true)
     expect(parsed.preview.incubator_passes.some((item) => item.includes("idea"))).toBe(true)
@@ -100,46 +225,46 @@ OCAL_ARM RUN_FOREVER id=one`
   })
 
   test("accepts the normal user incubator preset", async () => {
-    const parsed = await Effect.runPromise(parseOcal(getOcalExample("normal-user-incubator")!.text))
+    const parsed = await Effect.runPromise(parseZyal(getZyalExample("normal-user-incubator")!.text))
     expect(parsed.spec.incubator?.enabled).toBe(true)
     expect(parsed.preview.cleanup_summary).toContain("archive_artifacts")
     expect(parsed.preview.readiness_summary).toContain("promote_at:0.7")
   })
 
   test("rejects unknown incubator keys", async () => {
-    const text = getOcalExample("hard-task-incubator")!.text.replace("enabled: true", "enabled: true\n  allow_unbounded: true")
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const text = getZyalExample("hard-task-incubator")!.text.replace("enabled: true", "enabled: true\n  allow_unbounded: true")
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects unbounded incubator budgets", async () => {
-    const text = getOcalExample("hard-task-incubator")!.text.replace("max_passes_per_task: 7", "max_passes_per_task: .inf")
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const text = getZyalExample("hard-task-incubator")!.text.replace("max_passes_per_task: 7", "max_passes_per_task: .inf")
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects main worktree writes before promotion", async () => {
-    const text = getOcalExample("hard-task-incubator")!.text.replace("writes: scratch_only", "writes: main_worktree")
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const text = getZyalExample("hard-task-incubator")!.text.replace("writes: scratch_only", "writes: main_worktree")
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects prototype without isolation or scratch", async () => {
-    const text = getOcalExample("safe-prototype-promotion")!.text.replace("writes: isolated_worktree", "writes: main_worktree")
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const text = getZyalExample("safe-prototype-promotion")!.text.replace("writes: isolated_worktree", "writes: main_worktree")
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects idea count above configured parallel cap", async () => {
-    const text = getOcalExample("hard-task-incubator")!.text.replace("count: 3", "count: 4")
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const text = getZyalExample("hard-task-incubator")!.text.replace("count: 3", "count: 4")
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   // ─── v1.1 capability tests ────────────────────────────────────────────
 
   test("accepts a valid on handler block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 on:
   - signal: no_progress
     count_gte: 2
@@ -148,33 +273,33 @@ on:
   - signal: error
     do:
       - pause: true`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.on?.length).toBe(2)
     expect(parsed.preview.on_handler_count).toBe(2)
   })
 
   test("rejects on handler with empty do list", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 on:
   - signal: no_progress
     do: []`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects on handler with invalid count_gte", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 on:
   - signal: error
     count_gte: 0
     do:
       - abort: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid fan_out block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 fan_out:
   strategy: map_reduce
   split:
@@ -186,14 +311,14 @@ fan_out:
   reduce:
     strategy: merge_all
   on_partial_failure: continue`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.fan_out).toBeDefined()
     expect(parsed.preview.fan_out_enabled).toBe(true)
     expect(parsed.preview.fan_out_summary).toContain("merge_all")
   })
 
   test("rejects fan_out best_score without score_key", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 fan_out:
   split:
     items: ["a"]
@@ -201,12 +326,12 @@ fan_out:
     agent: build
   reduce:
     strategy: best_score`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects fan_out with non-positive max_parallel", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 fan_out:
   split:
     items: ["a"]
@@ -214,12 +339,12 @@ fan_out:
     max_parallel: 0
   reduce:
     strategy: merge_all`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid guardrails block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 guardrails:
   input:
     - name: no-force-push
@@ -230,36 +355,36 @@ guardrails:
       shell: "npx tsgo --noEmit"
       on_fail: retry
       max_retries: 2`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.guardrails).toBeDefined()
     expect(parsed.preview.guardrail_count).toBe(2)
     expect(parsed.preview.guardrails_summary).toContain("input:1")
   })
 
   test("rejects guardrails with empty deny_patterns", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 guardrails:
   input:
     - name: bad
       deny_patterns: []
       action: block`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid assertions block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 assertions:
   require_structured_output: true
   on_invalid: retry
   max_retries: 2`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.assertions?.require_structured_output).toBe(true)
     expect(parsed.preview.assertions_enabled).toBe(true)
   })
 
   test("accepts a valid retry block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 retry:
   default:
     max_attempts: 3
@@ -270,22 +395,22 @@ retry:
     shell_checks:
       max_attempts: 5
       backoff: linear`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.retry).toBeDefined()
     expect(parsed.preview.retry_enabled).toBe(true)
   })
 
   test("rejects retry with non-positive max_attempts", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 retry:
   default:
     max_attempts: 0`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid hooks block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 hooks:
   on_start:
     - run: "git fetch origin main"
@@ -295,14 +420,14 @@ hooks:
   after_checkpoint:
     - run: "echo done"
       on_fail: warn`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.hooks).toBeDefined()
     expect(parsed.preview.hook_count).toBe(3)
     expect(parsed.preview.hooks_summary).toContain("on_start:1")
   })
 
   test("accepts a valid constraints block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 constraints:
   - name: test-count-stable
     check:
@@ -315,14 +440,14 @@ constraints:
       shell: "find src/ -name '*.bin' | wc -l"
     invariant: equals_zero
     on_violation: block`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.constraints?.length).toBe(2)
     expect(parsed.preview.constraint_count).toBe(2)
     expect(parsed.preview.constraints_summary).toContain("test-count-stable:gte_baseline")
   })
 
   test("rejects constraints with duplicate names", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 constraints:
   - name: dup
     check:
@@ -332,24 +457,24 @@ constraints:
     check:
       shell: "echo 2"
     invariant: non_zero`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects constraint with baseline incompatible with equals_zero", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 constraints:
   - name: bad
     check:
       shell: "echo 0"
     baseline: capture_on_start
     invariant: equals_zero`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts full-featured v1.1 example", async () => {
-    const parsed = await Effect.runPromise(parseOcal(getOcalExample("full-v1.1-kitchen-sink")!.text))
+    const parsed = await Effect.runPromise(parseZyal(getZyalExample("full-v1.1-kitchen-sink")!.text))
     expect(parsed.spec.on?.length).toBeGreaterThan(0)
     expect(parsed.spec.guardrails).toBeDefined()
     expect(parsed.spec.hooks).toBeDefined()
@@ -361,8 +486,8 @@ constraints:
   })
 })
 
-/** Helper: produce a minimal armed OCAL block with extra YAML appended */
-function makeOcal(extra: string) {
+/** Helper: produce a minimal armed ZYAL block with extra YAML appended */
+function makeZyal(extra: string) {
   const body = `version: v1
 intent: daemon
 confirm: RUN_FOREVER
@@ -375,17 +500,17 @@ stop:
         command: "true"
         timeout: 1s
 ${extra.replace(/^\n/, "")}`
-  return `<<<OCAL v1:daemon id=test>>>
+  return `<<<ZYAL v1:daemon id=test>>>
 ${body}
-<<<END_OCAL id=test>>>
-OCAL_ARM RUN_FOREVER id=test`
+<<<END_ZYAL id=test>>>
+ZYAL_ARM RUN_FOREVER id=test`
 }
 
 // ─── v2 parser tests ────────────────────────────────────────────────────────
 
-describe("OCAL parser v2", () => {
+describe("ZYAL parser v2", () => {
   test("accepts a valid workflow block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: state_machine
   initial: discover
@@ -401,26 +526,26 @@ workflow:
             evidence_exists: impact_map
     done:
       terminal: true`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.workflow_enabled).toBe(true)
     expect(parsed.preview.workflow_summary).toContain("state_machine")
     expect(parsed.preview.workflow_summary).toContain("states:2")
   })
 
   test("rejects workflow with invalid initial state", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: state_machine
   initial: nonexistent
   states:
     a:
       terminal: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects workflow with invalid transition target", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: state_machine
   initial: a
@@ -432,12 +557,12 @@ workflow:
             all_checks_pass: true
     b:
       terminal: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects workflow with terminal state having transitions", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: state_machine
   initial: a
@@ -448,12 +573,12 @@ workflow:
         - to: a
           when:
             all_checks_pass: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects workflow with no terminal state", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: state_machine
   initial: a
@@ -463,12 +588,12 @@ workflow:
         - to: a
           when:
             all_checks_pass: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects workflow with unknown nested keys", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: state_machine
   initial: a
@@ -476,12 +601,12 @@ workflow:
   states:
     a:
       terminal: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid memory block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 memory:
   stores:
     task_context:
@@ -500,25 +625,25 @@ memory:
   provenance:
     track_source: true
     hash_chain: true`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.memory_store_count).toBe(2)
     expect(parsed.preview.memory_summary).toContain("task_context:task")
   })
 
   test("rejects memory with unknown store keys", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 memory:
   stores:
     ctx:
       scope: task
       retention: permanent
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid evidence block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 evidence:
   require_before_promote:
     - type: test_results
@@ -530,35 +655,35 @@ evidence:
   bundle_format: json
   sign: sha256
   archive: true`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.evidence_enabled).toBe(true)
     expect(parsed.preview.evidence_summary).toContain("test_results")
   })
 
   test("rejects evidence with duplicate types", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 evidence:
   require_before_promote:
     - type: test_results
       must_pass: true
     - type: test_results
       must_exist: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects evidence with empty type", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 evidence:
   require_before_promote:
     - type: ""
       must_pass: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid approvals block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 approvals:
   gates:
     plan_review:
@@ -578,24 +703,24 @@ approvals:
       - tech_lead
       - director
     auto_escalate_after: 48h`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.approval_gate_count).toBe(2)
     expect(parsed.preview.approvals_summary).toContain("plan_review:tech_lead")
   })
 
   test("rejects approvals with unknown gate keys", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 approvals:
   gates:
     review:
       required_role: admin
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("validates approval gate references in workflow", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: state_machine
   initial: a
@@ -612,12 +737,12 @@ approvals:
   gates:
     other_gate:
       required_role: admin`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts combined v2 blocks", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 workflow:
   type: pipeline
   initial: plan
@@ -645,7 +770,7 @@ approvals:
   gates:
     final_review:
       required_role: admin`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.workflow_enabled).toBe(true)
     expect(parsed.preview.memory_store_count).toBe(1)
     expect(parsed.preview.evidence_enabled).toBe(true)
@@ -655,9 +780,9 @@ approvals:
 
 // ─── v2 wave 2 parser tests ─────────────────────────────────────────────────
 
-describe("OCAL parser v2 wave 2", () => {
+describe("ZYAL parser v2 wave 2", () => {
   test("accepts a valid skills block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 skills:
   registry:
     code_review:
@@ -674,32 +799,32 @@ skills:
       writes: isolated_worktree
   allow_creation: true
   max_skills: 10`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.skills_count).toBe(2)
     expect(parsed.preview.skills_summary).toContain("code_review:builtin")
   })
 
   test("rejects skills with unknown nested keys", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 skills:
   registry:
     my_skill:
       description: test
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects skills with non-positive max_skills", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 skills:
   max_skills: 0`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid sandbox block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 sandbox:
   paths:
     - path: src/
@@ -720,46 +845,46 @@ sandbox:
     - PATH
   env_deny:
     - AWS_SECRET_KEY`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.sandbox_enabled).toBe(true)
     expect(parsed.preview.sandbox_summary).toContain("paths:2")
     expect(parsed.preview.sandbox_summary).toContain("net:allowlist")
   })
 
   test("rejects sandbox with unknown nested keys", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 sandbox:
   paths:
     - path: src/
       access: write
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects sandbox with allowlist but wrong outbound", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 sandbox:
   network:
     outbound: deny
     allowlist:
       - example.com`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects sandbox with empty path", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 sandbox:
   paths:
     - path: ""
       access: write`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid security block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 security:
   trust_zones:
     critical:
@@ -780,37 +905,37 @@ security:
       - API_KEY
     redact_from_logs: true
     rotate_after: 30d`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.security_enabled).toBe(true)
     expect(parsed.preview.security_summary).toContain("zones:1")
     expect(parsed.preview.security_summary).toContain("scan:input")
   })
 
   test("rejects security with unknown nested keys", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 security:
   trust_zones:
     zone1:
       paths:
         - src/
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects security with empty deny pattern", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 security:
   injection:
     scan_inputs: true
     deny_patterns:
       - ""`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts a valid observability block", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 observability:
   spans:
     emit: all
@@ -834,7 +959,7 @@ observability:
     include:
       - spans
       - costs`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.observability_enabled).toBe(true)
     expect(parsed.preview.observability_summary).toContain("spans:all")
     expect(parsed.preview.observability_summary).toContain("metrics:2")
@@ -842,7 +967,7 @@ observability:
   })
 
   test("rejects observability with duplicate metric names", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 observability:
   metrics:
     - name: x
@@ -851,31 +976,31 @@ observability:
     - name: x
       type: gauge
       source: b`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects observability with non-positive budget", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 observability:
   cost:
     budget: 0`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("rejects observability with invalid alert_at_percent", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 observability:
   cost:
     budget: 10
     alert_at_percent: 150`)
-    const result = await Effect.runPromiseExit(parseOcal(text))
+    const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
 
   test("accepts combined wave 2 blocks", async () => {
-    const text = makeOcal(`
+    const text = makeZyal(`
 skills:
   registry:
     reviewer:
@@ -890,10 +1015,203 @@ security:
 observability:
   cost:
     budget: 50`)
-    const parsed = await Effect.runPromise(parseOcal(text))
+    const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.preview.skills_count).toBe(1)
     expect(parsed.preview.sandbox_enabled).toBe(true)
     expect(parsed.preview.security_enabled).toBe(true)
     expect(parsed.preview.observability_enabled).toBe(true)
+  })
+})
+
+describe("ZYAL parser v2.1 and v2.2", () => {
+  test("accepts power blocks and fleet jnoccio", async () => {
+    const text = makeZyal(`
+arming:
+  preview_hash_required: true
+  host_nonce_required: true
+  accepted_origins: [trusted_user_message, signed_cli_input]
+  arm_token_single_use: true
+capabilities:
+  default: deny
+  rules:
+    - id: read
+      tool: read
+      decision: allow
+    - id: shell-tests
+      tool: shell
+      command_regex: "^bun test"
+      decision: allow
+  command_floor:
+    always_block: ["git push --force"]
+quality:
+  anti_vibe:
+    enabled: true
+    fail_closed: true
+  diff_budget:
+    max_files_changed: 10
+    max_added_lines: 500
+    on_violation: require_approval
+  checks:
+    - name: no-only
+      pattern: "test\\\\.only"
+      scope: file_diff
+      on_violation: block_promotion
+experiments:
+  strategy: disjoint_tournament
+  lanes:
+    - id: minimal
+      hypothesis: smallest safe patch
+      isolation: git_worktree
+      budget:
+        max_iterations: 2
+        max_diff_lines: 200
+  max_parallel: 1
+  reduce:
+    strategy: best_verified_patch
+models:
+  profiles:
+    builder: { provider: anthropic, model: claude-sonnet-4-6 }
+    critic: { provider: openai, model: gpt-5 }
+  routes:
+    implement: builder
+    review: critic
+  critic:
+    must_use_different_provider: true
+  confidence_cap: 0.6
+budgets:
+  run:
+    iterations: 10
+    cost_usd: 5
+    on_exhaust: pause
+triggers:
+  anti_recursion: true
+  list:
+    - id: manual
+      kind: manual
+      max_runs_per_sha: 1
+rollback:
+  required_when:
+    risk_score_gte: 0.6
+  plan_required: true
+done:
+  require: [tests_pass]
+  forbid: [test_skip]
+repo_intelligence:
+  scale: large
+  indexes: [rg]
+  scope_control:
+    require_scope_before_edit: true
+    max_initial_scope_files: 20
+  blast_radius:
+    compute_on: [diff]
+    pause_when_score_gte: 0.9
+fleet:
+  max_workers: 3
+  isolation: same_session
+  jnoccio:
+    enabled: true
+    base_url: "http://127.0.0.1:4317"
+    metrics_ws: "/v1/jnoccio/metrics/ws"
+    max_instances: 2`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.preview.arming_enabled).toBe(true)
+    expect(parsed.preview.capabilities_rule_count).toBe(2)
+    expect(parsed.preview.quality_enabled).toBe(true)
+    expect(parsed.preview.experiments_enabled).toBe(true)
+    expect(parsed.preview.models_enabled).toBe(true)
+    expect(parsed.preview.budgets_enabled).toBe(true)
+    expect(parsed.preview.triggers_count).toBe(1)
+    expect(parsed.preview.rollback_enabled).toBe(true)
+    expect(parsed.preview.done_enabled).toBe(true)
+    expect(parsed.preview.repo_intel_enabled).toBe(true)
+    expect(parsed.preview.fleet_summary).toContain("jnoccio:on")
+  })
+
+  test("rejects unknown nested keys in power blocks", async () => {
+    const text = makeZyal(`
+capabilities:
+  rules:
+    - id: bad
+      decision: allow
+      untracked: true`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects agents above fleet cap", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 2
+agents:
+  workers:
+    - id: builders
+      count: 3
+      agent: build`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects fan-out above fleet cap", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 2
+fan_out:
+  split:
+    items: ["a", "b", "c"]
+  worker:
+    max_parallel: 3
+  reduce:
+    strategy: merge_all`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects experiments above fleet cap", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+experiments:
+  lanes:
+    - id: a
+      hypothesis: a
+    - id: b
+      hypothesis: b
+  max_parallel: 2`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects incubator concurrency above fleet cap", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 2
+incubator:
+  enabled: true
+  budget:
+    max_passes_per_task: 3
+    max_rounds_per_task: 1
+    max_active_tasks: 2
+    max_parallel_idea_passes: 2
+  passes:
+    - id: ideas
+      type: idea
+      context: blind
+      writes: scratch_only
+      count: 2
+  promotion:
+    promote_at: 0.7`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects fleet jnoccio instance cap violations", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 2
+  jnoccio:
+    enabled: true
+    max_instances: 21`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
   })
 })

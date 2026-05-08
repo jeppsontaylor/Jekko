@@ -1,7 +1,7 @@
 import { Effect, Layer, Context } from "effect"
 import { Git } from "@/git"
 import { DaemonChecks } from "./daemon-checks"
-import type { OcalCheckpoint, OcalScript } from "@/agent-script/schema"
+import type { ZyalCheckpoint, ZyalScript } from "@/agent-script/schema"
 
 export type CheckpointResult = {
   readonly ok: boolean
@@ -12,8 +12,8 @@ export type CheckpointResult = {
 export interface Interface {
   readonly runCheckpoint: (input: {
     cwd: string
-    spec: OcalScript
-    checkpoint?: OcalCheckpoint
+    spec: ZyalScript
+    checkpoint?: ZyalCheckpoint
   }) => Effect.Effect<CheckpointResult, any, any>
 }
 
@@ -27,8 +27,8 @@ export const layer = Layer.effect(
 
     const runCheckpoint = Effect.fn("DaemonCheckpoint.runCheckpoint")(function* (input: {
       cwd: string
-      spec: OcalScript
-      checkpoint?: OcalCheckpoint
+      spec: ZyalScript
+      checkpoint?: ZyalCheckpoint
     }) {
       if (!input.checkpoint) return { ok: true }
       const verify = input.checkpoint.verify ?? []

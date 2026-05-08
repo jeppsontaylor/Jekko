@@ -6,9 +6,9 @@ import {
   hasRequiredEvidence,
   getTerminalStates,
 } from "../../src/session/daemon-workflow"
-import type { OcalWorkflow } from "../../src/agent-script/schema"
+import type { ZyalWorkflow } from "../../src/agent-script/schema"
 
-const basicWorkflow: OcalWorkflow = {
+const basicWorkflow: ZyalWorkflow = {
   type: "state_machine",
   initial: "discover",
   states: {
@@ -136,7 +136,7 @@ describe("daemon workflow", () => {
   })
 
   test("constraint_violated triggers transition", () => {
-    const wf: OcalWorkflow = {
+    const wf: ZyalWorkflow = {
       type: "state_machine",
       initial: "a",
       states: {
@@ -174,7 +174,7 @@ describe("daemon workflow", () => {
   })
 
   test("detectCycles returns empty for acyclic graph", () => {
-    const dag: OcalWorkflow = {
+    const dag: ZyalWorkflow = {
       type: "dag",
       initial: "a",
       states: {
@@ -212,7 +212,7 @@ describe("daemon workflow", () => {
   })
 
   test("no transitions returns null", () => {
-    const wf: OcalWorkflow = {
+    const wf: ZyalWorkflow = {
       type: "state_machine",
       initial: "a",
       states: {

@@ -9,9 +9,9 @@ import {
   getTrustZoneNames,
   getZonePaths,
 } from "../../src/session/daemon-security"
-import type { OcalSecurity } from "../../src/agent-script/schema"
+import type { ZyalSecurity } from "../../src/agent-script/schema"
 
-const testSecurity: OcalSecurity = {
+const testSecurity: ZyalSecurity = {
   trust_zones: {
     critical: {
       paths: ["src/auth", "src/payments"],
@@ -99,7 +99,7 @@ describe("daemon security", () => {
   })
 
   test("scanForInjection skips when not scanning direction", () => {
-    const security: OcalSecurity = {
+    const security: ZyalSecurity = {
       injection: { scan_inputs: true, scan_outputs: false, deny_patterns: ["eval("] },
     }
     const result = scanForInjection(security, "eval('x')", "output")

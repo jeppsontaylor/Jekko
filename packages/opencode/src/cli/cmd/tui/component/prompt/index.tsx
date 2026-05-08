@@ -30,8 +30,8 @@ import { useExit } from "../../context/exit"
 import * as Clipboard from "../../util/clipboard"
 import type { AssistantMessage, FilePart, UserMessage } from "@opencode-ai/sdk/v2"
 import { TuiEvent } from "../../event"
-import { detectOcal } from "@/agent-script/activation"
-import { setOcalFlashSource } from "@tui/context/ocal-flash"
+import { detectZyal } from "@/agent-script/activation"
+import { setZyalFlashSource } from "@tui/context/zyal-flash"
 import { iife } from "@/util/iife"
 import { Locale } from "@/util/locale"
 import { formatDuration } from "@/util/format"
@@ -352,15 +352,15 @@ export function Prompt(props: PromptProps) {
 
   const daemonDraft = createMemo(() => {
     const text = store.prompt.input.trim()
-    if (!text.startsWith("<<<OCAL v1:daemon id=")) return { kind: "none" as const }
-    return detectOcal(store.prompt.input)
+    if (!text.startsWith("<<<ZYAL v1:daemon id=")) return { kind: "none" as const }
+    return detectZyal(store.prompt.input)
   })
 
-  // Flash the TUI gold when the user is composing an OCAL block.
+  // Flash the TUI gold when the user is composing an ZYAL block.
   createEffect(() => {
-    setOcalFlashSource("prompt", daemonDraft().kind !== "none")
+    setZyalFlashSource("prompt", daemonDraft().kind !== "none")
   })
-  onCleanup(() => setOcalFlashSource("prompt", false))
+  onCleanup(() => setZyalFlashSource("prompt", false))
 
   createEffect(
     on(
@@ -850,7 +850,7 @@ export function Prompt(props: PromptProps) {
 
     let daemonMode: ReturnType<typeof daemonDraft> = daemonDraft()
     if (daemonMode.kind === "invalid") {
-      const sendAsPlainText = await DialogConfirm.show(dialog, "Invalid OCAL", daemonMode.error, "send as plain text")
+      const sendAsPlainText = await DialogConfirm.show(dialog, "Invalid ZYAL", daemonMode.error, "send as plain text")
       if (!sendAsPlainText) return false
       daemonMode = { kind: "none" }
     } else if (daemonMode.kind === "preview") {
@@ -1542,12 +1542,12 @@ export function Prompt(props: PromptProps) {
                   <Switch>
                     <Match when={daemonDraft().kind === "preview"}>
                       <text fg={theme.warning}>
-                        <b>✓ OCAL</b>
+                        <b>✓ ZYAL</b>
                       </text>
                     </Match>
                     <Match when={daemonDraft().kind === "invalid"}>
                       <text fg={theme.error}>
-                        <b>✗ OCAL</b>
+                        <b>✗ ZYAL</b>
                         <span style={{ fg: theme.textMuted }}>
                           {" "}{(daemonDraft() as { kind: "invalid"; error: string }).error.slice(0, 40)}
                         </span>

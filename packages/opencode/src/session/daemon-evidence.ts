@@ -1,8 +1,8 @@
-import type { OcalEvidence, OcalEvidenceRequirement } from "@/agent-script/schema"
+import type { ZyalEvidence, ZyalEvidenceRequirement } from "@/agent-script/schema"
 import { createHash } from "crypto"
 
 /**
- * Evidence bundle builder and validator for OCAL v2.
+ * Evidence bundle builder and validator for ZYAL v2.
  *
  * Manages typed proof bundles that must be satisfied before promotion.
  * Supports hash-chain signing for audit integrity.
@@ -35,7 +35,7 @@ export type EvidenceViolation = {
  */
 export function createBundle(
   artifacts: EvidenceArtifact[],
-  config: OcalEvidence | undefined,
+  config: ZyalEvidence | undefined,
 ): EvidenceBundle {
   if (!config?.require_before_promote?.length) {
     return { artifacts, complete: true, missing: [], violations: [], bundleHash: undefined }
@@ -70,7 +70,7 @@ export function createBundle(
 export function addArtifact(
   bundle: EvidenceBundle,
   artifact: EvidenceArtifact,
-  config: OcalEvidence | undefined,
+  config: ZyalEvidence | undefined,
 ): EvidenceBundle {
   const existing = bundle.artifacts.findIndex((a) => a.type === artifact.type)
   let artifacts: EvidenceArtifact[]
@@ -133,11 +133,11 @@ export function collectArtifact(input: {
 /**
  * Get the list of required evidence types from config.
  */
-export function getRequiredTypes(config: OcalEvidence | undefined): string[] {
+export function getRequiredTypes(config: ZyalEvidence | undefined): string[] {
   return config?.require_before_promote?.map((r) => r.type) ?? []
 }
 
-function checkRequirement(req: OcalEvidenceRequirement, artifact: EvidenceArtifact): EvidenceViolation | null {
+function checkRequirement(req: ZyalEvidenceRequirement, artifact: EvidenceArtifact): EvidenceViolation | null {
   if (req.must_pass === true && artifact.value !== true) {
     return { type: req.type, requirement: "must_pass", actual: artifact.value }
   }

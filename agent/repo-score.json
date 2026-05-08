@@ -3445,10 +3445,10 @@
       "severity": "high",
       "category": "context",
       "path": "agent/owner-map.json",
-      "problem": "path `OCAL_MISSION.md` has no owner-map route",
+      "problem": "path `ZYAL_MISSION.md` has no owner-map route",
       "agent_fix": "add the narrowest stable prefix for this path to `agent/owner-map.json`",
       "evidence": [
-        "OCAL_MISSION.md"
+        "ZYAL_MISSION.md"
       ],
       "check_id": "HLT-003-OWNERLESS-PATH:context",
       "hardness": "hard",
@@ -3511,10 +3511,10 @@
       "severity": "high",
       "category": "proof",
       "path": "agent/test-map.json",
-      "problem": "path `OCAL_MISSION.md` has no test-map proof route",
+      "problem": "path `ZYAL_MISSION.md` has no test-map proof route",
       "agent_fix": "add the narrowest stable prefix and runnable proof command to `agent/test-map.json`",
       "evidence": [
-        "OCAL_MISSION.md"
+        "ZYAL_MISSION.md"
       ],
       "check_id": "HLT-004-UNMAPPED-PROOF:proof",
       "hardness": "hard",
@@ -14006,7 +14006,7 @@
       "lane": "fast",
       "owner": "agent",
       "task": "add the narrowest stable prefix and runnable proof command to `agent/test-map.json`",
-      "why": "path `OCAL_MISSION.md` has no test-map proof route"
+      "why": "path `ZYAL_MISSION.md` has no test-map proof route"
     },
     {
       "path": "crates/",
@@ -14076,7 +14076,7 @@
       "lane": "fast",
       "owner": "agent",
       "task": "add the narrowest stable prefix for this path to `agent/owner-map.json`",
-      "why": "path `OCAL_MISSION.md` has no owner-map route"
+      "why": "path `ZYAL_MISSION.md` has no owner-map route"
     },
     {
       "path": "packages/app/public/oc-theme-preload.js",

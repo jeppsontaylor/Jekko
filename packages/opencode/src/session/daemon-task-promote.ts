@@ -1,4 +1,4 @@
-import type { OcalIncubatorPromotion } from "@/agent-script/schema"
+import type { ZyalIncubatorPromotion } from "@/agent-script/schema"
 import type { DaemonStore } from "./daemon-store"
 
 export type PromotionDecision = {
@@ -20,7 +20,7 @@ export function evaluatePromotion(input: {
   task: DaemonStore.TaskInfo
   memories: DaemonStore.TaskMemoryInfo[]
   passes: DaemonStore.TaskPassInfo[]
-  promotion: OcalIncubatorPromotion
+  promotion: ZyalIncubatorPromotion
   maxPasses: number
 }) {
   const missing = missingRequirements(input.promotion.require ?? [], input.memories)

@@ -1,4 +1,4 @@
-import type { OcalHooks, OcalHookStep } from "@/agent-script/schema"
+import type { ZyalHooks, ZyalHookStep } from "@/agent-script/schema"
 
 /**
  * Lifecycle hook runner.
@@ -17,14 +17,14 @@ export type HookPhase =
 
 export type HookResult =
   | { ok: true }
-  | { ok: false; step: OcalHookStep; error: string }
+  | { ok: false; step: ZyalHookStep; error: string }
 
 export type HookAction = "pause" | "abort" | "warn" | "block_promotion" | "continue"
 
 /**
  * Get the hook steps for a specific lifecycle phase.
  */
-export function getHookSteps(hooks: OcalHooks | undefined, phase: HookPhase): readonly OcalHookStep[] {
+export function getHookSteps(hooks: ZyalHooks | undefined, phase: HookPhase): readonly ZyalHookStep[] {
   if (!hooks) return []
   return hooks[phase] ?? []
 }
@@ -32,14 +32,14 @@ export function getHookSteps(hooks: OcalHooks | undefined, phase: HookPhase): re
 /**
  * Determine the action to take when a hook step fails.
  */
-export function resolveHookFailureAction(step: OcalHookStep): HookAction {
+export function resolveHookFailureAction(step: ZyalHookStep): HookAction {
   return step.on_fail ?? "continue"
 }
 
 /**
  * Count total hooks across all phases.
  */
-export function countHooks(hooks: OcalHooks | undefined): number {
+export function countHooks(hooks: ZyalHooks | undefined): number {
   if (!hooks) return 0
   return Object.values(hooks).reduce((sum, arr) => sum + (arr?.length ?? 0), 0)
 }
@@ -47,7 +47,7 @@ export function countHooks(hooks: OcalHooks | undefined): number {
 /**
  * List all phases that have at least one hook defined.
  */
-export function activeHookPhases(hooks: OcalHooks | undefined): HookPhase[] {
+export function activeHookPhases(hooks: ZyalHooks | undefined): HookPhase[] {
   if (!hooks) return []
   const phases: HookPhase[] = []
   const allPhases: HookPhase[] = [

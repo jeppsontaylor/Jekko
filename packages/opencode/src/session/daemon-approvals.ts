@@ -1,8 +1,8 @@
-import type { OcalApprovals, OcalApprovalGate } from "@/agent-script/schema"
+import type { ZyalApprovals, ZyalApprovalGate } from "@/agent-script/schema"
 import { parseDuration } from "./daemon-retry"
 
 /**
- * Approval gate evaluator for OCAL v2.
+ * Approval gate evaluator for ZYAL v2.
  *
  * Manages human-in-the-loop approval gates with roles, timeouts,
  * auto-approval conditions, and escalation chains.
@@ -28,7 +28,7 @@ export type ApprovalEvalResult = {
  * Evaluate whether an approval gate should auto-approve.
  */
 export function evaluateAutoApproval(
-  gate: OcalApprovalGate,
+  gate: ZyalApprovalGate,
   context: { riskScore?: number; allChecksPassed?: boolean },
 ): ApprovalEvalResult {
   if (!gate.auto_approve_if) {
@@ -58,7 +58,7 @@ export function evaluateAutoApproval(
  */
 export function checkApprovalTimeout(
   state: ApprovalState,
-  gate: OcalApprovalGate,
+  gate: ZyalApprovalGate,
   now: number,
 ): { timedOut: boolean; action: string } {
   if (state.status !== "pending") return { timedOut: false, action: "none" }
@@ -75,7 +75,7 @@ export function checkApprovalTimeout(
  * Get the next escalation target from the chain.
  */
 export function getEscalationTarget(
-  approvals: OcalApprovals,
+  approvals: ZyalApprovals,
   currentLevel: number,
 ): { target: string | null; level: number } {
   const chain = approvals.escalation?.chain
@@ -89,7 +89,7 @@ export function getEscalationTarget(
  */
 export function shouldAutoEscalate(
   state: ApprovalState,
-  approvals: OcalApprovals,
+  approvals: ZyalApprovals,
   now: number,
 ): boolean {
   if (state.status !== "pending") return false
@@ -133,7 +133,7 @@ export function recordDecision(
 /**
  * Get all gate names defined in approvals config.
  */
-export function getGateNames(approvals: OcalApprovals | undefined): string[] {
+export function getGateNames(approvals: ZyalApprovals | undefined): string[] {
   if (!approvals?.gates) return []
   return Object.keys(approvals.gates)
 }
@@ -142,7 +142,7 @@ export function getGateNames(approvals: OcalApprovals | undefined): string[] {
  * Check if required evidence exists for a gate.
  */
 export function hasRequiredEvidence(
-  gate: OcalApprovalGate,
+  gate: ZyalApprovalGate,
   evidence: Set<string>,
 ): boolean {
   if (!gate.require_evidence?.length) return true
@@ -152,6 +152,6 @@ export function hasRequiredEvidence(
 /**
  * Get available decisions for a gate.
  */
-export function getAvailableDecisions(gate: OcalApprovalGate): string[] {
+export function getAvailableDecisions(gate: ZyalApprovalGate): string[] {
   return gate.decisions?.map(String) ?? ["approve", "reject"]
 }

@@ -3,11 +3,11 @@ import { Effect, Layer, Schema } from "effect"
 import { DaemonCheckpoint } from "../../src/session/daemon-checkpoint"
 import { DaemonChecks } from "../../src/session/daemon-checks"
 import { Git } from "../../src/git"
-import { OcalScriptSchema } from "../../src/agent-script/schema"
+import { ZyalScriptSchema } from "../../src/agent-script/schema"
 import { testEffect } from "../lib/effect"
 
 function spec() {
-  return Schema.decodeUnknownSync(OcalScriptSchema)({
+  return Schema.decodeUnknownSync(ZyalScriptSchema)({
     version: "v1",
     intent: "daemon",
     confirm: "RUN_FOREVER",

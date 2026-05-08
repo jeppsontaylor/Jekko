@@ -1,7 +1,7 @@
-import type { OcalSkills, OcalSkillDefinition } from "@/agent-script/schema"
+import type { ZyalSkills, ZyalSkillDefinition } from "@/agent-script/schema"
 
 /**
- * Skill registry manager for OCAL v2.
+ * Skill registry manager for ZYAL v2.
  *
  * Manages agent skill definitions with trust levels, tool bindings,
  * write scope restrictions, and creation gating.
@@ -9,7 +9,7 @@ import type { OcalSkills, OcalSkillDefinition } from "@/agent-script/schema"
 
 export type SkillInstance = {
   readonly name: string
-  readonly definition: OcalSkillDefinition
+  readonly definition: ZyalSkillDefinition
   readonly active: boolean
   readonly invokeCount: number
   readonly lastInvokedAt?: number
@@ -24,7 +24,7 @@ export type SkillRegistry = {
 /**
  * Initialize the skill registry from config.
  */
-export function initializeSkillRegistry(config: OcalSkills | undefined): SkillRegistry {
+export function initializeSkillRegistry(config: ZyalSkills | undefined): SkillRegistry {
   const skills = new Map<string, SkillInstance>()
   if (config?.registry) {
     for (const [name, def] of Object.entries(config.registry)) {
@@ -81,7 +81,7 @@ export function recordInvocation(registry: SkillRegistry, name: string): SkillRe
 export function registerSkill(
   registry: SkillRegistry,
   name: string,
-  definition: OcalSkillDefinition,
+  definition: ZyalSkillDefinition,
 ): { registry: SkillRegistry; registered: boolean; reason?: string } {
   if (!registry.allowCreation) {
     return { registry, registered: false, reason: "skill creation is disabled" }
@@ -102,7 +102,7 @@ export function registerSkill(
  */
 export function getSkillsByTrust(
   registry: SkillRegistry,
-  trust: OcalSkillDefinition["trust"],
+  trust: ZyalSkillDefinition["trust"],
 ): SkillInstance[] {
   return Array.from(registry.skills.values()).filter((s) => s.definition.trust === trust)
 }

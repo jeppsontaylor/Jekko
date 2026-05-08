@@ -1,4 +1,4 @@
-import type { OcalIncubator, OcalIncubatorRouteCondition } from "@/agent-script/schema"
+import type { ZyalIncubator, ZyalIncubatorRouteCondition } from "@/agent-script/schema"
 import type { DaemonStore } from "./daemon-store"
 
 export type ReadinessEvidence = {
@@ -28,7 +28,7 @@ export type RouteInput = {
     | "implementation_confidence"
     | "verification_confidence"
   >
-  incubator?: OcalIncubator
+  incubator?: ZyalIncubator
   touchedPaths?: string[]
   evidence?: Partial<ReadinessEvidence>
   penalties?: Partial<ReadinessPenalties>
@@ -169,7 +169,7 @@ function defaultReasons(input: RouteInput & { readinessScore: number; riskScore:
   ]
 }
 
-function matchCondition(condition: OcalIncubatorRouteCondition, input: RouteInput & { readinessScore: number; riskScore: number }) {
+function matchCondition(condition: ZyalIncubatorRouteCondition, input: RouteInput & { readinessScore: number; riskScore: number }) {
   const out: string[] = []
   if (condition.repeated_attempts_gte !== undefined && input.task.attempt_count >= condition.repeated_attempts_gte) {
     out.push("repeated_attempts")

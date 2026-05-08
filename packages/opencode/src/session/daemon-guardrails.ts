@@ -1,4 +1,4 @@
-import type { OcalGuardrails, OcalPatternGuardrail, OcalShellGuardrail } from "@/agent-script/schema"
+import type { ZyalGuardrails, ZyalPatternGuardrail, ZyalShellGuardrail } from "@/agent-script/schema"
 
 /**
  * Guardrail evaluation engine.
@@ -12,7 +12,7 @@ export type GuardrailVerdict =
   | { pass: false; name: string; action: string; reason: string }
 
 export function evaluateInputGuardrails(
-  guardrails: OcalGuardrails | undefined,
+  guardrails: ZyalGuardrails | undefined,
   text: string,
 ): GuardrailVerdict {
   if (!guardrails?.input) return { pass: true }
@@ -33,7 +33,7 @@ export function evaluateInputGuardrails(
 }
 
 export function evaluateOutputPatternGuardrails(
-  guardrails: OcalGuardrails | undefined,
+  guardrails: ZyalGuardrails | undefined,
   text: string,
   scope: "tool_output" | "file_diff" | "commit_message" = "tool_output",
 ): GuardrailVerdict {
@@ -60,8 +60,8 @@ export function evaluateOutputPatternGuardrails(
  * Get shell guardrails that need to run at iteration boundaries.
  */
 export function getIterationShellGuardrails(
-  guardrails: OcalGuardrails | undefined,
-): readonly OcalShellGuardrail[] {
+  guardrails: ZyalGuardrails | undefined,
+): readonly ZyalShellGuardrail[] {
   return guardrails?.iteration ?? []
 }
 
@@ -69,10 +69,10 @@ export function getIterationShellGuardrails(
  * Get output shell guardrails that need to run after model output.
  */
 export function getOutputShellGuardrails(
-  guardrails: OcalGuardrails | undefined,
-): readonly OcalShellGuardrail[] {
+  guardrails: ZyalGuardrails | undefined,
+): readonly ZyalShellGuardrail[] {
   if (!guardrails?.output) return []
-  return guardrails.output.filter((rail): rail is OcalShellGuardrail => isShellGuardrail(rail))
+  return guardrails.output.filter((rail): rail is ZyalShellGuardrail => isShellGuardrail(rail))
 }
 
 function matchPatterns(patterns: readonly string[], text: string): string | null {
@@ -88,10 +88,10 @@ function matchPatterns(patterns: readonly string[], text: string): string | null
   return null
 }
 
-function isPatternGuardrail(rail: OcalPatternGuardrail | OcalShellGuardrail): rail is OcalPatternGuardrail {
+function isPatternGuardrail(rail: ZyalPatternGuardrail | ZyalShellGuardrail): rail is ZyalPatternGuardrail {
   return "deny_patterns" in rail
 }
 
-function isShellGuardrail(rail: OcalPatternGuardrail | OcalShellGuardrail): rail is OcalShellGuardrail {
+function isShellGuardrail(rail: ZyalPatternGuardrail | ZyalShellGuardrail): rail is ZyalShellGuardrail {
   return "shell" in rail
 }

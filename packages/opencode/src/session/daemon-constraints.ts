@@ -1,4 +1,4 @@
-import type { OcalConstraint } from "@/agent-script/schema"
+import type { ZyalConstraint } from "@/agent-script/schema"
 
 /**
  * Runtime invariant checker.
@@ -16,7 +16,7 @@ export type ConstraintVerdict =
  * The shellRunner returns the numeric output of the check command.
  */
 export function captureBaselines(
-  constraints: readonly OcalConstraint[],
+  constraints: readonly ZyalConstraint[],
   shellRunner: (command: string) => number,
   trigger: "capture_on_start" | "capture_on_checkpoint",
 ): ConstraintBaselines {
@@ -33,7 +33,7 @@ export function captureBaselines(
  * Evaluate a single constraint against its baseline or absolute invariant.
  */
 export function evaluateConstraint(
-  constraint: OcalConstraint,
+  constraint: ZyalConstraint,
   currentValue: number,
   baselines: ConstraintBaselines,
 ): ConstraintVerdict {
@@ -104,7 +104,7 @@ export function evaluateConstraint(
  * Evaluate all constraints, returning the first violation or pass.
  */
 export function evaluateAllConstraints(
-  constraints: readonly OcalConstraint[],
+  constraints: readonly ZyalConstraint[],
   shellRunner: (command: string) => number,
   baselines: ConstraintBaselines,
 ): ConstraintVerdict {

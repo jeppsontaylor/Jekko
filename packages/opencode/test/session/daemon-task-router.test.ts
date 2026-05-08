@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test"
 import { Effect } from "effect"
-import { getOcalExample } from "../../src/agent-script/examples"
-import { parseOcal } from "../../src/agent-script/parser"
+import { getZyalExample } from "../../src/agent-script/examples"
+import { parseZyal } from "../../src/agent-script/parser"
 import { DaemonTaskRouter } from "../../src/session/daemon-task-router"
 
 async function incubator() {
-  return (await Effect.runPromise(parseOcal(getOcalExample("hard-task-incubator")!.text))).spec.incubator!
+  return (await Effect.runPromise(parseZyal(getZyalExample("hard-task-incubator")!.text))).spec.incubator!
 }
 
 function task(patch: Record<string, unknown> = {}) {

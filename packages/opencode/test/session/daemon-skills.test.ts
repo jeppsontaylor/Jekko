@@ -10,9 +10,9 @@ import {
   deactivateSkill,
   getActiveSkills,
 } from "../../src/session/daemon-skills"
-import type { OcalSkills } from "../../src/agent-script/schema"
+import type { ZyalSkills } from "../../src/agent-script/schema"
 
-const testSkills: OcalSkills = {
+const testSkills: ZyalSkills = {
   registry: {
     code_review: {
       description: "Review code changes",

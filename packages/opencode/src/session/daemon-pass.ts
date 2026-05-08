@@ -1,4 +1,4 @@
-import type { OcalIncubatorPass } from "@/agent-script/schema"
+import type { ZyalIncubatorPass } from "@/agent-script/schema"
 
 export type PassReceipt = {
   summary: string
@@ -13,9 +13,9 @@ export type PassReceipt = {
   title?: string
 }
 
-export function passInstruction(pass: OcalIncubatorPass) {
+export function passInstruction(pass: ZyalIncubatorPass) {
   return [
-    "<ocal-incubator-pass-instructions>",
+    "<zyal-incubator-pass-instructions>",
     `Pass ID: ${pass.id}`,
     `Pass type: ${pass.type}`,
     `Context: ${pass.context}`,
@@ -26,7 +26,7 @@ export function passInstruction(pass: OcalIncubatorPass) {
     "",
     "Return a concise pass receipt with summary, claims, evidence, uncertainty, blockers, and recommended_next.",
     "Do not include private chain-of-thought.",
-    "</ocal-incubator-pass-instructions>",
+    "</zyal-incubator-pass-instructions>",
   ].join("\n")
 }
 

@@ -1,8 +1,8 @@
-import type { OcalParsed } from "@/agent-script/schema"
+import type { ZyalParsed } from "@/agent-script/schema"
 import type { RunInfo, IterationInfo } from "./daemon-store"
 
 export function buildDaemonIterationPrompt(input: {
-  parsed: OcalParsed
+  parsed: ZyalParsed
   run: RunInfo
   lastIteration?: IterationInfo
   locks?: string[]
@@ -10,7 +10,7 @@ export function buildDaemonIterationPrompt(input: {
 }) {
   const lines = [
     `<system-reminder>`,
-    `OCAL daemon iteration ${input.run.iteration + 1} for ${input.parsed.spec.job.name}.`,
+    `ZYAL daemon iteration ${input.run.iteration + 1} for ${input.parsed.spec.job.name}.`,
     `Objective: ${input.parsed.spec.job.objective}`,
     `Loop policy: ${input.parsed.spec.loop?.policy ?? "bounded"}`,
     `Stop checks: ${input.parsed.preview.stop_checks.join("; ") || "(none)"}`,
@@ -24,7 +24,7 @@ export function buildDaemonIterationPrompt(input: {
 }
 
 export function buildDaemonStateSummary(input: {
-  parsed: OcalParsed
+  parsed: ZyalParsed
   run: RunInfo
   iterations: IterationInfo[]
   lastError?: string | null

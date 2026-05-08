@@ -5,7 +5,7 @@ import {
   canRetry,
   parseDuration,
 } from "@/session/daemon-retry"
-import type { OcalRetry } from "@/agent-script/schema"
+import type { ZyalRetry } from "@/agent-script/schema"
 
 describe("daemon retry", () => {
   test("parseDuration handles seconds", () => {
@@ -26,7 +26,7 @@ describe("daemon retry", () => {
   })
 
   test("resolveRetryPolicy uses override over default", () => {
-    const retry: OcalRetry = {
+    const retry: ZyalRetry = {
       default: { max_attempts: 3, backoff: "exponential", initial_delay: "2s" },
       overrides: {
         shell_checks: { max_attempts: 5, backoff: "linear" },
@@ -40,7 +40,7 @@ describe("daemon retry", () => {
   })
 
   test("resolveRetryPolicy uses default when no override", () => {
-    const retry: OcalRetry = {
+    const retry: ZyalRetry = {
       default: { max_attempts: 3, backoff: "exponential" },
     }
     const policy = resolveRetryPolicy(retry, "checkpoint")

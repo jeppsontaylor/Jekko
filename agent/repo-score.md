@@ -796,11 +796,11 @@ No audited runtime boundary reclassifications declared.
    Check: `HLT-003-OWNERLESS-PATH:context` `hard` confidence `0.88`
    Route: TLR `Context/setup`, lane `fast`, owner `agent`
    Docs: `agent/JANKURAI_STANDARD.md#ownership-boundaries`
-   Reason: path `OCAL_MISSION.md` has no owner-map route
+   Reason: path `ZYAL_MISSION.md` has no owner-map route
    Fix: add the narrowest stable prefix for this path to `agent/owner-map.json`
    Rerun: `just fast`
    Fingerprint: `sha256:f64b051ff7f83fd0f473f250d0a9d148aaadccff67be6328558c429fc66b8b11`
-   Evidence: OCAL_MISSION.md
+   Evidence: ZYAL_MISSION.md
 60. `high` `context` `agent/owner-map.json`
    Rule: `HLT-003-OWNERLESS-PATH`
    Check: `HLT-003-OWNERLESS-PATH:context` `hard` confidence `0.88`
@@ -826,11 +826,11 @@ No audited runtime boundary reclassifications declared.
    Check: `HLT-004-UNMAPPED-PROOF:proof` `hard` confidence `0.88`
    Route: TLR `Verification`, lane `fast`, owner `agent`
    Docs: `agent/JANKURAI_STANDARD.md#proof-lanes`
-   Reason: path `OCAL_MISSION.md` has no test-map proof route
+   Reason: path `ZYAL_MISSION.md` has no test-map proof route
    Fix: add the narrowest stable prefix and runnable proof command to `agent/test-map.json`
    Rerun: `just fast`
    Fingerprint: `sha256:1bb2e7843192848594adb58a63c0d9e0e1270a76ad92c7d436a3c801183e2eed`
-   Evidence: OCAL_MISSION.md
+   Evidence: ZYAL_MISSION.md
 63. `high` `proof` `agent/test-map.json`
    Rule: `HLT-004-UNMAPPED-PROOF`
    Check: `HLT-004-UNMAPPED-PROOF:proof` `hard` confidence `0.88`

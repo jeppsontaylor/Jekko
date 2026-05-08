@@ -1,7 +1,7 @@
 import { Effect } from "effect"
 import { ulid } from "ulid"
 import path from "path"
-import type { OcalParsed, OcalIncubatorPass } from "@/agent-script/schema"
+import type { ZyalParsed, ZyalIncubatorPass } from "@/agent-script/schema"
 import { SessionID } from "./schema"
 import type { Session } from "./session"
 import type { SessionPrompt } from "./prompt"
@@ -25,7 +25,7 @@ export type TickResult =
 
 export function tick(input: {
   run: DaemonStore.RunInfo
-  parsed: OcalParsed
+  parsed: ZyalParsed
   sessions: Session.Interface
   store: DaemonStore.Interface
   prompt: SessionPrompt.Interface
@@ -84,7 +84,7 @@ export function tick(input: {
 
 function runTaskPass(input: {
   run: DaemonStore.RunInfo
-  parsed: OcalParsed
+  parsed: ZyalParsed
   sessions: Session.Interface
   store: DaemonStore.Interface
   prompt: SessionPrompt.Interface
@@ -209,14 +209,14 @@ function runTaskPass(input: {
 
 function executePass(input: {
   run: DaemonStore.RunInfo
-  parsed: OcalParsed
+  parsed: ZyalParsed
   sessions: Session.Interface
   store: DaemonStore.Interface
   prompt: SessionPrompt.Interface
   mcp: MCP.Interface
   worktree: Worktree.Interface
   task: DaemonStore.TaskInfo
-  pass: OcalIncubatorPass
+  pass: ZyalIncubatorPass
   taskPass: DaemonStore.TaskPassInfo
   memories: DaemonStore.TaskMemoryInfo[]
   passes: DaemonStore.TaskPassInfo[]
@@ -314,11 +314,11 @@ function executePass(input: {
 
 function createPrototype(input: {
   run: DaemonStore.RunInfo
-  parsed: OcalParsed
+  parsed: ZyalParsed
   sessions: Session.Interface
   worktree: Worktree.Interface
   task: DaemonStore.TaskInfo
-  pass: OcalIncubatorPass
+  pass: ZyalIncubatorPass
 }) {
   return Effect.gen(function* () {
     const parent = yield* input.sessions.get(SessionID.make(input.run.active_session_id))
@@ -345,12 +345,12 @@ function createPrototype(input: {
   })
 }
 
-function nextPass(passes: readonly OcalIncubatorPass[], completedCount: number) {
+function nextPass(passes: readonly ZyalIncubatorPass[], completedCount: number) {
   if (passes.length === 0) return undefined
   return passes[completedCount % passes.length]
 }
 
-function incubatorToolMap(pass: OcalIncubatorPass, mcp?: OcalParsed["spec"]["mcp"]) {
+function incubatorToolMap(pass: ZyalIncubatorPass, mcp?: ZyalParsed["spec"]["mcp"]) {
   const writeDenied = pass.writes === "scratch_only"
   const mcpAllow = DaemonMcp.buildMcpToolAllowMap({ mcp, pass })
   return {
@@ -384,7 +384,7 @@ function taskObjective(task: DaemonStore.TaskInfo) {
   return typeof body.objective === "string" ? body.objective : typeof body.goal === "string" ? body.goal : task.title
 }
 
-function readinessDelta(pass: OcalIncubatorPass, receipt: PassReceipt) {
+function readinessDelta(pass: ZyalIncubatorPass, receipt: PassReceipt) {
   if (receipt.readiness_delta !== undefined) return receipt.readiness_delta
   switch (pass.type) {
     case "scout":

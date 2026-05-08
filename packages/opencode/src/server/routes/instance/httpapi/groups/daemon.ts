@@ -41,13 +41,13 @@ export const DaemonApi = HttpApi.make("daemon").add(
     .add(
       HttpApiEndpoint.post("preview", DaemonPaths.preview, {
         payload: DaemonPreviewPayload,
-        success: described(JsonRecord, "Parsed OCAL preview"),
+        success: described(JsonRecord, "Parsed ZYAL preview"),
         error: HttpApiError.BadRequest,
       }).annotateMerge(
         OpenApi.annotations({
           identifier: "daemon.preview",
-          summary: "Preview OCAL",
-          description: "Parse an OCAL daemon draft and return a preview without starting execution.",
+          summary: "Preview ZYAL",
+          description: "Parse an ZYAL daemon draft and return a preview without starting execution.",
         }),
       ),
       HttpApiEndpoint.get("list", DaemonPaths.list, {
@@ -145,7 +145,7 @@ export const DaemonApi = HttpApi.make("daemon").add(
         OpenApi.annotations({
           identifier: "daemon.start",
           summary: "Start daemon run",
-          description: "Parse and start an OCAL daemon run for the given session.",
+          description: "Parse and start an ZYAL daemon run for the given session.",
         }),
       ),
       HttpApiEndpoint.get("tasks", DaemonPaths.tasks, {

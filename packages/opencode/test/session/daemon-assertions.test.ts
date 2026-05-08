@@ -3,10 +3,10 @@ import {
   validateAssertions,
   canRetryAssertion,
 } from "@/session/daemon-assertions"
-import type { OcalAssertions } from "@/agent-script/schema"
+import type { ZyalAssertions } from "@/agent-script/schema"
 
 describe("daemon assertions", () => {
-  const schema: OcalAssertions = {
+  const schema: ZyalAssertions = {
     require_structured_output: true,
     schema: {
       type: "object",

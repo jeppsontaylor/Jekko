@@ -1,7 +1,7 @@
-import type { OcalWorkflow, OcalWorkflowState, OcalWorkflowTransitionCondition } from "@/agent-script/schema"
+import type { ZyalWorkflow, ZyalWorkflowState, ZyalWorkflowTransitionCondition } from "@/agent-script/schema"
 
 /**
- * Workflow state machine evaluator for OCAL v2.
+ * Workflow state machine evaluator for ZYAL v2.
  *
  * Evaluates transition conditions against an evidence set and resolves
  * the next state in a durable workflow graph.
@@ -22,7 +22,7 @@ export type WorkflowEvalResult = {
  * Evaluate transitions from the current state and return the next state.
  */
 export function evaluateWorkflowTransitions(input: {
-  workflow: OcalWorkflow
+  workflow: ZyalWorkflow
   currentState: string
   evidence: EvidenceSet
   approvals: ApprovalSet
@@ -74,7 +74,7 @@ export function evaluateWorkflowTransitions(input: {
 /**
  * Get all states reachable from a given state (BFS).
  */
-export function reachableStates(workflow: OcalWorkflow, from: string): string[] {
+export function reachableStates(workflow: ZyalWorkflow, from: string): string[] {
   const visited = new Set<string>()
   const queue = [from]
   while (queue.length > 0) {
@@ -95,7 +95,7 @@ export function reachableStates(workflow: OcalWorkflow, from: string): string[] 
 /**
  * Detect cycles in the workflow graph (for DAG mode validation).
  */
-export function detectCycles(workflow: OcalWorkflow): string[][] {
+export function detectCycles(workflow: ZyalWorkflow): string[][] {
   const cycles: string[][] = []
   const visited = new Set<string>()
   const stack = new Set<string>()
@@ -127,14 +127,14 @@ export function detectCycles(workflow: OcalWorkflow): string[][] {
 /**
  * Get the list of required evidence for a workflow state.
  */
-export function getStateRequirements(state: OcalWorkflowState): string[] {
+export function getStateRequirements(state: ZyalWorkflowState): string[] {
   return [...(state.requires ?? [])]
 }
 
 /**
  * Check if all required evidence exists for a state.
  */
-export function hasRequiredEvidence(state: OcalWorkflowState, evidence: EvidenceSet): boolean {
+export function hasRequiredEvidence(state: ZyalWorkflowState, evidence: EvidenceSet): boolean {
   for (const req of state.requires ?? []) {
     if (evidence[req] === undefined) return false
   }
@@ -144,14 +144,14 @@ export function hasRequiredEvidence(state: OcalWorkflowState, evidence: Evidence
 /**
  * Get terminal states in a workflow.
  */
-export function getTerminalStates(workflow: OcalWorkflow): string[] {
+export function getTerminalStates(workflow: ZyalWorkflow): string[] {
   return Object.entries(workflow.states)
     .filter(([, state]) => state.terminal === true)
     .map(([name]) => name)
 }
 
 function evaluateCondition(
-  condition: OcalWorkflowTransitionCondition,
+  condition: ZyalWorkflowTransitionCondition,
   evidence: EvidenceSet,
   approvals: ApprovalSet,
   constraintViolations: string[],
@@ -179,7 +179,7 @@ function evaluateCondition(
   return true
 }
 
-function describeCondition(condition: OcalWorkflowTransitionCondition): string {
+function describeCondition(condition: ZyalWorkflowTransitionCondition): string {
   const parts: string[] = []
   if (condition.evidence_exists) parts.push(`evidence:${condition.evidence_exists}`)
   if (condition.approval_granted) parts.push(`approval:${condition.approval_granted}`)

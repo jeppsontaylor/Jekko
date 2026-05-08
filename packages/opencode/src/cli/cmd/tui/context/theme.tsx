@@ -44,7 +44,7 @@ import { Global } from "@opencode-ai/core/global"
 import { Filesystem } from "@/util/filesystem"
 import { useTuiConfig } from "./tui-config"
 import { isRecord } from "@/util/record"
-import { useOcalFlash, ocalFlashOverlayTheme } from "./ocal-flash"
+import { useZyalFlash, zyalFlashOverlayTheme } from "./zyal-flash"
 import type { TuiThemeCurrent } from "@opencode-ai/plugin/tui"
 
 type Theme = TuiThemeCurrent & {
@@ -419,12 +419,12 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
       process.off("SIGUSR2", refresh)
     })
 
-    const ocalFlash = useOcalFlash()
+    const zyalFlash = useZyalFlash()
 
     const values = createMemo(() => {
-      // OCAL flash forces the gold overlay when OCAL is detected.
+      // ZYAL flash forces the gold overlay when ZYAL is detected.
       // Falls back gracefully if the gold theme is missing.
-      const flashOverlay = ocalFlash().size > 0 ? ocalFlashOverlayTheme() : undefined
+      const flashOverlay = zyalFlash().size > 0 ? zyalFlashOverlayTheme() : undefined
       const flashTheme = flashOverlay ? store.themes[flashOverlay] : undefined
       if (flashTheme) {
         return resolveTheme(flashTheme, store.mode)

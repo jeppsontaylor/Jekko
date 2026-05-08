@@ -1,4 +1,4 @@
-import type { OcalAssertions } from "@/agent-script/schema"
+import type { ZyalAssertions } from "@/agent-script/schema"
 
 /**
  * Structured output assertion validator.
@@ -14,7 +14,7 @@ export type AssertionVerdict =
  * If no assertions are configured, always passes.
  */
 export function validateAssertions(
-  assertions: OcalAssertions | undefined,
+  assertions: ZyalAssertions | undefined,
   output: string,
 ): AssertionVerdict {
   if (!assertions?.require_structured_output) {
@@ -49,7 +49,7 @@ export function validateAssertions(
 /**
  * Check whether another assertion retry is allowed.
  */
-export function canRetryAssertion(assertions: OcalAssertions | undefined, currentAttempt: number): boolean {
+export function canRetryAssertion(assertions: ZyalAssertions | undefined, currentAttempt: number): boolean {
   if (!assertions) return false
   const maxRetries = assertions.max_retries ?? 0
   return currentAttempt < maxRetries

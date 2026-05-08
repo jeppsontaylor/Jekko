@@ -8,9 +8,9 @@ import {
   collectArtifact,
   getRequiredTypes,
 } from "../../src/session/daemon-evidence"
-import type { OcalEvidence } from "../../src/agent-script/schema"
+import type { ZyalEvidence } from "../../src/agent-script/schema"
 
-const testEvidence: OcalEvidence = {
+const testEvidence: ZyalEvidence = {
   require_before_promote: [
     { type: "test_results", must_pass: true },
     { type: "affected_files", must_be_known: true },
