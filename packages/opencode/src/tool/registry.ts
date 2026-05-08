@@ -28,6 +28,7 @@ import { LspTool } from "./lsp"
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
 import { DaemonTools } from "./daemon"
+import { DaemonStore } from "@/session/daemon-store"
 import { PatchVmModule } from "../patch/vm"
 import { Glob } from "@opencode-ai/core/util/glob"
 import path from "path"
@@ -336,6 +337,7 @@ export const defaultLayer = Layer.suspend(() =>
     Layer.provide(CrossSpawnSpawner.defaultLayer),
     Layer.provide(Ripgrep.defaultLayer),
     Layer.provide(Truncate.defaultLayer),
+    Layer.provide(DaemonStore.defaultLayer),
   ),
 )
 

@@ -39,6 +39,7 @@ import { McpAuth } from "@/mcp/auth"
 import { Command } from "@/command"
 import { Truncate } from "@/tool/truncate"
 import { ToolRegistry } from "@/tool/registry"
+import { DaemonStore } from "@/session/daemon-store"
 import { Format } from "@/format"
 import { Memory } from "@/memory"
 import { PatchVmModule } from "@/patch/vm"
@@ -94,6 +95,7 @@ export const AppLayer = Layer.mergeAll(
   McpAuth.defaultLayer,
   Command.defaultLayer,
   Truncate.defaultLayer,
+  DaemonStore.defaultLayer,
   ToolRegistry.defaultLayer,
   Format.defaultLayer,
   Memory.layer,
