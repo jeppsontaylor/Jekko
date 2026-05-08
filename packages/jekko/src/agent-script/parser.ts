@@ -408,6 +408,8 @@ function assertZyalNestedKeys(input: Record<string, unknown>) {
   assertPowerBlockNestedKeys(input)
   // v2.2 fleet
   assertFleetNestedKeys(input)
+  // v2.3 taint
+  assertTaintNestedKeys(input)
 
   const incubator = input.incubator
   if (incubator === undefined) return
@@ -1612,6 +1614,80 @@ function validateZyalSemantics(spec: ZyalScript) {
       throw new ZyalParseError(
         `experiments.max_parallel (${spec.experiments.max_parallel}) exceeds default fleet cap (20)`,
       )
+    }
+  }
+}
+
+// ─── v2.3: taint nested-key validator ────────────────────────────────────
+function assertTaintNestedKeys(input: Record<string, unknown>) {
+  if (input.taint === undefined) return
+  const taint = expectRecord(input.taint, "taint")
+  assertKeys("taint", taint, ["default_label", "labels", "forbid", "prompt_injection"])
+  if (taint.labels === undefined) {
+    throw new ZyalParseError("taint.labels is required when taint block is set")
+  }
+  const labels = expectRecord(taint.labels, "taint.labels")
+  if (Object.keys(labels).length === 0) {
+    throw new ZyalParseError("taint.labels must declare at least one label")
+  }
+  for (const [name, label] of Object.entries(labels)) {
+    const rec = expectRecord(label, `taint.labels.${name}`)
+    assertKeys(`taint.labels.${name}`, rec, ["rank", "notes"])
+  }
+  if (taint.default_label !== undefined) {
+    const def = String(taint.default_label)
+    if (!Object.prototype.hasOwnProperty.call(labels, def)) {
+      throw new ZyalParseError(
+        `taint.default_label '${def}' is not declared in taint.labels`,
+      )
+    }
+  }
+  if (taint.forbid !== undefined) {
+    if (!Array.isArray(taint.forbid)) {
+      throw new ZyalParseError("taint.forbid must be a list")
+    }
+    taint.forbid.forEach((rule, i) => {
+      const r = expectRecord(rule, `taint.forbid[${i}]`)
+      assertKeys(`taint.forbid[${i}]`, r, ["from", "cannot", "unless"])
+      if (!Array.isArray(r.from) || r.from.length === 0) {
+        throw new ZyalParseError(`taint.forbid[${i}].from must be a non-empty list`)
+      }
+      for (const lbl of r.from) {
+        if (typeof lbl !== "string") {
+          throw new ZyalParseError(`taint.forbid[${i}].from must contain strings only`)
+        }
+        if (!Object.prototype.hasOwnProperty.call(labels, lbl)) {
+          throw new ZyalParseError(
+            `taint.forbid[${i}].from references undeclared label '${lbl}'`,
+          )
+        }
+      }
+      if (!Array.isArray(r.cannot) || r.cannot.length === 0) {
+        throw new ZyalParseError(`taint.forbid[${i}].cannot must be a non-empty list`)
+      }
+    })
+  }
+  if (taint.prompt_injection !== undefined) {
+    const pi = expectRecord(taint.prompt_injection, "taint.prompt_injection")
+    assertKeys("taint.prompt_injection", pi, ["detect_patterns", "on_detect", "scan_sources"])
+    if (!Array.isArray(pi.detect_patterns) || pi.detect_patterns.length === 0) {
+      throw new ZyalParseError(
+        "taint.prompt_injection.detect_patterns must be a non-empty list",
+      )
+    }
+    for (const pat of pi.detect_patterns) {
+      if (typeof pat !== "string" || pat.trim().length === 0) {
+        throw new ZyalParseError(
+          "taint.prompt_injection.detect_patterns entries must be non-empty strings",
+        )
+      }
+      try {
+        new RegExp(pat)
+      } catch {
+        throw new ZyalParseError(
+          `taint.prompt_injection.detect_patterns contains invalid regex: ${pat}`,
+        )
+      }
     }
   }
 }

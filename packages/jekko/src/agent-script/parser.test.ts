@@ -1214,4 +1214,159 @@ fleet:
     const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
   })
+
+  test("rejects fleet.max_workers as a string at schema decode", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: "20"`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects fleet.max_workers below 1", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 0`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects fleet.max_workers above 20", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 21`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+})
+
+describe("ZYAL parser v2.3 taint", () => {
+  test("accepts a fully-formed taint block and surfaces preview fields", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 2
+taint:
+  default_label: tool_output
+  labels:
+    trusted_user: { rank: high }
+    repo_file: { rank: medium }
+    tool_output: { rank: untrusted }
+    web_content: { rank: hostile }
+  forbid:
+    - from: [web_content, tool_output]
+      cannot: [arm, approve, exec_shell]
+      unless: [human_review]
+  prompt_injection:
+    detect_patterns:
+      - "ignore (all )?previous instructions"
+      - "you are now (a|an)? \\\\w+"
+    on_detect: pause
+    scan_sources: [tool_output, web_content]`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.preview.taint_enabled).toBe(true)
+    expect(parsed.preview.taint_label_count).toBe(4)
+    expect(parsed.preview.taint_forbid_count).toBe(1)
+    expect(parsed.preview.taint_summary).toContain("labels:4")
+    expect(parsed.preview.taint_summary).toContain("forbid:1")
+    expect(parsed.preview.taint_summary).toContain("injection:pause")
+  })
+
+  test("rejects taint.labels missing", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  default_label: tool_output`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects empty taint.labels", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  labels: {}`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects taint.default_label not in labels", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  default_label: undeclared
+  labels:
+    trusted_user: { rank: high }`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects taint.forbid.from referencing undeclared label", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  labels:
+    trusted_user: { rank: high }
+  forbid:
+    - from: [unknown_origin]
+      cannot: [arm]`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects taint.forbid with empty cannot list", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  labels:
+    web_content: { rank: hostile }
+  forbid:
+    - from: [web_content]
+      cannot: []`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects taint.prompt_injection with empty detect_patterns", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  labels:
+    web_content: { rank: hostile }
+  prompt_injection:
+    detect_patterns: []
+    on_detect: pause`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects taint.prompt_injection with invalid regex", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  labels:
+    web_content: { rank: hostile }
+  prompt_injection:
+    detect_patterns: ["[unclosed"]
+    on_detect: pause`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects taint.labels[*].rank with unknown rank", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+taint:
+  labels:
+    web_content: { rank: bogus }`)
+    const result = await Effect.runPromiseExit(parseZyal(text))
+    expect(result._tag).toBe("Failure")
+  })
 })

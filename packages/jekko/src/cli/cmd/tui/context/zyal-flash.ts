@@ -154,6 +154,62 @@ export function resetZyalMetrics() {
   setMetrics({ ...DEFAULT_METRICS })
 }
 
+/**
+ * Atomic monotone-counter bump for jnoccio request_event traffic.
+ *
+ * Why this exists: the prior implementation read `useZyalMetrics()()` then
+ * called `updateZyalMetrics({...})` non-atomically. If a `snapshot` message
+ * (which authoritatively resets the jnoccio counters) landed between the
+ * read and the write, the snapshot's reset was clobbered by stale-baseline-
+ * plus-delta. Using Solid's functional setter keeps the read+merge+write
+ * inside a single signal transaction, so a snapshot landing concurrently
+ * either runs entirely before or entirely after this update — never
+ * interleaved. `applyJnoccioSnapshot` continues to authoritatively reset
+ * the jnoccio totals; this helper only adds to them.
+ */
+export type JnoccioCounterDelta = {
+  promptTokens?: number
+  completionTokens?: number
+  totalTokens?: number
+  calls?: number
+  wins?: number
+  failures?: number
+  /** Replaced (not summed) — represents the most-recent observation. */
+  avgLatencyMs?: number | null
+}
+
+export function incrementJnoccioCounters(delta: JnoccioCounterDelta) {
+  setMetrics((prev) => {
+    const next: ZyalFleetMetrics = { ...prev, jnoccioConnected: true }
+    if (delta.promptTokens) {
+      ;(next as { jnoccioPromptTokens: number | null }).jnoccioPromptTokens =
+        (prev.jnoccioPromptTokens ?? 0) + delta.promptTokens
+    }
+    if (delta.completionTokens) {
+      ;(next as { jnoccioCompletionTokens: number | null }).jnoccioCompletionTokens =
+        (prev.jnoccioCompletionTokens ?? 0) + delta.completionTokens
+    }
+    if (delta.totalTokens) {
+      ;(next as { jnoccioTotalTokens: number | null }).jnoccioTotalTokens =
+        (prev.jnoccioTotalTokens ?? 0) + delta.totalTokens
+    }
+    if (delta.calls) {
+      ;(next as { jnoccioCalls: number | null }).jnoccioCalls = (prev.jnoccioCalls ?? 0) + delta.calls
+    }
+    if (delta.wins) {
+      ;(next as { jnoccioWins: number | null }).jnoccioWins = (prev.jnoccioWins ?? 0) + delta.wins
+    }
+    if (delta.failures) {
+      ;(next as { jnoccioFailures: number | null }).jnoccioFailures =
+        (prev.jnoccioFailures ?? 0) + delta.failures
+    }
+    if (delta.avgLatencyMs !== undefined) {
+      ;(next as { jnoccioAvgLatencyMs: number | null }).jnoccioAvgLatencyMs = delta.avgLatencyMs
+    }
+    return next
+  })
+}
+
 function numberFrom(...values: unknown[]): number | undefined {
   for (const value of values) {
     if (value === undefined || value === null || value === "") continue

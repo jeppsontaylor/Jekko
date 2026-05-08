@@ -50,6 +50,31 @@ function jnoccioRequestHeaders(
   return headers
 }
 
+/**
+ * Build the universal daemon telemetry headers attached to every outbound
+ * chat completion — even for non-jekko providers. Closes the prior leak where
+ * `x-jekko-run-id` and `x-jekko-process-role` only flowed when the model
+ * provider id started with "jekko". Identity headers (run-id, process-role,
+ * pid, version) are safe for any LLM provider — they identify the agent
+ * making the call so server-side logs and downstream observability tooling
+ * can correlate.
+ */
+function daemonRequestHeaders(
+  metadata: JnoccioProcessMetadata | undefined | null,
+  sessionID: string,
+  parentSessionID: string | undefined,
+): Record<string, string> {
+  const base: Record<string, string> = {
+    "x-session-affinity": sessionID,
+    "User-Agent": `jekko/${InstallationVersion}`,
+  }
+  if (parentSessionID) base["x-parent-session-id"] = parentSessionID
+  if (metadata) {
+    Object.assign(base, jnoccioIdentityHeaders(metadata))
+  }
+  return base
+}
+
 // Avoid re-instantiating remeda's deep merge types in this hot LLM path; the runtime behavior is still mergeDeep.
 const mergeOptions = (target: Record<string, any>, source: Record<string, any> | undefined): Record<string, any> =>
   mergeDeep(target, source ?? {}) as Record<string, any>
@@ -395,13 +420,18 @@ const live: Layer.Layer<
         maxOutputTokens: params.maxOutputTokens,
         abortSignal: input.abort,
         headers: {
+          // Always include daemon identity headers (run-id, process-role,
+          // pid, version) regardless of provider — closes the prior leak
+          // where these only flowed on jekko providers. Adds jekko-only
+          // session/request/project on top when applicable.
+          ...daemonRequestHeaders(metadata, input.sessionID, input.parentSessionID),
           ...(input.model.providerID.startsWith("jekko") && metadata
-            ? jnoccioRequestHeaders(metadata, input.sessionID, input.user.id, jekkoProjectID)
-            : {
-                "x-session-affinity": input.sessionID,
-                ...(input.parentSessionID ? { "x-parent-session-id": input.parentSessionID } : {}),
-                "User-Agent": `jekko/${InstallationVersion}`,
-              }),
+            ? {
+                "x-jekko-session": input.sessionID,
+                "x-jekko-request": input.user.id,
+                ...(jekkoProjectID ? { "x-jekko-project": jekkoProjectID } : {}),
+              }
+            : {}),
           ...input.model.headers,
           ...headers,
         },

@@ -1138,7 +1138,11 @@ export const ZyalFleetJnoccio = Schema.Struct({
   register_workers: Schema.optional(Schema.Boolean),
   heartbeat_path: Schema.optional(Schema.String),
   heartbeat_interval: Schema.optional(Schema.String),
-  max_instances: Schema.optional(Schema.Number),
+  // Hard cap mirrors fleet.max_workers — keeps the spec consistent with the
+  // jnoccio-fusion gateway's own `max_instances` invariant.
+  max_instances: Schema.optional(
+    Schema.Int.check(Schema.isGreaterThanOrEqualTo(1), Schema.isLessThanOrEqualTo(20)),
+  ),
 })
 export type ZyalFleetJnoccio = Schema.Schema.Type<typeof ZyalFleetJnoccio>
 
@@ -1153,7 +1157,10 @@ export const ZyalFleetTelemetry = Schema.Struct({
 export type ZyalFleetTelemetry = Schema.Schema.Type<typeof ZyalFleetTelemetry>
 
 export const ZyalFleet = Schema.Struct({
-  max_workers: Schema.Number,
+  // Single-session multi-worker hard cap — must be an integer in [1, 20].
+  // Schema-level enforcement rejects strings, non-integers, and out-of-range
+  // values at decode time, before any semantic cross-block checks run.
+  max_workers: Schema.Int.check(Schema.isGreaterThanOrEqualTo(1), Schema.isLessThanOrEqualTo(20)),
   isolation: Schema.optional(Schema.Union([
     Schema.Literal("same_session"),
     Schema.Literal("git_worktree"),
@@ -1163,6 +1170,75 @@ export const ZyalFleet = Schema.Struct({
   telemetry: Schema.optional(ZyalFleetTelemetry),
 })
 export type ZyalFleet = Schema.Schema.Type<typeof ZyalFleet>
+
+// ─── v2.3: Taint — origin-aware data-flow defence ─────────────────────────
+//
+// Closes the prompt-injection / data-origin gap that no other ZYAL block
+// covers. Distinct from the preview-only `trust` block (which scopes
+// repository paths into trust zones): `taint` is about flow control on
+// inbound bytes — labelling every source of data the model might consume
+// (web pages, tool output, MCP resources, repo files, the assistant's own
+// output) and forbidding tainted content from triggering high-privilege
+// actions (arm, approve, grant capability, write procedural memory, exec
+// shell) without explicit human review or a signed sanitiser.
+
+export const ZyalTaintRank = Schema.Union([
+  Schema.Literal("high"),
+  Schema.Literal("medium"),
+  Schema.Literal("untrusted"),
+  Schema.Literal("untrusted_for_arming"),
+  Schema.Literal("hostile"),
+])
+export type ZyalTaintRank = Schema.Schema.Type<typeof ZyalTaintRank>
+
+export const ZyalTaintLabel = Schema.Struct({
+  rank: ZyalTaintRank,
+  notes: Schema.optional(Schema.String),
+})
+export type ZyalTaintLabel = Schema.Schema.Type<typeof ZyalTaintLabel>
+
+export const ZyalTaintForbidAction = Schema.Union([
+  Schema.Literal("arm"),
+  Schema.Literal("approve"),
+  Schema.Literal("grant_capability"),
+  Schema.Literal("write_memory_procedural"),
+  Schema.Literal("write_memory_semantic"),
+  Schema.Literal("exec_shell"),
+  Schema.Literal("install_skill"),
+  Schema.Literal("modify_objective"),
+  Schema.Literal("expose_secret"),
+])
+export type ZyalTaintForbidAction = Schema.Schema.Type<typeof ZyalTaintForbidAction>
+
+export const ZyalTaintForbidRule = Schema.Struct({
+  from: Schema.Array(Schema.String),
+  cannot: Schema.Array(ZyalTaintForbidAction),
+  unless: Schema.optional(Schema.Array(Schema.String)),
+})
+export type ZyalTaintForbidRule = Schema.Schema.Type<typeof ZyalTaintForbidRule>
+
+export const ZyalTaintInjectionAction = Schema.Union([
+  Schema.Literal("strip"),
+  Schema.Literal("quote"),
+  Schema.Literal("block"),
+  Schema.Literal("pause"),
+])
+export type ZyalTaintInjectionAction = Schema.Schema.Type<typeof ZyalTaintInjectionAction>
+
+export const ZyalTaintPromptInjection = Schema.Struct({
+  detect_patterns: Schema.Array(Schema.String),
+  on_detect: ZyalTaintInjectionAction,
+  scan_sources: Schema.optional(Schema.Array(Schema.String)),
+})
+export type ZyalTaintPromptInjection = Schema.Schema.Type<typeof ZyalTaintPromptInjection>
+
+export const ZyalTaint = Schema.Struct({
+  default_label: Schema.optional(Schema.String),
+  labels: Schema.Record(Schema.String, ZyalTaintLabel),
+  forbid: Schema.optional(Schema.Array(ZyalTaintForbidRule)),
+  prompt_injection: Schema.optional(ZyalTaintPromptInjection),
+})
+export type ZyalTaint = Schema.Schema.Type<typeof ZyalTaint>
 
 // ─── Preview-only control plane blocks ────────────────────────────────────
 
@@ -1418,6 +1494,8 @@ export const ZyalSpec = Schema.Struct({
   repo_intelligence: Schema.optional(ZyalRepoIntelligence),
   // v2.2 fleet
   fleet: Schema.optional(ZyalFleet),
+  // v2.3 taint — origin-aware data-flow defence
+  taint: Schema.optional(ZyalTaint),
   // preview-only control plane blocks
   interop: Schema.optional(ZyalInterop),
   runtime: Schema.optional(ZyalRuntime),
@@ -1520,6 +1598,11 @@ export const ZyalPreview = Schema.Struct({
   fleet_enabled: Schema.Boolean,
   fleet_max_workers: Schema.Number,
   fleet_summary: Schema.optional(Schema.String),
+  // v2.3 taint
+  taint_enabled: Schema.Boolean,
+  taint_label_count: Schema.Number,
+  taint_forbid_count: Schema.Number,
+  taint_summary: Schema.optional(Schema.String),
   // preview-only control plane blocks
   interop_enabled: Schema.Boolean,
   interop_summary: Schema.optional(Schema.String),
@@ -1607,6 +1690,8 @@ export function assertZyalTopLevelKeys(input: Record<string, unknown>) {
     "repo_intelligence",
   // v2.2
   "fleet",
+    // v2.3
+    "taint",
     // preview-only control plane blocks
     "interop",
     "runtime",
@@ -1853,6 +1938,19 @@ export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): Zy
           input.spec.fleet.isolation ? `iso:${input.spec.fleet.isolation}` : null,
           input.spec.fleet.jnoccio?.enabled ? "jnoccio:on" : null,
           input.spec.fleet.telemetry?.publish_to ? `telem:${input.spec.fleet.telemetry.publish_to}` : null,
+        ].filter(Boolean).join(" ")
+      : undefined,
+    // v2.3 taint
+    taint_enabled: input.spec.taint !== undefined,
+    taint_label_count: input.spec.taint ? Object.keys(input.spec.taint.labels).length : 0,
+    taint_forbid_count: input.spec.taint?.forbid?.length ?? 0,
+    taint_summary: input.spec.taint
+      ? [
+          `labels:${Object.keys(input.spec.taint.labels).length}`,
+          (input.spec.taint.forbid?.length ?? 0) > 0 ? `forbid:${input.spec.taint.forbid?.length}` : null,
+          input.spec.taint.prompt_injection
+            ? `injection:${input.spec.taint.prompt_injection.on_detect}`
+            : null,
         ].filter(Boolean).join(" ")
       : undefined,
     // preview-only control plane blocks

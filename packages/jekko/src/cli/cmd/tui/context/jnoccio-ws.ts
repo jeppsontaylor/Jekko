@@ -1,4 +1,4 @@
-import { setZyalFlashSource, updateZyalMetrics, useZyalMetrics } from "./zyal-flash"
+import { incrementJnoccioCounters, setZyalFlashSource, updateZyalMetrics } from "./zyal-flash"
 
 /**
  * Jnoccio Fusion live-metrics WebSocket subscriber.
@@ -113,25 +113,28 @@ export function applyJnoccioRequestEvent(event: any) {
   // Per-event tokens are already rolled into the next snapshot, so we only
   // bump the running counters by the delta to keep the UI feeling live
   // between snapshot polls (5s). Snapshots overwrite when they arrive.
+  //
+  // Delegates to `incrementJnoccioCounters` which uses Solid's functional
+  // setter to keep the read+merge+write atomic; without that, a snapshot
+  // landing between the read and write would have its authoritative reset
+  // overwritten by stale-baseline-plus-delta.
   if (!event || typeof event !== "object") return
   const dPrompt = Number(event.prompt_tokens ?? 0)
   const dCompletion = Number(event.completion_tokens ?? 0)
   const dTotal = Number(event.total_tokens ?? 0) || dPrompt + dCompletion
   const status = typeof event.status === "string" ? event.status : ""
-  const current = useZyalMetrics()()
   const callsDelta = status === "success" || status === "failure" ? 1 : 0
   const winsDelta = status === "winner" || event.winner_model_id ? 1 : 0
   const failuresDelta = status === "failure" ? 1 : 0
   const latencyMs = event.latency_ms == null ? null : Number(event.latency_ms)
-  updateZyalMetrics({
-    jnoccioConnected: true,
-    jnoccioPromptTokens: (current.jnoccioPromptTokens ?? 0) + dPrompt,
-    jnoccioCompletionTokens: (current.jnoccioCompletionTokens ?? 0) + dCompletion,
-    jnoccioTotalTokens: (current.jnoccioTotalTokens ?? 0) + dTotal,
-    jnoccioCalls: (current.jnoccioCalls ?? 0) + callsDelta,
-    jnoccioWins: (current.jnoccioWins ?? 0) + winsDelta,
-    jnoccioFailures: (current.jnoccioFailures ?? 0) + failuresDelta,
-    jnoccioAvgLatencyMs: Number.isFinite(latencyMs) ? latencyMs : undefined,
+  incrementJnoccioCounters({
+    promptTokens: dPrompt || undefined,
+    completionTokens: dCompletion || undefined,
+    totalTokens: dTotal || undefined,
+    calls: callsDelta || undefined,
+    wins: winsDelta || undefined,
+    failures: failuresDelta || undefined,
+    avgLatencyMs: Number.isFinite(latencyMs) ? (latencyMs as number) : undefined,
   })
 }
 
@@ -247,9 +250,19 @@ function scheduleReconnect(conn: ActiveConnection) {
 }
 
 function teardown(conn: ActiveConnection) {
-  conn.closed = true
+  // Invariant — must run in this order:
+  //   1. cancel any pending timers BEFORE flipping `closed`. Both timers
+  //      check `conn.closed` inside their callbacks; cancelling first
+  //      removes the queued tick entirely so even a re-entrant scheduler
+  //      cannot re-arm us.
+  //   2. flip `closed = true` so any in-flight socket event listeners
+  //      (open / message / close / error) bail out early.
+  //   3. close the socket and null the reference so further sends fail.
+  //   4. drop the gold-flash source flag.
+  //   5. clear cached jnoccio metrics so the panel resets visibly.
   cancelReconnect(conn)
   cancelHeartbeat(conn)
+  conn.closed = true
   if (conn.socket) {
     try {
       conn.socket.close(1000, "tui-teardown")

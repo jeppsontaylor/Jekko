@@ -287,9 +287,12 @@ export function Session() {
             disconnectJnoccio()
           }
         } else {
+          // Cleanup ordering: tear down the WS first so any in-flight
+          // metrics callbacks bail out before we reset state, then drop
+          // the gold overlay, then reset metrics.
+          disconnectJnoccio()
           setOverlay(undefined)
           resetZyalMetrics()
-          disconnectJnoccio()
         }
       } catch {
         if (!alive) return
@@ -302,9 +305,12 @@ export function Session() {
     onCleanup(() => {
       alive = false
       clearInterval(timer)
+      // Same ordering as the live-run else-branch above: WS first,
+      // then overlay, then metrics. Prevents stale WS messages from
+      // re-arming overlay or counters during teardown.
+      disconnectJnoccio()
       setOverlay(undefined)
       resetZyalMetrics()
-      disconnectJnoccio()
     })
   })
 

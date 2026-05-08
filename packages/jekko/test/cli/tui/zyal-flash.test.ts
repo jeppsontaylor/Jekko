@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import {
   daemonRunJnoccioConfig,
   daemonRunToZyalMetrics,
+  incrementJnoccioCounters,
   resetZyalMetrics,
   updateZyalMetrics,
   useZyalMetrics,
@@ -71,5 +72,76 @@ describe("zyal flash metrics", () => {
       metricsWsPath: "custom/ws",
       runId: "run_2",
     })
+  })
+})
+
+describe("incrementJnoccioCounters atomic merge", () => {
+  test("monotone counters survive interleaved snapshot resets", () => {
+    resetZyalMetrics()
+    // Authoritative snapshot establishes a baseline.
+    updateZyalMetrics({
+      jnoccioConnected: true,
+      jnoccioPromptTokens: 100,
+      jnoccioCompletionTokens: 50,
+      jnoccioTotalTokens: 150,
+      jnoccioCalls: 10,
+      jnoccioWins: 2,
+      jnoccioFailures: 1,
+    })
+    incrementJnoccioCounters({
+      promptTokens: 11,
+      completionTokens: 7,
+      totalTokens: 18,
+      calls: 1,
+      avgLatencyMs: 123,
+    })
+    incrementJnoccioCounters({ wins: 1 })
+    incrementJnoccioCounters({ calls: 1, failures: 1 })
+    const m = useZyalMetrics()()
+    expect(m.jnoccioConnected).toBe(true)
+    expect(m.jnoccioPromptTokens).toBe(111)
+    expect(m.jnoccioCompletionTokens).toBe(57)
+    expect(m.jnoccioTotalTokens).toBe(168)
+    expect(m.jnoccioCalls).toBe(12)
+    expect(m.jnoccioWins).toBe(3)
+    expect(m.jnoccioFailures).toBe(2)
+    expect(m.jnoccioAvgLatencyMs).toBe(123)
+  })
+
+  test("starts from null baseline without throwing", () => {
+    resetZyalMetrics()
+    incrementJnoccioCounters({
+      promptTokens: 5,
+      completionTokens: 3,
+      totalTokens: 8,
+      calls: 1,
+    })
+    const m = useZyalMetrics()()
+    expect(m.jnoccioConnected).toBe(true)
+    expect(m.jnoccioPromptTokens).toBe(5)
+    expect(m.jnoccioCompletionTokens).toBe(3)
+    expect(m.jnoccioTotalTokens).toBe(8)
+    expect(m.jnoccioCalls).toBe(1)
+  })
+
+  test("ignores zero / undefined deltas without resetting counters", () => {
+    resetZyalMetrics()
+    updateZyalMetrics({ jnoccioPromptTokens: 42, jnoccioConnected: true })
+    incrementJnoccioCounters({ promptTokens: 0, completionTokens: undefined })
+    expect(useZyalMetrics()().jnoccioPromptTokens).toBe(42)
+  })
+
+  test("avgLatencyMs is replaced not summed", () => {
+    resetZyalMetrics()
+    updateZyalMetrics({ jnoccioAvgLatencyMs: 200, jnoccioConnected: true })
+    incrementJnoccioCounters({ avgLatencyMs: 50 })
+    expect(useZyalMetrics()().jnoccioAvgLatencyMs).toBe(50)
+  })
+
+  test("avgLatencyMs null clears the field", () => {
+    resetZyalMetrics()
+    updateZyalMetrics({ jnoccioAvgLatencyMs: 200, jnoccioConnected: true })
+    incrementJnoccioCounters({ avgLatencyMs: null })
+    expect(useZyalMetrics()().jnoccioAvgLatencyMs).toBe(null)
   })
 })

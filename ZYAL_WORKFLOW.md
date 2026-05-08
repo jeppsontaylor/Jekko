@@ -73,3 +73,49 @@
 - Touching: `packages/jekko/src/cli/cmd/tui/context/zyal-flash.ts`, `packages/jekko/src/cli/cmd/tui/context/jnoccio-ws.ts`, `packages/jekko/src/agent-script/schema.ts`, `packages/jekko/src/agent-script/parser.ts`, `packages/jekko/src/session/llm.ts`, `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`, `packages/jekko/test/cli/tui/zyal-flash.test.ts`, `packages/jekko/test/cli/tui/jnoccio-ws.test.ts`, `packages/jekko/src/agent-script/parser.test.ts`, new `packages/jekko/test/session/telemetry-headers.test.ts`, new `packages/jekko/src/session/telemetry-headers.ts`.
 - Will run `bun test src/agent-script/`, `bun test test/cli/tui/`, `bun run typecheck`, `rg -w -i ocal` (must be 0) before commit.
 - Signature: `claude`
+
+## 2026-05-08T22:07:20Z — Claim — codex — ZYAL-only audit, docs/tips, paper
+- Git head: `5a9952b9a9fa95e56dac2518c92dd71907d53162`
+- Dirty worktree: yes; observed dirty Claude-owned paths: `packages/jekko/src/agent-script/schema.ts`, `packages/jekko/src/cli/cmd/tui/context/jnoccio-ws.ts`, `packages/jekko/src/cli/cmd/tui/context/zyal-flash.ts`, `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`, `packages/jekko/src/session/llm.ts`.
+- Coordination note: User confirmed target is ZYAL only. ZYML is invalid for this migration. OCAL must not remain except in clearly intentional historical notes.
+- Claimed codex scope: exact-token rename scans, docs/ZYAL and tips/ZYAL cleanup, paper/ZYAL.md IEEE-grade truthfulness and structure review, final validation receipts.
+- Avoiding while Claude claim is active: `schema.ts`, `parser.ts`, TUI Jnoccio/Zyal metrics files, session route cleanup, `session/llm.ts`, and Claude's listed tests unless workflow later releases them.
+- Commands run before claim: `rtk sed -n '1,260p' ZYAL_WORKFLOW.md`, `rtk git status --short`, `rtk git rev-parse HEAD`, `rtk date -u +%Y-%m-%dT%H:%M:%SZ`.
+- Signature: `codex`
+
+## 2026-05-08T23:05:00Z — Done — claude — Phase 2 + 3 + 4
+- Phase 2 bug fixes landed:
+  1. **TOCTOU race fix**: `incrementJnoccioCounters(delta)` added to `zyal-flash.ts` (Solid functional setter — atomic). `applyJnoccioRequestEvent` rewritten to delegate.
+  2. **Schema int bounds**: `fleet.max_workers` and `fleet.jnoccio.max_instances` now `Schema.Int.check(isGreaterThanOrEqualTo(1), isLessThanOrEqualTo(20))`. Strings, non-integers, OOR values rejected at decode.
+  3. **Telemetry headers hoist**: new `daemonRequestHeaders(metadata, sessionID, parentSessionID)` always emits `x-jekko-run-id`, `x-jekko-process-role`, `x-jekko-pid`, `x-jekko-version`, `x-session-affinity`, User-Agent — even for non-jekko providers. Jekko-only `x-jekko-session`/`x-jekko-request`/`x-jekko-project` overlaid conditionally.
+  4. **`teardown` ordering**: timers cancelled BEFORE `closed=true` flip, with explicit invariant comment.
+  5. **Session route cleanup ordering**: `disconnectJnoccio()` runs before `setOverlay(undefined)` and before `resetZyalMetrics()` in both else-branch and onCleanup.
+- Phase 3 `taint` block landed (key #40):
+  - `ZyalTaintRank` (high|medium|untrusted|untrusted_for_arming|hostile)
+  - `ZyalTaintForbidAction` (arm | approve | grant_capability | write_memory_procedural | write_memory_semantic | exec_shell | install_skill | modify_objective | expose_secret)
+  - `ZyalTaint` struct with `default_label`, `labels` (required), `forbid` rules, `prompt_injection` (`detect_patterns`, `on_detect`, `scan_sources`).
+  - Parser nested validator (`assertTaintNestedKeys`) enforces: labels non-empty, default_label declared, forbid.from references declared labels, forbid.cannot non-empty, prompt_injection.detect_patterns non-empty + valid regex.
+  - Preview surfaces `taint_enabled`, `taint_label_count`, `taint_forbid_count`, `taint_summary`.
+  - Distinct from existing preview-only `trust` block (path-zone scope, shallow stub).
+- Phase 4 tests (181 pass / 0 fail):
+  - `zyal-flash.test.ts` extended with 5 incrementJnoccioCounters cases (race-safe arithmetic, null baseline, zero deltas, replacement vs sum, null clears).
+  - `parser.test.ts` extended with 3 schema-level int rejection tests (string, below 1, above 20) + 9 taint accept/reject tests.
+- Build + verify:
+  - `bun run typecheck` → 0 errors in any file claude touched (only pre-existing duplicated `@opencode-ai/plugin` vs `packages/plugin/src/index` errors remain — codex territory).
+  - `bun test src/agent-script/ test/cli/tui/` → 181 pass, 0 fail, 491 expectations.
+  - `bun run build` → smoke test passed: `0.0.0-main-202605082211`.
+- Files staged: ZYAL_WORKFLOW.md, packages/jekko/src/agent-script/{parser.test.ts, parser.ts, schema.ts}, packages/jekko/src/cli/cmd/tui/context/{jnoccio-ws.ts, zyal-flash.ts}, packages/jekko/src/cli/cmd/tui/routes/session/index.tsx, packages/jekko/src/session/llm.ts, packages/jekko/test/cli/tui/zyal-flash.test.ts.
+- NOT staged (codex territory): packages/jekko/package.json (jekko-ai plugin namespace rename), paper/ZYAL.md (codex's pending docs).
+- Signature: `claude`
+
+## 2026-05-08T23:15:00Z — Block — claude — push rejected by pre-push typecheck
+- Local commit `5c5346e0c feat(zyal): TOCTOU fix + schema int bounds + telemetry hoist + taint v2.3` landed cleanly. All 181 tests pass; smoke build passes.
+- Pre-push hook ran `bun run typecheck` and failed with TWO pre-existing errors in `packages/jekko/src/plugin/index.ts:62` and `:63`:
+    Type 'import("…/@opencode-ai+plugin@1.14.41…/dist/index").Plugin' is not assignable to type 'import("…/packages/plugin/src/index").Plugin'.
+- Root cause: `packages/jekko/src/plugin/index.ts` imports `Plugin as PluginInstance` from `@jekko-ai/plugin`, but the array entries `GitlabAuthPlugin` (from `opencode-gitlab-auth`) and `PoeAuthPlugin` (from `opencode-poe-auth`) re-export the still-original `@opencode-ai/plugin.Plugin` type. Two type identities; assignment fails.
+- This is codex's territory (the @opencode-ai → @jekko-ai package namespace rename is theirs). Two options for codex:
+  1. Update `opencode-gitlab-auth` + `opencode-poe-auth` packages to import from `@jekko-ai/plugin`.
+  2. Add a short shim — re-export the `@opencode-ai/plugin.Plugin` type as `@jekko-ai/plugin.Plugin` so externally-imported plugins remain compatible during the migration.
+- Until then, claude's commit `5c5346e0c` is unpushed local-only. No risk of overwriting codex's work; the commit only touches files codex's pending dirty set didn't include (parser/schema/zyal-flash/jnoccio-ws/llm/session-route/parser-test/zyal-flash-test). Codex's pending paper/ZYAL.md and packages/jekko/package.json remain untouched.
+- Will retry push as soon as codex resolves the plugin namespace bridge.
+- Signature: `claude`
