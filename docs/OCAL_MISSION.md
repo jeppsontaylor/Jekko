@@ -818,3 +818,302 @@ The daemon is fully observable via the HTTP API:
 - `POST /daemon/runs/:id/pause` — Pause
 - `POST /daemon/runs/:id/resume` — Resume
 - `POST /daemon/runs/:id/abort` — Abort
+
+---
+
+## OCAL v2 Capabilities
+
+OCAL v2 extends the daemon from a loop-based runbook into an **evidence-gated agent operating contract** with durable graph execution, governed memory, proof bundles, and human approval gates. All v2 blocks are optional — omitting them has zero effect on v1/v1.1 scripts.
+
+### `workflow` — Durable Graph Execution
+
+Replaces or extends `loop` for complex multi-phase work. Defines a typed state machine where each state has an agent, write scope, required inputs, produced evidence, approval gates, and conditional transitions.
+
+```yaml
+workflow:
+  type: state_machine          # state_machine | dag | pipeline
+  initial: discover
+  states:
+    discover:
+      agent: plan
+      writes: scratch_only
+      produces: [impact_map, task_graph]
+      transitions:
+        - to: plan
+          when:
+            evidence_exists: impact_map
+        - to: incubate
+          when:
+            risk_score_gte: 0.7
+    plan:
+      agent: plan
+      writes: scratch_only
+      requires: [impact_map]
+      produces: [change_plan, test_plan, rollback_plan]
+      approval: plan_review     # blocks until human approves
+      transitions:
+        - to: implement
+          when:
+            approval_granted: plan_review
+    implement:
+      agent: build
+      writes: isolated_worktree
+      requires: [change_plan]
+      transitions:
+        - to: verify
+          when:
+            all_checks_pass: true
+        - to: plan
+          when:
+            checks_failed: true
+    verify:
+      agent: build
+      writes: none
+      transitions:
+        - to: promote
+          when:
+            all_checks_pass: true
+    promote:
+      terminal: true
+      approval: merge_review
+  on_stuck: pause              # pause | abort | incubate
+  max_total_time: 24h
+```
+
+**State properties:**
+
+| Key | Type | Description |
+|---|---|---|
+| `agent` | string | Agent to use for this state |
+| `writes` | enum | Write scope: `none`, `scratch_only`, `isolated_worktree`, `working_tree` |
+| `requires` | string[] | Evidence that must exist before entering |
+| `produces` | string[] | Evidence this state is expected to produce |
+| `approval` | string | Approval gate name (must match `approvals.gates`) |
+| `terminal` | boolean | If true, state ends the workflow |
+| `timeout` | duration | Max time in this state |
+| `hooks` | object | `on_enter` / `on_exit` lifecycle hooks |
+| `transitions` | array | Ordered list of conditional transitions |
+
+**Transition conditions:**
+
+| Key | Type | Description |
+|---|---|---|
+| `evidence_exists` | string | Fires when named evidence is available |
+| `approval_granted` | string | Fires when named approval gate is approved |
+| `all_checks_pass` | boolean | Fires when all checks pass (or fail) |
+| `checks_failed` | boolean | Fires on check failure |
+| `constraint_violated` | boolean | Fires when any constraint is violated |
+| `risk_score_gte` | number | Fires when risk score exceeds threshold |
+| `shell` | ShellCheck | Fires when shell command succeeds |
+
+**Semantic rules:**
+- `initial` must reference a defined state
+- All transition targets must reference defined states
+- Terminal states must not have transitions
+- At least one terminal state is required
+- Cycle detection is available for DAG mode
+
+---
+
+### `memory` — Governed Agent Memory
+
+Typed memory stores with scoping, retention, write policies, compression, redaction, and provenance tracking.
+
+```yaml
+memory:
+  stores:
+    task_context:
+      scope: task              # task | run | global | agent
+      retention: until_promotion   # until_promotion | until_archive | permanent | session
+      max_entries: 100
+      compression: summarize_after_50
+      write_policy: append_only    # append_only | upsert | overwrite
+      read_policy: inject_at_start # inject_at_start | on_demand | search
+    lessons_learned:
+      scope: global
+      retention: permanent
+      write_policy: upsert
+      read_policy: on_demand
+      searchable: true
+  redaction:
+    patterns: ["sk-*", "AKIA*", "password"]
+    action: mask               # mask | remove | hash
+  provenance:
+    track_source: true         # record which agent/pass wrote each entry
+    hash_chain: true           # tamper-evident memory chain
+```
+
+**Store properties:**
+
+| Key | Type | Description |
+|---|---|---|
+| `scope` | enum | Visibility scope for entries |
+| `retention` | enum | When entries are garbage-collected |
+| `max_entries` | number | Hard cap on entry count (oldest evicted) |
+| `compression` | string | Trigger expression (e.g. `summarize_after_50`) |
+| `write_policy` | enum | How duplicate keys are handled |
+| `read_policy` | enum | When entries are injected into context |
+| `searchable` | boolean | Whether FTS search is enabled |
+
+**Redaction** applies glob patterns to mask, remove, or hash-replace sensitive values before they enter memory. **Provenance** records which agent, pass, and iteration wrote each entry, with optional SHA-256 hash chaining for tamper detection.
+
+---
+
+### `evidence` — Typed Proof Bundles
+
+Structured evidence requirements that must be satisfied before promotion. Prevents "tests pass" from being the only promotion criterion.
+
+```yaml
+evidence:
+  require_before_promote:
+    - type: test_results
+      must_pass: true
+    - type: affected_files
+      must_be_known: true
+    - type: rollback_plan
+      must_exist: true
+    - type: risk_delta
+      max_increase: 0.1
+  bundle_format: json          # json | markdown
+  sign: sha256                 # sha256 | none
+  archive: true                # persist bundles in SQLite
+```
+
+**Requirement types:**
+
+| Key | Type | Description |
+|---|---|---|
+| `must_pass` | boolean | Evidence value must be `true` |
+| `must_be_known` | boolean | Evidence value must not be undefined |
+| `must_exist` | boolean | Evidence artifact must be present |
+| `max_increase` | number | Numeric evidence must not exceed this value |
+
+Bundles are signed with SHA-256 for audit integrity. The `verifyBundleHash` function detects tampering. Evidence types must be unique within a script.
+
+---
+
+### `approvals` — First-Class Human Decisions
+
+Typed approval gates with roles, timeouts, auto-approval conditions, and escalation chains.
+
+```yaml
+approvals:
+  gates:
+    plan_review:
+      required_role: tech_lead
+      timeout: 24h
+      on_timeout: pause        # pause | abort | escalate
+      decisions: [approve, reject, edit, escalate]
+      require_evidence: [test_results, rollback_plan]
+      auto_approve_if:
+        risk_score_lt: 0.3
+        all_checks_pass: true
+    merge_review:
+      required_role: code_owner
+      require_evidence: [test_results]
+  escalation:
+    chain: [tech_lead, staff_engineer, director]
+    auto_escalate_after: 48h
+```
+
+**Gate properties:**
+
+| Key | Type | Description |
+|---|---|---|
+| `required_role` | string | Who must approve |
+| `timeout` | duration | Max time before `on_timeout` fires |
+| `on_timeout` | enum | Action on timeout: pause, abort, escalate |
+| `decisions` | string[] | Available decision types |
+| `require_evidence` | string[] | Evidence that must exist before approval is possible |
+| `auto_approve_if` | object | Conditions for auto-approval (risk score, checks) |
+
+**Escalation** defines an ordered chain of roles. When `auto_escalate_after` expires on a pending approval, the request moves to the next role in the chain. The host manages all approval state — the model cannot approve or reject.
+
+**Integration with workflow:** When a workflow state has an `approval` field, the state machine blocks until the referenced gate is approved. The parser validates that all referenced gate names exist in `approvals.gates`.
+
+---
+
+## v2 Example: Workflow-Driven Feature Implementation
+
+```yaml
+<<<OCAL v1:daemon id=feature-impl>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: implement-feature
+  objective: Build feature X with evidence-gated workflow
+  risk: medium
+
+stop:
+  all:
+    - git_clean: {}
+
+workflow:
+  type: state_machine
+  initial: discover
+  states:
+    discover:
+      agent: plan
+      writes: scratch_only
+      produces: [impact_map]
+      transitions:
+        - to: plan
+          when:
+            evidence_exists: impact_map
+    plan:
+      agent: plan
+      writes: scratch_only
+      requires: [impact_map]
+      produces: [change_plan, test_plan]
+      approval: plan_review
+      transitions:
+        - to: implement
+          when:
+            approval_granted: plan_review
+    implement:
+      agent: build
+      writes: isolated_worktree
+      transitions:
+        - to: done
+          when:
+            all_checks_pass: true
+        - to: plan
+          when:
+            checks_failed: true
+    done:
+      terminal: true
+
+memory:
+  stores:
+    context:
+      scope: run
+      retention: session
+      write_policy: append_only
+      read_policy: inject_at_start
+
+evidence:
+  require_before_promote:
+    - type: test_results
+      must_pass: true
+    - type: affected_files
+      must_be_known: true
+
+approvals:
+  gates:
+    plan_review:
+      required_role: tech_lead
+      timeout: 24h
+      on_timeout: pause
+      auto_approve_if:
+        risk_score_lt: 0.2
+        all_checks_pass: true
+
+permissions:
+  shell: allow
+  edit: allow
+  git_commit: allow
+<<<END_OCAL id=feature-impl>>>
+OCAL_ARM RUN_FOREVER id=feature-impl
+```

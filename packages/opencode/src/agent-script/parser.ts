@@ -323,6 +323,12 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
     })
   }
 
+  // ─── v2 blocks ─────────────────────────────────────────────────────────
+  assertWorkflowNestedKeys(input)
+  assertMemoryNestedKeys(input)
+  assertEvidenceNestedKeys(input)
+  assertApprovalsNestedKeys(input)
+
   const incubator = input.incubator
   if (incubator === undefined) return
   const root = expectRecord(incubator, "incubator")
@@ -438,6 +444,111 @@ function assertOcalNestedKeys(input: Record<string, unknown>) {
         "unresolved_critical_objections_gte",
       ])
     }
+  }
+}
+
+// ─── v2: workflow ───────────────────────────────────────────────────────────
+function assertWorkflowNestedKeys(input: Record<string, unknown>) {
+  if (input.workflow === undefined) return
+  const workflow = expectRecord(input.workflow, "workflow")
+  assertKeys("workflow", workflow, ["type", "initial", "states", "on_stuck", "max_total_time"])
+  if (workflow.states !== undefined) {
+    const states = expectRecord(workflow.states, "workflow.states")
+    for (const [stateName, state] of Object.entries(states)) {
+      const record = expectRecord(state, `workflow.states.${stateName}`)
+      assertKeys(`workflow.states.${stateName}`, record, [
+        "agent", "writes", "requires", "produces", "approval", "terminal",
+        "timeout", "hooks", "transitions",
+      ])
+      if (record.hooks !== undefined) {
+        const hooks = expectRecord(record.hooks, `workflow.states.${stateName}.hooks`)
+        assertKeys(`workflow.states.${stateName}.hooks`, hooks, ["on_enter", "on_exit"])
+      }
+      if (record.transitions !== undefined) {
+        if (!Array.isArray(record.transitions)) {
+          throw new OcalParseError(`workflow.states.${stateName}.transitions must be a list`)
+        }
+        record.transitions.forEach((t, i) => {
+          const tr = expectRecord(t, `workflow.states.${stateName}.transitions[${i}]`)
+          assertKeys(`workflow.states.${stateName}.transitions[${i}]`, tr, ["to", "when"])
+          if (tr.when !== undefined) {
+            const when = expectRecord(tr.when, `workflow.states.${stateName}.transitions[${i}].when`)
+            assertKeys(`workflow.states.${stateName}.transitions[${i}].when`, when, [
+              "evidence_exists", "risk_score_gte", "approval_granted",
+              "all_checks_pass", "checks_failed", "constraint_violated", "shell",
+            ])
+          }
+        })
+      }
+    }
+  }
+}
+
+// ─── v2: memory ─────────────────────────────────────────────────────────────
+function assertMemoryNestedKeys(input: Record<string, unknown>) {
+  if (input.memory === undefined) return
+  const memory = expectRecord(input.memory, "memory")
+  assertKeys("memory", memory, ["stores", "redaction", "provenance"])
+  if (memory.stores !== undefined) {
+    const stores = expectRecord(memory.stores, "memory.stores")
+    for (const [storeName, store] of Object.entries(stores)) {
+      const record = expectRecord(store, `memory.stores.${storeName}`)
+      assertKeys(`memory.stores.${storeName}`, record, [
+        "scope", "retention", "max_entries", "compression",
+        "write_policy", "read_policy", "searchable",
+      ])
+    }
+  }
+  if (memory.redaction !== undefined) {
+    const redaction = expectRecord(memory.redaction, "memory.redaction")
+    assertKeys("memory.redaction", redaction, ["patterns", "action"])
+  }
+  if (memory.provenance !== undefined) {
+    const provenance = expectRecord(memory.provenance, "memory.provenance")
+    assertKeys("memory.provenance", provenance, ["track_source", "hash_chain"])
+  }
+}
+
+// ─── v2: evidence ───────────────────────────────────────────────────────────
+function assertEvidenceNestedKeys(input: Record<string, unknown>) {
+  if (input.evidence === undefined) return
+  const evidence = expectRecord(input.evidence, "evidence")
+  assertKeys("evidence", evidence, ["require_before_promote", "bundle_format", "sign", "archive"])
+  if (evidence.require_before_promote !== undefined) {
+    if (!Array.isArray(evidence.require_before_promote)) {
+      throw new OcalParseError("evidence.require_before_promote must be a list")
+    }
+    evidence.require_before_promote.forEach((req, i) => {
+      const record = expectRecord(req, `evidence.require_before_promote[${i}]`)
+      assertKeys(`evidence.require_before_promote[${i}]`, record, [
+        "type", "must_pass", "must_be_known", "must_exist", "max_increase",
+      ])
+    })
+  }
+}
+
+// ─── v2: approvals ──────────────────────────────────────────────────────────
+function assertApprovalsNestedKeys(input: Record<string, unknown>) {
+  if (input.approvals === undefined) return
+  const approvals = expectRecord(input.approvals, "approvals")
+  assertKeys("approvals", approvals, ["gates", "escalation"])
+  if (approvals.gates !== undefined) {
+    const gates = expectRecord(approvals.gates, "approvals.gates")
+    for (const [gateName, gate] of Object.entries(gates)) {
+      const record = expectRecord(gate, `approvals.gates.${gateName}`)
+      assertKeys(`approvals.gates.${gateName}`, record, [
+        "required_role", "timeout", "on_timeout", "decisions",
+        "require_evidence", "auto_approve_if",
+      ])
+      if (record.auto_approve_if !== undefined) {
+        const auto = expectRecord(record.auto_approve_if, `approvals.gates.${gateName}.auto_approve_if`)
+        assertKeys(`approvals.gates.${gateName}.auto_approve_if`, auto, ["risk_score_lt", "all_checks_pass"])
+      }
+    }
+  }
+  if (approvals.escalation !== undefined) {
+    const escalation = expectRecord(approvals.escalation, "approvals.escalation")
+    assertKeys("approvals.escalation", escalation, ["chain", "auto_escalate_after"])
   }
 }
 
@@ -581,7 +692,65 @@ function validateOcalSemantics(spec: OcalScript) {
       }
     }
   }
+
+  // ─── v2: workflow ──────────────────────────────────────────────────────
+  if (spec.workflow) {
+    const stateNames = new Set(Object.keys(spec.workflow.states))
+    if (!stateNames.has(spec.workflow.initial)) {
+      throw new OcalParseError(`workflow.initial '${spec.workflow.initial}' is not a defined state`)
+    }
+    // Validate transitions reference valid states
+    for (const [stateName, state] of Object.entries(spec.workflow.states)) {
+      if (state.transitions) {
+        for (const [i, t] of state.transitions.entries()) {
+          if (!stateNames.has(t.to)) {
+            throw new OcalParseError(
+              `workflow.states.${stateName}.transitions[${i}].to '${t.to}' is not a defined state`,
+            )
+          }
+        }
+      }
+    }
+    // Terminal states should not have transitions
+    for (const [stateName, state] of Object.entries(spec.workflow.states)) {
+      if (state.terminal && state.transitions?.length) {
+        throw new OcalParseError(`workflow.states.${stateName} is terminal but has transitions`)
+      }
+    }
+    // Must have at least one terminal state
+    const hasTerminal = Object.values(spec.workflow.states).some((s) => s.terminal)
+    if (!hasTerminal) {
+      throw new OcalParseError("workflow must have at least one terminal state")
+    }
+  }
+
+  // ─── v2: approvals ─────────────────────────────────────────────────────
+  if (spec.approvals?.gates && spec.workflow) {
+    // Validate that approval gates referenced in workflow states exist
+    for (const [stateName, state] of Object.entries(spec.workflow.states)) {
+      if (state.approval && !spec.approvals.gates[state.approval]) {
+        throw new OcalParseError(
+          `workflow.states.${stateName}.approval '${state.approval}' is not defined in approvals.gates`,
+        )
+      }
+    }
+  }
+
+  // ─── v2: evidence ──────────────────────────────────────────────────────
+  if (spec.evidence?.require_before_promote) {
+    const types = new Set<string>()
+    for (const [i, req] of spec.evidence.require_before_promote.entries()) {
+      if (!req.type.trim()) {
+        throw new OcalParseError(`evidence.require_before_promote[${i}].type must not be empty`)
+      }
+      if (types.has(req.type)) {
+        throw new OcalParseError(`evidence.require_before_promote[${i}].type '${req.type}' is duplicated`)
+      }
+      types.add(req.type)
+    }
+  }
 }
+
 
 function assertKeys(path: string, value: Record<string, unknown>, allowed: string[]) {
   const set = new Set(allowed)

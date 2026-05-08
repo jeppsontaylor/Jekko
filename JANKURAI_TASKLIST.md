@@ -3623,10 +3623,10 @@ Summary:
 - Proof receipt: `just fast` passed at 2026-05-08T15:12:00Z; replaced unsafe cast with instanceof guard at line 68.
 
 ### JK-0099 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/dialog-select-directory.tsx
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
+- Status: Complete
+- Assignee: opencode
+- Started: 2026-05-08T16:00:00Z
+- Completed: 2026-05-08T16:05:00Z
 - Source packet: `99`
 - Fingerprint: `sha256:aa1c8e266a95c8fcad59ead14f67ae918ddbedba0a0d4062898d92d13a8f8218`
 - Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
@@ -3658,6 +3658,10 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
+  - Command: `just fast`
+  - Result: `exit 0; repo checks ok`
+  - Timestamp: 2026-05-08T16:05:00Z
+  - Files touched: `packages/app/src/components/dialog-select-directory.tsx`, `JANKURAI_TASKLIST.md`
 
 ### JK-0100 - [high] HLT-001-DEAD-MARKER - packages/app/src/components/prompt-input.tsx
 - Status: Complete

@@ -505,6 +505,178 @@ export const OcalConstraint = Schema.Struct({
 })
 export type OcalConstraint = Schema.Schema.Type<typeof OcalConstraint>
 
+// ─── Workflow: Durable Graph Execution ─────────────────────────────────────
+
+export const OcalWorkflowTransitionCondition = Schema.Struct({
+  evidence_exists: Schema.optional(Schema.String),
+  risk_score_gte: Schema.optional(Schema.Number),
+  approval_granted: Schema.optional(Schema.String),
+  all_checks_pass: Schema.optional(Schema.Boolean),
+  checks_failed: Schema.optional(Schema.Boolean),
+  constraint_violated: Schema.optional(Schema.Boolean),
+  shell: Schema.optional(OcalShellCheck),
+})
+export type OcalWorkflowTransitionCondition = Schema.Schema.Type<typeof OcalWorkflowTransitionCondition>
+
+export const OcalWorkflowTransition = Schema.Struct({
+  to: Schema.String,
+  when: OcalWorkflowTransitionCondition,
+})
+export type OcalWorkflowTransition = Schema.Schema.Type<typeof OcalWorkflowTransition>
+
+export const OcalWorkflowState = Schema.Struct({
+  agent: Schema.optional(Schema.String),
+  writes: Schema.optional(Schema.Union([
+    Schema.Literal("none"),
+    Schema.Literal("scratch_only"),
+    Schema.Literal("isolated_worktree"),
+    Schema.Literal("working_tree"),
+  ])),
+  requires: Schema.optional(Schema.Array(Schema.String)),
+  produces: Schema.optional(Schema.Array(Schema.String)),
+  approval: Schema.optional(Schema.String),
+  terminal: Schema.optional(Schema.Boolean),
+  timeout: Schema.optional(Schema.String),
+  hooks: Schema.optional(Schema.Struct({
+    on_enter: Schema.optional(Schema.Array(OcalHookStep)),
+    on_exit: Schema.optional(Schema.Array(OcalHookStep)),
+  })),
+  transitions: Schema.optional(Schema.Array(OcalWorkflowTransition)),
+})
+export type OcalWorkflowState = Schema.Schema.Type<typeof OcalWorkflowState>
+
+export const OcalWorkflow = Schema.Struct({
+  type: Schema.Union([
+    Schema.Literal("state_machine"),
+    Schema.Literal("dag"),
+    Schema.Literal("pipeline"),
+  ]),
+  initial: Schema.String,
+  states: Schema.Record(Schema.String, OcalWorkflowState),
+  on_stuck: Schema.optional(Schema.Union([
+    Schema.Literal("pause"),
+    Schema.Literal("abort"),
+    Schema.Literal("incubate"),
+  ])),
+  max_total_time: Schema.optional(Schema.String),
+})
+export type OcalWorkflow = Schema.Schema.Type<typeof OcalWorkflow>
+
+// ─── Memory: Governed Agent Memory ─────────────────────────────────────────
+
+export const OcalMemoryStore = Schema.Struct({
+  scope: Schema.Union([
+    Schema.Literal("task"),
+    Schema.Literal("run"),
+    Schema.Literal("global"),
+    Schema.Literal("agent"),
+  ]),
+  retention: Schema.Union([
+    Schema.Literal("until_promotion"),
+    Schema.Literal("until_archive"),
+    Schema.Literal("permanent"),
+    Schema.Literal("session"),
+  ]),
+  max_entries: Schema.optional(Schema.Number),
+  compression: Schema.optional(Schema.String),
+  write_policy: Schema.optional(Schema.Union([
+    Schema.Literal("append_only"),
+    Schema.Literal("upsert"),
+    Schema.Literal("overwrite"),
+  ])),
+  read_policy: Schema.optional(Schema.Union([
+    Schema.Literal("inject_at_start"),
+    Schema.Literal("on_demand"),
+    Schema.Literal("search"),
+  ])),
+  searchable: Schema.optional(Schema.Boolean),
+})
+export type OcalMemoryStore = Schema.Schema.Type<typeof OcalMemoryStore>
+
+export const OcalMemoryRedaction = Schema.Struct({
+  patterns: Schema.Array(Schema.String),
+  action: Schema.Union([
+    Schema.Literal("mask"),
+    Schema.Literal("remove"),
+    Schema.Literal("hash"),
+  ]),
+})
+export type OcalMemoryRedaction = Schema.Schema.Type<typeof OcalMemoryRedaction>
+
+export const OcalMemory = Schema.Struct({
+  stores: Schema.optional(Schema.Record(Schema.String, OcalMemoryStore)),
+  redaction: Schema.optional(OcalMemoryRedaction),
+  provenance: Schema.optional(Schema.Struct({
+    track_source: Schema.optional(Schema.Boolean),
+    hash_chain: Schema.optional(Schema.Boolean),
+  })),
+})
+export type OcalMemory = Schema.Schema.Type<typeof OcalMemory>
+
+// ─── Evidence: Typed Proof Bundles ─────────────────────────────────────────
+
+export const OcalEvidenceRequirement = Schema.Struct({
+  type: Schema.String,
+  must_pass: Schema.optional(Schema.Boolean),
+  must_be_known: Schema.optional(Schema.Boolean),
+  must_exist: Schema.optional(Schema.Boolean),
+  max_increase: Schema.optional(Schema.Number),
+})
+export type OcalEvidenceRequirement = Schema.Schema.Type<typeof OcalEvidenceRequirement>
+
+export const OcalEvidence = Schema.Struct({
+  require_before_promote: Schema.optional(Schema.Array(OcalEvidenceRequirement)),
+  bundle_format: Schema.optional(Schema.Union([
+    Schema.Literal("json"),
+    Schema.Literal("markdown"),
+  ])),
+  sign: Schema.optional(Schema.Union([
+    Schema.Literal("sha256"),
+    Schema.Literal("none"),
+  ])),
+  archive: Schema.optional(Schema.Boolean),
+})
+export type OcalEvidence = Schema.Schema.Type<typeof OcalEvidence>
+
+// ─── Approvals: First-Class Human Decisions ────────────────────────────────
+
+export const OcalApprovalDecision = Schema.Union([
+  Schema.Literal("approve"),
+  Schema.Literal("reject"),
+  Schema.Literal("edit"),
+  Schema.Literal("escalate"),
+])
+export type OcalApprovalDecision = Schema.Schema.Type<typeof OcalApprovalDecision>
+
+export const OcalApprovalGate = Schema.Struct({
+  required_role: Schema.optional(Schema.String),
+  timeout: Schema.optional(Schema.String),
+  on_timeout: Schema.optional(Schema.Union([
+    Schema.Literal("pause"),
+    Schema.Literal("abort"),
+    Schema.Literal("escalate"),
+  ])),
+  decisions: Schema.optional(Schema.Array(OcalApprovalDecision)),
+  require_evidence: Schema.optional(Schema.Array(Schema.String)),
+  auto_approve_if: Schema.optional(Schema.Struct({
+    risk_score_lt: Schema.optional(Schema.Number),
+    all_checks_pass: Schema.optional(Schema.Boolean),
+  })),
+})
+export type OcalApprovalGate = Schema.Schema.Type<typeof OcalApprovalGate>
+
+export const OcalApprovalEscalation = Schema.Struct({
+  chain: Schema.optional(Schema.Array(Schema.String)),
+  auto_escalate_after: Schema.optional(Schema.String),
+})
+export type OcalApprovalEscalation = Schema.Schema.Type<typeof OcalApprovalEscalation>
+
+export const OcalApprovals = Schema.Struct({
+  gates: Schema.optional(Schema.Record(Schema.String, OcalApprovalGate)),
+  escalation: Schema.optional(OcalApprovalEscalation),
+})
+export type OcalApprovals = Schema.Schema.Type<typeof OcalApprovals>
+
 // ─── Core Types ────────────────────────────────────────────────────────────
 
 export const OcalArm = Schema.Struct({
@@ -537,6 +709,11 @@ export const OcalSpec = Schema.Struct({
   retry: Schema.optional(OcalRetry),
   hooks: Schema.optional(OcalHooks),
   constraints: Schema.optional(Schema.Array(OcalConstraint)),
+  // v2 blocks
+  workflow: Schema.optional(OcalWorkflow),
+  memory: Schema.optional(OcalMemory),
+  evidence: Schema.optional(OcalEvidence),
+  approvals: Schema.optional(OcalApprovals),
 })
 
 export type OcalSpec = Schema.Schema.Type<typeof OcalSpec>
@@ -581,6 +758,15 @@ export const OcalPreview = Schema.Struct({
   hooks_summary: Schema.optional(Schema.String),
   constraint_count: Schema.Number,
   constraints_summary: Schema.optional(Schema.String),
+  // v2 capabilities
+  workflow_enabled: Schema.Boolean,
+  workflow_summary: Schema.optional(Schema.String),
+  memory_store_count: Schema.Number,
+  memory_summary: Schema.optional(Schema.String),
+  evidence_enabled: Schema.Boolean,
+  evidence_summary: Schema.optional(Schema.String),
+  approval_gate_count: Schema.Number,
+  approvals_summary: Schema.optional(Schema.String),
 })
 
 export type OcalPreview = Schema.Schema.Type<typeof OcalPreview>
@@ -616,6 +802,11 @@ export function assertOcalTopLevelKeys(input: Record<string, unknown>) {
     "retry",
     "hooks",
     "constraints",
+    // v2
+    "workflow",
+    "memory",
+    "evidence",
+    "approvals",
   ])
   for (const key of Object.keys(input)) {
     if (!allowed.has(key)) {
@@ -718,6 +909,23 @@ export function buildOcalPreview(input: { spec: OcalScript; arm?: OcalArm }): Oc
     constraint_count: input.spec.constraints?.length ?? 0,
     constraints_summary: input.spec.constraints?.length
       ? input.spec.constraints.map((c) => `${c.name}:${c.invariant}`).join(", ")
+      : undefined,
+    // v2 capabilities
+    workflow_enabled: input.spec.workflow !== undefined,
+    workflow_summary: input.spec.workflow
+      ? `${input.spec.workflow.type} initial:${input.spec.workflow.initial} states:${Object.keys(input.spec.workflow.states).length}`
+      : undefined,
+    memory_store_count: input.spec.memory?.stores ? Object.keys(input.spec.memory.stores).length : 0,
+    memory_summary: input.spec.memory?.stores
+      ? Object.entries(input.spec.memory.stores).map(([k, v]) => `${k}:${v.scope}`).join(", ")
+      : undefined,
+    evidence_enabled: (input.spec.evidence?.require_before_promote?.length ?? 0) > 0,
+    evidence_summary: input.spec.evidence?.require_before_promote
+      ? input.spec.evidence.require_before_promote.map((r) => r.type).join(", ")
+      : undefined,
+    approval_gate_count: input.spec.approvals?.gates ? Object.keys(input.spec.approvals.gates).length : 0,
+    approvals_summary: input.spec.approvals?.gates
+      ? Object.entries(input.spec.approvals.gates).map(([k, v]) => `${k}${v.required_role ? `:${v.required_role}` : ""}`).join(", ")
       : undefined,
   }
 }

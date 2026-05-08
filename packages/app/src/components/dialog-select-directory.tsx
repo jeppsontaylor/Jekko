@@ -347,6 +347,7 @@ export function DialogSelectDirectory(props: DialogSelectDirectoryProps) {
         ref={(r) => (list = r)}
         onFilter={(value) => setFilter(cleanInput(value))}
         onKeyEvent={(e, item) => {
+          if (!(e instanceof KeyboardEvent)) return
           if (e.key !== "Tab") return
           if (e.shiftKey) return
           if (!item) return

@@ -691,6 +691,152 @@ permissions:
   git_commit: ask`,
     ),
   },
+  "v2-workflow-driven": {
+    id: "v2-workflow-driven",
+    title: "Workflow-driven feature implementation",
+    description: "Evidence-gated state machine with memory, approvals, and proof bundles.",
+    text: wrap(
+      "v2-workflow-driven",
+      `version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: v2-workflow-feature
+  objective: Implement a feature using workflow-driven orchestration
+  risk: medium
+
+stop:
+  all:
+    - git_clean: {}
+
+workflow:
+  type: state_machine
+  initial: discover
+  states:
+    discover:
+      agent: plan
+      writes: scratch_only
+      produces:
+        - impact_map
+        - task_graph
+      transitions:
+        - to: plan
+          when:
+            evidence_exists: impact_map
+    plan:
+      agent: plan
+      writes: scratch_only
+      requires:
+        - impact_map
+      produces:
+        - change_plan
+        - test_plan
+        - rollback_plan
+      approval: plan_review
+      transitions:
+        - to: implement
+          when:
+            approval_granted: plan_review
+    implement:
+      agent: build
+      writes: isolated_worktree
+      requires:
+        - change_plan
+        - test_plan
+      produces:
+        - code_changes
+        - test_results
+      transitions:
+        - to: verify
+          when:
+            all_checks_pass: true
+        - to: plan
+          when:
+            checks_failed: true
+    verify:
+      agent: build
+      writes: none
+      requires:
+        - test_results
+      produces:
+        - verification_report
+      transitions:
+        - to: promote
+          when:
+            all_checks_pass: true
+    promote:
+      terminal: true
+      approval: merge_review
+
+memory:
+  stores:
+    task_context:
+      scope: task
+      retention: until_promotion
+      max_entries: 100
+      write_policy: append_only
+      read_policy: inject_at_start
+    lessons_learned:
+      scope: global
+      retention: permanent
+      write_policy: upsert
+      read_policy: on_demand
+      searchable: true
+  redaction:
+    patterns:
+      - "sk-*"
+      - "AKIA*"
+    action: mask
+  provenance:
+    track_source: true
+    hash_chain: true
+
+evidence:
+  require_before_promote:
+    - type: test_results
+      must_pass: true
+    - type: affected_files
+      must_be_known: true
+    - type: rollback_plan
+      must_exist: true
+    - type: risk_delta
+      max_increase: 0.1
+  bundle_format: json
+  sign: sha256
+  archive: true
+
+approvals:
+  gates:
+    plan_review:
+      required_role: tech_lead
+      timeout: 24h
+      on_timeout: pause
+      decisions:
+        - approve
+        - reject
+        - edit
+      auto_approve_if:
+        risk_score_lt: 0.3
+        all_checks_pass: true
+    merge_review:
+      required_role: code_owner
+      require_evidence:
+        - test_results
+        - rollback_plan
+  escalation:
+    chain:
+      - tech_lead
+      - staff_engineer
+    auto_escalate_after: 48h
+
+permissions:
+  shell: allow
+  edit: allow
+  git_commit: allow
+  git_push: ask`,
+    ),
+  },
 }
 
 export function listOcalExamples() {

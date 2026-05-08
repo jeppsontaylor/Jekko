@@ -380,3 +380,275 @@ ${body}
 <<<END_OCAL id=test>>>
 OCAL_ARM RUN_FOREVER id=test`
 }
+
+// ─── v2 parser tests ────────────────────────────────────────────────────────
+
+describe("OCAL parser v2", () => {
+  test("accepts a valid workflow block", async () => {
+    const text = makeOcal(`
+workflow:
+  type: state_machine
+  initial: discover
+  states:
+    discover:
+      agent: plan
+      writes: scratch_only
+      produces:
+        - impact_map
+      transitions:
+        - to: done
+          when:
+            evidence_exists: impact_map
+    done:
+      terminal: true`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.workflow_enabled).toBe(true)
+    expect(parsed.preview.workflow_summary).toContain("state_machine")
+    expect(parsed.preview.workflow_summary).toContain("states:2")
+  })
+
+  test("rejects workflow with invalid initial state", async () => {
+    const text = makeOcal(`
+workflow:
+  type: state_machine
+  initial: nonexistent
+  states:
+    a:
+      terminal: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects workflow with invalid transition target", async () => {
+    const text = makeOcal(`
+workflow:
+  type: state_machine
+  initial: a
+  states:
+    a:
+      transitions:
+        - to: nonexistent
+          when:
+            all_checks_pass: true
+    b:
+      terminal: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects workflow with terminal state having transitions", async () => {
+    const text = makeOcal(`
+workflow:
+  type: state_machine
+  initial: a
+  states:
+    a:
+      terminal: true
+      transitions:
+        - to: a
+          when:
+            all_checks_pass: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects workflow with no terminal state", async () => {
+    const text = makeOcal(`
+workflow:
+  type: state_machine
+  initial: a
+  states:
+    a:
+      transitions:
+        - to: a
+          when:
+            all_checks_pass: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects workflow with unknown nested keys", async () => {
+    const text = makeOcal(`
+workflow:
+  type: state_machine
+  initial: a
+  bogus: true
+  states:
+    a:
+      terminal: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts a valid memory block", async () => {
+    const text = makeOcal(`
+memory:
+  stores:
+    task_context:
+      scope: task
+      retention: until_promotion
+      max_entries: 100
+      write_policy: append_only
+      read_policy: inject_at_start
+    lessons:
+      scope: global
+      retention: permanent
+  redaction:
+    patterns:
+      - "sk-*"
+    action: mask
+  provenance:
+    track_source: true
+    hash_chain: true`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.memory_store_count).toBe(2)
+    expect(parsed.preview.memory_summary).toContain("task_context:task")
+  })
+
+  test("rejects memory with unknown store keys", async () => {
+    const text = makeOcal(`
+memory:
+  stores:
+    ctx:
+      scope: task
+      retention: permanent
+      bogus: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts a valid evidence block", async () => {
+    const text = makeOcal(`
+evidence:
+  require_before_promote:
+    - type: test_results
+      must_pass: true
+    - type: affected_files
+      must_be_known: true
+    - type: risk_delta
+      max_increase: 0.1
+  bundle_format: json
+  sign: sha256
+  archive: true`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.evidence_enabled).toBe(true)
+    expect(parsed.preview.evidence_summary).toContain("test_results")
+  })
+
+  test("rejects evidence with duplicate types", async () => {
+    const text = makeOcal(`
+evidence:
+  require_before_promote:
+    - type: test_results
+      must_pass: true
+    - type: test_results
+      must_exist: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("rejects evidence with empty type", async () => {
+    const text = makeOcal(`
+evidence:
+  require_before_promote:
+    - type: ""
+      must_pass: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts a valid approvals block", async () => {
+    const text = makeOcal(`
+approvals:
+  gates:
+    plan_review:
+      required_role: tech_lead
+      timeout: 24h
+      on_timeout: pause
+      decisions:
+        - approve
+        - reject
+      auto_approve_if:
+        risk_score_lt: 0.3
+        all_checks_pass: true
+    merge_review:
+      required_role: code_owner
+  escalation:
+    chain:
+      - tech_lead
+      - director
+    auto_escalate_after: 48h`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.approval_gate_count).toBe(2)
+    expect(parsed.preview.approvals_summary).toContain("plan_review:tech_lead")
+  })
+
+  test("rejects approvals with unknown gate keys", async () => {
+    const text = makeOcal(`
+approvals:
+  gates:
+    review:
+      required_role: admin
+      bogus: true`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("validates approval gate references in workflow", async () => {
+    const text = makeOcal(`
+workflow:
+  type: state_machine
+  initial: a
+  states:
+    a:
+      approval: missing_gate
+      transitions:
+        - to: b
+          when:
+            approval_granted: missing_gate
+    b:
+      terminal: true
+approvals:
+  gates:
+    other_gate:
+      required_role: admin`)
+    const result = await Effect.runPromiseExit(parseOcal(text))
+    expect(result._tag).toBe("Failure")
+  })
+
+  test("accepts combined v2 blocks", async () => {
+    const text = makeOcal(`
+workflow:
+  type: pipeline
+  initial: plan
+  states:
+    plan:
+      agent: plan
+      produces:
+        - plan_doc
+      transitions:
+        - to: done
+          when:
+            evidence_exists: plan_doc
+    done:
+      terminal: true
+memory:
+  stores:
+    ctx:
+      scope: run
+      retention: session
+evidence:
+  require_before_promote:
+    - type: test_results
+      must_pass: true
+approvals:
+  gates:
+    final_review:
+      required_role: admin`)
+    const parsed = await Effect.runPromise(parseOcal(text))
+    expect(parsed.preview.workflow_enabled).toBe(true)
+    expect(parsed.preview.memory_store_count).toBe(1)
+    expect(parsed.preview.evidence_enabled).toBe(true)
+    expect(parsed.preview.approval_gate_count).toBe(1)
+  })
+})
