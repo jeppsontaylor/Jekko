@@ -11,7 +11,7 @@ import { LocaleLinks } from "~/component/locale-links"
 import { config } from "~/config"
 import { useI18n } from "~/context/i18n"
 import { useLanguage } from "~/context/language"
-import desktopAppIcon from "../../asset/lander/jekko-desktop-icon.png"
+import desktopAppIcon from "../../asset/lander/jekko-desktop-icon.svg"
 import type { DownloadPlatform } from "./types"
 
 type OS = "macOS" | "Windows" | "Linux" | null

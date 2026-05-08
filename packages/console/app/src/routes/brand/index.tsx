@@ -5,22 +5,22 @@ import { Footer } from "~/component/footer"
 import { Legal } from "~/component/legal"
 import { useI18n } from "~/context/i18n"
 import { LocaleLinks } from "~/component/locale-links"
-import previewLogoLight from "../../asset/brand/preview-jekko-logo-light.png"
-import previewLogoDark from "../../asset/brand/preview-jekko-logo-dark.png"
-import previewLogoLightSquare from "../../asset/brand/preview-jekko-logo-light-square.png"
-import previewLogoDarkSquare from "../../asset/brand/preview-jekko-logo-dark-square.png"
-import previewWordmarkLight from "../../asset/brand/preview-jekko-wordmark-light.png"
-import previewWordmarkDark from "../../asset/brand/preview-jekko-wordmark-dark.png"
-import previewWordmarkSimpleLight from "../../asset/brand/preview-jekko-wordmark-simple-light.png"
-import previewWordmarkSimpleDark from "../../asset/brand/preview-jekko-wordmark-simple-dark.png"
-import logoLightPng from "../../asset/brand/jekko-logo-light.png"
-import logoDarkPng from "../../asset/brand/jekko-logo-dark.png"
-import logoLightSquarePng from "../../asset/brand/jekko-logo-light-square.png"
-import logoDarkSquarePng from "../../asset/brand/jekko-logo-dark-square.png"
-import wordmarkLightPng from "../../asset/brand/jekko-wordmark-light.png"
-import wordmarkDarkPng from "../../asset/brand/jekko-wordmark-dark.png"
-import wordmarkSimpleLightPng from "../../asset/brand/jekko-wordmark-simple-light.png"
-import wordmarkSimpleDarkPng from "../../asset/brand/jekko-wordmark-simple-dark.png"
+import previewLogoLight from "../../asset/brand/jekko-logo-light.svg"
+import previewLogoDark from "../../asset/brand/jekko-logo-dark.svg"
+import previewLogoLightSquare from "../../asset/brand/jekko-logo-light-square.svg"
+import previewLogoDarkSquare from "../../asset/brand/jekko-logo-dark-square.svg"
+import previewWordmarkLight from "../../asset/brand/jekko-wordmark-light.svg"
+import previewWordmarkDark from "../../asset/brand/jekko-wordmark-dark.svg"
+import previewWordmarkSimpleLight from "../../asset/brand/jekko-wordmark-simple-light.svg"
+import previewWordmarkSimpleDark from "../../asset/brand/jekko-wordmark-simple-dark.svg"
+import logoLightPng from "../../asset/brand/jekko-logo-light.svg"
+import logoDarkPng from "../../asset/brand/jekko-logo-dark.svg"
+import logoLightSquarePng from "../../asset/brand/jekko-logo-light-square.svg"
+import logoDarkSquarePng from "../../asset/brand/jekko-logo-dark-square.svg"
+import wordmarkLightPng from "../../asset/brand/jekko-wordmark-light.svg"
+import wordmarkDarkPng from "../../asset/brand/jekko-wordmark-dark.svg"
+import wordmarkSimpleLightPng from "../../asset/brand/jekko-wordmark-simple-light.svg"
+import wordmarkSimpleDarkPng from "../../asset/brand/jekko-wordmark-simple-dark.svg"
 import logoLightSvg from "../../asset/brand/jekko-logo-light.svg"
 import logoDarkSvg from "../../asset/brand/jekko-logo-dark.svg"
 import logoLightSquareSvg from "../../asset/brand/jekko-logo-light-square.svg"
@@ -31,14 +31,14 @@ import wordmarkSimpleLightSvg from "../../asset/brand/jekko-wordmark-simple-ligh
 import wordmarkSimpleDarkSvg from "../../asset/brand/jekko-wordmark-simple-dark.svg"
 
 const brandDownloads = [
-  { url: logoLightPng, filename: "jekko-logo-light.png" },
-  { url: logoDarkPng, filename: "jekko-logo-dark.png" },
-  { url: logoLightSquarePng, filename: "jekko-logo-light-square.png" },
-  { url: logoDarkSquarePng, filename: "jekko-logo-dark-square.png" },
-  { url: wordmarkLightPng, filename: "jekko-wordmark-light.png" },
-  { url: wordmarkDarkPng, filename: "jekko-wordmark-dark.png" },
-  { url: wordmarkSimpleLightPng, filename: "jekko-wordmark-simple-light.png" },
-  { url: wordmarkSimpleDarkPng, filename: "jekko-wordmark-simple-dark.png" },
+  { url: logoLightPng, filename: "jekko-logo-light.svg" },
+  { url: logoDarkPng, filename: "jekko-logo-dark.svg" },
+  { url: logoLightSquarePng, filename: "jekko-logo-light-square.svg" },
+  { url: logoDarkSquarePng, filename: "jekko-logo-dark-square.svg" },
+  { url: wordmarkLightPng, filename: "jekko-wordmark-light.svg" },
+  { url: wordmarkDarkPng, filename: "jekko-wordmark-dark.svg" },
+  { url: wordmarkSimpleLightPng, filename: "jekko-wordmark-simple-light.svg" },
+  { url: wordmarkSimpleDarkPng, filename: "jekko-wordmark-simple-dark.svg" },
   { url: logoLightSvg, filename: "jekko-logo-light.svg" },
   { url: logoDarkSvg, filename: "jekko-logo-dark.svg" },
   { url: logoLightSquareSvg, filename: "jekko-logo-light-square.svg" },
@@ -115,7 +115,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoLight} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoLightPng, "jekko-logo-light.png")}>
+                  <button onClick={() => downloadFile(logoLightPng, "jekko-logo-light.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -142,7 +142,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoDark} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoDarkPng, "jekko-logo-dark.png")}>
+                  <button onClick={() => downloadFile(logoDarkPng, "jekko-logo-dark.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -169,7 +169,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoLightSquare} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoLightSquarePng, "jekko-logo-light-square.png")}>
+                  <button onClick={() => downloadFile(logoLightSquarePng, "jekko-logo-light-square.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -196,7 +196,7 @@ export default function Brand() {
               <div>
                 <img src={previewLogoDarkSquare} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(logoDarkSquarePng, "jekko-logo-dark-square.png")}>
+                  <button onClick={() => downloadFile(logoDarkSquarePng, "jekko-logo-dark-square.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -223,7 +223,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkLight} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkLightPng, "jekko-wordmark-light.png")}>
+                  <button onClick={() => downloadFile(wordmarkLightPng, "jekko-wordmark-light.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -250,7 +250,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkDark} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkDarkPng, "jekko-wordmark-dark.png")}>
+                  <button onClick={() => downloadFile(wordmarkDarkPng, "jekko-wordmark-dark.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -277,7 +277,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkSimpleLight} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkSimpleLightPng, "jekko-wordmark-simple-light.png")}>
+                  <button onClick={() => downloadFile(wordmarkSimpleLightPng, "jekko-wordmark-simple-light.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -304,7 +304,7 @@ export default function Brand() {
               <div>
                 <img src={previewWordmarkSimpleDark} alt={alt} />
                 <div data-component="actions">
-                  <button onClick={() => downloadFile(wordmarkSimpleDarkPng, "jekko-wordmark-simple-dark.png")}>
+                  <button onClick={() => downloadFile(wordmarkSimpleDarkPng, "jekko-wordmark-simple-dark.svg")}>
                     PNG
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path

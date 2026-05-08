@@ -67,7 +67,7 @@ export function updateTitlebar(win: BrowserWindow) {
 
 export function setDockIcon() {
   if (process.platform !== "darwin") return
-  const icon = nativeImage.createFromPath(join(iconsDir(), "dock.png"))
+  const icon = nativeImage.createFromPath(join(iconsDir(), "dock.svg"))
   if (!icon.isEmpty()) app.dock?.setIcon(icon)
 }
 
