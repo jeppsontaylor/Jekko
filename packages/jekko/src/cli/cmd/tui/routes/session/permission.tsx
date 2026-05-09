@@ -55,8 +55,14 @@ function EditBody(props: { request: PermissionRequest }) {
   const config = useTuiConfig()
   const dimensions = useTerminalDimensions()
 
-  const filepath = createMemo(() => (props.request.metadata?.filepath as string) ?? "")
-  const diff = createMemo(() => (props.request.metadata?.diff as string) ?? "")
+  const filepath = createMemo(() => {
+    const value = props.request.metadata?.filepath
+    return typeof value === "string" ? value : ""
+  })
+  const diff = createMemo(() => {
+    const value = props.request.metadata?.diff
+    return typeof value === "string" ? value : ""
+  })
 
   const view = createMemo(() => {
     const diffStyle = config.diff_style
@@ -611,19 +617,16 @@ function Prompt<const T extends Record<string, string>>(props: {
           })}
     >
       <box gap={1} paddingLeft={1} paddingRight={3} paddingTop={1} paddingBottom={1} flexGrow={1}>
-        <Show
-          when={props.header}
-          fallback={
-            <box flexDirection="row" gap={1} paddingLeft={1} flexShrink={0}>
-              <text fg={theme.warning}>{"△"}</text>
-              <text fg={theme.text}>{props.title}</text>
-            </box>
-          }
-        >
+        {props.header ? (
           <box paddingLeft={1} flexShrink={0}>
             {props.header}
           </box>
-        </Show>
+        ) : (
+          <box flexDirection="row" gap={1} paddingLeft={1} flexShrink={0}>
+            <text fg={theme.warning}>{"△"}</text>
+            <text fg={theme.text}>{props.title}</text>
+          </box>
+        )}
         {props.body}
       </box>
       <box
@@ -675,9 +678,5 @@ function Prompt<const T extends Record<string, string>>(props: {
     </box>
   )
 
-  return (
-    <Show when={!store.expanded} fallback={<Portal>{content()}</Portal>}>
-      {content()}
-    </Show>
-  )
+  return store.expanded ? <Portal>{content()}</Portal> : content()
 }

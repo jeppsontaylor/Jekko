@@ -67,6 +67,7 @@ import { FormatError, FormatUnknownError } from "@/cli/error"
 
 import type { EventSource } from "./context/sdk"
 import { DialogVariant } from "./component/dialog-variant"
+import { bootJnoccioFusion } from "./context/jnoccio-boot"
 
 function rendererConfig(_config: TuiConfig.Info): CliRendererConfig {
   const mouseEnabled = !Flag.JEKKO_DISABLE_MOUSE && (_config.mouse ?? true)
@@ -259,6 +260,10 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
     .finally(() => {
       setReady(true)
     })
+
+  // Auto-start Jnoccio Fusion server on TUI mount.
+  // Fire-and-forget — doesn't block UI, safe if unconfigured.
+  bootJnoccioFusion()
 
   useKeyboard((evt) => {
     if (!Flag.JEKKO_EXPERIMENTAL_DISABLE_COPY_ON_SELECT) return

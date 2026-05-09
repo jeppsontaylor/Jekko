@@ -74,6 +74,27 @@ const list = () =>
     return yield* permission.list()
   })
 
+const withEnv = <A, E, R>(vars: Record<string, string | undefined>, self: Effect.Effect<A, E, R>) =>
+  Effect.acquireUseRelease(
+    Effect.sync(() => {
+      const previous: Record<string, string | undefined> = {}
+      for (const [key, value] of Object.entries(vars)) {
+        previous[key] = process.env[key]
+        if (value === undefined) delete process.env[key]
+        else process.env[key] = value
+      }
+      return previous
+    }),
+    () => self,
+    (previous) =>
+      Effect.sync(() => {
+        for (const [key, value] of Object.entries(previous)) {
+          if (value === undefined) delete process.env[key]
+          else process.env[key] = value
+        }
+      }),
+  )
+
 function withDir(options: { git?: boolean } | undefined, self: (dir: string) => Effect.Effect<any, any, any>) {
   return provideTmpdirInstance(self, options)
 }
@@ -689,6 +710,107 @@ it.live("ask - publishes asked event", () =>
         unsub()
       }
     }),
+  ),
+)
+
+it.live("ask - ZYAL auto-allows read external_directory without publishing asked event", () =>
+  withDir({ git: true }, () =>
+    withEnv(
+      { ZYAL_RUN: "1", JEKKO_AUTO_ALLOW_READS: undefined, JEKKO_NO_HUMAN_PROMPTS: undefined },
+      Effect.gen(function* () {
+        const bus = yield* Bus.Service
+        let seen = false
+        const unsub = yield* bus.subscribeCallback(Permission.Event.Asked, () => {
+          seen = true
+        })
+
+        try {
+          yield* ask({
+            sessionID: SessionID.make("session_zyal_read"),
+            permission: "external_directory",
+            patterns: ["/tmp/*"],
+            metadata: { access: "read" },
+            always: ["/tmp/*"],
+            ruleset: [],
+          })
+
+          expect(seen).toBe(false)
+          expect(yield* list()).toHaveLength(0)
+        } finally {
+          unsub()
+        }
+      }),
+    ),
+  ),
+)
+
+it.live("ask - ZYAL does not auto-allow write external_directory", () =>
+  withDir({ git: true }, () =>
+    withEnv(
+      { ZYAL_RUN: "1", JEKKO_AUTO_ALLOW_READS: undefined, JEKKO_NO_HUMAN_PROMPTS: undefined },
+      Effect.gen(function* () {
+        const bus = yield* Bus.Service
+        let seen = false
+        const unsub = yield* bus.subscribeCallback(Permission.Event.Asked, () => {
+          seen = true
+        })
+
+        try {
+          const err = yield* fail(
+            ask({
+              sessionID: SessionID.make("session_zyal_write"),
+              permission: "external_directory",
+              patterns: ["/tmp/*"],
+              metadata: { access: "write" },
+              always: ["/tmp/*"],
+              ruleset: [],
+            }),
+          )
+
+          expect(err).toBeInstanceOf(Permission.DeniedError)
+          expect(seen).toBe(false)
+          expect(yield* list()).toHaveLength(0)
+        } finally {
+          unsub()
+        }
+      }),
+    ),
+  ),
+)
+
+it.live("ask - no_human marker denies non-read ask without publishing asked event", () =>
+  withDir({ git: true }, () =>
+    withEnv(
+      { ZYAL_RUN: undefined, JEKKO_AUTO_ALLOW_READS: undefined, JEKKO_NO_HUMAN_PROMPTS: undefined },
+      Effect.gen(function* () {
+        const bus = yield* Bus.Service
+        let seen = false
+        const unsub = yield* bus.subscribeCallback(Permission.Event.Asked, () => {
+          seen = true
+        })
+
+        try {
+          const err = yield* fail(
+            ask({
+              sessionID: SessionID.make("session_no_human"),
+              permission: "bash",
+              patterns: ["ls"],
+              metadata: {},
+              always: ["ls"],
+              ruleset: [
+                { permission: "zyal_unattended", pattern: "no_human_prompts", action: "allow" },
+              ],
+            }),
+          )
+
+          expect(err).toBeInstanceOf(Permission.DeniedError)
+          expect(seen).toBe(false)
+          expect(yield* list()).toHaveLength(0)
+        } finally {
+          unsub()
+        }
+      }),
+    ),
   ),
 )
 

@@ -58,7 +58,7 @@ export function selectedForeground(theme: Theme, bg?: RGBA): RGBA {
     return theme.selectedListItemText
   }
 
-  // For transparent backgrounds, calculate contrast based on the actual bg (or alternative_path to primary)
+  // For transparent backgrounds, calculate contrast from the provided bg or primary color.
   if (theme.background.a === 0) {
     const targetColor = bg ?? theme.primary
     const { r, g, b } = targetColor
@@ -66,7 +66,7 @@ export function selectedForeground(theme: Theme, bg?: RGBA): RGBA {
     return luminance > 0.5 ? RGBA.fromInts(0, 0, 0) : RGBA.fromInts(255, 255, 255)
   }
 
-  // Fall back to background color
+  // Use the background color for opaque themes.
   return theme.background
 }
 
@@ -243,7 +243,7 @@ export function resolveTheme(theme: ThemeJson, mode: "dark" | "light") {
     resolved.selectedListItemText = resolved.background
   }
 
-  // Handle backgroundMenu - optional with alternative_path to backgroundElement
+  // Handle backgroundMenu separately and reuse backgroundElement when unset.
   if (theme.theme.backgroundMenu !== undefined) {
     resolved.backgroundMenu = resolveColor(theme.theme.backgroundMenu)
   } else {
@@ -301,7 +301,7 @@ function ansiToRgba(code: number): RGBA {
     return RGBA.fromInts(gray, gray, gray)
   }
 
-  // Fallback for invalid codes
+  // Return black for invalid codes.
   return RGBA.fromInts(0, 0, 0)
 }
 
@@ -453,6 +453,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
 
     const syntax = createMemo(() => generateSyntax(values()))
     const subtleSyntax = createMemo(() => generateSubtleSyntax(values()))
+    const yamlSyntax = createMemo(() => generateYamlHighContrastSyntax(values()))
 
     return {
       theme: new Proxy(values(), {
@@ -472,6 +473,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
       },
       syntax,
       subtleSyntax,
+      yamlSyntax,
       mode() {
         return store.mode
       },
@@ -737,6 +739,89 @@ function generateMutedTextColor(bg: RGBA, isDark: boolean): RGBA {
 
 function generateSyntax(theme: Theme) {
   return SyntaxStyle.fromTheme(getSyntaxRules(theme))
+}
+
+export function generateYamlHighContrastSyntax(theme: Theme) {
+  const rules = getSyntaxRules(theme)
+
+  const overrideRules = [
+    {
+      scope: ["property", "yaml.property"],
+      style: {
+        foreground: RGBA.fromHex("#FF2EB8"), // Hot pink keys
+        bold: true,
+      },
+    },
+    {
+      scope: ["string", "yaml.string"],
+      style: {
+        foreground: RGBA.fromHex("#39FF14"), // Neon green strings
+      },
+    },
+    {
+      scope: ["boolean", "constant.builtin.boolean", "yaml.boolean"],
+      style: {
+        foreground: RGBA.fromHex("#FF8A00"), // Electric orange booleans
+        bold: true,
+      },
+    },
+    {
+      scope: ["number", "yaml.number"],
+      style: {
+        foreground: RGBA.fromHex("#FFFF00"), // Highlighter yellow numbers/durations
+        bold: true,
+      },
+    },
+    {
+      scope: ["comment", "yaml.comment"],
+      style: {
+        foreground: RGBA.fromHex("#B8A7FF"), // Bright lavender comments
+        italic: true,
+      },
+    },
+    {
+      scope: ["yaml.sentinel"],
+      style: {
+        foreground: RGBA.fromHex("#FFD700"), // Vivid Gold for ZYAL sentinel lines
+        bold: true,
+      },
+    },
+    {
+      scope: ["literal", "yaml.literal"],
+      style: {
+        foreground: RGBA.fromHex("#00E5FF"), // Electric cyan policy words/idents
+      },
+    },
+    {
+      scope: ["punctuation", "yaml.punctuation"],
+      style: {
+        foreground: RGBA.fromHex("#FF5C00"), // Hot orange structure
+        bold: true,
+      },
+    },
+    {
+      scope: ["sequence", "yaml.sequence"],
+      style: {
+        foreground: RGBA.fromHex("#00FFB2"), // Mint list markers
+        bold: true,
+      },
+    },
+    {
+      scope: ["block", "yaml.block"],
+      style: {
+        foreground: RGBA.fromHex("#FF77E9"), // Rich pink block-scalar prose
+      },
+    },
+    {
+      scope: ["operator", "yaml.operator"],
+      style: {
+        foreground: RGBA.fromHex("#FF3366"), // Alert rose for block markers/headings
+        bold: true,
+      },
+    },
+  ]
+
+  return SyntaxStyle.fromTheme([...rules, ...overrideRules])
 }
 
 function generateSubtleSyntax(theme: Theme) {

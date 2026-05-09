@@ -13,7 +13,7 @@ export async function serveUI(request: Request) {
     const match = embeddedWebUI[path.replace(/^\//, "")] ?? embeddedWebUI["index.html"] ?? null
     if (!match) return Response.json({ error: "Not Found" }, { status: 404 })
 
-    if (await fs.exists(match)) {
+    if (require("node:fs").existsSync(match)) {
       const mime = AppFileSystem.mimeType(match)
       const headers = new Headers({ "content-type": mime })
       const body = new Uint8Array(await fs.readFile(match))

@@ -3,7 +3,8 @@ import { fileURLToPath } from "bun"
 import { useTheme } from "../context/theme"
 import { useDialog } from "@tui/ui/dialog"
 import { useSync } from "@tui/context/sync"
-import { For, Match, Switch, Show, createMemo } from "solid-js"
+import type { McpStatus } from "@jekko-ai/sdk/v2"
+import { For, createMemo } from "solid-js"
 
 export type DialogStatusProps = {}
 
@@ -40,6 +41,15 @@ export function DialogStatus() {
     return result.toSorted((a, b) => a.name.localeCompare(b.name))
   })
 
+  const describeMcpStatus = (key: string, item: McpStatus) => {
+    if (item.status === "connected") return "Connected"
+    if (item.status === "failed") return item.error
+    if (item.status === "disabled") return "Disabled in configuration"
+    if (item.status === "needs_auth") return `Needs authentication (run: jekko mcp auth ${key})`
+    if (item.status === "needs_client_registration") return item.error
+    return (item as McpStatus).status
+  }
+
   return (
     <box paddingLeft={2} paddingRight={2} gap={1} paddingBottom={1}>
       <box flexDirection="row" justifyContent="space-between">
@@ -50,7 +60,7 @@ export function DialogStatus() {
           esc
         </text>
       </box>
-      <Show when={Object.keys(sync.data.mcp).length > 0} fallback={<text fg={theme.text}>No MCP Servers</text>}>
+      {Object.keys(sync.data.mcp).length > 0 ? (
         <box>
           <text fg={theme.text}>{Object.keys(sync.data.mcp).length} MCP Servers</text>
           <For each={Object.entries(sync.data.mcp)}>
@@ -74,25 +84,15 @@ export function DialogStatus() {
                 </text>
                 <text fg={theme.text} wrapMode="word">
                   <b>{key}</b>{" "}
-                  <span style={{ fg: theme.textMuted }}>
-                    <Switch fallback={item.status}>
-                      <Match when={item.status === "connected"}>Connected</Match>
-                      <Match when={item.status === "failed" && item}>{(val) => val().error}</Match>
-                      <Match when={item.status === "disabled"}>Disabled in configuration</Match>
-                      <Match when={(item.status as string) === "needs_auth"}>
-                        Needs authentication (run: jekko mcp auth {key})
-                      </Match>
-                      <Match when={(item.status as string) === "needs_client_registration" && item}>
-                        {(val) => (val() as { error: string }).error}
-                      </Match>
-                    </Switch>
-                  </span>
+                  <span style={{ fg: theme.textMuted }}>{describeMcpStatus(key, item)}</span>
                 </text>
               </box>
             )}
           </For>
         </box>
-      </Show>
+      ) : (
+        <text fg={theme.text}>No MCP Servers</text>
+      )}
       {sync.data.lsp.length > 0 && (
         <box>
           <text fg={theme.text}>{sync.data.lsp.length} LSP Servers</text>
@@ -118,7 +118,7 @@ export function DialogStatus() {
           </For>
         </box>
       )}
-      <Show when={enabledFormatters().length > 0} fallback={<text fg={theme.text}>No Formatters</text>}>
+      {enabledFormatters().length > 0 ? (
         <box>
           <text fg={theme.text}>{enabledFormatters().length} Formatters</text>
           <For each={enabledFormatters()}>
@@ -139,8 +139,10 @@ export function DialogStatus() {
             )}
           </For>
         </box>
-      </Show>
-      <Show when={plugins().length > 0} fallback={<text fg={theme.text}>No Plugins</text>}>
+      ) : (
+        <text fg={theme.text}>No Formatters</text>
+      )}
+      {plugins().length > 0 ? (
         <box>
           <text fg={theme.text}>{plugins().length} Plugins</text>
           <For each={plugins()}>
@@ -162,7 +164,9 @@ export function DialogStatus() {
             )}
           </For>
         </box>
-      </Show>
+      ) : (
+        <text fg={theme.text}>No Plugins</text>
+      )}
     </box>
   )
 }

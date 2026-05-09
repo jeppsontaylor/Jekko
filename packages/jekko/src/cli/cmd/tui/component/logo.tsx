@@ -761,6 +761,60 @@ export function cellColor(
   return globalGradientColor(x, y, totalWidth, totalRows, dim)
 }
 
+/**
+ * Monochromatic ink override — when an `ink` RGBA is provided, this maps the
+ * cell's diagonal gradient position onto a luminance curve derived from the
+ * ink color instead of the neon gecko palette. Produces a rich gold-to-white
+ * gradient for ZYAL mode, or any other monochromatic tint.
+ */
+function inkMonochrome(
+  ink: RGBA,
+  cell: LogoCell,
+  row: LogoRow,
+  x: number,
+  y: number,
+  totalWidth: number,
+  totalRows: number,
+): RGB {
+  // Base position in [0,1] — same diagonal as the regular gradient
+  let t: number
+  if (
+    cell.layer === "wordmark" ||
+    cell.layer === "wordmarkShadowNear" ||
+    cell.layer === "wordmarkShadowMid" ||
+    cell.layer === "wordmarkShadowFar"
+  ) {
+    const sx = cell.sourceX ?? x
+    const sy = cell.sourceY ?? y
+    const sw = cell.sourceWidth ?? totalWidth
+    const sh = cell.sourceHeight ?? totalRows
+    t = wordmarkT(sx, sy, sw, sh)
+    // Shadow layers get progressively darker
+    if (cell.layer === "wordmarkShadowFar") t = clamp01(t * 0.45)
+    else if (cell.layer === "wordmarkShadowMid") t = clamp01(t * 0.6)
+    else if (cell.layer === "wordmarkShadowNear") t = clamp01(t * 0.75)
+  } else {
+    t = globalDiagonalT(x, y, totalWidth, totalRows)
+  }
+
+  const dim = Boolean(cell.dim ?? row.dim)
+
+  // Convert ink RGBA to 0-255 integers
+  const baseR = Math.round(ink.r * 255)
+  const baseG = Math.round(ink.g * 255)
+  const baseB = Math.round(ink.b * 255)
+
+  // Luminance curve: dark amber (t=0) → ink color (t=0.4) → bright gold (t=0.7) → white highlights (t=1.0)
+  const brightness = dim ? 0.55 + t * 0.35 : 0.65 + t * 0.35
+  const whiteBlend = clamp01((t - 0.65) / 0.35) * 0.4 // top 35% blends toward white
+
+  const r = clamp255(baseR * brightness + (255 - baseR * brightness) * whiteBlend)
+  const g = clamp255(baseG * brightness + (255 - baseG * brightness) * whiteBlend)
+  const b = clamp255(baseB * brightness + (255 - baseB * brightness) * whiteBlend)
+
+  return rgb(r, g, b)
+}
+
 export function logoWidth(rows: LogoRow[]): number {
   return Math.max(OUTER_WIDTH, ...rows.map((row) => row.cells.length))
 }
@@ -822,6 +876,7 @@ function GradientRow(props: {
   y: number
   totalRows: number
   totalWidth: number
+  ink?: RGBA
 }) {
   return (
     <box flexDirection="row">
@@ -830,18 +885,28 @@ function GradientRow(props: {
           const strong = Boolean(cell.strong ?? props.row.strong)
           const attrs = strong ? 1 : undefined
 
+          const color = props.ink
+            ? inkMonochrome(
+                props.ink,
+                cell,
+                props.row,
+                x(),
+                props.y,
+                props.totalWidth,
+                props.totalRows,
+              )
+            : cellColor(
+                cell,
+                props.row,
+                x(),
+                props.y,
+                props.totalWidth,
+                props.totalRows,
+              )
+
           return (
             <text
-              fg={toRGBA(
-                cellColor(
-                  cell,
-                  props.row,
-                  x(),
-                  props.y,
-                  props.totalWidth,
-                  props.totalRows,
-                ),
-              )}
+              fg={toRGBA(color)}
               attributes={attrs}
               selectable={false}
             >
@@ -867,6 +932,7 @@ export function Logo(props: LogoProps = {}) {
             y={y()}
             totalRows={rows().length}
             totalWidth={totalWidth()}
+            ink={props.ink}
           />
         )}
       </For>

@@ -33,7 +33,7 @@ arming:
 loop:
   policy: forever
   sleep: 5s
-  pause_on: [permission_denied, checkpoint_failed, no_progress]
+  pause_on: [checkpoint_failed, no_progress]
   circuit_breaker:
     max_consecutive_errors: 3
     on_trip: pause
@@ -171,7 +171,7 @@ checkpoint:
   git:
     add: ["."]
     commit_message: "fix: ${task.id} — ${task.summary}"
-    push: ask
+    push: deny
 
 done:
   require:
@@ -191,9 +191,9 @@ ui:
   banner: forever
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask
+  git_commit: allow
   git_push: deny
 <<<END_ZYAL id=fix-until-green>>>
 ZYAL_ARM RUN_FOREVER id=fix-until-green

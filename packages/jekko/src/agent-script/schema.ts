@@ -63,7 +63,7 @@ export type ZyalJob = Schema.Schema.Type<typeof ZyalJob>
 
 export const ZyalLoopBreaker = Schema.Struct({
   max_consecutive_errors: Schema.optional(Schema.Number),
-  on_trip: Schema.optional(Schema.Union([Schema.Literal("pause"), Schema.Literal("abort")])),
+  on_trip: Schema.optional(Schema.Union([Schema.Literal("pause"), Schema.Literal("abort"), Schema.Literal("continue")])),
 })
 
 export type ZyalLoopBreaker = Schema.Schema.Type<typeof ZyalLoopBreaker>
@@ -274,6 +274,13 @@ export const ZyalMcp = Schema.Struct({
 export type ZyalMcp = Schema.Schema.Type<typeof ZyalMcp>
 
 export const ZyalPermissionMode = Schema.Struct({
+  read: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  list: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  glob: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  grep: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  external_directory: Schema.optional(
+    Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")]),
+  ),
   shell: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   edit: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   git_commit: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
@@ -1177,6 +1184,50 @@ export type ZyalFleet = Schema.Schema.Type<typeof ZyalFleet>
 // covers. Distinct from the preview-only `trust` block (which scopes
 // repository paths into trust zones): `taint` is about flow control on
 // inbound bytes — labelling every source of data the model might consume
+// ─── Interaction ─────────────────────────────────────────────────────────────
+// Declares whether a human is present during the run and how the runtime should
+// behave when the agent is ambiguous or blocked. When `user: "none"`:
+//   - The ZYAL runtime prepends `system_inject` into every agent turn's
+//     <system-reminder> block so the model never forgets the no-ask rule.
+//   - Any capability `decision: "ask"` is coerced to "allow" (if the path is
+//     otherwise permitted) or "deny" (if forbidden) — never a blocking prompt.
+//   - Jekyll suppresses its own interactive permission dialogs for the session.
+
+export const ZyalInteractionUser = Schema.Union([
+  Schema.Literal("none"),    // no human reads or responds; fully unattended
+  Schema.Literal("async"),   // human may respond but is not watching live
+  Schema.Literal("present"), // default — interactive session
+])
+export type ZyalInteractionUser = Schema.Schema.Type<typeof ZyalInteractionUser>
+
+export const ZyalInteractionOnAmbiguity = Schema.Union([
+  Schema.Literal("best_effort"), // agent picks the safest path and proceeds
+  Schema.Literal("pause"),       // pause the loop; wait for human input
+  Schema.Literal("skip"),        // skip the current unit of work and move on
+])
+export type ZyalInteractionOnAmbiguity = Schema.Schema.Type<typeof ZyalInteractionOnAmbiguity>
+
+export const ZyalInteractionOnBlocked = Schema.Union([
+  Schema.Literal("skip_and_next"), // mark blocked; claim next pending task
+  Schema.Literal("pause"),         // pause loop; wait for human to unblock
+  Schema.Literal("fail"),          // hard-fail the current iteration
+])
+export type ZyalInteractionOnBlocked = Schema.Schema.Type<typeof ZyalInteractionOnBlocked>
+
+export const ZyalInteraction = Schema.Struct({
+  // Whether a human is available to answer questions during this run.
+  user: Schema.optional(ZyalInteractionUser),
+  // What to do when the agent faces an ambiguous decision.
+  on_ambiguity: Schema.optional(ZyalInteractionOnAmbiguity),
+  // What to do when the agent is blocked on the current task.
+  on_blocked: Schema.optional(ZyalInteractionOnBlocked),
+  // Text injected verbatim into every agent turn's <system-reminder> block.
+  // Use to enforce tool-call hygiene, schema rules, or no-ask discipline.
+  // Only injected when `user` is "none" or "async".
+  system_inject: Schema.optional(Schema.String),
+})
+export type ZyalInteraction = Schema.Schema.Type<typeof ZyalInteraction>
+
 // (web pages, tool output, MCP resources, repo files, the assistant's own
 // output) and forbidding tainted content from triggering high-privilege
 // actions (arm, approve, grant capability, write procedural memory, exec
@@ -1496,6 +1547,8 @@ export const ZyalSpec = Schema.Struct({
   fleet: Schema.optional(ZyalFleet),
   // v2.3 taint — origin-aware data-flow defence
   taint: Schema.optional(ZyalTaint),
+  // v2.3 interaction — unattended-run control and per-turn system injection
+  interaction: Schema.optional(ZyalInteraction),
   // preview-only control plane blocks
   interop: Schema.optional(ZyalInterop),
   runtime: Schema.optional(ZyalRuntime),
@@ -1692,6 +1745,7 @@ export function assertZyalTopLevelKeys(input: Record<string, unknown>) {
   "fleet",
     // v2.3
     "taint",
+    "interaction",
     // preview-only control plane blocks
     "interop",
     "runtime",

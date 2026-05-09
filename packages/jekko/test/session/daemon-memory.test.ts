@@ -81,7 +81,7 @@ describe("daemon memory", () => {
   test("writeEntry upserts in upsert store", () => {
     const stores = initializeStores(testMemory)
     let store = stores.get("lessons")!
-    store = writeEntry(store, { key: "lesson1", value: "old" }).store
+    store = writeEntry(store, { key: "lesson1", value: "initial" }).store
     store = writeEntry(store, { key: "lesson1", value: "new" }).store
     expect(store.entryCount).toBe(1)
     expect(store.entries[0].value).toBe("new")
@@ -103,7 +103,7 @@ describe("daemon memory", () => {
   test("writeEntry overwrites in overwrite store", () => {
     const stores = initializeStores(testMemory)
     let store = stores.get("scratch")!
-    store = writeEntry(store, { key: "temp", value: "old" }).store
+    store = writeEntry(store, { key: "temp", value: "initial" }).store
     store = writeEntry(store, { key: "temp", value: "new" }).store
     expect(store.entryCount).toBe(1)
     expect(store.entries[0].value).toBe("new")

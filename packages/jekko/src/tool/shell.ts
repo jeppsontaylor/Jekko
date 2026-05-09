@@ -22,6 +22,7 @@ import { ChildProcess } from "effect/unstable/process"
 import { ChildProcessSpawner } from "effect/unstable/process/ChildProcessSpawner"
 import { ShellPrompt, type Parameters } from "./shell/prompt"
 import { BashArity } from "@/permission/arity"
+import type { ExternalDirectoryAccess } from "@/permission/read-like"
 
 export { Parameters } from "./shell/prompt"
 
@@ -38,10 +39,33 @@ const FILES = new Set([
   "chmod",
   "chown",
   "cat",
+  "head",
+  "tail",
+  "ls",
+  "grep",
+  "rg",
+  "sed",
   // Leave PowerShell aliases out for now. Common ones like cat/cp/mv/rm/mkdir
   // already hit the entries above, and alias normalization should happen in one
   // place later so we do not risk double-prompting.
   "get-content",
+  "set-content",
+  "add-content",
+  "copy-item",
+  "move-item",
+  "remove-item",
+  "new-item",
+  "rename-item",
+])
+const READ_ONLY_FILES = new Set(["cat", "head", "tail", "ls", "grep", "rg", "get-content"])
+const WRITE_FILES = new Set([
+  "rm",
+  "cp",
+  "mv",
+  "mkdir",
+  "touch",
+  "chmod",
+  "chown",
   "set-content",
   "add-content",
   "copy-item",
@@ -64,6 +88,8 @@ const CMD_FILES = new Set([
   "rmdir",
   "type",
 ])
+const CMD_READ_FILES = new Set(["dir", "type"])
+const CMD_WRITE_FILES = new Set(["copy", "del", "erase", "md", "mkdir", "move", "rd", "ren", "rename", "rmdir"])
 const FLAGS = new Set(["-destination", "-literalpath", "-path"])
 const SWITCHES = new Set(["-confirm", "-debug", "-force", "-nonewline", "-recurse", "-verbose", "-whatif"])
 
@@ -73,7 +99,7 @@ type Part = {
 }
 
 type Scan = {
-  dirs: Set<string>
+  dirs: Map<string, ExternalDirectoryAccess>
   patterns: Set<string>
   always: Set<string>
 }
@@ -221,6 +247,42 @@ function pathArgs(list: Part[], ps: boolean, cmd = false) {
   return out
 }
 
+function mergeAccess(a: ExternalDirectoryAccess | undefined, b: ExternalDirectoryAccess): ExternalDirectoryAccess {
+  if (a === "write" || b === "write") return "write"
+  if (a === "unknown" || b === "unknown") return "unknown"
+  return "read"
+}
+
+function addDir(scan: Scan, dir: string, access: ExternalDirectoryAccess) {
+  scan.dirs.set(dir, mergeAccess(scan.dirs.get(dir), access))
+}
+
+function sedIsReadOnly(command: Part[]) {
+  for (const item of command.slice(1)) {
+    const text = item.text.toLowerCase()
+    if (text === "-i" || text.startsWith("-i") || text === "--in-place" || text.startsWith("--in-place=")) {
+      return false
+    }
+  }
+  return true
+}
+
+function commandPathAccess(
+  cmd: string | undefined,
+  command: Part[],
+  shellKind: ReturnType<typeof ShellID.toKind>,
+): ExternalDirectoryAccess {
+  if (!cmd) return "unknown"
+  if (shellKind === "cmd") {
+    if (CMD_READ_FILES.has(cmd)) return "read"
+    if (CMD_WRITE_FILES.has(cmd)) return "write"
+  }
+  if (cmd === "sed") return sedIsReadOnly(command) ? "read" : "write"
+  if (READ_ONLY_FILES.has(cmd)) return "read"
+  if (WRITE_FILES.has(cmd)) return "write"
+  return "unknown"
+}
+
 function preview(text: string) {
   if (text.length <= MAX_METADATA_LENGTH) return text
   return "...\n\n" + text.slice(-MAX_METADATA_LENGTH)
@@ -266,16 +328,21 @@ const parse = Effect.fn("ShellTool.parse")(function* (command: string, ps: boole
 
 const ask = Effect.fn("ShellTool.ask")(function* (ctx: Tool.Context, scan: Scan) {
   if (scan.dirs.size > 0) {
-    const globs = Array.from(scan.dirs).map((dir) => {
-      if (process.platform === "win32") return AppFileSystem.normalizePathPattern(path.join(dir, "*"))
-      return path.join(dir, "*")
-    })
-    yield* ctx.ask({
-      permission: "external_directory",
-      patterns: globs,
-      always: globs,
-      metadata: {},
-    })
+    for (const access of ["read", "unknown", "write"] as const) {
+      const globs = Array.from(scan.dirs.entries())
+        .filter(([, value]) => value === access)
+        .map(([dir]) => {
+          if (process.platform === "win32") return AppFileSystem.normalizePathPattern(path.join(dir, "*"))
+          return path.join(dir, "*")
+        })
+      if (globs.length === 0) continue
+      yield* ctx.ask({
+        permission: "external_directory",
+        patterns: globs,
+        always: globs,
+        metadata: { access },
+      })
+    }
   }
 
   if (scan.patterns.size === 0) return
@@ -378,7 +445,7 @@ export const ShellTool = Tool.define(
       instance: InstanceContext,
     ) {
       const scan: Scan = {
-        dirs: new Set<string>(),
+        dirs: new Map<string, ExternalDirectoryAccess>(),
         patterns: new Set<string>(),
         always: new Set<string>(),
       }
@@ -390,12 +457,13 @@ export const ShellTool = Tool.define(
         const cmd = ps || shellKind === "cmd" ? tokens[0]?.toLowerCase() : tokens[0]
 
         if (cmd && (FILES.has(cmd) || (shellKind === "cmd" && CMD_FILES.has(cmd)))) {
+          const access = commandPathAccess(cmd, command, shellKind)
           for (const arg of pathArgs(command, ps, shellKind === "cmd")) {
             const resolved = yield* argPath(arg, cwd, ps, shell)
             log.info("resolved path", { arg, resolved })
             if (!resolved || containsPath(resolved, instance)) continue
             const dir = (yield* fs.isDir(resolved)) ? resolved : path.dirname(resolved)
-            scan.dirs.add(dir)
+            addDir(scan, dir, access)
           }
         }
 
@@ -608,7 +676,7 @@ export const ShellTool = Tool.define(
                     Effect.sync(() => tree.delete()),
                   )
                   const scan = yield* collect(tree.rootNode, cwd, ps, shell, executeInstance)
-                  if (!containsPath(cwd, executeInstance)) scan.dirs.add(cwd)
+                  if (!containsPath(cwd, executeInstance)) addDir(scan, cwd, "unknown")
                   yield* ask(ctx, scan)
                 }),
               )
@@ -620,7 +688,7 @@ export const ShellTool = Tool.define(
                   cwd,
                   env: yield* shellEnv(ctx, cwd),
                   timeout,
-                  description: params.description,
+                  description: params.description ?? "",
                 },
                 ctx,
               )

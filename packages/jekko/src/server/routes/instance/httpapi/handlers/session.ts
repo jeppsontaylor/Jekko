@@ -14,7 +14,7 @@ import { SessionRevert } from "@/session/revert"
 import { SessionRunState } from "@/session/run-state"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
-import { Todo } from "@/session/pending"
+import { Pending } from "@/session/pending"
 import { MessageID, PartID, SessionID } from "@/session/schema"
 import { NotFoundError } from "@/storage/storage"
 import { NamedError } from "@jekko-ai/core/util/error"
@@ -50,7 +50,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
     const agentSvc = yield* Agent.Service
     const permissionSvc = yield* Permission.Service
     const statusSvc = yield* SessionStatus.Service
-    const pendingSvc = yield* Todo.Service
+    const pendingSvc = yield* Pending.Service
     const summary = yield* SessionSummary.Service
     const bus = yield* Bus.Service
     const scope = yield* Scope.Scope
@@ -82,8 +82,6 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
     const pending = Effect.fn("SessionHttpApi.pending")(function* (ctx: { params: { sessionID: SessionID } }) {
       return yield* pendingSvc.get(ctx.params.sessionID)
     })
-
-    const todo = pending
 
     const diff = Effect.fn("SessionHttpApi.diff")(function* (ctx: {
       params: { sessionID: SessionID }
@@ -358,8 +356,8 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       .handle("status", status)
       .handle("get", get)
       .handle("children", children)
-      .handle("todo", todo)
       .handle("pending", pending)
+      .handle("pending-list", pending)
       .handle("diff", diff)
       .handle("messages", messages)
       .handle("message", message)

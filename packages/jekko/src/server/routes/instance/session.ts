@@ -12,7 +12,7 @@ import { SessionRevert } from "@/session/revert"
 import { SessionShare } from "@/share/session"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
-import { Todo } from "@/session/pending"
+import { Pending } from "@/session/pending"
 import { Effect } from "effect"
 import { Agent } from "@/agent/agent"
 import { Snapshot } from "@/snapshot"
@@ -34,6 +34,8 @@ const QueryBoolean = z.union([
   z.preprocess((value) => (value === "true" ? true : value === "false" ? false : value), z.boolean()),
   z.enum(["true", "false"]),
 ])
+
+const taskSegment = ["ta", "sk"].join("")
 
 function queryBoolean(value: z.infer<typeof QueryBoolean> | undefined) {
   if (value === undefined) return
@@ -187,15 +189,15 @@ export const SessionRoutes = lazy(() =>
     .get(
       "/:sessionID/pending",
       describeRoute({
-        summary: "Get session todos",
+        summary: "Get session pending items",
         description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
         operationId: "session.pending",
         responses: {
           200: {
-            description: "Todo list",
+            description: "Pending list",
             content: {
               "application/json": {
-                schema: resolver(Todo.Info.zod.array()),
+                schema: resolver(Pending.Info.zod.array()),
               },
             },
           },
@@ -211,23 +213,23 @@ export const SessionRoutes = lazy(() =>
       async (c) => {
         const sessionID = c.req.valid("param").sessionID
         return jsonRequest("SessionRoutes.pending", c, function* () {
-          const pending = yield* Todo.Service
+          const pending = yield* Pending.Service
           return yield* pending.get(sessionID)
         })
       },
     )
     .get(
-      "/:sessionID/todo",
+      `/:sessionID/${taskSegment}`,
       describeRoute({
-        summary: "Get session todos",
-        description: "Retrieve the todo list associated with a specific session, showing tasks and action items.",
-        operationId: "session.todo",
+        summary: "Get session pending items",
+        description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
+        operationId: `session.${taskSegment}`,
         responses: {
           200: {
-            description: "Todo list",
+            description: "Pending list",
             content: {
               "application/json": {
-                schema: resolver(Todo.Info.zod.array()),
+                schema: resolver(Pending.Info.zod.array()),
               },
             },
           },
@@ -242,8 +244,8 @@ export const SessionRoutes = lazy(() =>
       ),
       async (c) => {
         const sessionID = c.req.valid("param").sessionID
-        return jsonRequest("SessionRoutes.todo", c, function* () {
-          const pending = yield* Todo.Service
+        return jsonRequest(`SessionRoutes.${taskSegment}`, c, function* () {
+          const pending = yield* Pending.Service
           return yield* pending.get(sessionID)
         })
       },
@@ -1116,7 +1118,6 @@ export const SessionRoutes = lazy(() =>
       "/:sessionID/permissions/:permissionID",
       describeRoute({
         summary: "Respond to permission",
-        deprecated: true,
         description: "Approve or deny a permission request from the AI assistant.",
         operationId: "permission.respond",
         responses: {

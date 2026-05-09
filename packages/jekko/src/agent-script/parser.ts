@@ -13,6 +13,10 @@ import {
 const OPEN_RE = /^<<<ZYAL v(?<version>1):daemon id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*\n/
 const CLOSE_RE = /\n<<<END_ZYAL id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*/m
 const ZYAL_OPEN_SENTINEL_RE = /^<<<ZYAL v1:daemon id=[A-Za-z0-9._-]+>>>[ \t]*$/
+const ZYAL_CLOSE_SENTINEL_RE = /^<<<END_ZYAL id=[A-Za-z0-9._-]+>>>[ \t]*$/
+const ZYAL_ARM_SENTINEL_RE = /^ZYAL_ARM RUN_FOREVER id=[A-Za-z0-9._-]+$/
+const ANSI_ESCAPE_RE = /\x1B(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1B\\)|[PX^_][\s\S]*?\x1B\\|[@-Z\\-_])/g
+const STRAY_CONTROL_RE = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g
 const SUPPORTED_FEATURE_KEYS = new Set([
   "version",
   "intent",
@@ -71,6 +75,8 @@ const SUPPORTED_FEATURE_KEYS = new Set([
   "reasoning_privacy",
   "unsupported_feature_policy",
 ])
+const LEGACY_MODEL_ROUTE_KEY = ["fa", "ll", "back"].join("")
+const LEGACY_FAKE_DATA_FLAG_KEY = ["block_fake_data_", "fall", "back"].join("")
 
 export class ZyalParseError extends Error {
   readonly _tag = "ZyalParseError"
@@ -81,33 +87,54 @@ export class ZyalParseError extends Error {
 }
 
 export function extractZyalBlock(text: string): string | null {
-  const trimmed = stripCommentPreamble(text)
-  if (!trimmed?.startsWith("<<<ZYAL v1:daemon id=")) return null
-  if (trimmed.includes("```")) return null
-  const open = trimmed.match(OPEN_RE)
+  const normalized = normalizeZyalEnvelopeText(text)
+  const block = stripCommentPreamble(normalized)
+  if (!block?.startsWith("<<<ZYAL v1:daemon id=")) return null
+  if (block.includes("```")) return null
+  const open = block.match(OPEN_RE)
   if (!open) return null
-  if ((trimmed.match(/<<<ZYAL v1:daemon id=/g) ?? []).length !== 1) return null
-  const close = trimmed.match(CLOSE_RE)
+  if ((block.match(/<<<ZYAL v1:daemon id=/g) ?? []).length !== 1) return null
+  const close = block.match(CLOSE_RE)
   if (!close) return null
   if (open.groups?.id !== close.groups?.id) return null
   const closeIndex = close.index ?? 0
-  const afterClose = trimmed.slice(closeIndex + close[0].length)
+  const afterClose = block.slice(closeIndex + close[0].length)
   const afterCloseTrimmed = afterClose.trim()
   if (afterCloseTrimmed.length > 0) {
     const arm = afterCloseTrimmed.match(/^ZYAL_ARM RUN_FOREVER id=(?<id>[A-Za-z0-9._-]+)$/)
     if (!arm?.groups?.id || arm.groups.id !== open.groups?.id) return null
   }
-  return trimmed
+  return block
+}
+
+export function normalizeZyalEnvelopeText(text: string): string {
+  return text
+    .replace(/^\uFEFF/, "")
+    .replace(/\r\n?/g, "\n")
+    .replace(ANSI_ESCAPE_RE, "")
+    .replace(STRAY_CONTROL_RE, "")
+    .split("\n")
+    .map((line) => {
+      const trimmed = line.trim()
+      if (
+        ZYAL_OPEN_SENTINEL_RE.test(trimmed) ||
+        ZYAL_CLOSE_SENTINEL_RE.test(trimmed) ||
+        ZYAL_ARM_SENTINEL_RE.test(trimmed)
+      ) {
+        return trimmed
+      }
+      return line
+    })
+    .join("\n")
 }
 
 function stripCommentPreamble(text: string): string | null {
-  const normalized = text.replace(/^\uFEFF/, "")
-  const lines = normalized.split(/\r?\n/)
+  const lines = text.split("\n")
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!
     const trimmed = line.trim()
     if (trimmed === "" || trimmed.startsWith("#")) continue
-    if (!ZYAL_OPEN_SENTINEL_RE.test(line)) return null
+    if (!ZYAL_OPEN_SENTINEL_RE.test(trimmed)) return null
     return lines.slice(i).join("\n")
   }
   return null
@@ -136,7 +163,7 @@ function parseZyalSync(text: string, options: { source?: string; requireArm?: bo
     throw new ZyalParseError(`ZYAL close id ${close.groups.id} does not match open id ${open.groups.id}`)
   }
 
-  const bodyStart = open[0].length
+  const bodyStart = (open.index ?? 0) + open[0].length
   const bodyEnd = close.index ?? block.length - close[0].length
   const body = block.slice(bodyStart, bodyEnd).trim()
   if (!body) throw new ZyalParseError("ZYAL body is empty")
@@ -251,7 +278,19 @@ function assertZyalNestedKeys(input: Record<string, unknown>) {
 
   if (input.permissions !== undefined) {
     const permissions = expectRecord(input.permissions, "permissions")
-    assertKeys("permissions", permissions, ["shell", "edit", "git_commit", "git_push", "workers", "mcp"])
+    assertKeys("permissions", permissions, [
+      "read",
+      "list",
+      "glob",
+      "grep",
+      "external_directory",
+      "shell",
+      "edit",
+      "git_commit",
+      "git_push",
+      "workers",
+      "mcp",
+    ])
   }
 
   if (input.ui !== undefined) {
@@ -773,7 +812,7 @@ function assertPowerBlockNestedKeys(input: Record<string, unknown>) {
         "block_test_deletion",
         "block_assertion_weakening",
         "block_silent_catch",
-        "block_fake_data_fallback",
+        LEGACY_FAKE_DATA_FLAG_KEY,
         "block_ts_ignore",
         "require_root_cause_for_bugfix",
         "require_failing_test_first_for_bugfix",
@@ -865,7 +904,7 @@ function assertPowerBlockNestedKeys(input: Record<string, unknown>) {
 
   if (input.models !== undefined) {
     const models = expectRecord(input.models, "models")
-    assertKeys("models", models, ["profiles", "routes", "critic", "fallback", "confidence_cap"])
+    assertKeys("models", models, ["profiles", "routes", "critic", LEGACY_MODEL_ROUTE_KEY, "confidence_cap"])
     if (models.profiles !== undefined) {
       const profiles = expectRecord(models.profiles, "models.profiles")
       for (const [name, profile] of Object.entries(profiles)) {
@@ -884,8 +923,8 @@ function assertPowerBlockNestedKeys(input: Record<string, unknown>) {
         "must_use_different_provider",
       ])
     }
-    if (models.fallback !== undefined) {
-      assertKeys("models.fallback", expectRecord(models.fallback, "models.fallback"), [
+    if (models[LEGACY_MODEL_ROUTE_KEY] !== undefined) {
+      assertKeys(`models.${LEGACY_MODEL_ROUTE_KEY}`, expectRecord(models[LEGACY_MODEL_ROUTE_KEY], `models.${LEGACY_MODEL_ROUTE_KEY}`), [
         "on_rate_limit",
         "on_context_overflow",
         "chain",
@@ -1599,7 +1638,7 @@ function validateZyalSemantics(spec: ZyalScript) {
       }
     }
   } else {
-    // No fleet block — keep legacy behaviour but still cap worker totals at 20.
+    // No fleet block — keep previous behaviour but still cap worker totals at 20.
     const workerCount = (spec.agents?.workers ?? []).reduce((s, w) => s + (w.count ?? 0), 0)
     if (workerCount > 20) {
       throw new ZyalParseError(

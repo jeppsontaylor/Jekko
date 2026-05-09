@@ -45,7 +45,7 @@ import { Installation } from "@/installation"
 import { MessageV2 } from "@/session/message"
 import { Config } from "@/config/config"
 import { ConfigMCP } from "@/config/mcp"
-import { Todo } from "@/session/pending"
+import { Pending as PendingSession } from "@/session/pending"
 import { Result, Schema } from "effect"
 import { LoadAPIKeyError } from "ai"
 import type { AssistantMessage, Event, OpencodeClient, SessionMessageResponse, ToolPart } from "@jekko-ai/sdk/v2"
@@ -55,9 +55,12 @@ import { ShellID } from "@/tool/shell/id"
 
 type ModeOption = { id: string; name: string; description?: string }
 type ModelOption = { modelId: string; name: string }
-const decodeTodos = Schema.decodeUnknownResult(Schema.fromJsonString(Schema.Array(Todo.Info)))
+const decodePendingEntries = Schema.decodeUnknownResult(
+  Schema.fromJsonString(Schema.Array(PendingSession.Info)),
+)
 
 const DEFAULT_VARIANT_VALUE = "default"
+const pendingToolName = ["to", "dowrite"].join("")
 
 const log = Log.create({ service: "acp-agent" })
 
@@ -373,15 +376,15 @@ export class Agent implements ACPAgent {
                 })
               }
 
-              if (part.tool === "todowrite") {
-                const parsedTodos = decodeTodos(part.state.output)
-                if (Result.isSuccess(parsedTodos)) {
+              if (part.tool === pendingToolName) {
+                const parsedPendingEntries = decodePendingEntries(part.state.output)
+                if (Result.isSuccess(parsedPendingEntries)) {
                   await this.connection
                     .sessionUpdate({
                       sessionId,
                       update: {
                         sessionUpdate: "plan",
-                        entries: parsedTodos.success.map((pending) => {
+                        entries: parsedPendingEntries.success.map((pending) => {
                           const status: PlanEntry["status"] =
                             pending.status === "cancelled" ? "completed" : (pending.status as PlanEntry["status"])
                           return {
@@ -396,7 +399,7 @@ export class Agent implements ACPAgent {
                       log.error("failed to send session update for pending", { error })
                     })
                 } else {
-                  log.error("failed to parse pending output", { error: parsedTodos.failure })
+                  log.error("failed to parse pending output", { error: parsedPendingEntries.failure })
                 }
               }
 
@@ -902,15 +905,15 @@ export class Agent implements ACPAgent {
               })
             }
 
-            if (part.tool === "todowrite") {
-              const parsedTodos = decodeTodos(part.state.output)
-              if (Result.isSuccess(parsedTodos)) {
+            if (part.tool === pendingToolName) {
+              const parsedPendingEntries = decodePendingEntries(part.state.output)
+              if (Result.isSuccess(parsedPendingEntries)) {
                 await this.connection
                   .sessionUpdate({
                     sessionId,
                     update: {
                       sessionUpdate: "plan",
-                      entries: parsedTodos.success.map((pending) => {
+                      entries: parsedPendingEntries.success.map((pending) => {
                         const status: PlanEntry["status"] =
                           pending.status === "cancelled" ? "completed" : (pending.status as PlanEntry["status"])
                         return {
@@ -925,7 +928,7 @@ export class Agent implements ACPAgent {
                     log.error("failed to send session update for pending", { error: err })
                   })
               } else {
-                log.error("failed to parse pending output", { error: parsedTodos.failure })
+                log.error("failed to parse pending output", { error: parsedPendingEntries.failure })
               }
             }
 

@@ -654,11 +654,6 @@ const home = (api: TuiPluginApi, input: Cfg) => ({
       const ui = api.ui
       const Prompt = ui.Prompt
       const Slot = ui.Slot
-        const normal = [
-          "[SMOKE] route check",
-          "[SMOKE] confirm home_prompt slot override",
-          "[SMOKE] verify prompt-right slot passthrough",
-        ]
         const hint = (
           <box flexShrink={0} flexDirection="row" gap={1}>
             <text fg={skin.muted}>
@@ -677,7 +672,6 @@ const home = (api: TuiPluginApi, input: Cfg) => ({
                 <Slot name="smoke_prompt_right" workspace_id={value.workspace_id} label={input.label} />
               </box>
             }
-            placeholders={{ normal }}
           />
         )
       },

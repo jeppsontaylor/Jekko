@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { formatDaemonRunSummary, formatDaemonTaskList } from "../../../src/cli/cmd/daemon"
+import { formatDaemonRunList, formatDaemonRunSummary, formatDaemonTaskList } from "../../../src/cli/cmd/daemon"
 
 describe("daemon cli summaries", () => {
   test("render compact run and task summaries", () => {
@@ -27,5 +27,21 @@ describe("daemon cli summaries", () => {
     expect(formatDaemonRunSummary(run, tasks.length)).toContain("tasks 1")
     expect(formatDaemonTaskList(tasks)).toContain("ready 62%")
     expect(formatDaemonTaskList(tasks)).toContain("passes 0")
+  })
+
+  test("renders daemon status list output", () => {
+    expect(formatDaemonRunList([])).toBe("No daemon runs.")
+    expect(
+      formatDaemonRunList([
+        {
+          id: "run-1",
+          status: "running",
+          phase: "iteration",
+          iteration: 1,
+          epoch: 1,
+          last_error: null,
+        },
+      ]),
+    ).toContain("run run-1")
   })
 })

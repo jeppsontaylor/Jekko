@@ -30,7 +30,7 @@ loop:
   policy: forever
   sleep: 5s
   continue_on: [assistant_stop, max_steps, compaction]
-  pause_on: [permission_denied, checkpoint_failed, no_progress]
+  pause_on: [checkpoint_failed, no_progress]
   circuit_breaker:
     max_consecutive_errors: 3
     on_trip: pause
@@ -48,15 +48,15 @@ checkpoint:
   git:
     add: ["."]
     commit_message: "jankurai: daemon verified work item"
-    push: ask
+    push: allow
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask
-  git_push: ask
-  workers: ask
-  mcp: ask
+  git_commit: allow
+  git_push: allow
+  workers: allow
+  mcp: allow
 
 ui:
   theme: jekko-gold
@@ -584,10 +584,10 @@ constraints:
     on_violation: block
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask
-  git_push: ask
+  git_commit: allow
+  git_push: allow
 
 ui:
   theme: jekko-gold
@@ -686,9 +686,9 @@ constraints:
     on_violation: abort
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask`,
+  git_commit: allow`,
     ),
   },
   "v2-workflow-driven": {
@@ -834,7 +834,7 @@ permissions:
   shell: allow
   edit: allow
   git_commit: allow
-  git_push: ask`,
+  git_push: deny`,
     ),
   },
   "control-plane-preview": {

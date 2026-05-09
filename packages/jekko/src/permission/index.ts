@@ -14,6 +14,13 @@ import { Wildcard } from "@/util/wildcard"
 import { Deferred, Effect, Layer, Schema, Context } from "effect"
 import os from "os"
 import { evaluate as evalRule } from "./evaluate"
+import {
+  envAutoAllowReads,
+  envNoHumanPrompts,
+  resolveAskFallback as resolveAskDecision,
+  rulesAutoAllowReads,
+  rulesNoHumanPrompts,
+} from "./read-like"
 import { PermissionID } from "./schema"
 
 const log = Log.create({ service: "permission" })
@@ -195,6 +202,18 @@ export const layer = Layer.effect(
 
       if (!needsAsk) return
 
+      const decision = resolveAskDecision({
+        request,
+        autoAllowReads: envAutoAllowReads() || rulesAutoAllowReads(ruleset, approved),
+        noHumanPrompts: envNoHumanPrompts() || rulesNoHumanPrompts(ruleset, approved),
+      })
+      if (decision === "allow") return
+      if (decision === "deny") {
+        return yield* new DeniedError({
+          ruleset: ruleset.filter((rule) => Wildcard.match(request.permission, rule.permission)),
+        })
+      }
+
       const id = request.id ?? PermissionID.ascending()
       const info = Schema.decodeUnknownSync(Request)({
         id,
@@ -320,5 +339,12 @@ export function disabled(tools: string[], ruleset: Ruleset): Set<string> {
 }
 
 export const defaultLayer = layer.pipe(Layer.provide(Bus.layer))
+
+export {
+  AUTO_ALLOW_READS_PERMISSION,
+  NO_HUMAN_PROMPTS_PATTERN,
+  NO_HUMAN_PROMPTS_PERMISSION,
+  UNATTENDED_READ_AUTO_ALLOW_RULES,
+} from "./read-like"
 
 export * as Permission from "."

@@ -191,7 +191,7 @@ function pending(info: ToolProps<typeof PendingWriteTool>) {
   block(
     {
       icon: "#",
-      title: "Todos",
+      title: "Pending items",
     },
     info.input.todos.map((item) => `${item.status === "completed" ? "[x]" : "[ ]"} ${item.content}`).join("\n"),
   )
@@ -486,7 +486,7 @@ export const RunCommand = effectCmd({
             if (part.tool === "edit") return edit(props<typeof EditTool>(part))
             if (part.tool === "websearch") return websearch(props<typeof WebSearchTool>(part))
             if (part.tool === "task") return task(props<typeof TaskTool>(part))
-            if (part.tool === "todowrite") return pending(props<typeof PendingWriteTool>(part))
+            if (part.tool === PendingWriteTool.id) return pending(props<typeof PendingWriteTool>(part))
             if (part.tool === "skill") return skill(props<typeof SkillTool>(part))
             return alternative_path(part)
           } catch {
@@ -617,13 +617,13 @@ export const RunCommand = effectCmd({
               if (args["dangerously-skip-permissions"]) {
                 await sdk.permission.reply({
                   requestID: permission.id,
-                  reply: "once",
+                  reply: "always",
                 })
               } else {
                 UI.println(
                   UI.Style.TEXT_WARNING_BOLD + "!",
                   UI.Style.TEXT_NORMAL +
-                    `permission requested: ${permission.permission} (${permission.patterns.join(", ")}); auto-rejecting`,
+                    `permission requested: ${permission.permission} (${permission.patterns.join(", ")}); auto-rejecting (set JEKKO_AUTO_ALLOW_READS=1 for read-only auto-allow, configure an explicit allow rule for this permission, or pass --dangerously-skip-permissions to bypass the gate)`,
                 )
                 await sdk.permission.reply({
                   requestID: permission.id,

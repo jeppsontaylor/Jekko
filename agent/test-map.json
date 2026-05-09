@@ -217,6 +217,10 @@
       "command": "just fast",
       "purpose": "verify install proof route stays visible"
     },
+    "jekko-jankurai-loop.sh": {
+      "command": "just fast",
+      "purpose": "verify jekko loop script proof route stays visible"
+    },
     "jnoccio-fusion/": {
       "command": "just fast",
       "purpose": "verify jnoccio-fusion proof routes stay visible"
@@ -401,9 +405,37 @@
       "command": "just fast",
       "purpose": "verify license proof route stays visible"
     },
+    ".codex-loop-runs/": {
+      "command": "just fast",
+      "purpose": "verify codex loop run proof routes stay visible"
+    },
+    ".gitattributes": {
+      "command": "just fast",
+      "purpose": "verify git attributes proof route stays visible"
+    },
+    ".husky/": {
+      "command": "just fast",
+      "purpose": "verify husky hook proof routes stay visible"
+    },
+    ".jekko/daemon/": {
+      "command": "just fast",
+      "purpose": "verify daemon state proof routes stay visible"
+    },
     ".oxlintrc.json": {
       "command": "just fast",
-      "purpose": "verify oxlint proof route stays visible"
+      "purpose": "verify oxlint config proof route stays visible"
+    },
+    "DO_NOT_ASK_ZYAL.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL instructions proof route stays visible"
+    },
+    "SESSION_SCOPED_ZYAL_METRICS_PLAN.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL metrics plan proof route stays visible"
+    },
+    "UNLOCK_WORKPLAN.md": {
+      "command": "just fast",
+      "purpose": "verify unlock workplan proof route stays visible"
     }
   }
 }

@@ -58,6 +58,13 @@ describe("daemon task router", () => {
     expect(score).toBeLessThan(0.1)
   })
 
+  test("baseline score is reused when evidence is empty", () => {
+    const score = DaemonTaskRouter.computeReadiness({
+      baselineScore: 0.7,
+    })
+    expect(score).toBe(0.7)
+  })
+
   test("exclude_when keeps low readiness tasks in the normal lane", async () => {
     const nextIncubator = {
       ...(await incubator()),

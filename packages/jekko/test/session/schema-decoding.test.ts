@@ -6,7 +6,7 @@ import { SessionPrompt } from "../../src/session/prompt"
 import { SessionRevert } from "../../src/session/revert"
 import { SessionStatus } from "../../src/session/status"
 import { SessionSummary } from "../../src/session/summary"
-import { Todo } from "../../src/session/pending"
+import { Pending } from "../../src/session/pending"
 import { SessionID, MessageID, PartID } from "../../src/session/schema"
 import { ProjectID } from "../../src/project/schema"
 import { WorkspaceID } from "../../src/control-plane/schema"
@@ -242,13 +242,13 @@ describe("SessionStatus.Info", () => {
   })
 })
 
-describe("Todo.Info", () => {
-  const decode = decodeUnknown(Todo.Info)
+describe("Pending.Info", () => {
+  const decode = decodeUnknown(Pending.Info)
 
   test("three-field round-trip", () => {
     const input = { content: "do a thing", status: "pending", priority: "high" }
     expect(decode(input)).toEqual(input)
-    expect(Todo.Info.zod.parse(input)).toEqual(input)
+    expect(Pending.Info.zod.parse(input)).toEqual(input)
   })
 })
 

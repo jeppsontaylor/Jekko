@@ -340,7 +340,7 @@ test("keeps plugin origins aligned with merged plugin list", async () => {
   })
 })
 
-// Legacy tools migration tests
+// Historical tools migration tests
 
 test("migrates historical tools config to permissions - allow", async () => {
   await using tmp = await tmpdir({

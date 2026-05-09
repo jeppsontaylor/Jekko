@@ -80,6 +80,22 @@ describe("tool.assertExternalDirectory", () => {
     expect(req).toBeDefined()
     expect(req!.patterns).toEqual([expected])
     expect(req!.always).toEqual([expected])
+    expect(req!.metadata.access).toBe("unknown")
+  })
+
+  test("records requested access mode in metadata", async () => {
+    const { requests, ctx } = makeCtx()
+
+    await WithInstance.provide({
+      directory: "/tmp/project",
+      fn: async () => {
+        await assertExternalDirectory(ctx, "/tmp/outside/file.txt", { access: "read" })
+      },
+    })
+
+    const req = requests.find((r) => r.permission === "external_directory")
+    expect(req).toBeDefined()
+    expect(req!.metadata.access).toBe("read")
   })
 
   test("uses target directory when kind=directory", async () => {

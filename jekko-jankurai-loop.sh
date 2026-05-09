@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ZYAL/jankurai loop runs are headless. Tell the Jekko permission gate to
+# auto-allow read-like permissions everywhere on the filesystem. Non-read
+# permission asks must be explicitly allowed by rules or they fail without
+# waiting for a human prompt.
+export ZYAL_RUN="${ZYAL_RUN:-1}"
+export JEKKO_AUTO_ALLOW_READS="${JEKKO_AUTO_ALLOW_READS:-1}"
+
 PROMPT_FILE="${PROMPT_FILE:-./prompt.md}"
 REPO_DIR="${REPO_DIR:-$PWD}"
 LOG_DIR="${LOG_DIR:-./.jekko-loop-runs}"
@@ -17,22 +24,25 @@ STOP_ON_FAILURE="${STOP_ON_FAILURE:-0}"
 SKIP_PERMISSIONS="${SKIP_PERMISSIONS:-0}"
 LOOP_COLOR="${LOOP_COLOR:-auto}"
 
-die() {
-  echo "ERROR: $*" >&2
+fatal() {
+  printf 'ERROR: %s\n' "$*" >&2
   exit 1
 }
 
-abs_path() {
+resolve_path() {
   local path="$1"
   if [[ -d "$path" ]]; then
     (cd "$path" && pwd -P)
-  else
-    local dir
-    local base
-    dir="$(dirname "$path")"
-    base="$(basename "$path")"
-    (cd "$dir" && printf '%s/%s\n' "$(pwd -P)" "$base")
+    return
   fi
+
+  local dir="${path%/*}"
+  local base="${path##*/}"
+  if [[ "$dir" == "$path" ]]; then
+    dir="."
+  fi
+
+  (cd "$dir" && printf '%s/%s\n' "$(pwd -P)" "$base")
 }
 
 expand_home() {
@@ -52,52 +62,60 @@ json_escape() {
   printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g; s/\r/\\r/g'
 }
 
-command -v "$JEKKO_BIN" >/dev/null 2>&1 || die "jekko CLI not found on PATH. Install or build it first."
-[[ -f "$PROMPT_FILE" ]] || die "prompt file not found: $PROMPT_FILE"
-[[ -d "$REPO_DIR" ]] || die "repo dir not found: $REPO_DIR"
+write_command_file() {
+  local file="$1"
+  shift
+
+  printf '%q ' "$@" > "$file"
+  printf '\n' >> "$file"
+}
+
+command -v "$JEKKO_BIN" >/dev/null 2>&1 || fatal "jekko CLI not found on PATH. Install or build it first."
+[[ -f "$PROMPT_FILE" ]] || fatal "prompt file not found: $PROMPT_FILE"
+[[ -d "$REPO_DIR" ]] || fatal "repo dir not found: $REPO_DIR"
 
 case "$MAX_RUNS" in
-  ''|*[!0-9]*) die "MAX_RUNS must be a non-negative integer" ;;
+  ''|*[!0-9]*) fatal "MAX_RUNS must be a non-negative integer" ;;
 esac
 
 case "$SLEEP_SECONDS" in
-  ''|*[!0-9]*) die "SLEEP_SECONDS must be a non-negative integer" ;;
+  ''|*[!0-9]*) fatal "SLEEP_SECONDS must be a non-negative integer" ;;
 esac
 
 case "$JSON_EVENTS" in
   0|1) ;;
-  *) die "JSON_EVENTS must be 0 or 1" ;;
+  *) fatal "JSON_EVENTS must be 0 or 1" ;;
 esac
 
 case "$AUTO_UNLOCK" in
   0|1) ;;
-  *) die "AUTO_UNLOCK must be 0 or 1" ;;
+  *) fatal "AUTO_UNLOCK must be 0 or 1" ;;
 esac
 
 case "$REQUIRE_UNLOCK" in
   0|1) ;;
-  *) die "REQUIRE_UNLOCK must be 0 or 1" ;;
+  *) fatal "REQUIRE_UNLOCK must be 0 or 1" ;;
 esac
 
 case "$STOP_ON_FAILURE" in
   0|1) ;;
-  *) die "STOP_ON_FAILURE must be 0 or 1" ;;
+  *) fatal "STOP_ON_FAILURE must be 0 or 1" ;;
 esac
 
 case "$SKIP_PERMISSIONS" in
   0|1) ;;
-  *) die "SKIP_PERMISSIONS must be 0 or 1" ;;
+  *) fatal "SKIP_PERMISSIONS must be 0 or 1" ;;
 esac
 
 case "$LOOP_COLOR" in
   auto|always|never) ;;
-  *) die "LOOP_COLOR must be auto, always, or never" ;;
+  *) fatal "LOOP_COLOR must be auto, always, or never" ;;
 esac
 
-PROMPT_FILE="$(abs_path "$PROMPT_FILE")"
-REPO_DIR="$(abs_path "$REPO_DIR")"
+PROMPT_FILE="$(resolve_path "$PROMPT_FILE")"
+REPO_DIR="$(resolve_path "$REPO_DIR")"
 mkdir -p "$LOG_DIR"
-LOG_DIR="$(abs_path "$LOG_DIR")"
+LOG_DIR="$(resolve_path "$LOG_DIR")"
 
 palette=(196 202 208 214 201 45)
 palette_len="${#palette[@]}"
@@ -156,6 +174,8 @@ write_env_file() {
     echo "VARIANT=$VARIANT"
     echo "AGENT=$AGENT"
     echo "JEKKO_BIN=$JEKKO_BIN"
+    echo "ZYAL_RUN=$ZYAL_RUN"
+    echo "JEKKO_AUTO_ALLOW_READS=$JEKKO_AUTO_ALLOW_READS"
     echo "JSON_EVENTS=$JSON_EVENTS"
     echo "AUTO_UNLOCK=$AUTO_UNLOCK"
     echo "REQUIRE_UNLOCK=$REQUIRE_UNLOCK"
@@ -252,8 +272,7 @@ while true; do
     run_cmd+=(--dangerously-skip-permissions)
   fi
 
-  printf '%q ' "${run_cmd[@]}" > "$command_file"
-  printf '\n' >> "$command_file"
+  write_command_file "$command_file" "${run_cmd[@]}"
 
   unlock_ran=0
   unlock_status=null
@@ -272,8 +291,7 @@ while true; do
       --json
     )
 
-    printf '%q ' "${unlock_cmd[@]}" > "$unlock_command_file"
-    printf '\n' >> "$unlock_command_file"
+    write_command_file "$unlock_command_file" "${unlock_cmd[@]}"
 
     set +e
     "${unlock_cmd[@]}" > "$unlock_stdout" 2> "$unlock_stderr"

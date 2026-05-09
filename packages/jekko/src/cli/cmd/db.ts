@@ -8,6 +8,11 @@ import { cmd } from "./cmd"
 import { JsonMigration } from "@/storage/json-migration"
 import { EOL } from "os"
 import { errorMessage } from "../../util/error"
+import { isRecord } from "@/util/record"
+
+function isRecordArray(value: unknown[]): value is Record<string, unknown>[] {
+  return value.every(isRecord)
+}
 
 const QueryCommand = cmd({
   command: "$0 [query]",
@@ -26,14 +31,17 @@ const QueryCommand = cmd({
       })
   },
   handler: async (args: { query?: string; format: string }) => {
-    const query = args.query as string | undefined
+    const query = args.query
     if (query) {
       const db = new BunDatabase(Database.Path, { readonly: true })
       try {
-        const result = db.query(query).all() as Record<string, unknown>[]
+        const result = db.query(query).all()
         if (args.format === "json") {
           console.log(JSON.stringify(result, null, 2))
         } else if (result.length > 0) {
+          if (!isRecordArray(result)) {
+            throw new Error("sqlite query results must be object rows")
+          }
           const keys = Object.keys(result[0])
           console.log(keys.join("\t"))
           for (const row of result) {

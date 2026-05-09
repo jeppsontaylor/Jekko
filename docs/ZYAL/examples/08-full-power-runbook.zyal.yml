@@ -447,7 +447,7 @@ loop:
   policy: forever
   sleep: 5s
   continue_on: [assistant_stop, max_steps, compaction]
-  pause_on: [permission_denied, checkpoint_failed]
+  pause_on: [checkpoint_failed]
   circuit_breaker: { max_consecutive_errors: 3, on_trip: pause }
 
 context:
@@ -464,7 +464,7 @@ checkpoint:
   git:
     add: ["."]
     commit_message: "checkpoint: ${task.id}"
-    push: ask
+    push: deny
 
 # ─── UI ────────────────────────────────────────────────────────────────────
 ui:
@@ -472,11 +472,11 @@ ui:
   banner: forever
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask
+  git_commit: allow
   git_push: deny
   workers: allow
-  mcp: ask
+  mcp: allow
 <<<END_ZYAL id=full-power>>>
 ZYAL_ARM RUN_FOREVER id=full-power

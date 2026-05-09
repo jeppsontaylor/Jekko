@@ -1,12 +1,22 @@
 import { describe, expect, test } from "bun:test"
 import {
+  clearZyalExit,
   daemonRunJnoccioConfig,
   daemonRunToZyalMetrics,
   incrementJnoccioCounters,
+  isZyalTerminalStatus,
+  recordZyalExit,
   resetZyalMetrics,
+  textHasZyalSentinel,
   updateZyalMetrics,
+  useZyalExit,
   useZyalMetrics,
 } from "../../../src/cli/cmd/tui/context/zyal-flash"
+import {
+  daemonPollResultForSession,
+  selectDaemonRunForSession,
+  shouldPreserveZyalStateOnDaemonPollError,
+} from "../../../src/cli/cmd/tui/routes/session/daemon-poll"
 
 describe("zyal flash metrics", () => {
   test("normalizes daemon API stats and spec_json fleet", () => {
@@ -72,6 +82,97 @@ describe("zyal flash metrics", () => {
       metricsWsPath: "custom/ws",
       runId: "run_2",
     })
+  })
+})
+
+describe("textHasZyalSentinel", () => {
+  test("matches the open sentinel anywhere in the buffer", () => {
+    expect(textHasZyalSentinel("<<<ZYAL v1:daemon id=test>>>")).toBe(true)
+    expect(textHasZyalSentinel("# preamble\n<<<ZYAL v1:daemon id=foo-bar>>>\n")).toBe(true)
+    expect(textHasZyalSentinel("here you go: <<<ZYAL v1:daemon id=t1>>>")).toBe(true)
+    expect(textHasZyalSentinel("[<<<ZYAL v1:daemon id=wrap>>>]")).toBe(true)
+  })
+
+  test("rejects buffers without the sentinel", () => {
+    expect(textHasZyalSentinel("")).toBe(false)
+    expect(textHasZyalSentinel(null)).toBe(false)
+    expect(textHasZyalSentinel(undefined)).toBe(false)
+    expect(textHasZyalSentinel("<<<ZYAL v1:daemon>>>")).toBe(false)
+    expect(textHasZyalSentinel("not zyal at all")).toBe(false)
+  })
+})
+
+describe("zyal exit record", () => {
+  test("isZyalTerminalStatus recognises every transition the daemon can take", () => {
+    expect(isZyalTerminalStatus("satisfied")).toBe(true)
+    expect(isZyalTerminalStatus("paused")).toBe(true)
+    expect(isZyalTerminalStatus("aborted")).toBe(true)
+    expect(isZyalTerminalStatus("failed")).toBe(true)
+    expect(isZyalTerminalStatus("running")).toBe(false)
+    expect(isZyalTerminalStatus("running_iteration")).toBe(false)
+    expect(isZyalTerminalStatus(undefined)).toBe(false)
+    expect(isZyalTerminalStatus(null)).toBe(false)
+  })
+
+  test("recordZyalExit stamps tone, reason, runId and surfaces them via useZyalExit", () => {
+    clearZyalExit()
+    expect(useZyalExit()()).toBeNull()
+    recordZyalExit({ runId: "run_1", status: "satisfied", reason: "git_clean" })
+    const record = useZyalExit()()
+    expect(record).not.toBeNull()
+    expect(record!.runId).toBe("run_1")
+    expect(record!.status).toBe("satisfied")
+    expect(record!.tone).toBe("success")
+    expect(record!.reason).toBe("git_clean")
+    expect(typeof record!.at).toBe("number")
+    clearZyalExit()
+  })
+
+  test("paused → warning tone, aborted/failed → error tone", () => {
+    clearZyalExit()
+    recordZyalExit({ runId: "r", status: "paused", reason: "circuit_breaker" })
+    expect(useZyalExit()()!.tone).toBe("warning")
+    recordZyalExit({ runId: "r", status: "aborted", reason: "user" })
+    expect(useZyalExit()()!.tone).toBe("error")
+    recordZyalExit({ runId: "r", status: "failed", reason: "boom" })
+    expect(useZyalExit()()!.tone).toBe("error")
+    clearZyalExit()
+  })
+})
+
+describe("daemon poll helpers", () => {
+  test("prefers live daemon runs over older terminal runs for a session", () => {
+    const terminalRun = { id: "old", status: "satisfied", root_session_id: "ses_1" }
+    const live = { id: "new", status: "running", active_session_id: "ses_1" }
+
+    expect(selectDaemonRunForSession([terminalRun, live], "ses_1")).toBe(live)
+    expect(daemonPollResultForSession([terminalRun], "ses_1")).toMatchObject({
+      run: terminalRun,
+      found: true,
+      live: false,
+      terminal: true,
+    })
+  })
+
+  test("preserves gold state on transient poll errors while submit or live run is pending", () => {
+    expect(
+      shouldPreserveZyalStateOnDaemonPollError({
+        promptSubmitted: true,
+        currentRun: undefined,
+      }),
+    ).toBe(true)
+    expect(
+      shouldPreserveZyalStateOnDaemonPollError({
+        promptSubmitted: false,
+        currentRun: { status: "running" },
+      }),
+    ).toBe(true)
+    expect(
+      shouldPreserveZyalStateOnDaemonPollError({
+        promptSubmitted: false,
+        currentRun: { status: "failed" },
+      }),
+    ).toBe(false)
   })
 })
 

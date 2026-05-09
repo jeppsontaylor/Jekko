@@ -26,6 +26,10 @@ export function isZyalFlashActive() {
   return active().size > 0
 }
 
+export function isZyalFlashSourceActive(sourceId: string) {
+  return active().has(sourceId)
+}
+
 export function zyalFlashOverlayTheme() {
   return ZYAL_OVERLAY_THEME
 }
@@ -57,6 +61,76 @@ const ZYAL_SENTINEL_RE = /<<<ZYAL v\d+:daemon id=[A-Za-z0-9._-]+>>>/
 export function textHasZyalSentinel(text: string | undefined | null): boolean {
   if (!text) return false
   return ZYAL_SENTINEL_RE.test(text)
+}
+
+// ─── Exit reason ──────────────────────────────────────────────────────────
+//
+// When a daemon run reaches a terminal status the gold flash deactivates and
+// the live-metrics panel disappears. The user is left with no signal as to
+// WHY the run ended. This signal carries the most recent exit so the sidebar
+// can render a brightly-coloured banner and the prompt route can fire a
+// one-shot toast.
+//
+// The record self-clears after ZYAL_EXIT_TTL_MS so a long-idle session
+// doesn't keep showing a stale banner forever.
+
+export type ZyalExitTone = "success" | "warning" | "error"
+
+export type ZyalExitRecord = {
+  readonly runId: string | null
+  readonly status: string
+  readonly tone: ZyalExitTone
+  readonly reason: string
+  readonly at: number
+}
+
+const ZYAL_EXIT_TTL_MS = 30_000
+
+const [exitRecord, setExitRecord] = createSignal<ZyalExitRecord | null>(null)
+let exitClearTimer: ReturnType<typeof setTimeout> | null = null
+
+const TERMINAL_TONE: Record<string, ZyalExitTone> = {
+  satisfied: "success",
+  paused: "warning",
+  aborted: "error",
+  failed: "error",
+}
+
+export function isZyalTerminalStatus(status: string | undefined | null): boolean {
+  return !!status && status in TERMINAL_TONE
+}
+
+export function useZyalExit() {
+  return exitRecord
+}
+
+export function recordZyalExit(input: {
+  runId: string | null
+  status: string
+  reason: string
+}) {
+  const tone = TERMINAL_TONE[input.status] ?? "warning"
+  const record: ZyalExitRecord = {
+    runId: input.runId,
+    status: input.status,
+    tone,
+    reason: input.reason,
+    at: Date.now(),
+  }
+  setExitRecord(record)
+  if (exitClearTimer) clearTimeout(exitClearTimer)
+  exitClearTimer = setTimeout(() => {
+    setExitRecord((prev) => (prev?.at === record.at ? null : prev))
+    exitClearTimer = null
+  }, ZYAL_EXIT_TTL_MS)
+}
+
+export function clearZyalExit() {
+  if (exitClearTimer) {
+    clearTimeout(exitClearTimer)
+    exitClearTimer = null
+  }
+  setExitRecord(null)
 }
 
 // ─── Fleet metrics ────────────────────────────────────────────────────────
@@ -160,7 +234,7 @@ export function resetZyalMetrics() {
  * Why this exists: the prior implementation read `useZyalMetrics()()` then
  * called `updateZyalMetrics({...})` non-atomically. If a `snapshot` message
  * (which authoritatively resets the jnoccio counters) landed between the
- * read and the write, the snapshot's reset was clobbered by stale-baseline-
+ * read and the write, the snapshot's reset was clobbered by previous-baseline-
  * plus-delta. Using Solid's functional setter keeps the read+merge+write
  * inside a single signal transaction, so a snapshot landing concurrently
  * either runs entirely before or entirely after this update — never

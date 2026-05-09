@@ -154,7 +154,7 @@ permissions:
   shell: allow
   edit: allow
   workers: allow
-  git_commit: ask
+  git_commit: allow
   git_push: deny
 
 ui:

@@ -6,11 +6,11 @@ import { Filesystem } from "@/util/filesystem"
 import { isRecord } from "@/util/record"
 import { Npm } from "@jekko-ai/core/npm"
 
-// Previous npm package names for plugins that are now built-in
-export const DEPRECATED_PLUGIN_PACKAGES = ["jekko-openai-codex-auth", "jekko-copilot-auth"]
+// Previous npm package names for plugins that are now built-in.
+export const LEGACY_PLUGIN_PACKAGES = ["jekko-openai-codex-auth", "jekko-copilot-auth"]
 
-export function isDeprecatedPlugin(spec: string) {
-  return DEPRECATED_PLUGIN_PACKAGES.some((pkg) => spec.includes(pkg))
+export function isLegacyPlugin(spec: string) {
+  return LEGACY_PLUGIN_PACKAGES.some((pkg) => spec.includes(pkg))
 }
 
 function parse(spec: string) {

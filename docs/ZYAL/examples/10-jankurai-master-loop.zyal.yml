@@ -54,16 +54,65 @@ confirm: RUN_FOREVER
 job:
   name: "Jankurai master loop"
   objective: |
+    UNATTENDED JOB — never ask the user anything; make best-effort decisions always.
     Run forever: audit with jankurai, harvest new work into JANKURAI_TASKLIST.md,
-    rotate completed items into JANKURAI_TASKLIST.md.completed, claim one task,
-    route trivial tasks to direct execution and risky tasks to the multi-pass
-    incubator, commit and push every verified change, hard-clear context between
-    tasks. Stop only when jankurai reports zero issues, the worktree is clean,
-    and HEAD is fully pushed to origin/main.
+    rotate completed items into JANKURAI_TASKLIST.md.completed, claim ONE task at
+    random from the eligible Pending set, route trivial tasks to direct execution
+    and risky tasks to the multi-pass incubator, commit and push every verified
+    change, hard-clear context between tasks. Stop only when jankurai reports
+    zero issues, the worktree is clean, and HEAD is fully pushed to origin/main.
+    If blocked on a task: mark Status: Blocked with reason and claim the next
+    random one.
+
+    RANDOM SELECTION — REQUIRED. Multiple workers run this loop in parallel
+    (see fleet.max_workers below). Never claim the first / top / lowest-id
+    Pending task — that produces deterministic collisions. Filter the Pending
+    list to eligible candidates first (apply the `Eligibility` and safety
+    filters from agent/JANKURAI_STANDARD.md), then pick exactly one uniformly
+    at random (`shuf -n 1` over the candidate list, or `awk` with `srand()`).
+    Re-randomise on every iteration; never bias toward the same task across
+    iterations.
+
+    HARD CONTEXT RESET — REQUIRED. `context.strategy: hard` with
+    `hard_clear_every: 1` means every iteration starts with a wiped context
+    window. The ONLY state that survives is on disk: JANKURAI_TASKLIST.md,
+    JANKURAI_TASKLIST.md.completed, the jankurai audit JSON, and the
+    `preserve:` keys (objective, current_task_id, failed_approaches, …). Never
+    rely on prior-turn memory; re-read AGENTS.md, JANKURAI_STANDARD.md, and the
+    tasklist at the start of every iteration. Treat each iteration as a fresh
+    boot from disk-persisted state.
   risk:
     - Long-running with autonomous git_commit; bounded by per-iteration verify
     - Touches arbitrary files; bounded by capability rules and anti-vibe gates
     - Inbound tool/MCP/web content is hostile by default — bounded by `taint` rules
+
+interaction:
+  user: none
+  on_ambiguity: best_effort
+  on_blocked: skip_and_next
+  system_inject: |
+    UNATTENDED ZYAL JOB (interaction.user=none).
+    Never ask the user a question. Never write "Should I…" or list choices.
+    When uncertain: make your best judgment and proceed.
+    When blocked: mark Status: Blocked in JANKURAI_TASKLIST.md and move on.
+
+    RANDOM TASK SELECTION — REQUIRED. fleet.max_workers > 1 means many workers
+    share this tasklist. Never claim the first/top/lowest-id Pending task —
+    that produces collisions. Filter Pending → eligible candidates (safety
+    filter from agent/JANKURAI_STANDARD.md) THEN pick one uniformly at random
+    (`shuf -n 1` over the candidate list, or `awk 'BEGIN{srand()} …'`).
+
+    HARD CONTEXT RESET — REQUIRED. Every iteration starts with a wiped context
+    window (`context.hard_clear_every: 1`). State lives on disk only — re-read
+    AGENTS.md, agent/JANKURAI_STANDARD.md, and JANKURAI_TASKLIST.md on every
+    iteration. Never depend on prior-turn memory.
+
+    TOOL SCHEMAS — jekko camelCase, no exceptions:
+    - bash:  {"command":"...","description":"..."}
+    - read:  {"filePath":"/abs/path"}
+    - edit:  {"filePath":"/abs/path","oldString":"...","newString":"..."}
+    - write: {"filePath":"/abs/path","content":"..."}
+    - task:  {"description":"...","prompt":"...","subagent_type":"..."}
 
 arming:
   preview_hash_required: true
@@ -134,11 +183,17 @@ fleet:
 loop:
   policy: forever
   sleep: 5s
-  continue_on: [assistant_stop, max_steps, compaction]
-  pause_on: [permission_denied, checkpoint_failed]
+  continue_on:
+    - assistant_stop
+    - max_steps
+    - compaction
+    - permission_denied
+    - checkpoint_failed
+    - error
+  pause_on: []
   circuit_breaker:
-    max_consecutive_errors: 3
-    on_trip: pause
+    max_consecutive_errors: 10
+    on_trip: continue
 
 context:
   strategy: hard
@@ -204,8 +259,12 @@ hooks:
 
 tasks:
   ledger: sqlite
+  # Discover surfaces Pending candidates in RANDOM order so parallel workers
+  # under fleet.max_workers never collide on the same top-of-list task. The
+  # agent must still apply the safety filter from agent/JANKURAI_STANDARD.md
+  # before claiming. Re-shuffle every iteration.
   discover:
-    - command: "grep -nE '^- \\[ \\] ' JANKURAI_TASKLIST.md | head -50"
+    - command: "grep -nE '^- \\[ \\] ' JANKURAI_TASKLIST.md | shuf | head -50"
       timeout: 10s
 
 on:
@@ -493,7 +552,7 @@ permissions:
   edit: allow
   git_commit: allow
   git_push: allow
-  workers: ask
-  mcp: ask
+  workers: allow
+  mcp: allow
 <<<END_ZYAL id=jankurai-master-loop>>>
 ZYAL_ARM RUN_FOREVER id=jankurai-master-loop

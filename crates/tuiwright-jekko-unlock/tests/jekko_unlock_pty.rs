@@ -45,7 +45,11 @@ fn read_secret() -> Result<String> {
     let raw = std::fs::read_to_string(secret_path())
         .with_context(|| format!("read secret from {:?}", secret_path()))?;
     let trimmed = raw.trim();
-    if trimmed.len() != SECRET_LEN || !trimmed.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-') {
+    if trimmed.len() != SECRET_LEN
+        || !trimmed
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
+    {
         return Err(anyhow!(
             "secret at {:?} is not exactly {} chars [A-Za-z0-9_-]",
             secret_path(),
@@ -125,11 +129,23 @@ fn jekko_tui_paste_unlocks_jnoccio_fusion() -> Result<()> {
         .env("TERM", "xterm-256color")
         .env("COLORTERM", "truecolor")
         .env("XDG_DATA_HOME", xdg.join("data").to_string_lossy().as_ref())
-        .env("XDG_CACHE_HOME", xdg.join("cache").to_string_lossy().as_ref())
-        .env("XDG_CONFIG_HOME", xdg.join("config").to_string_lossy().as_ref())
-        .env("XDG_STATE_HOME", xdg.join("state").to_string_lossy().as_ref())
+        .env(
+            "XDG_CACHE_HOME",
+            xdg.join("cache").to_string_lossy().as_ref(),
+        )
+        .env(
+            "XDG_CONFIG_HOME",
+            xdg.join("config").to_string_lossy().as_ref(),
+        )
+        .env(
+            "XDG_STATE_HOME",
+            xdg.join("state").to_string_lossy().as_ref(),
+        )
         .env("JNOCCIO_REPO_ROOT", clone.to_string_lossy().as_ref())
-        .env("JNOCCIO_UNLOCK_SECRET_PATH", secret_cache.to_string_lossy().as_ref())
+        .env(
+            "JNOCCIO_UNLOCK_SECRET_PATH",
+            secret_cache.to_string_lossy().as_ref(),
+        )
         .timeout(Duration::from_secs(60));
     for (k, v) in std::env::vars() {
         match k.as_str() {
@@ -161,8 +177,11 @@ fn jekko_tui_paste_unlocks_jnoccio_fusion() -> Result<()> {
         .context("model picker did not show Jnoccio Fusion")?;
     page.screenshot(artifact_dir.join("03-model.png"))?;
     page.press(Key::Enter)?;
-    page.wait_for_text("Paste your 128-character unlock secret", Duration::from_secs(15))
-        .context("unlock dialog did not open")?;
+    page.wait_for_text(
+        "Paste your 128-character unlock secret",
+        Duration::from_secs(15),
+    )
+    .context("unlock dialog did not open")?;
     page.screenshot(artifact_dir.join("04-dialog.png"))?;
 
     page.paste(&secret).context("send bracketed paste")?;

@@ -2,11 +2,27 @@ import { describe, expect, test } from "bun:test"
 import { Effect } from "effect"
 import fs from "fs"
 import path from "path"
-import { detectZyal } from "./activation"
+import { detectZyal, scanZyalEnvelope } from "./activation"
 import { getZyalExample, listZyalExamples } from "./examples"
 import { extractZyalBlock, parseZyal } from "./parser"
 
 describe("ZYAL parser", () => {
+  test("fast envelope scan recognises complete pasted ZYAL without schema parsing", () => {
+    const text = `[# copied terminal buffer
+  <<<ZYAL v1:daemon id=fast-loop>>>
+version: v1
+<<<END_ZYAL id=fast-loop>>>
+ZYAL_ARM RUN_FOREVER id=fast-loop
+]`
+    expect(scanZyalEnvelope(text)).toEqual({
+      kind: "zyal",
+      id: "fast-loop",
+      hasClose: true,
+      hasArm: true,
+      complete: true,
+    })
+  })
+
   test("accepts a valid example", async () => {
     const example = getZyalExample("jankurai-clean-worktree")
     expect(example).toBeDefined()
@@ -50,6 +66,50 @@ ZYAL_ARM RUN_FOREVER id=test`
     expect(detectZyal(text).kind).toBe("preview")
   })
 
+  test("accepts indented sentinels from terminal paste", async () => {
+    const text = `# copied from a terminal buffer
+  <<<ZYAL v1:daemon id=test>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+job:
+  name: test
+  objective: test
+stop:
+  all:
+    - git_clean: {}
+  <<<END_ZYAL id=test>>>
+  ZYAL_ARM RUN_FOREVER id=test`
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.id).toBe("test")
+    expect(detectZyal(text).kind).toBe("preview")
+  })
+
+  test("strips terminal escape noise before parsing", async () => {
+    const text = makeZyal("").replace("<<<ZYAL", "\x1B[118;1:3u<<<ZYAL")
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.id).toBe("test")
+  })
+
+  test("detects wrapped malformed terminal ZYAL paste as invalid, not none", () => {
+    const text = `[# ZYAL v1 - terminal transcript
+  <<<ZYAL v1:daemon id=jankurai-min-loop>>>
+  version: v1
+  intent: daemon
+  confirm: RUN_FOREVER
+  job:
+    name: "Jankurai min loop"
+    objective: |
+      first line
+  broken continuation from terminal wrap
+  \x1B[118;1:3u# selection marker noise
+  <<<END_ZYAL id=jankurai-min-loop>>>
+  ZYAL_ARM RUN_FOREVER id=jankurai-min-loop
+]`
+    const detected = detectZyal(text)
+    expect(detected.kind).toBe("invalid")
+  })
+
   test("rejects arbitrary prose before the ZYAL sentinel", async () => {
     const text = `This is not a comment.
 <<<ZYAL v1:daemon id=test>>>
@@ -66,6 +126,26 @@ stop:
 ZYAL_ARM RUN_FOREVER id=test`
     const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")
+  })
+
+  test("activation reports prose-prefixed sentinel as invalid (not none)", () => {
+    // Parser is intentionally strict, but detection must still flip so the
+    // gold flash, ✗ ZYAL footer, and sidebar panel surface to give the user
+    // a diagnostic instead of silently swallowing the paste.
+    const text = `here you go:
+<<<ZYAL v1:daemon id=test>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+job:
+  name: test
+  objective: test
+stop:
+  all:
+    - git_clean: {}
+<<<END_ZYAL id=test>>>
+ZYAL_ARM RUN_FOREVER id=test`
+    expect(detectZyal(text).kind).toBe("invalid")
   })
 
   test("rejects unknown top-level keys", async () => {
@@ -176,6 +256,8 @@ ZYAL_ARM RUN_FOREVER id=one`
       "08-full-power-runbook.zyal.yml",
       "09-control-plane-preview.zyal.yml",
       "10-jankurai-master-loop.zyal.yml",
+      "11-jankurai-fleet-loop.zyal.yml",
+      "12-jankurai-min-loop.zyal.yml",
     ])
     for (const file of files) {
       const text = fs.readFileSync(path.join(examplesDir, file), "utf8")
@@ -525,6 +607,31 @@ ZYAL_ARM RUN_FOREVER id=test`
 // ─── v2 parser tests ────────────────────────────────────────────────────────
 
 describe("ZYAL parser v2", () => {
+  test("accepts read permission keys", async () => {
+    const text = makeZyal(`
+permissions:
+  read: allow
+  list: allow
+  glob: allow
+  grep: allow
+  external_directory: ask`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.permissions?.read).toBe("allow")
+    expect(parsed.spec.permissions?.glob).toBe("allow")
+    expect(parsed.spec.permissions?.external_directory).toBe("ask")
+  })
+
+  test("accepts unattended interaction metadata", async () => {
+    const text = makeZyal(`
+interaction:
+  user: none
+  on_blocked: skip_and_next
+  system_inject: "never ask a human"`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.interaction?.user).toBe("none")
+    expect(parsed.spec.interaction?.on_blocked).toBe("skip_and_next")
+  })
+
   test("accepts a valid workflow block", async () => {
     const text = makeZyal(`
 workflow:

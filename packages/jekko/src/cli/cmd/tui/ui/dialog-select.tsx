@@ -60,7 +60,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
   const scrollAcceleration = createMemo(() => getScrollAcceleration(tuiConfig))
   const filterInputProps = {
     default_value: props.default_value ?? "Search",
-  } as any
+  } as { default_value: string }
 
   const [store, setStore] = createStore({
     selected: 0,

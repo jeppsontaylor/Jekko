@@ -245,7 +245,7 @@ const live: Layer.Layer<
           inputSchema: jsonSchema({
             type: "object",
             properties: {
-              reason: { type: "string", description: "Unused" },
+              reason: { type: "string", description: "Compatibility note" },
             },
           }),
           execute: async () => ({ output: "", title: "", metadata: {} }),

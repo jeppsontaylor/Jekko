@@ -71,6 +71,11 @@ export function formatDaemonRunSummary(run: any, taskCount = 0) {
     .join(" · ")
 }
 
+export function formatDaemonRunList(runs: readonly any[]) {
+  if (!runs.length) return "No daemon runs."
+  return runs.map((run) => formatDaemonRunSummary(run)).join("\n")
+}
+
 export function formatDaemonTaskSummary(task: any, passCount = 0) {
   return [
     `task ${task.title}`,
@@ -222,13 +227,16 @@ export const DaemonStatusCommand = effectCmd({
     }),
   handler: Effect.fn("Cli.daemon.status")(function* (args) {
     const input = target(args)
+    if (!args.runID) {
+      const runs = (yield* Effect.promise(() => requestJson(input, "/daemon"))) as readonly any[]
+      UI.println(formatDaemonRunList(runs))
+      return
+    }
     const run = args.runID
       ? yield* Effect.promise(() => requestJson(input, `/daemon/${args.runID}`))
-      : yield* Effect.promise(() => requestJson(input, "/daemon"))
+      : undefined
     if (!run) return
-    const tasks = args.runID
-      ? ((yield* Effect.promise(() => requestJson(input, `/daemon/${args.runID}/tasks`))) as readonly any[])
-      : []
+    const tasks = (yield* Effect.promise(() => requestJson(input, `/daemon/${args.runID}/tasks`))) as readonly any[]
     UI.println(formatDaemonRunSummary(run as any, tasks.length))
     if (tasks.length) UI.println(formatDaemonTaskList(tasks))
   }),

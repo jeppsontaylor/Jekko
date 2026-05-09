@@ -1,8 +1,13 @@
 import type { TuiPlugin, TuiPluginApi, TuiPluginModule } from "@jekko-ai/plugin/tui"
 import { createMemo, Match, Show, Switch } from "solid-js"
 import { Global } from "@jekko-ai/core/global"
+import { useZyalMetrics } from "@tui/context/zyal-flash"
+import { useJnoccioBootStatus, type JnoccioBootStatus } from "@tui/context/jnoccio-boot"
+import { RGBA } from "@opentui/core"
 
 const id = "internal:home-footer"
+
+const HOT_PINK = RGBA.fromHex("#FF00B8")
 
 function Directory(props: { api: TuiPluginApi }) {
   const theme = () => props.api.theme.current
@@ -44,6 +49,63 @@ function Mcp(props: { api: TuiPluginApi }) {
   )
 }
 
+function Jnoccio(props: { api: TuiPluginApi }) {
+  const theme = () => props.api.theme.current
+  const metrics = useZyalMetrics()
+  const bootStatus = useJnoccioBootStatus()
+
+  const connected = () => metrics().jnoccioConnected
+  const status = (): JnoccioBootStatus => {
+    // If the WS metrics say connected, that's authoritative
+    if (connected()) return "ready"
+    return bootStatus()
+  }
+
+  const dotColor = () => {
+    const s = status()
+    if (s === "ready") return theme().success
+    if (s === "checking" || s === "starting") return HOT_PINK
+    return theme().error
+  }
+
+  const label = () => {
+    const s = status()
+    if (s === "checking") return "checking…"
+    if (s === "starting") return "starting…"
+    if (s === "ready") return "Jnoccio"
+    if (s === "failed") return "Jnoccio ✗"
+    if (s === "unavailable") return "Jnoccio"
+    return "Jnoccio"
+  }
+
+  const isBooting = () => {
+    const s = status()
+    return s === "checking" || s === "starting"
+  }
+
+  return (
+    <box flexDirection="row" gap={1} flexShrink={0}>
+      <Switch>
+        <Match when={isBooting()}>
+          <spinner
+            frames={["◐", "◓", "◑", "◒"]}
+            interval={200}
+            color={HOT_PINK}
+          />
+        </Match>
+        <Match when={true}>
+          <spinner
+            frames={["●", "○"]}
+            interval={800}
+            color={dotColor()}
+          />
+        </Match>
+      </Switch>
+      <text fg={isBooting() ? HOT_PINK : theme().text}>{label()}</text>
+    </box>
+  )
+}
+
 function Version(props: { api: TuiPluginApi }) {
   const theme = () => props.api.theme.current
 
@@ -67,6 +129,7 @@ function View(props: { api: TuiPluginApi }) {
       gap={2}
     >
       <Directory api={props.api} />
+      <Jnoccio api={props.api} />
       <Mcp api={props.api} />
       <box flexGrow={1} />
       <Version api={props.api} />

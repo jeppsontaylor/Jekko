@@ -93,8 +93,21 @@ describe("cross-spawn spawner", () => {
     fx.effect(
       "returns non-zero exit code",
       Effect.gen(function* () {
-        const handle = yield* js("process.exit(42)")
+        const tmp = yield* Effect.acquireRelease(
+          Effect.promise(() => tmpdir()),
+          (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
+        )
+        const marker = path.join(tmp.path, "non-zero-exit.txt")
+        const handle = yield* js(
+          'const fs = require("node:fs"); const code = Number(process.env.JEKKO_NON_ZERO_EXIT_CODE ?? "1"); fs.writeFileSync(process.env.JEKKO_NON_ZERO_EXIT_MARKER, "ran"); process.exit(code)',
+          {
+            env: { JEKKO_NON_ZERO_EXIT_MARKER: marker, JEKKO_NON_ZERO_EXIT_CODE: "42" },
+            extendEnv: true,
+          },
+        )
         const code = yield* handle.exitCode
+        const wrote = yield* Effect.promise(() => fs.readFile(marker, "utf8"))
+        expect(wrote).toBe("ran")
         expect(code).toBe(ChildProcessSpawner.ExitCode(42))
       }),
     )
@@ -231,14 +244,12 @@ describe("cross-spawn spawner", () => {
     fx.effect(
       "kills a running process",
       Effect.gen(function* () {
-        const exit = yield* Effect.exit(
-          Effect.gen(function* () {
-            const handle = yield* js("setTimeout(() => {}, 10_000)")
-            yield* handle.kill()
-            return yield* handle.exitCode
-          }),
-        )
-        expect(Exit.isFailure(exit) ? true : exit.value !== ChildProcessSpawner.ExitCode(0)).toBe(true)
+        const handle = yield* js("setTimeout(() => {}, 10_000)")
+        const running = yield* handle.isRunning
+        expect(running).toBe(true)
+        yield* handle.kill()
+        const exit = yield* Effect.exit(handle.exitCode)
+        expect(Exit.isFailure(exit)).toBe(true)
       }),
     )
 
@@ -248,6 +259,8 @@ describe("cross-spawn spawner", () => {
         const pid = yield* Effect.scoped(
           Effect.gen(function* () {
             const handle = yield* js("setInterval(() => {}, 10_000)")
+            const running = yield* handle.isRunning
+            expect(running).toBe(true)
             return Number(handle.pid)
           }),
         )
@@ -262,16 +275,14 @@ describe("cross-spawn spawner", () => {
         if (process.platform === "win32") return
 
         const started = Date.now()
-        const exit = yield* Effect.exit(
-          Effect.gen(function* () {
-            const handle = yield* js('process.on("SIGTERM", () => {}); setInterval(() => {}, 10_000)')
-            yield* handle.kill({ forceKillAfter: 100 })
-            return yield* handle.exitCode
-          }),
-        )
+        const handle = yield* js('process.on("SIGTERM", () => {}); setInterval(() => {}, 10_000)')
+        const running = yield* handle.isRunning
+        expect(running).toBe(true)
+        yield* handle.kill({ forceKillAfter: 100 })
+        const exit = yield* Effect.exit(handle.exitCode)
 
         expect(Date.now() - started).toBeLessThan(1_000)
-        expect(Exit.isFailure(exit) ? true : exit.value !== ChildProcessSpawner.ExitCode(0)).toBe(true)
+        expect(Exit.isFailure(exit)).toBe(true)
       }),
     )
 
@@ -296,7 +307,7 @@ describe("cross-spawn spawner", () => {
             return yield* handle.exitCode
           }),
         )
-        expect(Exit.isFailure(exit) ? true : exit.value !== ChildProcessSpawner.ExitCode(0)).toBe(true)
+        expect(Exit.isFailure(exit)).toBe(true)
       }),
     )
   })

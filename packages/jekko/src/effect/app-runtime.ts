@@ -22,7 +22,7 @@ import { Skill } from "@/skill"
 import { Discovery } from "@/skill/discovery"
 import { Question } from "@/question"
 import { Permission } from "@/permission"
-import { Todo } from "@/session/pending"
+import { Pending } from "@/session/pending"
 import { Session } from "@/session/session"
 import { SessionStatus } from "@/session/status"
 import { SessionRunState } from "@/session/run-state"
@@ -79,7 +79,7 @@ export const AppLayer = Layer.mergeAll(
   Discovery.defaultLayer,
   Question.defaultLayer,
   Permission.defaultLayer,
-  Todo.defaultLayer,
+  Pending.defaultLayer,
   Session.defaultLayer,
   SessionStatus.defaultLayer,
   SessionRunState.defaultLayer,

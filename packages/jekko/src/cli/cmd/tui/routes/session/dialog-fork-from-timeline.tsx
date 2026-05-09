@@ -50,6 +50,7 @@ export function DialogForkFromTimeline(props: { sessionID: string; onMove: (mess
             messageID: message.id,
           })
           const parts = sync.data.part[message.id] ?? []
+          const promptParts: PromptInfo["parts"] = []
           const prompt = parts.reduce(
             (agg, part) => {
               if (part.type === "text") {
@@ -58,7 +59,7 @@ export function DialogForkFromTimeline(props: { sessionID: string; onMove: (mess
               if (part.type === "file") agg.parts.push(strip(part))
               return agg
             },
-            { input: "", parts: [] as PromptInfo["parts"] },
+            { input: "", parts: promptParts },
           )
           route.navigate({
             sessionID: forked.data!.id,

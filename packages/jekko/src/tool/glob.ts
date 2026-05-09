@@ -43,7 +43,7 @@ export const GlobTool = Tool.define(
           if (info?.type === "File") {
             throw new Error(`glob path must be a directory: ${search}`)
           }
-          yield* assertExternalDirectoryEffect(ctx, search, { kind: "directory" })
+          yield* assertExternalDirectoryEffect(ctx, search, { kind: "directory", access: "read" })
 
           const limit = 100
           let truncated = false

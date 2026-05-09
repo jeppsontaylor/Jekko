@@ -100,6 +100,14 @@ async function substituteWellKnownRemoteConfig(input: { value: unknown; dir: str
   return { url, headers }
 }
 
+function parseWellKnownConfig(data: unknown): { config?: Record<string, unknown>; remote_config?: unknown } {
+  if (!isRecord(data)) return {}
+  return {
+    config: isRecord(data.config) ? data.config : undefined,
+    remote_config: data.remote_config,
+  }
+}
+
 async function resolveLoadedPlugins<T extends { plugin?: ConfigPlugin.Spec[] }>(config: T, filepath: string) {
   if (!config.plugin) return config
   for (let i = 0; i < config.plugin.length; i++) {
@@ -524,10 +532,7 @@ export const layer = Layer.effect(
             if (!response.ok) {
               throw new Error(`failed to fetch remote config from ${url}: ${response.status}`)
             }
-            const wellknown = (yield* Effect.promise(() => response.json())) as {
-              config?: Record<string, unknown>
-              remote_config?: unknown
-            }
+            const wellknown = parseWellKnownConfig(yield* Effect.promise(() => response.json()))
             const remote = yield* Effect.promise(() =>
               substituteWellKnownRemoteConfig({
                 value: wellknown.remote_config,

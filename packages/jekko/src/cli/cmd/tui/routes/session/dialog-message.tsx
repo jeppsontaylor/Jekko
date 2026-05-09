@@ -7,6 +7,11 @@ import * as Clipboard from "@tui/util/clipboard"
 import type { PromptInfo } from "@tui/component/prompt/history"
 import { strip } from "@tui/component/prompt/part"
 
+const makePromptInfo = (): PromptInfo => ({
+  input: "",
+  parts: [],
+})
+
 export function DialogMessage(props: {
   messageID: string
   sessionID: string
@@ -44,7 +49,7 @@ export function DialogMessage(props: {
                   if (part.type === "file") agg.parts.push(strip(part))
                   return agg
                 },
-                { input: "", parts: [] as PromptInfo["parts"] },
+                makePromptInfo(),
               )
               props.setPrompt(promptInfo)
             }
@@ -91,7 +96,7 @@ export function DialogMessage(props: {
                     if (part.type === "file") agg.parts.push(part)
                     return agg
                   },
-                  { input: "", parts: [] as PromptInfo["parts"] },
+                  makePromptInfo(),
                 )
               : undefined
             route.navigate({

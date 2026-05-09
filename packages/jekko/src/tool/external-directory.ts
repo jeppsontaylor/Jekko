@@ -5,12 +5,14 @@ import { InstanceState } from "@/effect/instance-state"
 import type * as Tool from "./tool"
 import { containsPath } from "../project/instance-context"
 import { AppFileSystem } from "@jekko-ai/core/filesystem"
+import type { ExternalDirectoryAccess } from "@/permission/read-like"
 
 type Kind = "file" | "directory"
 
 type Options = {
   bypass?: boolean
   kind?: Kind
+  access?: ExternalDirectoryAccess
 }
 
 export const assertExternalDirectoryEffect = Effect.fn("Tool.assertExternalDirectory")(function* (
@@ -40,6 +42,7 @@ export const assertExternalDirectoryEffect = Effect.fn("Tool.assertExternalDirec
     metadata: {
       filepath: full,
       parentDir: dir,
+      access: options?.access ?? "unknown",
     },
   })
 })

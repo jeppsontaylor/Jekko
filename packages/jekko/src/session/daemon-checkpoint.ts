@@ -76,6 +76,9 @@ export const layer = Layer.effect(
   }),
 )
 
-export const defaultLayer = layer
+export const defaultLayer = layer.pipe(
+  Layer.provide(DaemonChecks.defaultLayer),
+  Layer.provide(Git.defaultLayer),
+)
 
 export * as DaemonCheckpoint from "./daemon-checkpoint"

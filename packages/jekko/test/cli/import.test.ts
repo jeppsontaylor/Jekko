@@ -33,16 +33,16 @@ test("only attaches share auth headers for same-origin URLs", () => {
 
 // transformShareData tests
 test("transforms share data to storage format", () => {
-  const data: ShareData[] = [
+  const data = [
     { type: "session", data: { id: "sess-1", title: "Test" } as any },
     { type: "message", data: { id: "msg-1", sessionID: "sess-1" } as any },
     { type: "part", data: { id: "part-1", messageID: "msg-1" } as any },
     { type: "part", data: { id: "part-2", messageID: "msg-1" } as any },
-  ]
+  ] as unknown as ShareData[]
 
   const result = transformShareData(data)!
 
-  expect(result.info.id).toBe("sess-1")
+  expect(String(result.info.id)).toBe("sess-1")
   expect(result.messages).toHaveLength(1)
   expect(result.messages[0].parts).toHaveLength(2)
 })

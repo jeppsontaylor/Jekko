@@ -200,7 +200,11 @@ for (const item of targets) {
     plugins: [plugin],
     external: ["node-gyp"],
     format: "esm",
-    minify: true,
+    // Bun's compile-time minifier has produced TDZ failures in the TUI bundle
+    // (for example "Cannot access '<symbol>' before initialization"). Keep the
+    // compiled binary unminified so the installed CLI matches source-run
+    // behavior under real PTY tests.
+    minify: false,
     sourcemap: sourcemapsFlag ? "linked" : "none",
     splitting: true,
     compile: {

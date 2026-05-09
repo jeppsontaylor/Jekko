@@ -113,6 +113,13 @@ CREATE TABLE `__backup_20260127222353_familiar_lady_ursula_session` AS SELECT * 
 CREATE TABLE `__backup_20260127222353_familiar_lady_ursula_todo` AS SELECT * FROM `todo` WHERE 1=0;
 CREATE TABLE `__backup_20260127222353_familiar_lady_ursula_session_share` AS SELECT * FROM `session_share` WHERE 1=0;
 SELECT 'familiar_lady_ursula backups captured' AS receipt_label;
+SELECT (SELECT COUNT(*) FROM `__backup_20260127222353_familiar_lady_ursula_project`) AS `backup_rows_project`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260127222353_familiar_lady_ursula_message`) AS `backup_rows_message`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260127222353_familiar_lady_ursula_part`) AS `backup_rows_part`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260127222353_familiar_lady_ursula_permission`) AS `backup_rows_permission`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260127222353_familiar_lady_ursula_session`) AS `backup_rows_session`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260127222353_familiar_lady_ursula_todo`) AS `backup_rows_todo`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260127222353_familiar_lady_ursula_session_share`) AS `backup_rows_session_share`;
 DROP TABLE `__backup_20260127222353_familiar_lady_ursula_project`;
 DROP TABLE `__backup_20260127222353_familiar_lady_ursula_message`;
 DROP TABLE `__backup_20260127222353_familiar_lady_ursula_part`;

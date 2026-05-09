@@ -5,12 +5,17 @@ import { DaemonPaths, type DaemonPreviewPayload, type DaemonStartPayload, Daemon
 import { Daemon } from "@/session/daemon"
 import { SessionID } from "@/session/schema"
 
+function jsonSafe<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T
+}
+
 export const daemonHandlers = HttpApiBuilder.group(InstanceHttpApi, "daemon", (handlers) =>
   Effect.gen(function* () {
     const daemon = yield* Daemon.Service
 
     const preview = Effect.fn("DaemonHttpApi.preview")(function* (ctx: { payload: Schema.Schema.Type<typeof DaemonPreviewPayload> }) {
       return yield* daemon.preview({ text: ctx.payload.text }).pipe(
+        Effect.map(jsonSafe),
         Effect.catch(() => Effect.fail(new HttpApiError.BadRequest({}))),
       )
     })

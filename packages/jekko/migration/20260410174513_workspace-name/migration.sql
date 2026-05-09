@@ -16,6 +16,8 @@ CREATE TABLE `__new_workspace` (
 );
 --> statement-breakpoint
 INSERT INTO `__new_workspace`(`id`, `type`, `branch`, `name`, `directory`, `extra`, `project_id`) SELECT `id`, `type`, `branch`, `name`, `directory`, `extra`, `project_id` FROM `workspace`;--> statement-breakpoint
+SELECT (SELECT COUNT(*) FROM `workspace`) AS `nearby_rows_workspace`;
+SELECT (SELECT COUNT(*) FROM `__backup_20260410174513_workspace-name_workspace`) AS `nearby_backup_rows_workspace`;
 DROP TABLE `workspace`;--> statement-breakpoint
 ALTER TABLE `__new_workspace` RENAME TO `workspace`;--> statement-breakpoint
 PRAGMA foreign_keys=ON;

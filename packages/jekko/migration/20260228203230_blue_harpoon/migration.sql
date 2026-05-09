@@ -3,6 +3,7 @@
 -- backup/row-count evidence
 SELECT (SELECT COUNT(*) FROM `control_account`) AS `pre_rows_control_account`;
 CREATE TABLE `__backup_20260228203230_blue_harpoon_control_account` AS SELECT * FROM `control_account`;
+SELECT 'blue_harpoon backups captured' AS receipt_label;
 CREATE TABLE `account` (
 	`id` text PRIMARY KEY,
 	`email` text NOT NULL,
@@ -18,7 +19,7 @@ CREATE TABLE `account` (
 CREATE TABLE `account_state` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`active_account_id` text,
-	FOREIGN KEY (`active_account_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`active_account_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE no action
 	);
 
 INSERT INTO `account` (`id`, `email`, `url`, `access_token`, `refresh_token`, `token_expiry`, `selected_org_id`, `time_created`, `time_updated`)

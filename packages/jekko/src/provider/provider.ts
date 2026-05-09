@@ -6,6 +6,8 @@ import {
   JNOCCIO_DEFAULT_BASE_URL,
   JNOCCIO_MODEL_ID,
   JNOCCIO_PROVIDER_ID,
+  readGlobalJnoccioRepoRoot,
+  repoRootFromSource,
 } from "@/util/jnoccio-unlock"
 import { ensureJnoccioFusionServer } from "@/util/jnoccio-server"
 import { Config } from "@/config/config"
@@ -1003,8 +1005,20 @@ export function defaultModelIDs<T extends { models: Record<string, { id: string;
   )
 }
 
-export function jnoccioProviderInfo(repoRoot?: string): Info {
-  const configured = isJnoccioFusionConfigured(repoRoot)
+export function jnoccioProviderInfo(repoRoot = repoRootFromSource()): Info {
+  // The model is "active" when EITHER:
+  //   - the local repo's jnoccio-fusion is unlocked, OR
+  //   - some repo on this machine has registered with the global jnoccio
+  //     registry (~/.local/state/jekko/jnoccio.json) — this means an unlock
+  //     happened somewhere and the server at 127.0.0.1:4317 is reachable
+  //     globally regardless of the current working directory.
+  // Treating it as "locked" purely because the *local* worktree files aren't
+  // plaintext caused jekko launched outside the unlocked clone to incorrectly
+  // report jnoccio as unavailable even though the server was running fine.
+  const localConfigured = isJnoccioFusionConfigured(repoRoot)
+  const globalRepo = readGlobalJnoccioRepoRoot()
+  const globalConfigured = !!globalRepo && isJnoccioFusionConfigured(globalRepo)
+  const configured = localConfigured || globalConfigured
   const status = configured ? "active" : "locked"
   const options = configured
     ? {
@@ -1014,9 +1028,11 @@ export function jnoccioProviderInfo(repoRoot?: string): Info {
     : {}
 
   // When jnoccio-fusion is configured, ensure the server is running.
-  // Fire-and-forget so provider loading isn't blocked.
-  if (configured && repoRoot) {
-    ensureJnoccioFusionServer(repoRoot).catch(() => {})
+  // Fire-and-forget so provider loading isn't blocked. Spawn from whichever
+  // repo we know about (prefer local; fall back to global registry).
+  const spawnRoot = localConfigured ? repoRoot : globalRepo
+  if (configured && spawnRoot) {
+    ensureJnoccioFusionServer(spawnRoot).catch(() => {})
   }
 
   return {

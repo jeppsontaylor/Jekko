@@ -30,8 +30,9 @@ import { useExit } from "../../context/exit"
 import * as Clipboard from "../../util/clipboard"
 import type { AssistantMessage, FilePart, UserMessage } from "@jekko-ai/sdk/v2"
 import { TuiEvent } from "../../event"
-import { detectZyal } from "@/agent-script/activation"
-import { setZyalFlashSource } from "@tui/context/zyal-flash"
+import { detectZyal, scanZyalEnvelope, type ZyalDetection } from "@/agent-script/activation"
+import { isZyalFlashSourceActive, setZyalFlashSource, textHasZyalSentinel, useZyalFlash } from "@tui/context/zyal-flash"
+import { tokenizeYaml } from "@tui/util/yaml-tokenize"
 import { iife } from "@/util/iife"
 import { Locale } from "@/util/locale"
 import { formatDuration } from "@/util/format"
@@ -77,6 +78,8 @@ export type PromptRef = {
   focus(): void
   submit(): void
 }
+
+type PromptZyalDraft = ZyalDetection | { readonly kind: "draft"; readonly id?: string; readonly complete: boolean }
 
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -177,13 +180,30 @@ export function Prompt(props: PromptProps) {
   const sync = useSync()
   const dialog = useDialog()
   const toast = useToast()
-  const status = createMemo(() => sync.data.session_status?.[props.sessionID ?? ""] ?? { type: "idle" })
+  // Read flash so this memo invalidates when the daemon flash flips. The
+  // signal call is what wires reactivity; we don't need the value itself,
+  // we just need the memo to recompute.
+  const zyalFlashSignal = useZyalFlash()
+  const status = createMemo(() => {
+    const raw = sync.data.session_status?.[props.sessionID ?? ""] ?? { type: "idle" }
+    if (raw.type !== "idle") return raw
+    // ZYAL daemon may be working in a forked active session that differs
+    // from this prompt's `sessionID`. The session_status entry on the root
+    // therefore stays "idle" and the spinner disappears even though
+    // workers are churning. When the daemon flash is on for this session,
+    // surface `busy` so the chat shows the processing animation.
+    void zyalFlashSignal()
+    if (isZyalFlashSourceActive("session:daemon") || isZyalFlashSourceActive("prompt:submitted")) {
+      return { type: "busy" } as const
+    }
+    return raw
+  })
   const history = usePromptHistory()
   const stash = usePromptStash()
   const command = useCommandDialog()
   const renderer = useRenderer()
   const dimensions = useTerminalDimensions()
-  const { theme, syntax, setOverlay } = useTheme()
+  const { theme, syntax, yamlSyntax, setOverlay } = useTheme()
   const kv = useKV()
   const animationsEnabled = createMemo(() => kv.get("animations_enabled", true))
   const list = createMemo(() => props.placeholders?.normal ?? [])
@@ -330,6 +350,7 @@ export function Prompt(props: PromptProps) {
   const agentStyleId = syntax().getStyleId("extmark.agent")!
   const pasteStyleId = syntax().getStyleId("extmark.paste")!
   let promptPartTypeId = 0
+  let yamlTokenTypeId = 0
   const event = useEvent()
 
   event.on(TuiEvent.PromptAppend.type, (evt) => {
@@ -393,17 +414,103 @@ export function Prompt(props: PromptProps) {
     interrupt: 0,
   })
 
-  const daemonDraft = createMemo(() => {
-    const text = store.prompt.input.trim()
-    if (!text.startsWith("<<<ZYAL v1:daemon id=")) return { kind: "none" as const }
-    return detectZyal(store.prompt.input)
+  const zyalEnvelope = createMemo(() => scanZyalEnvelope(store.prompt.input))
+  const [daemonDraft, setDaemonDraft] = createSignal<PromptZyalDraft>({ kind: "none" })
+  const isZyalInput = createMemo(() => zyalEnvelope().kind !== "none" || textHasZyalSentinel(store.prompt.input))
+
+  // Paste recognition must be instant. The hot path only scans for the ZYAL
+  // envelope; full YAML parse + schema validation is deferred until the close
+  // sentinel is present, and submit always re-validates synchronously.
+  createEffect(() => {
+    const envelope = zyalEnvelope()
+    const text = store.prompt.input
+    if (envelope.kind === "none" && !textHasZyalSentinel(text)) {
+      setDaemonDraft({ kind: "none" })
+      return
+    }
+
+    setDaemonDraft({
+      kind: "draft",
+      id: envelope.kind === "zyal" ? envelope.id : undefined,
+      complete: envelope.kind === "zyal" && envelope.complete,
+    })
+
+    if (envelope.kind !== "zyal" || !envelope.hasClose) return
+    const handle = setTimeout(() => {
+      if (store.prompt.input !== text) return
+      const parsed = detectZyal(text)
+      setDaemonDraft(
+        parsed.kind === "none"
+          ? { kind: "draft", id: envelope.id, complete: envelope.complete }
+          : parsed,
+      )
+    }, 50)
+    onCleanup(() => clearTimeout(handle))
+  })
+
+  const composedKeybindings = createMemo(() => {
+    const base = textareaKeybindings()
+    const composing = isZyalInput()
+    if (!composing) return base
+    // While composing a ZYAL block, bare Enter inserts a newline so terminals
+    // that drop bracketed paste don't auto-submit on the first newline of the
+    // streamed body. Submit requires a modifier (meta/ctrl/shift+Enter).
+    return [
+      { name: "return", action: "newline" as const },
+      { name: "return", meta: true, action: "submit" as const },
+      { name: "return", ctrl: true, action: "submit" as const },
+      { name: "return", shift: true, action: "submit" as const },
+      ...base.filter((b) => b.name !== "return"),
+    ]
   })
 
   // Flash the TUI gold when the user is composing an ZYAL block.
   createEffect(() => {
-    setZyalFlashSource("prompt", daemonDraft().kind !== "none")
+    setZyalFlashSource("prompt", isZyalInput())
   })
   onCleanup(() => setZyalFlashSource("prompt", false))
+
+  // Brilliant high-contrast YAML highlights inside the prompt while a ZYAL
+  // block is detected. Re-tokenises on every input change, and clears its extmarks the
+  // moment the block is removed. Tracks them under their own typeId so the
+  // prompt-part extmarks stay untouched.
+  //
+  // PERF: opentui's ExtmarksController.updateHighlights() walks every extmark
+  // and recomputes display offsets per call — O(N × text). Calling create()
+  // or delete() N times in a loop is O(N² × text). For a 600-token ZYAL
+  // paste that's ~2 billion ops and translates to multi-second hangs. We
+  // suppress the per-op rebuild by stubbing updateHighlights for the duration
+  // of the diff and call it exactly once at the end.
+  createEffect(() => {
+    if (!input || input.isDestroyed) return
+    if (yamlTokenTypeId === 0) return
+    const composing = isZyalInput()
+    const text = store.prompt.input
+
+    const ctl = input.extmarks as unknown as { updateHighlights: () => void }
+    const realUpdate = ctl.updateHighlights.bind(ctl)
+    ctl.updateHighlights = () => {}
+    try {
+      const existing = input.extmarks.getAllForTypeId(yamlTokenTypeId)
+      for (const mark of existing) input.extmarks.delete(mark.id)
+      if (!composing) return
+      const palette = yamlSyntax()
+      const tokens = tokenizeYaml(text)
+      for (const token of tokens) {
+        const styleId = palette.getStyleId(`yaml.${token.scope}`)
+        if (styleId === undefined || styleId === null) continue
+        input.extmarks.create({
+          typeId: yamlTokenTypeId,
+          start: token.start,
+          end: token.end,
+          styleId,
+        })
+      }
+    } finally {
+      ctl.updateHighlights = realUpdate
+      realUpdate()
+    }
+  })
 
   createEffect(
     on(
@@ -891,15 +998,13 @@ export function Prompt(props: PromptProps) {
       return false
     }
 
-    let daemonMode: ReturnType<typeof daemonDraft> = daemonDraft()
+    let daemonMode: ZyalDetection = isZyalInput() ? detectZyal(store.prompt.input) : { kind: "none" }
     if (daemonMode.kind === "invalid") {
       const sendAsPlainText = await DialogConfirm.show(dialog, "Invalid ZYAL", daemonMode.error, "send as plain text")
       if (!sendAsPlainText) return false
       daemonMode = { kind: "none" }
     } else if (daemonMode.kind === "preview") {
-      const summary = zyalRunCard(daemonMode.preview)
-      const startDaemon = await DialogConfirm.show(dialog, "Start daemon", summary, "start daemon")
-      if (!startDaemon) return false
+      // Auto-approve ZYAL payload submission without showing the preview dialog
     }
 
     const workspaceSession = props.sessionID ? sync.session.get(props.sessionID) : undefined
@@ -1022,6 +1127,7 @@ export function Prompt(props: PromptProps) {
         return false
       }
       setOverlay("jekko-gold")
+      setZyalFlashSource("prompt:submitted", true)
     } else if (store.mode === "shell") {
       void sdk.client.session.shell({
         sessionID,
@@ -1218,8 +1324,8 @@ export function Prompt(props: PromptProps) {
   const borderHighlight = createMemo(() => {
     const base = tint(theme.border, highlight(), agentMetaAlpha())
     const draft = daemonDraft()
-    if (draft.kind === "preview") return tint(base, theme.warning, 0.55)
     if (draft.kind === "invalid") return tint(base, theme.error, 0.55)
+    if (draft.kind === "preview" || draft.kind === "draft" || isZyalInput()) return tint(base, theme.warning, 0.55)
     return base
   })
 
@@ -1347,7 +1453,7 @@ export function Prompt(props: PromptProps) {
                 autocomplete.onInput(value)
                 syncExtmarksWithPromptParts()
               }}
-              keyBindings={textareaKeybindings()}
+              keyBindings={composedKeybindings()}
               onKeyDown={async (e) => {
                 if (props.disabled) {
                   e.preventDefault()
@@ -1495,7 +1601,12 @@ export function Prompt(props: PromptProps) {
                 }
 
                 const lineCount = (pastedContent.match(/\n/g)?.length ?? 0) + 1
+                const isZyalPaste =
+                  textHasZyalSentinel(pastedContent) ||
+                  textHasZyalSentinel(store.prompt.input)
+
                 if (
+                  !isZyalPaste &&
                   (lineCount >= 3 || pastedContent.length > 150) &&
                   kv.get("paste_summary_enabled", !sync.data.config.experimental?.disable_paste_summary)
                 ) {
@@ -1504,6 +1615,9 @@ export function Prompt(props: PromptProps) {
                 }
 
                 input.insertText(normalizedText)
+                setStore("prompt", "input", input.plainText)
+                autocomplete.onInput(input.plainText)
+                syncExtmarksWithPromptParts()
 
                 // Force layout update and render for the pasted content
                 setTimeout(() => {
@@ -1518,6 +1632,9 @@ export function Prompt(props: PromptProps) {
                 if (promptPartTypeId === 0) {
                   promptPartTypeId = input.extmarks.registerType("prompt-part")
                 }
+                if (yamlTokenTypeId === 0) {
+                  yamlTokenTypeId = input.extmarks.registerType("yaml-token")
+                }
                 props.ref?.(ref)
                 setTimeout(() => {
                   // setTimeout is a alternative and needs to be addressed properly
@@ -1528,43 +1645,49 @@ export function Prompt(props: PromptProps) {
               onMouseDown={(r: MouseEvent) => r.target?.focus()}
               focusedBackgroundColor={theme.backgroundElement}
               cursorColor={props.disabled ? theme.backgroundElement : theme.text}
-              syntaxStyle={syntax()}
+              syntaxStyle={isZyalInput() ? yamlSyntax() : syntax()}
             />
             <box flexDirection="row" flexShrink={0} paddingTop={1} gap={1} justifyContent="space-between">
               <box flexDirection="row" gap={1}>
-                <Show when={local.agent.current()} fallback={<box height={1} />}>
-                  {(agent) => (
-                    <>
-                      <text fg={fadeColor(highlight(), agentMetaAlpha())}>
-                        {store.mode === "shell" ? "Shell" : Locale.titlecase(agent().name)}
-                      </text>
-                      <Show when={store.mode === "normal"}>
-                        <box flexDirection="row" gap={1}>
-                          <text fg={fadeColor(theme.textMuted, modelMetaAlpha())}>·</text>
-                          <text
-                            flexShrink={0}
-                            fg={fadeColor(keybind.leader ? theme.textMuted : theme.text, modelMetaAlpha())}
-                          >
-                            {local.model.parsed().model}
+                {local.agent.current() ? (
+                  <>
+                    <text fg={fadeColor(highlight(), agentMetaAlpha())}>
+                      {store.mode === "shell" ? "Shell" : Locale.titlecase(local.agent.current()!.name)}
+                    </text>
+                    <Show when={store.mode === "normal"}>
+                      <box flexDirection="row" gap={1}>
+                        <text fg={fadeColor(theme.textMuted, modelMetaAlpha())}>·</text>
+                        <text
+                          flexShrink={0}
+                          fg={fadeColor(keybind.leader ? theme.textMuted : theme.text, modelMetaAlpha())}
+                        >
+                          {local.model.parsed().model}
+                        </text>
+                        <text fg={fadeColor(theme.textMuted, modelMetaAlpha())}>{currentProviderLabel()}</text>
+                        <Show when={showVariant()}>
+                          <text fg={fadeColor(theme.textMuted, variantMetaAlpha())}>·</text>
+                          <text>
+                            <span style={{ fg: fadeColor(theme.warning, variantMetaAlpha()), bold: true }}>
+                              {local.model.variant.current()}
+                            </span>
                           </text>
-                          <text fg={fadeColor(theme.textMuted, modelMetaAlpha())}>{currentProviderLabel()}</text>
-                          <Show when={showVariant()}>
-                            <text fg={fadeColor(theme.textMuted, variantMetaAlpha())}>·</text>
-                            <text>
-                              <span style={{ fg: fadeColor(theme.warning, variantMetaAlpha()), bold: true }}>
-                                {local.model.variant.current()}
-                              </span>
-                            </text>
-                          </Show>
-                        </box>
-                      </Show>
-                    </>
-                  )}
-                </Show>
+                        </Show>
+                      </box>
+                    </Show>
+                  </>
+                ) : (
+                  <box height={1} />
+                )}
               </box>
-              <Show when={daemonDraft().kind !== "none"}>
+              <Show when={isZyalInput()}>
                 <box flexDirection="row" gap={1} alignItems="center">
-                  <Switch>
+                  <Switch
+                    fallback={
+                      <text fg={theme.warning}>
+                        <b>✓ ZYAL</b>
+                      </text>
+                    }
+                  >
                     <Match when={daemonDraft().kind === "preview"}>
                       <text fg={theme.warning}>
                         <b>✓ ZYAL</b>

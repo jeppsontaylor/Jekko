@@ -10,11 +10,11 @@ export const DaemonRunTable = sqliteTable(
     root_session_id: text()
       .$type<SessionID>()
       .notNull()
-      .references(() => SessionTable.id, { onDelete: "cascade" }),
+      .references(() => SessionTable.id, { onDelete: "restrict" }),
     active_session_id: text()
       .$type<SessionID>()
       .notNull()
-      .references(() => SessionTable.id, { onDelete: "cascade" }),
+      .references(() => SessionTable.id, { onDelete: "restrict" }),
     status: text().notNull(),
     phase: text().notNull(),
     spec_json: text({ mode: "json" }).notNull(),
@@ -38,12 +38,12 @@ export const DaemonIterationTable = sqliteTable(
   {
     run_id: text()
       .notNull()
-      .references(() => DaemonRunTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonRunTable.id, { onDelete: "restrict" }),
     iteration: integer().notNull(),
     session_id: text()
       .$type<SessionID>()
       .notNull()
-      .references(() => SessionTable.id, { onDelete: "cascade" }),
+      .references(() => SessionTable.id, { onDelete: "restrict" }),
     terminal_reason: text().notNull(),
     result_json: text({ mode: "json" }).notNull(),
     token_usage_json: text({ mode: "json" }),
@@ -60,7 +60,7 @@ export const DaemonEventTable = sqliteTable(
     id: text().primaryKey(),
     run_id: text()
       .notNull()
-      .references(() => DaemonRunTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonRunTable.id, { onDelete: "restrict" }),
     iteration: integer().notNull(),
     event_type: text().notNull(),
     payload_json: text({ mode: "json" }).notNull(),
@@ -75,7 +75,7 @@ export const DaemonTaskTable = sqliteTable(
     id: text().primaryKey(),
     run_id: text()
       .notNull()
-      .references(() => DaemonRunTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonRunTable.id, { onDelete: "restrict" }),
     external_id: text(),
     title: text().notNull(),
     body_json: text({ mode: "json" }).notNull(),
@@ -115,10 +115,10 @@ export const DaemonTaskPassTable = sqliteTable(
     id: text().primaryKey(),
     run_id: text()
       .notNull()
-      .references(() => DaemonRunTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonRunTable.id, { onDelete: "restrict" }),
     task_id: text()
       .notNull()
-      .references(() => DaemonTaskTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonTaskTable.id, { onDelete: "restrict" }),
     pass_number: integer().notNull(),
     pass_type: text().notNull(),
     context_mode: text().notNull(),
@@ -150,10 +150,10 @@ export const DaemonTaskMemoryTable = sqliteTable(
     id: text().primaryKey(),
     run_id: text()
       .notNull()
-      .references(() => DaemonRunTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonRunTable.id, { onDelete: "restrict" }),
     task_id: text()
       .notNull()
-      .references(() => DaemonTaskTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonTaskTable.id, { onDelete: "restrict" }),
     kind: text().notNull(),
     title: text().notNull(),
     summary: text().notNull(),
@@ -175,7 +175,7 @@ export const DaemonWorkerTable = sqliteTable(
     id: text().primaryKey(),
     run_id: text()
       .notNull()
-      .references(() => DaemonRunTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonRunTable.id, { onDelete: "restrict" }),
     role: text().notNull(),
     session_id: text().references(() => SessionTable.id, { onDelete: "set null" }),
     worktree_path: text(),
@@ -194,8 +194,8 @@ export const DaemonArtifactTable = sqliteTable(
     id: text().primaryKey(),
     run_id: text()
       .notNull()
-      .references(() => DaemonRunTable.id, { onDelete: "cascade" }),
-    task_id: text().references(() => DaemonTaskTable.id, { onDelete: "cascade" }),
+      .references(() => DaemonRunTable.id, { onDelete: "restrict" }),
+    task_id: text().references(() => DaemonTaskTable.id, { onDelete: "restrict" }),
     pass_id: text().references(() => DaemonTaskPassTable.id, { onDelete: "set null" }),
     kind: text().notNull(),
     path_or_ref: text().notNull(),

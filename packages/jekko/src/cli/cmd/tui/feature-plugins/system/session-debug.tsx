@@ -479,14 +479,7 @@ function GenericTool(props: ToolProps) {
     return [...lines().slice(0, maxLines), "…"].join("\n")
   })
   return (
-    <Show
-      when={output()}
-      fallback={
-        <InlineTool icon="⚙" pending="Writing command..." complete={toolComplete(props.part)} part={props.part}>
-          {props.part.name} {input(props.input)}
-        </InlineTool>
-      }
-    >
+    output() ? (
       <BlockTool
         title={`# ${props.part.name} ${input(props.input)}`}
         part={props.part}
@@ -499,7 +492,11 @@ function GenericTool(props: ToolProps) {
           </Show>
         </box>
       </BlockTool>
-    </Show>
+    ) : (
+      <InlineTool icon="⚙" pending="Writing command..." complete={toolComplete(props.part)} part={props.part}>
+        {props.part.name} {input(props.input)}
+      </InlineTool>
+    )
   )
 }
 
@@ -633,16 +630,13 @@ function BlockTool(props: {
       }}
       flexShrink={0}
     >
-      <Show
-        when={props.spinner}
-        fallback={
-          <text paddingLeft={3} fg={theme.textMuted}>
-            {props.title}
-          </text>
-        }
-      >
+      {props.spinner ? (
         <Spinner color={theme.textMuted}>{props.title.replace(/^# /, "")}</Spinner>
-      </Show>
+      ) : (
+        <text paddingLeft={3} fg={theme.textMuted}>
+          {props.title}
+        </text>
+      )}
       {props.children}
       <Show when={error()}>
         <text fg={theme.error}>{error()}</text>
@@ -867,20 +861,14 @@ function ApplyPatch(props: ToolProps) {
     <Switch>
       <Match when={files().length > 0}>
         <For each={files()}>
-          {(file) => (
-            <BlockTool title={fileTitle(file)} part={props.part}>
-              <Show
-                when={stringValue(file.patch)}
-                fallback={
-                  <text fg={theme.diffRemoved}>
-                    -{numberValue(file.deletions) ?? 0} line{numberValue(file.deletions) === 1 ? "" : "s"}
-                  </text>
-                }
-              >
-                {(patch) => (
+          {(file) => {
+            const patch = stringValue(file.patch)
+            return (
+              <BlockTool title={fileTitle(file)} part={props.part}>
+                {patch ? (
                   <box paddingLeft={1}>
                     <diff
-                      diff={patch()}
+                      diff={patch}
                       view={dimensions().width > 120 ? "split" : "unified"}
                       filetype={filetype(stringValue(file.filePath) ?? stringValue(file.relativePath))}
                       syntaxStyle={syntax()}
@@ -899,10 +887,14 @@ function ApplyPatch(props: ToolProps) {
                       removedLineNumberBg={theme.diffRemovedLineNumberBg}
                     />
                   </box>
+                ) : (
+                  <text fg={theme.diffRemoved}>
+                    -{numberValue(file.deletions) ?? 0} line{numberValue(file.deletions) === 1 ? "" : "s"}
+                  </text>
                 )}
-              </Show>
-            </BlockTool>
-          )}
+              </BlockTool>
+            )
+          }}
         </For>
       </Match>
       <Match when={true}>

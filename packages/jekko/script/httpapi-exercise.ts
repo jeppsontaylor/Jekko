@@ -1399,11 +1399,11 @@ const scenarios: Scenario[] = [
     ),
   http
     .post("/session/{sessionID}/permissions/{permissionID}", "permission.respond")
-    .seeded((ctx) => ctx.session({ title: "Deprecated permission session" }))
+    .seeded((ctx) => ctx.session({ title: "Permission session" }))
     .at((ctx) => ({
       path: route("/session/{sessionID}/permissions/{permissionID}", {
         sessionID: ctx.state.id,
-        permissionID: "per_httpapi_deprecated",
+        permissionID: "per_httpapi_previous",
       }),
       headers: ctx.headers(),
       body: { response: "once" },

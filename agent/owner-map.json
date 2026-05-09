@@ -2,6 +2,7 @@
   "workspace": "jankurai",
   "owners": {
     "AGENTS.md": "agent",
+    "agent/owner-map.json": "agent",
     "README": "workspace",
     "README.md": "workspace",
     "apps/": "apps",
@@ -46,7 +47,7 @@
     "github/": "agent",
     "infra/": "ops",
     "install": "workspace",
-    "nix/": "workspace",
+    "nix": "workspace",
     "package.json": "workspace",
     "patches/": "workspace",
     "script/": "workspace",
@@ -62,6 +63,7 @@
     "LICENSE": "workspace",
     "tsconfig.json": "workspace",
     "turbo.json": "workspace",
-    "apps/web": "apps"
+    "apps/web": "apps",
+    ".codex-loop-runs/": "workspace"
   }
 }

@@ -253,9 +253,9 @@ ui:
   banner: forever
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask
+  git_commit: allow
   git_push: deny
   workers: allow
 <<<END_ZYAL id=billion-loc-monorepo>>>

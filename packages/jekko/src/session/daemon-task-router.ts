@@ -65,7 +65,7 @@ export function routeTask(input: RouteInput): RouteResult {
     },
     implementationConfidence: input.task.implementation_confidence,
     verificationConfidence: input.task.verification_confidence,
-    fallback: input.task.readiness_score,
+    baselineScore: input.task.readiness_score,
   })
   const riskScore = computeRisk(input)
   if (!input.incubator?.enabled) return { lane: "normal", readinessScore, riskScore, reasons: [] }
@@ -81,12 +81,12 @@ export function computeReadiness(input: {
   penalties?: Partial<ReadinessPenalties>
   implementationConfidence?: number
   verificationConfidence?: number
-  fallback?: number
+  baselineScore?: number
 }) {
   const evidence = { ...DEFAULT_EVIDENCE, ...(input.evidence ?? {}) }
   const penalties = { ...DEFAULT_PENALTIES, ...(input.penalties ?? {}) }
-  if (Object.values(evidence).every((value) => value === 0) && input.fallback && input.fallback > 0) {
-    return clamp(input.fallback, 0, 1)
+  if (Object.values(evidence).every((value) => value === 0) && input.baselineScore && input.baselineScore > 0) {
+    return clamp(input.baselineScore, 0, 1)
   }
   const modelSignal =
     0.03 * clamp(input.implementationConfidence ?? 0, 0, 1) +

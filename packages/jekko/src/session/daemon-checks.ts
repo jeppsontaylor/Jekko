@@ -1,6 +1,7 @@
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { Effect, Layer, Context, Schema } from "effect"
 import * as Stream from "effect/Stream"
+import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
 import { Config } from "@/config/config"
 import { Shell } from "@/shell/shell"
 import { Git } from "@/git"
@@ -117,7 +118,11 @@ export const layer = Layer.effect(
   }),
 )
 
-export const defaultLayer = layer
+export const defaultLayer = layer.pipe(
+  Layer.provide(Config.defaultLayer),
+  Layer.provide(Git.defaultLayer),
+  Layer.provide(CrossSpawnSpawner.defaultLayer),
+)
 
 export function walkJsonPath(value: unknown, pointer: string): unknown {
   if (!pointer.startsWith("$")) throw new Error(`JSON path must start with $: ${pointer}`)

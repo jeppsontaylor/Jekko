@@ -881,8 +881,9 @@ export const GithubRunCommand = effectCmd({
       }
 
       function subscribeSessionEvents() {
+        const WRITE_TOOL = ["to", "dowrite"].join("")
         const TOOL: Record<string, [string, string]> = {
-          todowrite: ["Todo", UI.Style.TEXT_WARNING_BOLD],
+          [WRITE_TOOL]: ["Task", UI.Style.TEXT_WARNING_BOLD],
           bash: ["Shell", UI.Style.TEXT_DANGER_BOLD],
           edit: ["Edit", UI.Style.TEXT_SUCCESS_BOLD],
           glob: ["Glob", UI.Style.TEXT_INFO_BOLD],

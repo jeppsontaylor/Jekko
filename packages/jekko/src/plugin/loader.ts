@@ -1,7 +1,6 @@
 import {
   checkPluginCompatibility,
   createPluginEntry,
-  isDeprecatedPlugin,
   pluginSource,
   resolvePluginTarget,
   type PluginKind,
@@ -10,6 +9,12 @@ import {
 } from "./shared"
 import { ConfigPlugin } from "@/config/plugin"
 import { InstallationVersion } from "@jekko-ai/core/installation/version"
+
+const BUILT_IN_PLUGIN_PACKAGES = ["jekko-openai-codex-auth", "jekko-copilot-auth"]
+
+function isBuiltInPlugin(spec: string) {
+  return BUILT_IN_PLUGIN_PACKAGES.some((pkg) => spec.includes(pkg))
+}
 
 export namespace PluginLoader {
   // A normalized plugin declaration derived from config before any filesystem or npm work happens.
@@ -59,7 +64,7 @@ export namespace PluginLoader {
   // Normalize a config item into the loader's internal representation.
   function plan(item: ConfigPlugin.Spec): Plan {
     const spec = ConfigPlugin.pluginSpecifier(item)
-    return { spec, options: ConfigPlugin.pluginOptions(item), discouraged: isDeprecatedPlugin(spec) }
+    return { spec, options: ConfigPlugin.pluginOptions(item), discouraged: isBuiltInPlugin(spec) }
   }
 
   // Resolve a configured plugin into a concrete entrypoint that can later be imported.
@@ -139,7 +144,7 @@ export namespace PluginLoader {
   ): Promise<R | undefined> {
     const plan = candidate.plan
 
-    // Deprecated plugin packages are silently ignored because they are now built in.
+    // Built-in plugin packages are silently ignored because they are already bundled.
     if (plan.discouraged) return
 
     report?.start?.(candidate, retry)

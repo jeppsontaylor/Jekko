@@ -353,7 +353,8 @@ describe("doStream", () => {
       id: "reasoning-0",
       providerMetadata: {
         copilot: {
-          reasoningOpaque: expect.stringContaining("WHOd3dYFnxEBOsKUXjbX6c2rJa0fS214"),
+          reasoningOpaque:
+            "WHOd3dYFnxEBOsKUXjbX6c2rJa0fS214FHbsj+A3Q+i63SFo7H/92RsownAzyo0h2qEy3cOcrvAatsMx51eCKiMSqt4dYWZhd5YVSgF0CehkpDbWBP/SoRqLU1dhCmUJV/6b5uYFBOzKLBGNadyhI7T1gWFlXntwc6SNjH6DujnFPeVr+L8DdOoUJGJrw2aOfm9NtkXA6wZh9t7dt+831yIIImjD9MHczuXoXj8K7tyLpIJ9KlVXMhnO4IKSYNdKRtoHlGTmudAp5MgH/vLWb6oSsL+ZJl/OdF3WBOeanGhYNoByCRDSvR7anAR/9m5zf9yUax+u/nFg+gzmhFacnzZGtSmcvJ4/4HWKNtUkRASTKeN94DXB8j1ptB/i6ldaMAz2ZyU+sbjPWI8aI4fKJ2MuO01u3uE87xVwpWiM+0rahIzJsllI5edwOaOFtF4tnlCTQafbxHwCZR62uON2E+IjGzW80MzyfYrbLBJKS5zTeHCgPYQSNaKzPfpzkQvdwo3JUnJYcEHgGeKzkq5sbvS5qitCYI7Xue0V98S6/KnUSPnDQBjNnas2i6BqJV2vuCEU/Y3ucrlKVbuRIFCZXCyLzrsGeRLRKlrf5S/HDAQ04IOPQVQhBPvhX0nDjhZB",
         },
       },
     })

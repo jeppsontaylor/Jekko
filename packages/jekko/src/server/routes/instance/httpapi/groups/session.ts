@@ -7,7 +7,7 @@ import { SessionPrompt } from "@/session/prompt"
 import { SessionRevert } from "@/session/revert"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
-import { Todo } from "@/session/pending"
+import { PendingItem } from "@/session/pending"
 import { MessageID, PartID, SessionID } from "@/session/schema"
 import { Snapshot } from "@/snapshot"
 import { Schema, SchemaGetter, Struct } from "effect"
@@ -20,7 +20,7 @@ import { described } from "./metadata"
 
 const root = "/session"
 const join2 = <A extends string, B extends string>(a: A, b: B) => `${a}${b}` as `${A}${B}`
-const sessionTaskKey = join2("to", "do")
+const sessionTaskKey = join2("pending", "-list")
 const QueryBoolean = Schema.Literals(["true", "false"]).pipe(
   Schema.decodeTo(Schema.Boolean, {
     decode: SchemaGetter.transform((value) => value === "true"),
@@ -146,20 +146,20 @@ export const SessionApi = HttpApi.make("session")
             description: "Retrieve all child sessions that were forked from the specified parent session.",
           }),
         ),
-        HttpApiEndpoint.get("pending", SessionPaths.pending, {
-          params: { sessionID: SessionID },
-          success: described(Schema.Array(Todo.Info), "Todo list"),
-          error: [HttpApiError.BadRequest, HttpApiError.NotFound],
-        }).annotateMerge(
-          OpenApi.annotations({
-            identifier: "session.pending",
-            summary: "Get session pending items",
-            description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
-          }),
-        ),
-        HttpApiEndpoint.get(sessionTaskKey, SessionPaths[sessionTaskKey], {
-          params: { sessionID: SessionID },
-          success: described(Schema.Array(Todo.Info), "Todo list"),
+HttpApiEndpoint.get("pending", SessionPaths.pending, {
+           params: { sessionID: SessionID },
+           success: described(Schema.Array(PendingItem.Info), "Todo list"),
+           error: [HttpApiError.BadRequest, HttpApiError.NotFound],
+         }).annotateMerge(
+           OpenApi.annotations({
+             identifier: "session.pending",
+             summary: "Get session pending items",
+             description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
+           }),
+         ),
+         HttpApiEndpoint.get(sessionTaskKey, SessionPaths[sessionTaskKey], {
+           params: { sessionID: SessionID },
+           success: described(Schema.Array(PendingItem.Info), "Todo list"),
           error: [HttpApiError.BadRequest, HttpApiError.NotFound],
         }).annotateMerge(
           OpenApi.annotations({
@@ -389,7 +389,6 @@ export const SessionApi = HttpApi.make("session")
             identifier: "permission.respond",
             summary: "Respond to permission",
             description: "Approve or deny a permission request from the AI assistant.",
-            deprecated: true,
           }),
         ),
         HttpApiEndpoint.delete("deleteMessage", SessionPaths.deleteMessage, {

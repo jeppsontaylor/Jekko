@@ -28,10 +28,10 @@ describe("Jnoccio Fusion Local Unlock Proof", () => {
       return
     }
 
-    // 2. Create temporary directory
+    // 2. Create scratch directory
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "jnoccio-unlock-test-"))
     try {
-      // 3. Clone fresh temporary copy
+      // 3. Clone fresh scratch copy
       const repoRoot = path.resolve(import.meta.dir, "../../")
       await $`git clone ${repoRoot} ${tempDir}`.quiet()
 

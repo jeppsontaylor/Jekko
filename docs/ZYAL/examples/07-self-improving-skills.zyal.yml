@@ -205,9 +205,9 @@ ui:
   banner: forever
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask
+  git_commit: allow
   git_push: deny
 <<<END_ZYAL id=self-improving-skills>>>
 ZYAL_ARM RUN_FOREVER id=self-improving-skills

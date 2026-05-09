@@ -231,10 +231,10 @@ ui:
   banner: forever
 
 permissions:
-  shell: ask
+  shell: allow
   edit: allow
-  git_commit: ask
+  git_commit: allow
   git_push: deny
-  mcp: ask
+  mcp: allow
 <<<END_ZYAL id=secure-mcp-lockdown>>>
 ZYAL_ARM RUN_FOREVER id=secure-mcp-lockdown

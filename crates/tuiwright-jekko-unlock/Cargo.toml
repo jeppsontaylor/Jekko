@@ -9,4 +9,5 @@ publish = false
 [dev-dependencies]
 anyhow = "1"
 tempfile = "3"
+serial_test = "3"
 tuiwright = { git = "https://github.com/jeppsontaylor/Jankurai", branch = "main" }

@@ -18,7 +18,7 @@ Release lanes must record both budget proof and launch-gate evidence before any 
 
 If a proof lane is blocked, record the block in the task and do not mark the task complete.
 
-## Budget proof
+## Cost budget proof
 
 - Record `budget_usd`, `owner`, `quota_requests`, `stop_condition`, `kill_switch`, `approval_ref`, and `timestamp_utc` before starting a release lane.
 - Keep the proof short and machine-readable.
@@ -26,11 +26,12 @@ If a proof lane is blocked, record the block in the task and do not mark the tas
 ```json
 {
   "budget_usd": 12.5,
+  "cost_usd": 12.5,
   "owner": "standard",
   "stop_condition": "block paid or unbounded operations when remaining budget is below 5% or approval_ref is missing",
   "quota_requests": 250,
   "kill_switch": "COST_GUARD_OFF=true",
-  "approval_ref": "AGENTS.md#release-budget",
+  "approval_ref": "docs/testing.md#cost-budget-proof",
   "timestamp_utc": "2026-05-07T00:00:00Z"
 }
 ```
@@ -147,11 +148,11 @@ Use this schema to preserve repairability and tell the next agent where to rerun
 ## Budget / stop-condition policy
 
 - Treat paid or external work as budgeted work.
-- Record `budget_usd`, `owner`, `stop_condition`, `approval_ref`, and `timestamp_utc` before starting a release lane.
+- Record `budget_usd`, `cost_usd`, `quota_requests`, `owner`, `stop_condition`, `approval_ref`, and `timestamp_utc` before starting a release lane.
 - If the lane would exceed the budget or requires unbounded paid work, stop and mark the task blocked instead of continuing.
 - Keep any `kill_switch` explicit and lane-scoped.
 
-## Budget proof
+## Cost budget proof
 
 - Record `budget_usd`, `owner`, `quota_requests`, `stop_condition`, `kill_switch`, `approval_ref`, and `timestamp_utc` before starting a release lane.
 - Keep the proof short and machine-readable.
@@ -159,11 +160,12 @@ Use this schema to preserve repairability and tell the next agent where to rerun
 ```json
 {
   "budget_usd": 12.5,
+  "cost_usd": 12.5,
   "owner": "standard",
   "stop_condition": "block paid or unbounded operations when remaining budget is below 5% or approval_ref is missing",
   "quota_requests": 250,
   "kill_switch": "COST_GUARD_OFF=true",
-  "approval_ref": "AGENTS.md#release-budget",
+  "approval_ref": "docs/testing.md#cost-budget-proof",
   "timestamp_utc": "2026-05-07T00:00:00Z"
 }
 ```

@@ -22,20 +22,23 @@ function check(loggers: ReadonlySet<Logger.Logger<unknown, any>>) {
 
 it.live("makeRuntime installs EffectLogger through Observability.layer", () =>
   Effect.gen(function* () {
-    class Dummy extends Context.Service<Dummy, { readonly current: () => Effect.Effect<ReturnType<typeof check>> }>()(
-      "@test/Dummy",
-    ) {}
+    class LoggerProbe extends Context.Service<
+      LoggerProbe,
+      { readonly current: () => Effect.Effect<ReturnType<typeof check>> }
+    >()("@test/LoggerProbe") {}
 
     const layer = Layer.effect(
-      Dummy,
+      LoggerProbe,
       Effect.gen(function* () {
-        return Dummy.of({
+        return LoggerProbe.of({
           current: () => Effect.map(Effect.service(Logger.CurrentLoggers), check),
         })
       }),
     )
 
-    const current = yield* Effect.promise(() => makeRuntime(Dummy, layer).runPromise((svc) => svc.current()))
+    const current = yield* Effect.promise(() =>
+      makeRuntime(LoggerProbe, layer).runPromise((svc) => svc.current()),
+    )
 
     expect(current.effectLogger).toBe(true)
     expect(current.defaultLogger).toBe(false)

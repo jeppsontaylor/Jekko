@@ -139,7 +139,7 @@ describe("JSON to SQLite migration", () => {
     await Bun.write(
       path.join(storageDir, "project", "proj_filename.json"),
       JSON.stringify({
-        id: "proj_different_in_json", // Stale! Should be ignored
+        id: "proj_different_in_json", // Ignored by migration
         worktree: "/test/path",
         vcs: "git",
         name: "Test Project",
@@ -319,7 +319,7 @@ describe("JSON to SQLite migration", () => {
     await Bun.write(
       path.join(storageDir, "message", "ses_test456def", "msg_from_filename.json"),
       JSON.stringify({
-        id: "msg_different_in_json", // Stale! Should be ignored
+        id: "msg_different_in_json", // Ignored by migration
         sessionID: "ses_test456def",
         role: "user",
         agent: "default",
@@ -356,8 +356,8 @@ describe("JSON to SQLite migration", () => {
     await Bun.write(
       path.join(storageDir, "part", "msg_realmsgid", "prt_from_filename.json"),
       JSON.stringify({
-        id: "prt_different_in_json", // Stale! Should be ignored
-        messageID: "msg_different_in_json", // Stale! Should be ignored
+        id: "prt_different_in_json", // Ignored by migration
+        messageID: "msg_different_in_json", // Ignored by migration
         sessionID: "ses_test456def",
         type: "text",
         text: "Hello",
@@ -408,7 +408,7 @@ describe("JSON to SQLite migration", () => {
     // Session is in the git-based directory but JSON still has prior projectID
     await writeSession(storageDir, gitBasedProjectID, {
       id: "ses_migrated",
-      projectID: "prior-project-name", // Stale! Should be ignored
+      projectID: "prior-project-name", // Ignored by migration
       slug: "migrated-session",
       directory: "/test/path",
       title: "Migrated Session",
@@ -437,7 +437,7 @@ describe("JSON to SQLite migration", () => {
     await Bun.write(
       path.join(storageDir, "session", "proj_test123abc", "ses_from_filename.json"),
       JSON.stringify({
-        id: "ses_different_in_json", // Stale! Should be ignored
+        id: "ses_different_in_json", // Ignored by migration
         projectID: "proj_test123abc",
         slug: "test-session",
         directory: "/test/path",

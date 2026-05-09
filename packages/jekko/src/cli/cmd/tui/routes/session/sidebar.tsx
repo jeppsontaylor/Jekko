@@ -15,7 +15,7 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
   const { theme } = useTheme()
   const tuiConfig = useTuiConfig()
   const session = createMemo(() => sync.session.get(props.sessionID))
-  const workspace = () => {
+  const workspaceItem = () => {
     const workspaceID = session()?.workspaceID
     if (!workspaceID) return
     return project.workspace.get(workspaceID)
@@ -61,19 +61,16 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
                 </Show>
                 <Show when={session()!.workspaceID}>
                   <text fg={theme.textMuted}>
-                    <Show
-                      when={workspace()}
-                      fallback={<WorkspaceLabel type="unknown" name={session()!.workspaceID!} status="error" icon />}
-                    >
-                      {(item) => (
-                        <WorkspaceLabel
-                          type={item().type}
-                          name={item().name}
-                          status={project.workspace.status(item().id) ?? "error"}
-                          icon
-                        />
-                      )}
-                    </Show>
+                    {workspaceItem() ? (
+                      <WorkspaceLabel
+                        type={workspaceItem()!.type}
+                        name={workspaceItem()!.name}
+                        status={project.workspace.status(workspaceItem()!.id) ?? "error"}
+                        icon
+                      />
+                    ) : (
+                      <WorkspaceLabel type="unknown" name={session()!.workspaceID!} status="error" icon />
+                    )}
                   </text>
                 </Show>
                 <Show when={session()!.share?.url}>

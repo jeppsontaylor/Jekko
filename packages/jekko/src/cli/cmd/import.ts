@@ -1,4 +1,3 @@
-import type { Session as SDKSession, Message, Part } from "@jekko-ai/sdk/v2"
 import { Session } from "@/session/session"
 import { MessageV2 } from "../../session/message"
 import { CliError, effectCmd } from "../effect-cmd"
@@ -12,14 +11,37 @@ import { Effect, Schema } from "effect"
 
 const decodeMessageInfo = Schema.decodeUnknownSync(MessageV2.Info)
 const decodePart = Schema.decodeUnknownSync(MessageV2.Part)
+const ShareDataSchema = Schema.Union([
+  Schema.Struct({
+    type: Schema.Literal("session"),
+    data: Session.Info,
+  }),
+  Schema.Struct({
+    type: Schema.Literal("message"),
+    data: MessageV2.Info,
+  }),
+  Schema.Struct({
+    type: Schema.Literal("part"),
+    data: MessageV2.Part,
+  }),
+  Schema.Struct({
+    type: Schema.Literal("session_diff"),
+    data: Schema.Unknown,
+  }),
+  Schema.Struct({
+    type: Schema.Literal("model"),
+    data: Schema.Unknown,
+  }),
+]).annotate({ discriminator: "type", identifier: "ShareData" })
+const decodeShareData = Schema.decodeUnknownSync(
+  Schema.Array(ShareDataSchema),
+)
 
 /** Discriminated union returned by the ShareNext API (GET /api/shares/:id/data) */
-export type ShareData =
-  | { type: "session"; data: SDKSession }
-  | { type: "message"; data: Message }
-  | { type: "part"; data: Part }
-  | { type: "session_diff"; data: unknown }
-  | { type: "model"; data: unknown }
+export type ShareData = Schema.Schema.Type<typeof ShareDataSchema>
+type ShareSessionInfo = Schema.Schema.Type<typeof Session.Info>
+type ShareMessageInfo = Schema.Schema.Type<typeof MessageV2.Info>
+type SharePartInfo = Schema.Schema.Type<typeof MessageV2.Part>
 
 /** Extract share ID from a share URL like https://opncd.ai/share/abc123 */
 export function parseShareUrl(url: string): string | null {
@@ -43,15 +65,15 @@ export function shouldAttachShareAuthHeaders(shareUrl: string, accountBaseUrl: s
  *
  * This groups parts by their messageID to reconstruct the hierarchy before writing to disk.
  */
-export function transformShareData(shareData: ShareData[]): {
-  info: SDKSession
-  messages: Array<{ info: Message; parts: Part[] }>
+export function transformShareData(shareData: ReadonlyArray<ShareData>): {
+  info: ShareSessionInfo
+  messages: Array<{ info: ShareMessageInfo; parts: SharePartInfo[] }>
 } | null {
   const sessionItem = shareData.find((d) => d.type === "session")
   if (!sessionItem) return null
 
-  const messageMap = new Map<string, Message>()
-  const partMap = new Map<string, Part[]>()
+  const messageMap = new Map<string, ShareMessageInfo>()
+  const partMap = new Map<string, SharePartInfo[]>()
 
   for (const item of shareData) {
     if (item.type === "message") {
@@ -75,7 +97,7 @@ export function transformShareData(shareData: ShareData[]): {
   }
 }
 
-type ExportData = { info: SDKSession; messages: Array<{ info: Message; parts: Part[] }> }
+type ExportData = { info: ShareSessionInfo; messages: Array<{ info: ShareMessageInfo; parts: SharePartInfo[] }> }
 
 export const ImportCommand = effectCmd({
   command: "import <file>",
@@ -135,9 +157,13 @@ const runImport = Effect.fn("Cli.import.body")(function* (file: string, projectI
       return
     }
 
-    const shareData = yield* Effect.tryPromise({
-      try: () => response.json() as Promise<ShareData[]>,
+    const shareDataJson = yield* Effect.tryPromise({
+      try: () => response.json(),
       catch: () => new CliError({ message: "Share data was not valid JSON" }),
+    })
+    const shareData = yield* Effect.try({
+      try: () => decodeShareData(shareDataJson),
+      catch: () => new CliError({ message: "Share data did not match the expected format" }),
     })
     const transformed = transformShareData(shareData)
 

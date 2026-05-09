@@ -127,7 +127,7 @@ function makeHttp() {
     status,
   ).pipe(Layer.provideMerge(infra))
   const question = Question.layer.pipe(Layer.provideMerge(deps))
-  const pending = PendingModule.Todo.layer.pipe(Layer.provideMerge(deps))
+  const pending = PendingModule.Pending.layer.pipe(Layer.provideMerge(deps))
   const registry = ToolRegistry.layer.pipe(
     Layer.provide(Skill.defaultLayer),
     Layer.provide(FetchHttpClient.layer),

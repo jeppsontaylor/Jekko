@@ -35,7 +35,7 @@ const registryLayer = ToolRegistry.layer.pipe(
   Layer.provide(configLayer),
   Layer.provide(Plugin.defaultLayer),
   Layer.provide(Question.defaultLayer),
-  Layer.provide(PendingModule.Todo.defaultLayer),
+  Layer.provide(PendingModule.Pending.defaultLayer),
   Layer.provide(Skill.defaultLayer),
   Layer.provide(Agent.defaultLayer),
   Layer.provide(Session.defaultLayer),

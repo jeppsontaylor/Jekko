@@ -116,10 +116,14 @@ function parseToolParams(input?: string) {
     }
   })
 
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+  if (!isRecord(parsed)) {
     throw new Error("Tool params must be an object.")
   }
-  return parsed as Record<string, unknown>
+  return parsed
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
 const createToolContext = Effect.fn("Cli.debug.agent.createToolContext")(function* (

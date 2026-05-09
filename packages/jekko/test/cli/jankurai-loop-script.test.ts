@@ -150,6 +150,9 @@ describe("jekko-jankurai-loop.sh", () => {
     await expect(fsp.readFile(path.join(latestRun, "command.txt"), "utf8")).resolves.toContain(
       "--output-last-message",
     )
+    await expect(fsp.readFile(path.join(latestRun, "env.txt"), "utf8")).resolves.toContain(
+      "JEKKO_AUTO_ALLOW_READS=1",
+    )
     await expect(fsp.readFile(path.join(latestRun, "unlock-command.txt"), "utf8")).resolves.toContain(
       "providers unlock jnoccio",
     )

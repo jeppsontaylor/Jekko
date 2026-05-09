@@ -2,8 +2,73 @@ import type { TuiPlugin, TuiPluginApi, TuiPluginModule } from "@jekko-ai/plugin/
 import { createMemo, Show } from "solid-js"
 import { Global } from "@jekko-ai/core/global"
 import { hasConnectedProvider } from "../../component/use-connected"
+import { useJnoccioBootStatus, useJnoccioModelCount, type JnoccioBootStatus } from "../../context/jnoccio-boot"
+import { RGBA } from "@opentui/core"
 
 const id = "internal:sidebar-footer"
+
+const HOT_PINK = RGBA.fromHex("#FF00B8")
+
+function JnoccioStatus(props: { api: TuiPluginApi }) {
+  const theme = () => props.api.theme.current
+  const bootStatus = useJnoccioBootStatus()
+  const modelCount = useJnoccioModelCount()
+
+  const status = (): JnoccioBootStatus => bootStatus()
+
+  // Only show when Jnoccio has been discovered (not idle or unavailable)
+  const visible = createMemo(() => {
+    const s = status()
+    return s !== "idle" && s !== "unavailable"
+  })
+
+  const dotColor = () => {
+    const s = status()
+    if (s === "ready") return theme().success
+    if (s === "checking" || s === "starting") return HOT_PINK
+    return theme().error
+  }
+
+  const label = createMemo(() => {
+    const s = status()
+    const count = modelCount()
+    if (s === "checking") return "checking…"
+    if (s === "starting") return "starting…"
+    if (s === "ready" && count !== null) return `Jnoccio · ${count} model${count !== 1 ? "s" : ""}`
+    if (s === "ready") return "Jnoccio"
+    if (s === "failed") return "Jnoccio ✗"
+    return "Jnoccio"
+  })
+
+  const isBooting = () => {
+    const s = status()
+    return s === "checking" || s === "starting"
+  }
+
+  return (
+    <Show when={visible()}>
+      <box flexDirection="row" gap={1} flexShrink={0}>
+        <Show
+          when={!isBooting()}
+          fallback={
+            <spinner
+              frames={["◐", "◓", "◑", "◒"]}
+              interval={200}
+              color={HOT_PINK}
+            />
+          }
+        >
+          <spinner
+            frames={["●", "○"]}
+            interval={800}
+            color={dotColor()}
+          />
+        </Show>
+        <text fg={isBooting() ? HOT_PINK : theme().text}>{label()}</text>
+      </box>
+    </Show>
+  )
+}
 
 function View(props: { api: TuiPluginApi }) {
   const theme = () => props.api.theme.current
@@ -67,6 +132,7 @@ function View(props: { api: TuiPluginApi }) {
         </span>{" "}
         <span>{props.api.app.version}</span>
       </text>
+      <JnoccioStatus api={props.api} />
     </box>
   )
 }

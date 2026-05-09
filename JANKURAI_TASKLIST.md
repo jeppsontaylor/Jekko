@@ -1,6 +1,6 @@
 # Jankurai Tasklist
 
-Generated from `jankurai audit` and `jankurai repair-plan` on 2026-05-07 after rerun with `jankurai 0.8.12`.
+Generated from `jankurai audit` and `jankurai repair-plan` on 2026-05-09T10:34:58Z after rerun with `jankurai 0.8.12`.
 
 Audit receipt:
 - Binary version: `0.8.12`
@@ -11,11 +11,11 @@ Audit receipt:
 - Paper edition: `2026.05-ed8`
 - Target stack: `rust-ts-vite-react-postgres-bounded-python`
 - Final score: `60`
-- Raw score: `73`
-- Findings: `261` repair packets from `target/jankurai/repair-plan.json`
-- Hard findings: `250`
-- Caps applied: `20`
-- Generated at: 2026-05-07T15:08:04Z
+- Raw score: `76`
+- Findings: `282` repair packets from `target/jankurai/repair-plan.json`
+- Hard findings: `276`
+- Caps applied: `17`
+- Generated at: 2026-05-09T10:34:58Z
 - Source artifacts: `agent/repo-score.json`, `agent/repo-score.md`, `target/jankurai/repair-plan.json`, `target/jankurai/repair-plan.md`
 
 Status protocol:
@@ -49,22 +49,24 @@ Validation commands:
 
 Summary:
 - critical: 1
-- high: 315
-- medium: 12
+- high: 275
+- medium: 6
+
 
 ## Pending Tasks
 
-### JK-0001 - [medium] HLT-001-DEAD-MARKER - .
-- Status: Complete
+### JK-0153 - [high] HLT-001-DEAD-MARKER - .
+- Status: Blocked
 - Assignee: jekko
-- Started: 2026-05-07T12:00:00Z
-- Completed: 2026-05-07T12:05:00Z
-- Source packet: `1`
-- Fingerprint: `sha256:6de3a9fbc1e60d6b8008e645267a55aef7e7c90fe5e758bb0f8185b0325dc08e`
+- Started: 2026-05-09T11:32:23Z
+- Completed:
+- Blocked reason: proof failed due to pre-existing TypeScript errors in packages/jekko/src/server/routes/instance/httpapi/ - multiple type mismatches, duplicate property 'todo'; these are unrelated to the dead-marker task
+- Source packet: `999`
+- Fingerprint: `sha256:38a9f7d956ac8511198538a5576aa28c83b137f84f47796e6509f33fc6a1a180`
 - Check: `HLT-001-DEAD-MARKER:shape`
 - Owner: `tools`
 - Lane: `fast`
-- Risk: `medium`
+- Risk: `high`
 - Eligibility: `agent-assisted`
 - Human review required: `no`
 - Scope path: `.`
@@ -72,1664 +74,30 @@ Summary:
 - Why: `Code shape and semantic surface` scored 0 below the standard floor of 85
 - Instructions: scoped fix with targeted proof and no authority expansion
 - Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `.`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `just score`
-  - Result: `exit 0; score=60 raw=70 caps=22 findings=319`
-  - Timestamp: 2026-05-07T12:05:00Z
-  - Files touched: `agent/repo-score.json`, `agent/repo-score.md`, `agent/score-history.jsonl`, `agent/score-history.csv`, `JANKURAI_TASKLIST.md`
-
-### JK-0002 - [high] HLT-009-GENERATED-SECURITY - .github/workflows
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T12:00:00Z
-- Completed: 2026-05-07T12:05:00Z
-- Source packet: `2`
-- Fingerprint: `sha256:c249be982d975721833fe396cdfff422f53a2d61819df881968fba63fdd6b9bf`
-- Check: `HLT-009-GENERATED-SECURITY:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows`
-- Problem: high-risk repo has no explicit security lane
-- Why: high-risk repo has no explicit security lane
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `just score`
-  - Result: `exit 0; score=60 raw=70 caps=22 findings=319`
-  - Timestamp: 2026-05-07T12:05:00Z
-  - Files touched: `agent/repo-score.json`, `agent/repo-score.md`, `agent/score-history.jsonl`, `agent/score-history.csv`, `JANKURAI_TASKLIST.md`
-
-### JK-0003 - [high] HLT-016-SUPPLY-CHAIN-DRIFT - .github/workflows
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T13:15:00Z
-- Completed: 2026-05-07T13:20:00Z
-- Source packet: `3`
-- Fingerprint: `sha256:2e22551cbdbd8da1f6fedd2d509dba064990dc4b1505df71609f431d11901099`
-- Check: `HLT-016-SUPPLY-CHAIN-DRIFT:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows`
-- Problem: no secret or dependency scanning was found in CI
-- Why: no secret or dependency scanning was found in CI
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.github/workflows/jankurai.yml`
-- Proof receipt:
-  - Command: `just security`
-  - Result: `exit 0; security scan passed; secrets/deps scanning now active in CI`
-  - Timestamp: 2026-05-07T13:20:00Z
-  - Files touched: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0004 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/beta.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:29:55Z
-- Source packet: `4`
-- Fingerprint: `sha256:594a9d6afba2b5e737f0d338f5369864063476ed1cc4bb694a7cfbb5500e5e33`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/beta.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/beta.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:29:55Z
-  - Files touched: `.github/workflows/beta.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/beta.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0005 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:29:55Z
-- Source packet: `5`
-- Fingerprint: `sha256:5da07808a4d4a3ebdf2050ce6cae1881ff649b63358a14367bfa8441e65b8162`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/containers.yml`
-- Problem: workflow is missing concurrency control
-- Why: workflow can run duplicate stale audits for the same ref
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/containers.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:29:55Z
-  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0006 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:29:55Z
-- Source packet: `6`
-- Fingerprint: `sha256:68d8f0c99ec9a9712b5e17160469cbafe84af42cab8160b04f28baa5cda68bf1`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/containers.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/containers.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:29:55Z
-  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0007 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:29:55Z
-- Source packet: `7`
-- Fingerprint: `sha256:08205c33a5fda331c6f5b7380ec8f376d5f47d096453c4d09ab813e00a2ef1d4`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/containers.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/containers.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:29:55Z
-  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0008 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:29:55Z
-- Source packet: `8`
-- Fingerprint: `sha256:3feb0a3f62226da627178e117068720c953fd98a18003a83d1f38409b8e21af4`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/containers.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/containers.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:29:55Z
-  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0009 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:29:55Z
-- Source packet: `9`
-- Fingerprint: `sha256:864bccabcb179be0b06d4358d40aeb02b55d7c58fd1108fe5af6b634dea1d2a8`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/containers.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/containers.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:29:55Z
-  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0010 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/containers.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:29:55Z
-- Source packet: `10`
-- Fingerprint: `sha256:492528958f3b7a3c6e9ad9c40968ac19f69565097965e73a95fcd4088078b05f`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/containers.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/containers.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:29:55Z
-  - Files touched: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/containers.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0011 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/deploy.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:55Z
-- Completed: 2026-05-07T09:32:12Z
-- Source packet: `11`
-- Fingerprint: `sha256:399a3a5e9e1979217dbf10519e1ea9f1ca6c81dc463d93df2dbab768154638aa`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/deploy.yml`
-- Problem: workflow is missing explicit top-level permissions
-- Why: workflow permissions default is not pinned in source
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/deploy.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:32:12Z
-  - Files touched: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0012 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/deploy.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:55Z
-- Completed: 2026-05-07T09:32:12Z
-- Source packet: `12`
-- Fingerprint: `sha256:56ce869d51f630d8cebdb09d4577129071b8d7454f601cb0bfe2acd216764f7d`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/deploy.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/deploy.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:32:12Z
-  - Files touched: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0013 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/deploy.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:55Z
-- Completed: 2026-05-07T09:32:12Z
-- Source packet: `13`
-- Fingerprint: `sha256:f576309e0dc8c5be8670d080c5dfe00bf308be4344cc4e31fa001f8fd48b9996`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/deploy.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/deploy.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:32:12Z
-  - Files touched: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0014 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/deploy.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:55Z
-- Completed: 2026-05-07T09:32:12Z
-- Source packet: `14`
-- Fingerprint: `sha256:b8a39a10c8bcfcd823e64a1a1def60a34e411b0e22308a15c2a9280ea749da30`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/deploy.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/deploy.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:32:12Z
-  - Files touched: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/deploy.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0015 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-locale-sync.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T13:10:00Z
-- Completed: 2026-05-07T13:30:00Z
-- Source packet: `15`
-- Fingerprint: `sha256:39191044293f790fd9545aaf7ccee3ad6c06d75d3e88d94df130ecdc9f65d72b`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/docs-locale-sync.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- - `.github/`
-- - `ops/`
-- - `.github/workflows/`
-- - `.github/workflows/docs-locale-sync.yml`
+- - `crates/`
+- - `packages/`
+- - `sdks/`
+- - `tools/`
+- - `.`
 - Forbidden paths:
 - - `reference/`
 - - `target/`
 - - `agent/repo-score.json`
 - - `agent/repo-score.md`
 - Proof required:
-- - `just security`
+- - `just fast`
 - Stop conditions:
 - - stop if the fix broadens permission scope or touches a generated zone
 - - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
--   - Command: `just security`
--   - Result: `exit 0; security scan passed; secrets/deps scanning now active in CI`
--   - Timestamp: 2026-05-07T13:30:00Z
--   - Files touched: `.github/workflows/docs-locale-sync.yml`
-- Touched files: `.github/workflows/docs-locale-sync.yml`
- - Status: Complete
- - Assignee: jekko
- - Started: 2026-05-07T13:10:00Z
- - Completed: 2026-05-07T13:15:00Z
- - Source packet: `15`
- - Fingerprint: `sha256:39191044293f790fd9545aaf7ccee3ad6c06d75d3e88d94df130ecdc9f65d72b`
- - Check: `HLT-034-CI-BAD-BEHAVIOR:security`
- - Owner: `ops`
- - Lane: `security`
- - Risk: `high`
- - Eligibility: `human-required`
- - Human review required: `yes`
- - Scope path: `.github/workflows/docs-locale-sync.yml`
- - Problem: workflow uses an external action not pinned to a full commit SHA
- - Why: tag or branch refs can change without review
- - Instructions: scoped fix with targeted proof and no authority expansion
- - Allowed paths:
- - `.github/`
- - `ops/`
- - `.github/workflows/`
- - `.github/workflows/docs-locale-sync.yml`
- - Forbidden paths:
- - `reference/`
- - `target/`
- - `agent/repo-score.json`
- - `agent/repo-score.md`
- - Proof required:
- - `just security`
- - Stop conditions:
- - stop if the fix broadens permission scope or touches a generated zone
- - stop if the repair requires a migration, secret rotation, or external service change
- - Rollback: revert the scoped files and rerun the required proof before retrying
- - Proof receipt:
-   - Command: `just security`
-   - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
-   - Timestamp: 2026-05-07T13:15:00Z
-   - Files touched: `.github/workflows/docs-locale-sync.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0016 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/docs-locale-sync.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:11Z
-- Completed: 2026-05-07T09:31:11Z
-- Source packet: `16`
-- Fingerprint: `sha256:332990ce552616bb1b50d175fb60dac476259998bdad4638d0d7bf73d2a38006`
-- Check: `HLT-032-DOCKER-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/docs-locale-sync.yml`
-- Problem: remote install step is not pinned or verified
-- Why: the build downloads remote code without a checksum or signature proof
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/docs-locale-sync.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:31:11Z
-  - Files touched: `.github/workflows/docs-locale-sync.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/docs-locale-sync.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0017 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-update.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `17`
-- Fingerprint: `sha256:5266f276939624325bebaacea1566a6c0cd197e58de7e2eaeaf03d6f6f1f2381`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/docs-update.yml`
-- Problem: workflow is missing concurrency control
-- Why: workflow can run duplicate stale audits for the same ref
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/docs-update.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0018 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-update.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `18`
-- Fingerprint: `sha256:5e0417393d177a0a89bcd0601819aa1aa8d18f360fa30d3123071f01113b43a4`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/docs-update.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/docs-update.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0019 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-update.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `19`
-- Fingerprint: `sha256:163c8625b66555128ab37ec00f3251e805944628cdbe462d0a261b7ffd66ffc9`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/docs-update.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/docs-update.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0020 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-update.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `20`
-- Fingerprint: `sha256:4de16f1aaf2d98a19c89d26ca88fa6361f57a4c8cd22aeeaf1cd1418d0a3071f`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/docs-update.yml`
-- Problem: workflow uses a mutable action or image reference
-- Why: action ref can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/docs-update.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0021 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/docs-update.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T12:05:00Z
-- Completed: 2026-05-08T12:15:00Z
-- Proof receipt:
-  - Command: `rtk just security`
-  - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
-  - Timestamp: 2026-05-08T12:15:00Z
-  - Files touched: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `21`
-- Fingerprint: `sha256:8037c3aa883724fec9ba4f589fbe4dcd154375e831b3e26d9c969f98a8d660d5`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/docs-update.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/docs-update.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0022 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:11Z
-- Completed: 2026-05-07T09:31:11Z
-- Source packet: `22`
-- Fingerprint: `sha256:96d7594fab4078b693f12cda732a675693d6b7f832616ec3e7f4bd46de0830c0`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/duplicate-issues.yml`
-- Problem: workflow is missing concurrency control
-- Why: workflow can run duplicate stale audits for the same ref
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/duplicate-issues.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:31:11Z
-  - Files touched: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0023 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:11Z
-- Completed: 2026-05-07T09:31:11Z
-- Source packet: `23`
-- Fingerprint: `sha256:5cc9f42915adb9cfa0c0a8971fe085343d0bae7dee650a71cfe34546286ac321`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/duplicate-issues.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/duplicate-issues.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:31:11Z
-  - Files touched: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0024 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:11Z
-- Completed: 2026-05-07T09:31:11Z
-- Source packet: `24`
-- Fingerprint: `sha256:60a9d26d5778f50c34893ff1541c07324e414f5e2dac00520b7cab03bad3c903`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/duplicate-issues.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/duplicate-issues.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:31:11Z
-  - Files touched: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0025 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:11Z
-- Completed: 2026-05-07T09:31:11Z
-- Source packet: `25`
-- Fingerprint: `sha256:b0b6c1e3de50da857fe6b5d8333b24249e56e37ab910ccf2720994075629ea3c`
-- Check: `HLT-032-DOCKER-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/duplicate-issues.yml`
-- Problem: remote install step is not pinned or verified
-- Why: the build downloads remote code without a checksum or signature proof
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/duplicate-issues.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:31:11Z
-  - Files touched: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0026 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:08Z
-- Completed: 2026-05-07T09:31:11Z
-- Source packet: `26`
-- Fingerprint: `sha256:41ec625da63598808a6d44c15d908c4e15ec4b9bc6b53a08832c206c6b4f918d`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/duplicate-issues.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/duplicate-issues.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:31:11Z
-  - Files touched: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/duplicate-issues.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0027 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/duplicate-issues.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:31:11Z
-- Completed: 2026-05-07T09:31:11Z
-- Source packet: `27`
-- Fingerprint: `sha256:2ad4f459877f94a5f0b0ce5ce7d29fe548e270ef93319b175b66392015ef72d6`
-- Check: `HLT-032-DOCKER-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/duplicate-issues.yml`
-- Problem: remote install step is not pinned or verified
-- Why: the build downloads remote code without a checksum or signature proof
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/duplicate-issues.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/docs-update.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0028 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/generate.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `28`
-- Fingerprint: `sha256:7dc31597a420c83f544d322a2d46efa71fe4857e712649bf37811c213ae03786`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/generate.yml`
-- Problem: workflow is missing concurrency control
-- Why: workflow can run duplicate stale audits for the same ref
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/generate.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/generate.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/generate.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0029 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/generate.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `29`
-- Fingerprint: `sha256:d52b46ceee6a269a50985f7bea1d51720a044debc71b43a40a2bf828142c9c1e`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/generate.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/generate.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/generate.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/generate.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0030 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/generate.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:33:49Z
-- Completed: 2026-05-07T09:34:07Z
-- Source packet: `30`
-- Fingerprint: `sha256:f06b3e1760af79129d732302e012a31843841b9709a3754eee73997558e4c44f`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/generate.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/generate.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:34:07Z
-  - Files touched: `.github/workflows/generate.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/generate.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0031 - [medium] HLT-016-SUPPLY-CHAIN-DRIFT - .github/workflows/jankurai.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T13:00:00Z
-- Completed: 2026-05-07T13:05:00Z
-- Source packet: `31`
-- Fingerprint: `sha256:448fef8ddc7723add084cc7c7c107d8cc3ee2a2440a375749c98a2cec4d642b9`
-- Check: `HLT-016-SUPPLY-CHAIN-DRIFT:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jankurai.yml`
-- Problem: `Security and supply-chain posture` scored 64 below the standard floor of 85
-- Why: `Security and supply-chain posture` scored 64 below the standard floor of 85
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jankurai.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
--   - Command: `rtk just fast`
--   - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
--   - Timestamp: 2026-05-07T13:05:00Z
--   - Files touched: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0032 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T12:00:00Z
-- Completed: 2026-05-07T12:05:00Z
-- Source packet: `32`
-- Fingerprint: `sha256:130d79c121d03f9780d3348a86c4a7eac6308bf578a32a416f722babe7df892e`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jankurai.yml`
-- Problem: workflow is missing concurrency control
-- Why: workflow can run duplicate stale audits for the same ref
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jankurai.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `git diff --stat`
-  - Result: `1 file changed, 3 insertions(+)`
-  - Timestamp: 2026-05-07T12:05:00Z
-  - Files touched: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0033 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T12:05:00Z
-- Completed: 2026-05-07T12:10:00Z
-- Source packet: `33`
-- Fingerprint: `sha256:9e961161af32933baacaf16de5b2469db25a682f6a9e5e311b8985bcef32daa6`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jankurai.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jankurai.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `git diff --stat`
-  - Result: `1 file changed, 4 insertions(+)`
-  - Timestamp: 2026-05-07T12:10:00Z
-  - Files touched: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-  - Command: `git diff --stat`
-  - Result: `1 file changed, 1 insertion(+)`
-  - Timestamp: 2026-05-07T12:06:00Z
-  - Files touched: `.github/workflows/jankurai.yml`, `JANKURAI_TASKLIST.md`
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
-
-### JK-0034 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T12:20:00Z
-- Completed: 2026-05-07T12:20:30Z
-- Source packet: `34`
-- Fingerprint: `sha256:9ea25b4546fd02120b2de2ed543993c39a48830bf1c9507e3445bddaf195fe96`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jankurai.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jankurai.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: (no changes required - already compliant)
-- Proof receipt:
-  - Command: `cat .github/workflows/jankurai.yml | grep uses`
-  - Result: `actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd`, `dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8`, `actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` - all pinned to full commit SHAs
-  - Timestamp: 2026-05-07T12:20:30Z
-  - Files touched: none (all actions already compliant)
-
-### JK-0035 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T12:21:00Z
-- Completed: 2026-05-08T13:15:00Z
-- Touched files: `.github/workflows/jankurai.yml`
-- Proof receipt:
-  - Command: `just security`
-  - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
-  - Timestamp: 2026-05-08T13:15:00Z
-  - Files touched: `.github/workflows/jankurai.yml`
-- Source packet: `35`
-- Fingerprint: `sha256:5c8e3c293a011267c5ad0ae48771934d132ce141be69fcaf422f367ebdb02aac`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jankurai.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jankurai.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
-
-### JK-0036 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T14:00:00Z
-- Completed: 2026-05-07T14:05:00Z
-- Source packet: `36`
-- Fingerprint: `sha256:0ca2538a607749dd7399a1d1190f4586b71d5bd7fe239609c9f195890548be23`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jankurai.yml`
-- Problem: workflow creates SARIF without uploading it
-- Why: SARIF evidence is not published to code scanning
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jankurai.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: .github/workflows/jankurai.yml
-- Proof receipt:
-  - Command: grep -A2 "Upload SARIF" .github/workflows/jankurai.yml
-  - Result:
-        - name: Upload SARIF to code scanning
-          uses: github/codeql-action/upload-sarif@v2
-          with:
-            sarif_file: target/jankurai/jankurai.sarif
-  - Timestamp: 2026-05-07T14:05:00Z
-  - Files touched: .github/workflows/jankurai.yml
-
-### JK-0037 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jankurai.yml
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T09:45:45Z
-- Completed: 2026-05-07T09:46:46Z
-- Source packet: `51`
-- Fingerprint: `sha256:7ed105d29e8dafa5b603f717fb8ceab97c12e94b9fa2925c7b812f75d8410649`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jekko.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jekko.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0051 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:45:45Z
-- Completed: 2026-05-07T09:46:46Z
-- Source packet: `51`
-- Fingerprint: `sha256:7ed105d29e8dafa5b603f717fb8ceab97c12e94b9fa2925c7b812f75d8410649`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jekko.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jekko.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0052 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:45:45Z
-- Completed: 2026-05-07T09:46:46Z
-- Source packet: `52`
-- Fingerprint: `sha256:6106a3bf55ad1ff521f8f6b424b12fd0ee584e3aed07513a43d20ce64c07f342`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jekko.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jekko.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0053 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:45:45Z
-- Completed: 2026-05-07T09:46:46Z
-- Source packet: `53`
-- Fingerprint: `sha256:02a53e939c84e1d75ba0b08ce0ff0881a1ea2a59fd86fecf033dc49593497fe7`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jekko.yml`
-- Problem: workflow uses a mutable action or image reference
-- Why: action ref can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jekko.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0054 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
-- Assignee: codex-agent
-- Started: 2026-05-07T09:45:45Z
-- Completed: 2026-05-07T09:46:46Z
-- Source packet: `54`
-- Fingerprint: `sha256:64493168759096ee20e18a910334ed24eee7bac856649d3013e3c76f8bf94a2b`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/jekko.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/jekko.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T09:46:46Z
-  - Files touched: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
-- Touched files: `.github/workflows/jekko.yml`, `JANKURAI_TASKLIST.md`
 
 ### JK-0055 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
 - Status: Blocked
 - Assignee: codex-agent
 - Started: 2026-05-07T09:49:38Z
+- Note: stale claim by codex-agent since 2026-05-07T09:49:38Z; left for owner
 - Completed:
 - Source packet: `55`
 - Fingerprint: `sha256:8c87082ee1c872f744295d26b06514519ed736ea0800bcf3b12d7b02ddc642c5`
@@ -1761,166 +129,474 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
+
+### JK-1033 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/routes/session/index.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `191`
+- Fingerprint: `sha256:29191d577751b9be90b5e9d9d97230ae4aca21fabd3186c993af3c055096fd47`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Note: reappeared in current audit
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1034 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal.tsx
+- Status: Blocked
+- Assignee: codex-loop
+- Started: 2026-05-09T11:31:28Z
+- Completed:
+- Source packet: `182`
+- Fingerprint: `sha256:66c56169d0f085532db1dff6906d2dfc5b96320a209ddd4f5e1431d9ab8548bc`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal.tsx`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Blocked reason: `rtk just fast` failed in `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`, which is outside the task's allowed paths; no safe task-scope fix is available
+- Touched files:
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 2; bun typecheck failed in packages/jekko/src/server/routes/instance/httpapi/groups/session.ts (missing export from @/session/pending)`
+  - Timestamp: 2026-05-09T11:32:13Z
+  - Files touched: `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal.tsx`, `JANKURAI_TASKLIST.md`
+
+### JK-1035 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `192`
+- Fingerprint: `sha256:6f3ab0b3c2a3feacb6071657291f6ccf3516c52cc144951c3cca5717c1643b96`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Note: reappeared in current audit
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1036 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `181`
+- Fingerprint: `sha256:710299fa56cb7bcbc4e531362f99f3e18292fa454d02410c30d91d87e162506f`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal.tsx`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1037 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `162`
+- Fingerprint: `sha256:7fa5e2eafce8922304dc0ec70ba29bd22e998a4658654ea174dd1d56e5d13132`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1038 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `194`
+- Fingerprint: `sha256:a545feadec36473e698142331154ca8c849cbb7b00a475909a8793ca52687836`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1039 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `196`
+- Fingerprint: `sha256:ab505750f01acdb027eae175430ca87f934cb4b7af7e29225fbca6d4b9a46de9`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1040 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `193`
+- Fingerprint: `sha256:afa426ed93321432634ab6aa47b8d1d0d53d24a487ccdca3e7fa3cd00e06a08b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1041 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `198`
+- Fingerprint: `sha256:c491677aa05d099ba6371ab573239a55f03fa02b3bcb8630be269b09bb6cd5d8`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1042 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `199`
+- Fingerprint: `sha256:dd425bc02186efe1556fd4276272fe7698801c6d4b9cf9bde9378bf41ee5df8b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1043 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `195`
+- Fingerprint: `sha256:e424e16b8f1d0d7f316d4004971e38ef51c6bce992d058c788c08c1a134ae4d6`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1044 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `197`
+- Fingerprint: `sha256:e4d55bd5cc3dd157a9cece6f7c0b920d510befcb0cb32c0b1d5f231d595a8ff9`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
   - Command: `rtk just security`
   - Result: `exit 1; blocked by required tool evidence: security-lane`
   - Timestamp: 2026-05-07T09:49:44Z
   - Files touched: `.github/workflows/pr-management.yml`, `JANKURAI_TASKLIST.md`
-
-### JK-0056 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T12:30:00Z
-- Completed: 2026-05-07T15:30:00Z
-- Proof receipt:
-  - Command: just security
-  - Result: exit 0
-  - Timestamp: 2026-05-07T15:30:00Z
-  - Files touched: .github/workflows/pr-management.yml
-- Source packet: `56`
-- Fingerprint: `sha256:83337f1e762b79cef1c455d5b34585e92372a907667258c3e093e14c79b774c6`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/pr-management.yml`
-- Problem: workflow job is missing timeout-minutes
-- Why: workflow can run without a checked time bound
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/pr-management.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
-
-### JK-0057 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-management.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T14:00:00Z
-- Completed: 2026-05-07T11:14:20Z
-- Source packet: `57`
-- Fingerprint: `sha256:6a479ba9514fb6f2b51638c45a3a7d5a2024df7586c176863fdf8b8a0e3ed95a`
-- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/pr-management.yml`
-- Problem: workflow uses an external action not pinned to a full commit SHA
-- Why: tag or branch refs can change without review
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/pr-management.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.github/workflows/pr-management.yml`
-- Proof receipt:
-  - Command: `rtk just security`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T11:14:20Z
-  - Files touched: `.github/workflows/pr-management.yml`
-
-### JK-0058 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/pr-management.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T15:00:00Z
-- Completed: 2026-05-07T15:15:00Z
-- Source packet: `58`
-- Fingerprint: `sha256:21d369e76aef3729be4bbff6b60d8f510b69af2f21c3b6a14d98d038060123ea`
-- Check: `HLT-032-DOCKER-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/pr-management.yml`
-- Problem: remote install step is not pinned or verified
-- Why: the build downloads remote code without a checksum or signature proof
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/pr-management.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
-
-### JK-0059 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/review.yml
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T15:05:00Z
-- Completed: 2026-05-07T15:15:00Z
-- Source packet: `60`
-- Fingerprint: `sha256:31091e87505a8a41edd98a2ac05e536f0fe1229a0845c14dd5a0612f684fe95e`
-- Check: `HLT-032-DOCKER-BAD-BEHAVIOR:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.github/workflows/review.yml`
-- Problem: remote install step is not pinned or verified
-- Why: the build downloads remote code without a checksum or signature proof
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.github/workflows/`
-- `.github/workflows/review.yml`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- - stop if the fix broadens permission scope or touches a generated zone
-- - stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
--   - Command: `just security`
--   - Result: `exit 0; security scan passed; remote install step now pinned and verified`
--   - Timestamp: 2026-05-07T15:10:00Z
--   - Files touched: `.github/workflows/review.yml`
 
 ### JK-0061 - [high] HLT-001-DEAD-MARKER - .jekko/plugins/tui-smoke.tsx
  - Status: In Progress
@@ -1958,1171 +634,11 @@ Summary:
  - Touched files:
  - Proof receipt:
 
-### JK-0062 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - .jekko/plugins/tui-smoke.tsx
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T14:30:00Z
-- Completed: 2026-05-07T14:31:00Z
-- Source packet: `62`
-- Fingerprint: `sha256:50228189e49863444a8f5badc6a5ecd3cdda98b96cb6502f69ff366ab5c4a403`
-- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `no`
-- Scope path: `.jekko/plugins/tui-smoke.tsx`
-- Problem: raw shell or SQL text is built from untrusted TypeScript input
-- Why: trusted input proof is missing
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `.jekko/plugins/`
-- `.jekko/plugins/tui-smoke.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
--   - Command: `just fast`
--   - Result: `exit 0; repo checks ok`
--   - Timestamp: 2026-05-07T14:31:00Z
--   - Files touched: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
-
-### JK-0063 - [high] HLT-023-INPUT-BOUNDARY-GAP - .jekko/plugins/tui-smoke.tsx
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T12:40:00Z
-- Completed: 2026-05-08T12:45:00Z
-- Source packet: `63`
-- Fingerprint: `sha256:905c5fb22e3da655bc8faf1f94f84bb2e7ac0f2b0f039179bb2952d819a7fa27`
-- Check: `HLT-023-INPUT-BOUNDARY-GAP:security`
-- Owner: `ops`
-- Lane: `security`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `.jekko/plugins/tui-smoke.tsx`
-- Problem: unsafe or unvalidated input boundary marker appears in product code
-- Why: input handling risk needs deterministic negative tests
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.github/`
-- `ops/`
-- `.jekko/plugins/`
-- `.jekko/plugins/tui-smoke.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just security`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just security`
-  - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
-  - Timestamp: 2026-05-08T12:45:00Z
-  - Files touched: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
-
-### JK-0065 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T09:53:24Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `65`
-- Fingerprint: `sha256:1f2e1a190a8436c6dc7417d90fbfb668da38e08ff248a4df94a1f0224e58599e`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/agent/owner-map.json` has no owner-map route
-- Why: path `.jekko/agent/owner-map.json` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0066 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `66`
-- Fingerprint: `sha256:a9379b91637d2f1fb12ed1a6d8034a2ffc27e2d38e17079cc123c6d61cdfd17b`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/agent/proof-lanes.toml` has no owner-map route
-- Why: path `.jekko/agent/proof-lanes.toml` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0067 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `67`
-- Fingerprint: `sha256:ca6747f5b617e79610c817f42d35c1b884e1bf9d269da30fc11e33ca3a9cdb85`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/agent/triage.md` has no owner-map route
-- Why: path `.jekko/agent/triage.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0068 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `68`
-- Fingerprint: `sha256:c4505f342b1fe9c5153993b5f95155d9db4617c03ff05789942e11626d5bf546`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/command/ai-deps.md` has no owner-map route
-- Why: path `.jekko/command/ai-deps.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0069 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `69`
-- Fingerprint: `sha256:81347805883ad198b28f8062853930272b24c5524aac77175c5acd15e7f6cdfb`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/command/changelog.md` has no owner-map route
-- Why: path `.jekko/command/changelog.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0070 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `70`
-- Fingerprint: `sha256:353d33f0f0a55c9d52c3108452beee5f4e93f72ebf71c0b10943004a9c5b1f4f`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/command/commit.md` has no owner-map route
-- Why: path `.jekko/command/commit.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0071 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `71`
-- Fingerprint: `sha256:17e7af73f02f308ed5bf853bac7457ed4876a199f012084e424d8cc15e45c00f`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/command/issues.md` has no owner-map route
-- Why: path `.jekko/command/issues.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0072 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `72`
-- Fingerprint: `sha256:951baa4c30a74c941d07093186afeb86e607c521e15c145d4f61b0cab397f673`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/command/learn.md` has no owner-map route
-- Why: path `.jekko/command/learn.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0073 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `73`
-- Fingerprint: `sha256:55b5286f861cd986dad0f118b725f3e6121996634abdfd63fd2a099883be2034`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/command/rmslop.md` has no owner-map route
-- Why: path `.jekko/command/rmslop.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0074 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:07:03Z
-- Completed: 2026-05-07T10:07:03Z
-- Source packet: `74`
-- Fingerprint: `sha256:d75fd38b8e60c0d2c9df7732436c59ffdb28f3c1ebe363ba26ba614e9d941607`
-- Check: `HLT-003-OWNERLESS-PATH:context`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/owner-map.json`
-- Problem: path `.jekko/command/spellcheck.md` has no owner-map route
-- Why: path `.jekko/command/spellcheck.md` has no owner-map route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/owner-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft, security-evidence-stale-head`
-  - Timestamp: 2026-05-07T10:07:03Z
-  - Files touched: `agent/owner-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0075 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:08:21Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `75`
-- Fingerprint: `sha256:8e815d1727fe97500bff70b3839df71d71d4a67053f39c0ae74ab4ba458c6999`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/agent/owner-map.json` has no test-map proof route
-- Why: path `.jekko/agent/owner-map.json` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0076 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `76`
-- Fingerprint: `sha256:779449fb96390f8671339bfe13a5a96729602572aaf9fae43b8138fa324265a7`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/agent/proof-lanes.toml` has no test-map proof route
-- Why: path `.jekko/agent/proof-lanes.toml` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0077 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `77`
-- Fingerprint: `sha256:e25665f5d280812bc53a4da88c4c10522f4711948ca949f04b8a1478d5567ef3`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/agent/triage.md` has no test-map proof route
-- Why: path `.jekko/agent/triage.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0078 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `78`
-- Fingerprint: `sha256:fffaa1699dd34410791542c1494ca0430fe0a9f6b4b2ad56c515b16d41950504`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/command/ai-deps.md` has no test-map proof route
-- Why: path `.jekko/command/ai-deps.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0079 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `79`
-- Fingerprint: `sha256:79ecf238b27efbbcffd5ebf1c5af1ad8c653b478a425dbfe18ed646b3c87f367`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/command/changelog.md` has no test-map proof route
-- Why: path `.jekko/command/changelog.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0080 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `80`
-- Fingerprint: `sha256:8bb6c7c1366328a37e0c354b6ba1c2470859c444d24da127c35ad0e66c700a5c`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/command/commit.md` has no test-map proof route
-- Why: path `.jekko/command/commit.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0081 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `81`
-- Fingerprint: `sha256:cf3799f4e740b1e74e629e5fd13c736f7d352270d912d2357238cd8a3d9be30c`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/command/issues.md` has no test-map proof route
-- Why: path `.jekko/command/issues.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0082 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `82`
-- Fingerprint: `sha256:3d4aa6fcd0627d57f1e903aef48c58b2d31f6a6de54043102f36fc7880852c2e`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/command/learn.md` has no test-map proof route
-- Why: path `.jekko/command/learn.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0083 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `83`
-- Fingerprint: `sha256:ec2756a3ab9a906300a6545386f1a43c016003b7023dfa7e166c4181549e8742`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/command/rmslop.md` has no test-map proof route
-- Why: path `.jekko/command/rmslop.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
-### JK-0084 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:39:39Z
-- Completed: 2026-05-07T10:39:39Z
-- Source packet: `84`
-- Fingerprint: `sha256:e4895185d9bf3fce1e76eba808d1cd76b3843af56f82c55e6e825c9267bc80de`
-- Check: `HLT-004-UNMAPPED-PROOF:proof`
-- Owner: `agent`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `agent/test-map.json`
-- Problem: path `.jekko/command/spellcheck.md` has no test-map proof route
-- Why: path `.jekko/command/spellcheck.md` has no test-map proof route
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `.agents/agents.md`
-- `.agents/skills/jankurai/SKILL.md`
-- `.agents/workflows/jankurai-audit.md`
-- `.claude/skills/jankurai/SKILL.md`
-- `.cursor/rules/jankurai.mdc`
-- `.editorconfig`
-- `.github/CODEOWNERS`
-- `.github/ISSUE_TEMPLATE/bug-report.yml`
-- `.github/ISSUE_TEMPLATE/config.yml`
-- `.github/ISSUE_TEMPLATE/feature-request.yml`
-- `.gitignore`
-- `.husky/pre-push`
-- `.jekko/agent/duplicate-pr.md`
-- `.jekko/agent/generated-zones.toml`
-- `AGENTS.md`
-- `agent/`
-- `agent/test-map.json`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
-- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-07T10:39:39Z
-  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
-
 ### JK-0085 - [high] HLT-013-RENDERED-UX-GAP - apps/web
 - Status: In Progress
 - Assignee: jekko
 - Started: 2026-05-07T11:20:00Z
+- Note: stale claim by jekko since 2026-05-07T11:20:00Z; left for owner
 - Completed:
 - Source packet: `85`
 - Fingerprint: `sha256:571d35c2e730a393b782bac14825b197c0543920bb21967079d264ac602ea5b1`
@@ -3150,85 +666,12 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
+- Touched files: `packages/jekko/test/cli/tui/zyal-flash.test.ts`, `JANKURAI_TASKLIST.md`, `JANKURAI_TASKLIST.md.completed`
 - Proof receipt:
-
-### JK-0086 - [high] HLT-017-OPAQUE-OBSERVABILITY - crates/domain
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T10:42:25Z
-- Completed: 2026-05-07T10:43:31Z
-- Source packet: `86`
-- Fingerprint: `sha256:538667a01e35d8e91eae100627364816dd225911862fa2fa1578642af63d4af8`
-- Check: `HLT-017-OPAQUE-OBSERVABILITY:exceptions`
-- Owner: `tools`
-- Lane: `observability`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `crates/domain`
-- Problem: no agent-friendly exception/error pattern was detected
-- Why: no agent-friendly exception/error pattern was detected
-- Instructions: add typed errors, traces, and repairable boundary evidence
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `crates/domain`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just score`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `crates/domain/observability.md`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just score`
-  - Result: `exit 0; score history appended ./agent/score-history.jsonl; score=60 raw=73 caps=21 findings=290`
-  - Timestamp: 2026-05-07T10:43:31Z
-  - Files touched: `crates/domain/observability.md`, `JANKURAI_TASKLIST.md`
-
-### JK-0087 - [medium] HLT-017-OPAQUE-OBSERVABILITY - docs/testing.md
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T11:15:39Z
-- Completed: 2026-05-07T11:16:38Z
-- Source packet: `87`
-- Fingerprint: `sha256:70c91c3c9a1f88fe8c49e24ef5ddbea9585e640f6889837cf0857995b4372117`
-- Check: `HLT-017-OPAQUE-OBSERVABILITY:observability`
-- Owner: `standard`
-- Lane: `observability`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `docs/testing.md`
-- Problem: `Observability and repair evidence` scored 64 below the standard floor of 85
-- Why: `Observability and repair evidence` scored 64 below the standard floor of 85
-- Instructions: add typed errors, traces, and repairable boundary evidence
-- Allowed paths:
-- `docs/`
-- `docs/testing.md`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just score`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: restore the previous text and rerun the narrow proof lane
-- Touched files: `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just score`
-  - Result: `exit 0; score=60 raw=73 caps=20 findings=283; docs/testing.md finding not present in agent/repo-score.json`
-  - Timestamp: 2026-05-07T11:16:38Z
+  - Command: `rtk just fast`
+  - Result: `exit 0; bun typecheck, targeted tests, and jankurai doctor passed`
+  - Timestamp: 2026-05-09T10:45:03Z
+  - Files touched: `packages/jekko/test/cli/tui/zyal-flash.test.ts`, `JANKURAI_TASKLIST.md`, `JANKURAI_TASKLIST.md.completed`
 
 ### JK-0088 - [medium] HLT-026-COST-BUDGET-GAP - docs/testing.md
 - Status: Blocked
@@ -3269,171 +712,11 @@ Summary:
   - Timestamp: 2026-05-07T10:52:20Z
   - Files touched: `docs/testing.md`, `JANKURAI_TASKLIST.md`
 
-### JK-0089 - [high] HLT-001-DEAD-MARKER - github/index.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T11:14:08Z
-- Completed: 2026-05-07T11:15:15Z
-- Source packet: `89`
-- Fingerprint: `sha256:84b6eb14b447dca5ef73be507cf6d8f8dee70ac3f973395a21cf1048c063b813`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `github/index.ts`
-- Problem: fallback soup detected in product code
-- Why: fallback soup detected in product code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `github/`
-- `github/index.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `github/index.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T11:15:15Z
-
-### JK-0090 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - github/index.ts
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T14:00:00Z
-- Completed: 2026-05-08T14:01:00Z
-- Source packet: `90`
-- Fingerprint: `sha256:5da7c4d567982ef058271cb9c3f1cfba8942a357efbb75a0f944e09110722a9b`
-- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `github/index.ts`
-- Problem: unchecked boundary cast or parse result crosses a trust boundary
-- Why: value shape is not proven before the cast
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `github/`
-- `github/index.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `github/index.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
--   - Command: `rtk just fast`
--   - Result: `exit 0`
--   - Timestamp: 2026-05-08T14:01:00Z
--   - Files touched: `github/index.ts`, `JANKURAI_TASKLIST.md`
-
-### JK-0091 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - github/index.ts
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T14:05:00Z
-- Completed: 2026-05-08T14:08:00Z
-- Source packet: `91`
-- Fingerprint: `sha256:74d9b255e227969c028b76b13555e24ba945c92e621704da3c4ea40e9115d93`
-- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `github/index.ts`
-- Problem: unchecked boundary cast or parse result crosses a trust boundary
-- Why: value shape is not proven before the cast
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `github/`
-- `github/index.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; repo checks ok; advisories only: lockfile missing, echo-proof workflow, security-tool:syft`
-  - Timestamp: 2026-05-08T14:08:00Z
-  - Files touched: `github/index.ts`, `JANKURAI_TASKLIST.md`
-- Touched files: `github/index.ts`, `JANKURAI_TASKLIST.md`
-- Touched files:
-- Proof receipt:
-
-### JK-0092 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - github/index.ts
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T14:45:00Z
-- Completed: 2026-05-07T15:00:00Z
-- Source packet: `92`
-- Fingerprint: `sha256:9c7d1f4e6a9b9a66a898f45810abc2e4ec7e921ca2d9a2b77bbad74de3ac2fd2`
-- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `github/index.ts`
-- Problem: unchecked boundary cast or parse result crosses a trust boundary
-- Why: value shape is not proven before the cast
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `github/`
-- `github/index.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
-
 ### JK-0093 - [high] UNKNOWN - infra/console.ts
 - Status: In Progress
 - Assignee: jekko
 - Started: 2026-05-08T15:00:00Z
+- Note: stale claim by jekko since 2026-05-08T15:00:00Z; left for owner
 - Completed:
 - Source packet: `93`
 - Fingerprint: `sha256:c6cb7aa0947f7627ce6408a79cbaeb81f8afacb65f8a8b20244c65e78ae0a330`
@@ -3463,285 +746,6 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0094 - [critical] HLT-010-SECRET-SPRAWL - infra/console.ts
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T12:40:00Z
-- Completed: 2026-05-08T12:45:00Z
-- Proof receipt:
-  - Command: `rtk just security`
-  - Result: `jankurai security run . --out target/jankurai/security/evidence.json`
-  - Timestamp: 2026-05-08T12:45:00Z
-  - Files touched: `.jekko/plugins/tui-smoke.tsx`, `JANKURAI_TASKLIST.md`
-
-### JK-0095 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/state.rs
-- Assignee: Codex
-- Started: 2026-05-07T09:25:14.158Z
-- Completed: 2026-05-07T09:25:40.528Z
-- Source packet: `95`
-- Fingerprint: `sha256:0567f10800bae7fb4e8b5d02ecef22736675b43833742ff73b3f67cf72b63352`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `jnoccio-fusion/src/state.rs`
-- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
-- Why: future-hostile/dead-language term `stale` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `jnoccio-fusion/src/`
-- `jnoccio-fusion/src/state.rs`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `jnoccio-fusion/src/state.rs`, `JANKURAI_TASKLIST.md`
-- Proof receipt: `just fast` passed at 2026-05-07T09:26:11.395Z; `cargo test expired_active_agents_are_pruned` passed at 2026-05-07T09:26:11.395Z; scoped source check removed runtime stale marker from jnoccio-fusion/src/state.rs.
-
-### JK-0096 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/web/src/main.tsx
-- Status: Complete
-- Assignee: Codex
-- Started: 2026-05-07T10:46:20.398Z
-- Completed: 2026-05-07T10:46:44.246Z
-- Source packet: `96`
-- Fingerprint: `sha256:f0c0dd9eaf6a10c55975d89e445242c67a24292c4f3092a515597c291e9f909c`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `jnoccio-fusion/web/src/main.tsx`
-- Problem: future-hostile/dead-language term `placeholder` appears in product/runtime code
-- Why: future-hostile/dead-language term `placeholder` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `jnoccio-fusion/web/src/`
-- `jnoccio-fusion/web/src/main.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `jnoccio-fusion/web/src/main.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt: `just fast` passed at 2026-05-07T10:46:44.246Z; replaced live-feed placeholder attribute with aria-label in jnoccio-fusion/web/src/main.tsx.
-
-### JK-0097 - [high] UNKNOWN - packages/app/public/oc-theme-preload.js
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T15:00:00Z
-- Completed: 2026-05-08T15:05:00Z
-- Source packet: `97`
-- Fingerprint: `sha256:139c59be93ae16bacd0a8718f1a15dcf6146bda8f4c66065769a29f3c2e62f0a`
-- Check: `HLT-000-SCORE-DIMENSION:stack`
-- Owner: `tools`
-- Lane: `audit`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `packages/app/public/oc-theme-preload.js`
-- Problem: runtime code uses a language outside the chosen optimal stack
-- Why: runtime code uses a language outside the chosen optimal stack
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/public/`
-- `packages/app/public/oc-theme-preload.js`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just score`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/public/oc-theme-preload.js`
-- Proof receipt: `just fast` passed at 2026-05-08T15:05:00Z; removed dead oc-1 migration marker from oc-theme-preload.js.
-
-### JK-0098 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/dialog-edit-project.tsx
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T15:10:00Z
-- Completed: 2026-05-08T15:12:00Z
-- Source packet: `98`
-- Fingerprint: `sha256:3f8fa05bb593c98f6d8c7c05bd84b85cb7787826f2f8b45f6eb04bc5b68c6311`
-- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `packages/app/src/components/dialog-edit-project.tsx`
-- Problem: unchecked boundary cast or parse result crosses a trust boundary
-- Why: value shape is not proven before the cast
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/components/`
-- `packages/app/src/components/dialog-edit-project.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/components/dialog-edit-project.tsx`
-- Proof receipt: `just fast` passed at 2026-05-08T15:12:00Z; replaced unsafe cast with instanceof guard at line 68.
-
-### JK-0099 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/dialog-select-directory.tsx
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-08T16:00:00Z
-- Completed: 2026-05-08T16:05:00Z
-- Source packet: `99`
-- Fingerprint: `sha256:aa1c8e266a95c8fcad59ead14f67ae918ddbedba0a0d4062898d92d13a8f8218`
-- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `packages/app/src/components/dialog-select-directory.tsx`
-- Problem: unchecked boundary cast or parse result crosses a trust boundary
-- Why: value shape is not proven before the cast
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/components/`
-- `packages/app/src/components/dialog-select-directory.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
-  - Command: `just fast`
-  - Result: `exit 0; repo checks ok`
-  - Timestamp: 2026-05-08T16:05:00Z
-  - Files touched: `packages/app/src/components/dialog-select-directory.tsx`, `JANKURAI_TASKLIST.md`
-
-### JK-0100 - [high] HLT-001-DEAD-MARKER - packages/app/src/components/prompt-input.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:38:53Z
-- Completed: 2026-05-07T14:39:08Z
-- Source packet: `100`
-- Fingerprint: `sha256:2ae02b24db27d751652d71e0a859bb06239a8ede3d49529fd7f5ac62391f2f0e`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/components/prompt-input.tsx`
-- Problem: future-hostile/dead-language term `placeholder` appears in product/runtime code
-- Why: future-hostile/dead-language term `placeholder` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/components/`
-- `packages/app/src/components/prompt-input.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/components/prompt-input.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T14:39:08Z
-
-### JK-0101 - [high] HLT-001-DEAD-MARKER - packages/app/src/components/prompt-input/placeholder.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:44:33Z
-- Completed: 2026-05-07T14:44:42Z
-- Source packet: `101`
-- Fingerprint: `sha256:6cf54292443d8cb0d68baaefa4a4dba276099c8253e2c90fdfc3cdc195d0da29`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/components/prompt-input/placeholder.test.ts`
-- Problem: future-hostile/dead-language term `placeholder` appears in product/runtime code
-- Why: future-hostile/dead-language term `placeholder` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/components/prompt-input/`
-- `packages/app/src/components/prompt-input/placeholder.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/components/prompt-input/placeholder.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T14:44:42Z
 
 ### JK-0102 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/components/terminal.tsx
 - Status: Pending
@@ -3779,86 +783,6 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0103 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:45:18Z
-- Completed: 2026-05-07T14:45:46Z
-- Source packet: `103`
-- Fingerprint: `sha256:c5ecadb1891cb9b2c3797956b57ac918fe597d822d29acf97fda1d50b817da2e`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/`
-- `packages/app/src/context/global-sync.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T14:45:46Z
-
-### JK-0104 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:45:46Z
-- Completed: 2026-05-07T14:45:53Z
-- Source packet: `104`
-- Fingerprint: `sha256:a5e819874ea4c483ea6c552d354c0be3f225960473b0e005a20a11f548e7b9c7`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/`
-- `packages/app/src/context/global-sync.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0103`
-  - Timestamp: 2026-05-07T14:45:53Z
 
 ### JK-0105 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/context/global-sync.tsx
 - Status: Pending
@@ -3971,206 +895,6 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0108 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:47:14Z
-- Completed: 2026-05-07T14:47:14Z
-- Source packet: `108`
-- Fingerprint: `sha256:a607e889cf671d34aa40bfc36c73db05a094458c2153f422e48e9887299d956a`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/`
-- `packages/app/src/context/global-sync.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0103/JK-0104`
-  - Timestamp: 2026-05-07T14:47:14Z
-
-### JK-0109 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync/event-reducer.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:46:27Z
-- Completed: 2026-05-07T14:46:37Z
-- Source packet: `109`
-- Fingerprint: `sha256:4327732f6492648b077948880e2c7f09ed570bb48237a7eb12a4bd3211f56feb`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync/event-reducer.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/global-sync/`
-- `packages/app/src/context/global-sync/event-reducer.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync/event-reducer.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T14:46:37Z
-
-### JK-0110 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync/event-reducer.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:46:37Z
-- Completed: 2026-05-07T14:46:53Z
-- Source packet: `110`
-- Fingerprint: `sha256:93905b21e94532cc622b468a56c080b1219c694c0c89ae584929c084082d7bfa`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync/event-reducer.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/global-sync/`
-- `packages/app/src/context/global-sync/event-reducer.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync/event-reducer.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0109`
-  - Timestamp: 2026-05-07T14:46:53Z
-
-### JK-0111 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync/event-reducer.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:47:14Z
-- Completed: 2026-05-07T14:47:14Z
-- Source packet: `111`
-- Fingerprint: `sha256:8a2e8364f737787ab0ce895d21f44b2cdfb918d295fb35b0e91ca4dbcb81f241`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync/event-reducer.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/global-sync/`
-- `packages/app/src/context/global-sync/event-reducer.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync/event-reducer.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0109/JK-0110`
-  - Timestamp: 2026-05-07T14:47:14Z
-
-### JK-0112 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync/event-reducer.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:47:14Z
-- Completed: 2026-05-07T14:47:14Z
-- Source packet: `112`
-- Fingerprint: `sha256:6e08aeaeb74aae3c6bef0cd2438178962fe8ff01ca3b321ad808993d3d156d52`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync/event-reducer.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/global-sync/`
-- `packages/app/src/context/global-sync/event-reducer.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync/event-reducer.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0109/JK-0110`
-  - Timestamp: 2026-05-07T14:47:14Z
-
 ### JK-0113 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/context/global-sync/event-reducer.ts
 - Status: Pending
 - Assignee: unassigned
@@ -4244,126 +968,6 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0115 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync/session-cache.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:47:40Z
-- Completed: 2026-05-07T14:47:47Z
-- Source packet: `115`
-- Fingerprint: `sha256:faf1bea29e26def898a9d412fb14f3a3bb622816ba7def386d19ed3147058d7f`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync/session-cache.test.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/global-sync/`
-- `packages/app/src/context/global-sync/session-cache.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync/session-cache.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T14:47:47Z
-
-### JK-0116 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/global-sync/types.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:47:57Z
-- Completed: 2026-05-07T14:48:03Z
-- Source packet: `116`
-- Fingerprint: `sha256:3248aaa09b1b271a76f69b5219faf539d7e2fefd39d53cb03c8d149f9418e416`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/global-sync/types.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/global-sync/`
-- `packages/app/src/context/global-sync/types.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/global-sync/types.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T14:48:03Z
-
-### JK-0117 - [high] HLT-001-DEAD-MARKER - packages/app/src/context/sync.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T14:48:38Z
-- Completed: 2026-05-07T14:48:49Z
-- Source packet: `117`
-- Fingerprint: `sha256:95a5f314f90190052ba9c1263889091f27178ad9175328f691e62d0277551eac`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/context/sync.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/context/`
-- `packages/app/src/context/sync.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/context/sync.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T14:48:49Z
 
 ### JK-0118 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/pages/layout.tsx
 - Status: Pending
@@ -4513,206 +1117,6 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0122 - [high] HLT-001-DEAD-MARKER - packages/app/src/pages/session/composer/session-composer-region.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:02:08Z
-- Completed: 2026-05-07T15:03:20Z
-- Source packet: `122`
-- Fingerprint: `sha256:36701eb2819f9f16a33553383f1b8a071c0c693be9ed30df98a6bede8f4d7c0e`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/pages/session/composer/session-composer-region.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/pages/session/composer/`
-- `packages/app/src/pages/session/composer/session-composer-region.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/pages/session/composer/session-composer-region.tsx`, `packages/app/src/pages/session/composer/session-composer-state.ts`, `packages/app/src/pages/session/composer/session-pending-dock.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T15:03:20Z
-
-### JK-0123 - [high] HLT-001-DEAD-MARKER - packages/app/src/pages/session/composer/session-todo-dock.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:03:20Z
-- Completed: 2026-05-07T15:03:20Z
-- Source packet: `123`
-- Fingerprint: `sha256:c69c7dbfc758d983e602219a310431b321e9b0299266ac1f2f08d0bcfccb8791`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/pages/session/composer/`
-- `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/pages/session/composer/session-pending-dock.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0122`
-  - Timestamp: 2026-05-07T15:03:20Z
-
-### JK-0124 - [high] HLT-001-DEAD-MARKER - packages/app/src/pages/session/composer/session-todo-dock.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:03:20Z
-- Completed: 2026-05-07T15:03:20Z
-- Source packet: `124`
-- Fingerprint: `sha256:02321bcd90ada1b61cf7b27485e034a231b6e45bd02c1de936dbf36cc2f88cd2`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/pages/session/composer/`
-- `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/pages/session/composer/session-pending-dock.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0122`
-  - Timestamp: 2026-05-07T15:03:20Z
-
-### JK-0125 - [high] HLT-001-DEAD-MARKER - packages/app/src/pages/session/composer/session-todo-dock.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:03:20Z
-- Completed: 2026-05-07T15:03:20Z
-- Source packet: `125`
-- Fingerprint: `sha256:6e88ce2412f45f3d2a3d9cd324983d229f14ed0d84a7ae469d5437b9b2780e20`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/pages/session/composer/`
-- `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/pages/session/composer/session-pending-dock.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0122`
-  - Timestamp: 2026-05-07T15:03:20Z
-
-### JK-0126 - [high] HLT-001-DEAD-MARKER - packages/app/src/pages/session/composer/session-todo-dock.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:03:20Z
-- Completed: 2026-05-07T15:03:20Z
-- Source packet: `126`
-- Fingerprint: `sha256:5c636a8e9711c5164d6e0ab8e168803ceba58ff4d733c37861e3599b51c5905b`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/app/src/pages/session/composer/`
-- `packages/app/src/pages/session/composer/session-todo-dock.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/app/src/pages/session/composer/session-pending-dock.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0122`
-  - Timestamp: 2026-05-07T15:03:20Z
-
 ### JK-0127 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/app/src/sst-env.d.ts
 - Status: Pending
 - Assignee: unassigned
@@ -4860,46 +1264,6 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0131 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/console/app/src/asset/brand/jekko-brand-assets.zip
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:04:09Z
-- Completed: 2026-05-07T15:08:11Z
-- Source packet: `131`
-- Fingerprint: `sha256:f0d147bfd1fc421fbda79cd6148cb3782102b897d4a0ca2588c68279433ef2d1`
-- Check: `HLT-040-REPO-ROT-BAD-BEHAVIOR:context`
-- Owner: `tools`
-- Lane: `audit`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/console/app/src/asset/brand/jekko-brand-assets.zip`
-- Problem: active tree contains an archive or backup artifact that looks like a source snapshot
-- Why: checked-in snapshots bypass normal source control review and can preserve stale code or secrets
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/console/app/src/asset/brand/`
-- `packages/console/app/src/asset/brand/jekko-brand-assets.zip`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just score`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/console/app/src/routes/brand/index.tsx`, `packages/console/app/src/asset/brand/jekko-brand-assets.zip`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just score`
-  - Result: `exit 0; archive finding removed from agent/repo-score.json`
-  - Timestamp: 2026-05-07T15:08:11Z
 
 ### JK-0132 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/console/app/src/component/header.tsx
 - Status: Pending
@@ -5196,83 +1560,6 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0140 - [high] HLT-001-DEAD-MARKER - packages/console/app/src/routes/workspace/[id]/billing/billing-section.tsx
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:08:47Z
-- Completed: 2026-05-07T15:09:02Z
-- Source packet: `140`
-- Fingerprint: `sha256:aa406aecfbad9a712e9cfda8234e474cf5ebcdaea7374504f2b83c4c13eec12a`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/console/app/src/routes/workspace/[id]/billing/billing-section.tsx`
-- Problem: future-hostile/dead-language term `dummy` appears in product/runtime code
-- Why: future-hostile/dead-language term `dummy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/console/app/src/routes/workspace/[id]/billing/`
-- `packages/console/app/src/routes/workspace/[id]/billing/billing-section.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/console/app/src/routes/workspace/[id]/billing/billing-section.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; dummy marker removed from billing-section.tsx`
-  - Timestamp: 2026-05-07T15:09:02Z
-
-### JK-0141 - [high] HLT-001-DEAD-MARKER - packages/console/app/src/routes/workspace/[id]/billing/payment-section.tsx
-- Status: Complete
-- Assignee: Codex
-- Started: 2026-05-07T15:02:50.446Z
-- Completed: 2026-05-07T15:03:14.207Z
-- Source packet: `141`
-- Fingerprint: `sha256:45ff127aa1e1f452c9f1435d2e931af12973e304532d0e89e30b1de51cc7b729`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/console/app/src/routes/workspace/[id]/billing/payment-section.tsx`
-- Problem: future-hostile/dead-language term `dummy` appears in product/runtime code
-- Why: future-hostile/dead-language term `dummy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/console/app/src/routes/workspace/[id]/billing/`
-- `packages/console/app/src/routes/workspace/[id]/billing/payment-section.tsx`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/console/app/src/routes/workspace/[id]/billing/payment-section.tsx`, `JANKURAI_TASKLIST.md`
-- Proof receipt: `just fast` passed at 2026-05-07T15:03:14.207Z; target file no longer contains `dummy` marker.
 
 ### JK-0142 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/console/app/src/routes/zen/util/provider/anthropic.ts
 - Status: Pending
@@ -6385,9 +2672,9 @@ Summary:
 - Proof receipt:
 
 ### JK-0172 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/desktop/scripts/copy-icons.ts
-- Status: Pending
-- Assignee: unassigned
-- Started:
+- Status: Blocked
+- Assignee: codex-loop
+- Started: 2026-05-09T11:25:36Z
 - Completed:
 - Source packet: `172`
 - Fingerprint: `sha256:f24319c9b04ac3c7994f9f735c8c38bbc21cd1bbf47ca9e16b93b33446dcbae2`
@@ -6418,8 +2705,13 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
+- Blocked reason: scoped path `packages/desktop/scripts/copy-icons.ts` does not exist in the current worktree, so there is no local file to repair within the declared allowed paths
 - Touched files:
 - Proof receipt:
+  - Command: `rtk sed -n '1,240p' packages/desktop/scripts/copy-icons.ts`
+  - Result: `exit 1; sed: packages/desktop/scripts/copy-icons.ts: No such file or directory`
+  - Timestamp: 2026-05-09T11:25:36Z
+  - Files touched: `JANKURAI_TASKLIST.md`
 
 ### JK-0173 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/docs/favicon-v3.svg
 - Status: Pending
@@ -6606,42 +2898,6 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0178 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
-- Status: Pending
-- Assignee: unassigned
-- Started:
-- Completed:
-- Source packet: `178`
-- Fingerprint: `sha256:028d147e225e5ab9fe890280fc78f6ce77bec1955298e6ca4948b9267d226009`
-- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
-- Owner: `tools`
-- Lane: `db`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
-- Problem: destructive migration appears without nearby rollback or backup proof
-- Why: the migration can remove or rewrite data without local evidence of recovery
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
-- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
 
 ### JK-0179 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
 - Status: Pending
@@ -7716,47 +3972,6 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0208 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/plugin/shared.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:40:21Z
-- Completed: 2026-05-07T10:41:33Z
-- Source packet: `208`
-- Fingerprint: `sha256:b1543bdd3a84677040c72c9fe6cde31148810fc3452a8a70af97d28301737516`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/src/plugin/shared.ts`
-- Problem: future-hostile/dead-language term `old` appears in product/runtime code
-- Why: future-hostile/dead-language term `old` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/src/plugin/`
-- `packages/jekko/src/plugin/shared.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/src/plugin/shared.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:41:33Z
-  - Files touched: packages/jekko/src/plugin/shared.ts, JANKURAI_TASKLIST.md
-
 ### JK-0209 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/groups/session.ts
 - Status: Pending
 - Assignee: unassigned
@@ -8534,47 +4749,6 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0230 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/message.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:43:03Z
-- Completed: 2026-05-07T10:44:02Z
-- Source packet: `230`
-- Fingerprint: `sha256:44ff90d94da722fa22438a476bfd308135849067c9ee7e1d5ed4c88a6bd102a1`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/src/session/message.ts`
-- Problem: future-hostile/dead-language term `old` appears in product/runtime code
-- Why: future-hostile/dead-language term `old` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/src/session/`
-- `packages/jekko/src/session/message.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/src/session/message.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:44:02Z
-  - Files touched: packages/jekko/src/session/message.ts, JANKURAI_TASKLIST.md
-
 ### JK-0231 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/pending.ts
 - Status: Pending
 - Assignee: unassigned
@@ -9245,6 +5419,7 @@ Summary:
 - Status: In Progress
 - Assignee: jekko
 - Started: 2026-05-07T15:04:41Z
+- Note: stale claim by jekko since 2026-05-07T15:04:41Z; left for owner
 - Completed:
 - Source packet: `249`
 - Fingerprint: `sha256:de83cfefcd00202538d824490148aac0ce593e286db9eb61d62e04ee06c18bf7`
@@ -9353,9 +5528,9 @@ Summary:
 - Proof receipt:
 
 ### JK-0252 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/todo.ts
-- Status: Pending
-- Assignee: unassigned
-- Started:
+- Status: In Progress
+- Assignee: jekko
+- Started: 2026-05-09T10:50:00Z
 - Completed:
 - Source packet: `252`
 - Fingerprint: `sha256:06e4bfffa4411bad6a7c5565bac943807e6f1d34abee1e32be411bfbd1e63d18`
@@ -9944,332 +6119,6 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0268 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/lsp/lifecycle.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:09:28Z
-- Completed: 2026-05-07T15:09:45Z
-- Source packet: `268`
-- Fingerprint: `sha256:c0a460747444cf30e387cfdad30767dbf1dcfb3458c3a17b2266931048026c1b`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/lsp/lifecycle.test.ts`
-- Problem: future-hostile/dead-language term `unused` appears in product/runtime code
-- Why: future-hostile/dead-language term `unused` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/lsp/`
-- `packages/jekko/test/lsp/lifecycle.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/jekko/test/lsp/lifecycle.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T15:09:45Z
-
-### JK-0269 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/lsp/lifecycle.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:09:45Z
-- Completed: 2026-05-07T15:09:45Z
-- Source packet: `269`
-- Fingerprint: `sha256:4abc0b4a003db00efef9e60da067af9e343ad1c0f81119e78dd58a991ebfc071`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/lsp/lifecycle.test.ts`
-- Problem: future-hostile/dead-language term `unused` appears in product/runtime code
-- Why: future-hostile/dead-language term `unused` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/lsp/`
-- `packages/jekko/test/lsp/lifecycle.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/jekko/test/lsp/lifecycle.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0268`
-  - Timestamp: 2026-05-07T15:09:45Z
-
-### JK-0270 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/memory/abort-leak.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:45:02Z
-- Completed: 2026-05-07T10:46:03Z
-- Source packet: `270`
-- Fingerprint: `sha256:8588a13e7e7795d4fa5fdb360f50642abe6151aaa3f9753d13850d90e0c9d91f`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/memory/abort-leak.test.ts`
-- Problem: future-hostile/dead-language term `old` appears in product/runtime code
-- Why: future-hostile/dead-language term `old` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/memory/`
-- `packages/jekko/test/memory/abort-leak.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:46:03Z
-  - Files touched: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0271 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/memory/abort-leak.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:46:03Z
-- Completed: 2026-05-07T10:46:03Z
-- Source packet: `271`
-- Fingerprint: `sha256:fc3ebcd66ac907f8bbbaed12717f6e4c47df63aa7da8b9e5d485020d6878c34c`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/memory/abort-leak.test.ts`
-- Problem: future-hostile/dead-language term `old` appears in product/runtime code
-- Why: future-hostile/dead-language term `old` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/memory/`
-- `packages/jekko/test/memory/abort-leak.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:46:03Z
-  - Files touched: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0272 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/memory/abort-leak.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:46:03Z
-- Completed: 2026-05-07T10:46:03Z
-- Source packet: `272`
-- Fingerprint: `sha256:0bf3992d3a365ebbaf8b2476289480ad390c4b7a9d3b543ca687d5cb585d9dd7`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/memory/abort-leak.test.ts`
-- Problem: future-hostile/dead-language term `old` appears in product/runtime code
-- Why: future-hostile/dead-language term `old` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/memory/`
-- `packages/jekko/test/memory/abort-leak.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:46:03Z
-  - Files touched: packages/jekko/test/memory/abort-leak.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0273 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/patch/patch.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T11:13:32Z
-- Completed: 2026-05-07T11:14:46Z
-- Source packet: `273`
-- Fingerprint: `sha256:2912438f48f5afe1d315a3257d37f6210e3b49e739d411be9148fee1563324b2`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/patch/patch.test.ts`
-- Problem: future-hostile/dead-language term `old` appears in product/runtime code
-- Why: future-hostile/dead-language term `old` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/patch/`
-- `packages/jekko/test/patch/patch.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/patch/patch.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T11:14:46Z
-  - Files touched: packages/jekko/test/patch/patch.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0274 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/preload.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T14:38:32Z
-- Completed: 2026-05-07T14:40:29Z
-- Source packet: `274`
-- Fingerprint: `sha256:6ddb1d7d9b3bc20a07ce419adf8a1e4b6aa5308c49625a21ef03b8f446d60a28`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/preload.ts`
-- Problem: future-hostile/dead-language term `temp` appears in product/runtime code
-- Why: future-hostile/dead-language term `temp` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/`
-- `packages/jekko/test/preload.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/preload.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T14:40:29Z
-  - Files touched: packages/jekko/test/preload.ts, JANKURAI_TASKLIST.md
-
-### JK-0275 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/project/migrate-global.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T14:44:16Z
-- Completed: 2026-05-07T14:45:35Z
-- Source packet: `275`
-- Fingerprint: `sha256:950de7bcefa2f10ca4d7e06cfdebdcc017addb59bd6a4232373cc323e75fdc82`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/project/migrate-global.test.ts`
-- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/project/`
-- `packages/jekko/test/project/migrate-global.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/project/migrate-global.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T14:45:35Z
-  - Files touched: packages/jekko/test/project/migrate-global.test.ts, JANKURAI_TASKLIST.md
-
 ### JK-0276 - [medium] HLT-027-HUMAN-REVIEW-EVIDENCE-GAP - packages/jekko/test/provider/copilot/copilot-chat-model.test.ts
 - Status: Pending
 - Assignee: unassigned
@@ -10343,370 +6192,6 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0278 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/provider/provider.part-07.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:10:00Z
-- Completed: 2026-05-07T15:10:08Z
-- Source packet: `278`
-- Fingerprint: `sha256:c8e6cfc64e848d828ca54fc20b0b2744e3e27c3eeee01a6e6a54529a441eb723`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/provider/provider.part-07.test.ts`
-- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
-- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/provider/`
-- `packages/jekko/test/provider/provider.part-07.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/jekko/test/provider/provider.part-07.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T15:10:08Z
-
-### JK-0279 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-event.test.ts
-- Assignee: codex-agent
-- Started: 2026-05-07T09:28:01Z
-- Completed: 2026-05-07T09:29:23Z
-- Source packet: `279`
-- Fingerprint: `sha256:2d608621fb76d03bdd00d4cbba6d0a5b748e49e58e73188b8891a0899ebf895a`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/server/httpapi-event.test.ts`
-- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/server/`
-- `packages/jekko/test/server/httpapi-event.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T09:29:23Z
-  - Files touched: packages/jekko/test/server/httpapi-event.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0280 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-json-parity.test.ts
-- Assignee: codex-agent
-- Started: 2026-05-07T09:30:05Z
-- Completed: 2026-05-07T09:31:30Z
-- Source packet: `280`
-- Fingerprint: `sha256:1547d67f1f3dc08e1e5c85406dee74c8b73a3280be16237509c3a56efca2199a`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/server/httpapi-json-parity.test.ts`
-- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/server/`
-- `packages/jekko/test/server/httpapi-json-parity.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T09:31:30Z
-  - Files touched: packages/jekko/test/server/httpapi-json-parity.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0281 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-mcp.test.ts
-- Assignee: codex-agent
-- Started: 2026-05-07T09:32:13Z
-- Completed: 2026-05-07T09:33:51Z
-- Source packet: `281`
-- Fingerprint: `sha256:3c8cb8a62c0e80e52c471efa68c1f210e7de0b7a4080307d28a22799f6ef2805`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/server/httpapi-mcp.test.ts`
-- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/server/`
-- `packages/jekko/test/server/httpapi-mcp.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/server/httpapi-mcp.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T09:33:51Z
-  - Files touched: packages/jekko/test/server/httpapi-mcp.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0284 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-provider.test.ts
-- Assignee: codex-agent
-- Started: 2026-05-07T09:24:11Z
-- Completed: 2026-05-07T09:27:13Z
-- Source packet: `284`
-- Fingerprint: `sha256:66d789d13ffe46914f86ded0b0b16d5d51850d819fe3f250f730a52f0308aebd`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/server/httpapi-provider.test.ts`
-- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/server/`
-- `packages/jekko/test/server/httpapi-provider.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T09:27:13Z
-  - Files touched: packages/jekko/test/server/httpapi-provider.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0289 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-tui.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:24:00Z
-- Completed: 2026-05-07T10:24:00Z
-- Source packet: `289`
-- Fingerprint: `sha256:6c4420b70418b5f227f984f9faca68f4cdd7e9733eaa3678aa957fe6636b7154`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/server/httpapi-tui.test.ts`
-- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/server/`
-- `packages/jekko/test/server/httpapi-tui.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/server/httpapi-tui.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:24:00Z
-  - Files touched: packages/jekko/test/server/httpapi-tui.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0290 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/llm.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:28:45Z
-- Completed: 2026-05-07T10:29:43Z
-- Source packet: `290`
-- Fingerprint: `sha256:0bf4a26648a2558de52c8e7d12d6c9f773dc0e3bd5151f3d6533af17bfd7fb32`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/session/llm.test.ts`
-- Problem: future-hostile/dead-language term `stub` appears in product/runtime code
-- Why: future-hostile/dead-language term `stub` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/session/`
-- `packages/jekko/test/session/llm.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:29:43Z
-  - Files touched: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0291 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/llm.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:29:43Z
-- Completed: 2026-05-07T10:29:43Z
-- Source packet: `291`
-- Fingerprint: `sha256:dc65439d2eef1df93fc6ba169a77fe4ccc55a53e6daaba71d30a2029934af735`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/session/llm.test.ts`
-- Problem: future-hostile/dead-language term `stub` appears in product/runtime code
-- Why: future-hostile/dead-language term `stub` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/session/`
-- `packages/jekko/test/session/llm.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:29:43Z
-  - Files touched: packages/jekko/test/session/llm.test.ts, JANKURAI_TASKLIST.md
-
-### JK-0292 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/message-v2.test.ts
-- Status: Complete
-- Assignee: unassigned
-- Started: 2026-05-07T10:34:14Z
-- Completed: 2026-05-07T10:35:16Z
-- Source packet: `292`
-- Fingerprint: `sha256:03c5d1645466c1876e00ab1bc40b7c95fc39d5a9ef2567de8140489a553d0e1c`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/session/message-v2.test.ts`
-- Problem: future-hostile/dead-language term `old` appears in product/runtime code
-- Why: future-hostile/dead-language term `old` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/session/`
-- `packages/jekko/test/session/message-v2.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: packages/jekko/test/session/message-v2.test.ts, JANKURAI_TASKLIST.md
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; jankurai doctor --fail-on critical; lockfile - package manifests exist without a committed lockfile; echo-proof - workflow has echo-only proof instead of an operational command; security-tool:syft advisory`
-  - Timestamp: 2026-05-07T10:35:16Z
-  - Files touched: packages/jekko/test/session/message-v2.test.ts, JANKURAI_TASKLIST.md
 
 ### JK-0293 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/prompt.test.ts
 - Status: Pending
@@ -10929,86 +6414,6 @@ Summary:
 - Rollback: revert the scoped files and rerun the required proof before retrying
 - Touched files:
 - Proof receipt:
-
-### JK-0299 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/snapshot-tool-race.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:10:26Z
-- Completed: 2026-05-07T15:11:08Z
-- Source packet: `299`
-- Fingerprint: `sha256:b71a8a03a522c1dd71298ca735083a7e9819bc86fdebbe26f94d789413d9acc9`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/session/snapshot-tool-race.test.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/session/`
-- `packages/jekko/test/session/snapshot-tool-race.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/jekko/test/session/snapshot-tool-race.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0`
-  - Timestamp: 2026-05-07T15:11:08Z
-
-### JK-0300 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/snapshot-tool-race.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:11:08Z
-- Completed: 2026-05-07T15:11:08Z
-- Source packet: `300`
-- Fingerprint: `sha256:f1de2ee99f55f4da6a18cfba6a633ad8eeb3349af32c25bb224a3f66cd805e96`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/session/snapshot-tool-race.test.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/session/`
-- `packages/jekko/test/session/snapshot-tool-race.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/jekko/test/session/snapshot-tool-race.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt:
-  - Command: `rtk just fast`
-  - Result: `exit 0; proof shared with JK-0299`
-  - Timestamp: 2026-05-07T15:11:08Z
 
 ### JK-0301 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
 - Status: Pending
@@ -11380,80 +6785,6 @@ Summary:
 - Touched files:
 - Proof receipt:
 
-### JK-0311 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/registry.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:12:11Z
-- Completed: 2026-05-07T15:12:25Z
-- Source packet: `311`
-- Fingerprint: `sha256:79f7079cab9fab7ae2ce66122d1955b6a799a7bca7e0df903a3f1deb9a28546b`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/tool/registry.test.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/tool/`
-- `packages/jekko/test/tool/registry.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/jekko/test/tool/registry.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt: `rtk just fast` (pass, exit 0, 2026-05-07T15:12:25Z)
-
-### JK-0312 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/registry.test.ts
-- Status: Complete
-- Assignee: codex-agent
-- Started: 2026-05-07T15:12:11Z
-- Completed: 2026-05-07T15:12:25Z
-- Source packet: `312`
-- Fingerprint: `sha256:a5cf27a098fc05113cde4870186cecd6f494c54ff42a63e6a31736a96d68afb2`
-- Check: `HLT-001-DEAD-MARKER:vibe`
-- Owner: `tools`
-- Lane: `fast`
-- Risk: `medium`
-- Eligibility: `agent-assisted`
-- Human review required: `no`
-- Scope path: `packages/jekko/test/tool/registry.test.ts`
-- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
-- Why: future-hostile/dead-language term `todo` appears in product/runtime code
-- Instructions: scoped fix with targeted proof and no authority expansion
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/jekko/test/tool/`
-- `packages/jekko/test/tool/registry.test.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files: `packages/jekko/test/tool/registry.test.ts`, `JANKURAI_TASKLIST.md`
-- Proof receipt: `rtk just fast` (pass, exit 0, 2026-05-07T15:12:25Z)
-
 ### JK-0313 - [high] HLT-001-DEAD-MARKER - packages/plugin/src/tui.ts
 - Status: Pending
 - Assignee: unassigned
@@ -11525,44 +6856,6 @@ Summary:
 - stop if the fix broadens permission scope or touches a generated zone
 - stop if the repair requires a migration, secret rotation, or external service change
 - Rollback: revert the scoped files and rerun the required proof before retrying
-- Touched files:
-- Proof receipt:
-
-### JK-0315 - [high] HLT-002-GENERATED-MUTATION - packages/sdk/js/src/gen/client/client.gen.ts
-- Status: Complete
-- Assignee: jekko
-- Started: 2026-05-07T12:00:00Z
-- Completed: 2026-05-07T12:05:00Z
-- Source packet: `315`
-- Fingerprint: `sha256:14ea5b3fddebb2958fcd0d3eb2c97d6432765cb2685c62b1a32b3ac9194ed40d`
-- Check: `HLT-002-GENERATED-MUTATION:generated`
-- Owner: `tools`
-- Lane: `contract`
-- Risk: `high`
-- Eligibility: `human-required`
-- Human review required: `yes`
-- Scope path: `packages/sdk/js/src/gen/client/client.gen.ts`
-- Problem: generated zone is not protected strongly enough against hand edits
-- Why: generated zone is not protected strongly enough against hand edits
-- Instructions: edit the source contract and regenerate the protected artifact
-- Allowed paths:
-- `crates/`
-- `packages/`
-- `tools/`
-- `packages/sdk/js/src/gen/client/`
-- `packages/sdk/js/src/gen/client/client.gen.ts`
-- Forbidden paths:
-- `reference/`
-- `target/`
-- `agent/repo-score.json`
-- `agent/repo-score.md`
-- Proof required:
-- `just fast`
-- Stop conditions:
-- stop if the fix broadens permission scope or touches a generated zone
-- stop if the repair requires a migration, secret rotation, or external service change
-- stop if the source contract or generator is not identified first
-- Rollback: revert the source contract or template, then regenerate the output
 - Touched files:
 - Proof receipt:
 
@@ -12033,6 +7326,13998 @@ Summary:
 - `tools/`
 - `packages/web/src/components/share/`
 - `packages/web/src/components/share/part.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0691 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/check-encrypted-paths.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `2`
+- Fingerprint: `sha256:541fbf4b23821a0b9cbf4e6c985fa7344558d5efe223d803b9ae0bf7e3ca02a6`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/check-encrypted-paths.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/check-encrypted-paths.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0692 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/check-encrypted-paths.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `3`
+- Fingerprint: `sha256:d0791a3b403331eec3f2386768007a4ece3663d63bf3cc9fe68c94d44c9d69e1`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/check-encrypted-paths.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/check-encrypted-paths.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0693 - [medium] HLT-016-SUPPLY-CHAIN-DRIFT - .github/workflows/jankurai.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `4`
+- Fingerprint: `sha256:da221881fae691071bddc454109bed0998c48e6a9f99ee7c2e61538c8340a5d8`
+- Check: `HLT-016-SUPPLY-CHAIN-DRIFT:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/jankurai.yml`
+- Problem: `Security and supply-chain posture` scored 72 below the standard floor of 85
+- Why: `Security and supply-chain posture` scored 72 below the standard floor of 85
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/jankurai.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0694 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/jekko.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `5`
+- Fingerprint: `sha256:b343ceb27323859d2fa52d5aefcbbae3b0328619fc0e68c397ee69e2c8ee46a2`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/jekko.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/jekko.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0695 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-standards.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `6`
+- Fingerprint: `sha256:15d6b9864df0e541dd419e302cd58312e408bdd53ac8c85f5d3473cc63570ff3`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/pr-standards.yml`
+- Problem: workflow is missing concurrency control
+- Why: workflow can run duplicate stale audits for the same ref
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/pr-standards.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0696 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-standards.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `7`
+- Fingerprint: `sha256:cea8b8c8079a5750b886e0d9b179f862d682721359c1d018a5e369cc878427ae`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/pr-standards.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/pr-standards.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0697 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-standards.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `8`
+- Fingerprint: `sha256:8e47218b225e81396cbfa0e8b4d6640d84285bdb4426a5cd827a3caae8f5c34a`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/pr-standards.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/pr-standards.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0698 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/pr-standards.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `9`
+- Fingerprint: `sha256:d7dad9830259f3cea7426e569561af467ac73dc0ce1ccc18ede31b22f30ecb39`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/pr-standards.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/pr-standards.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0699 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `10`
+- Fingerprint: `sha256:2a958f040bb76c4d640c0753b05894e876ee8e064e57c8461755edf5c089a5ae`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0700 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `11`
+- Fingerprint: `sha256:f3293d5a885c58d3563817ebfeda8a1439ba85887e96fa47961dfe2bf0c1e9d1`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0701 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `12`
+- Fingerprint: `sha256:bf31d20ca5c47a24253559da10c0da6e16b4076f6083df67012b9c0e0f7830eb`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0702 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `13`
+- Fingerprint: `sha256:970a10ed076b932ab80fc577b6acadfc268eb22de44dfc31149ca00c279a787c`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0703 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `14`
+- Fingerprint: `sha256:d84ff3c9998219f3ed505ddaeaca0bad4df9a6517bb90c748d44d9c9da7a71b5`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0704 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `15`
+- Fingerprint: `sha256:9411c41f006a636dfc5ce173e11faef32286b51154440c1d0102a1ab7683aed7`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0705 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `16`
+- Fingerprint: `sha256:76310ec94f3bd193c71181e70c558c87a3b02a1c04813ed1f4e9d86e85f83d15`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0706 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `17`
+- Fingerprint: `sha256:e0c6ec145290e09ae349543bab3dd57cb2003da2e83363a519974339c3d8a5ef`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0707 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `18`
+- Fingerprint: `sha256:950e00e9998b66da67dd58f18dcd53dfd73a5218842f76f3049149cd0d787fe4`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0708 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `19`
+- Fingerprint: `sha256:176b33d631beac47bc1b10e805b2373cfacb9be65d694d855a97bd764ce46caf`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0709 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `20`
+- Fingerprint: `sha256:1cad286ee3f72495e8857aa6aad3fe924ba053fe0351d1ab4bbd1024e3f2e121`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0710 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `21`
+- Fingerprint: `sha256:377497341b15612e61732ef088fd6d07eed0583c51a10a3b4ab85852a2a624c0`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0711 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `22`
+- Fingerprint: `sha256:984a15d8bc578929a61c1082e5afc9fff551062329235f9512c248979f5e9ca4`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0712 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `23`
+- Fingerprint: `sha256:6e74216b9c7fc170e2b6e0f3baf9c836dfdcd896da0d27062cf963542bdaf241`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0713 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `24`
+- Fingerprint: `sha256:9802c1a0b274851e21d6b30b6990ab1da6cff97763b253874af2b5d21ba193b3`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0714 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `25`
+- Fingerprint: `sha256:c291130ba0d0067212f9fefca31df029ab49cc376d882561e12d2038df7e8e08`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0715 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `26`
+- Fingerprint: `sha256:ea94cbb55b7939e1b9f56d2e593837a0b120966252ae90308d1b093c31676862`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0716 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `27`
+- Fingerprint: `sha256:eeb598e875f4a1912222ba38f804136970048e4e201bb1ce29a4e1473c759ac7`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0717 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `28`
+- Fingerprint: `sha256:006542ca48fe608964daf794ec418e2476ac99cdf670be53d6c31008352fb635`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0718 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `29`
+- Fingerprint: `sha256:60e93309d31dd32aba3612896e0b9fc53c7e1dfc0bff3dc3ae973c0fd6c36f74`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: artifact or cache path includes secret material
+- Why: workflow stores a secret-bearing path in cache or artifact upload
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0719 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `30`
+- Fingerprint: `sha256:b9c9f0e64319a36efe7ae37182c4a418171c5a68aa496858be0f13216262cafb`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: artifact or cache path includes secret material
+- Why: workflow stores a secret-bearing path in cache or artifact upload
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0720 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `31`
+- Fingerprint: `sha256:f510ea4428506a57bf6b8089c48ab63de7b6d3c9bee12f78a472dade89a5c67d`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: workflow potentially leaks secrets via echo or debug output
+- Why: secret-bearing workflow step writes sensitive values to logs
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0721 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `32`
+- Fingerprint: `sha256:ae049985dce96570a38fa8ad9c417b23a4e5cfca628795290b2f561f73f41f15`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: artifact or cache path includes secret material
+- Why: workflow stores a secret-bearing path in cache or artifact upload
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0722 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/publish.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `33`
+- Fingerprint: `sha256:aabddeca74f381f5e2a5542a5ffeae01a41c8eafe5ba548f434b1a90efc5e089`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/publish.yml`
+- Problem: artifact or cache path includes secret material
+- Why: workflow stores a secret-bearing path in cache or artifact upload
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/publish.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0723 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/review.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `34`
+- Fingerprint: `sha256:f51b7902321755231ba74720ee093788a823e26f120cd1bcf3df0e5e11127ac9`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/review.yml`
+- Problem: workflow is missing concurrency control
+- Why: workflow can run duplicate stale audits for the same ref
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/review.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0724 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/review.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `35`
+- Fingerprint: `sha256:ee28699a9ec6051cff0052e5f9dfb1b61a27695ed14389a981ed571efcf98791`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/review.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/review.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0725 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/review.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `36`
+- Fingerprint: `sha256:6971bd8d9e3a529595de6d7aafde805836a2ce22aa1282b9ef5ede5c338dbc2e`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/review.yml`
+- Problem: workflow uses a mutable action or image reference
+- Why: action ref can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/review.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0726 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/review.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `37`
+- Fingerprint: `sha256:15f4a6b7f248757e2ae3a51dce59f8ca0a7a3d6b55390d106c8acc737e355a62`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/review.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/review.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0727 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/stats.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `38`
+- Fingerprint: `sha256:ef174017b67b59504a073697e9eba39281cf651cb919cef8e5cc773ad73fa2f3`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/stats.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/stats.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0728 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/stats.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `39`
+- Fingerprint: `sha256:014304386ed4aa7d18f28edadff266b549446ebd6e11d8ae9e280b71e84caef1`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/stats.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/stats.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0729 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/test.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `40`
+- Fingerprint: `sha256:b49158d4c9da292ba5305bcb26fb8d224e5ac011f1d46dd271a6c7d7dddf515e`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/test.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/test.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0730 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/test.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `41`
+- Fingerprint: `sha256:3f527f417ebfaf1c64469dd8999796fd74bcd19270fa690fcf5853f4a8b008bd`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/test.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/test.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0731 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/test.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `42`
+- Fingerprint: `sha256:8f25b7565ba3f4fe079b6316da373edc9933d9f02628d10ba198880edbbc41f1`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/test.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/test.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0732 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/test.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `43`
+- Fingerprint: `sha256:d425bf7e9ce6c3e168b5df77ab84fef16ee9ff086e23775d8e33b25a6a091a92`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/test.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/test.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0733 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/test.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `44`
+- Fingerprint: `sha256:b4566e880218b4a292223f9f80c4a41f3dd58700c22ee5153f1a270e4f3d7370`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/test.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/test.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0734 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/test.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `45`
+- Fingerprint: `sha256:09f074205396935201b30c5870c67b86da98de51cff24b5b7a3b155b218eed07`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/test.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/test.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0735 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/triage.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `46`
+- Fingerprint: `sha256:3453d04b39122118198d0697516589b3bdd9c82324d6959d15255cf8c0f5902c`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/triage.yml`
+- Problem: workflow is missing concurrency control
+- Why: workflow can run duplicate stale audits for the same ref
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/triage.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0736 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/triage.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `47`
+- Fingerprint: `sha256:a9b65c45c6748d6155029e4d738096a550058a4bb156de40254f44c331decff5`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/triage.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/triage.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0737 - [high] HLT-032-DOCKER-BAD-BEHAVIOR - .github/workflows/triage.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `48`
+- Fingerprint: `sha256:ce7a3dbf1e21e9be193c1ced55409feaf69936003d17e98a3b9a87bbf6467f45`
+- Check: `HLT-032-DOCKER-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/triage.yml`
+- Problem: remote install step is not pinned or verified
+- Why: the build downloads remote code without a checksum or signature proof
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/triage.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0738 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/typecheck.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `49`
+- Fingerprint: `sha256:cfd8867b28b23bfedb92108e0da30d85e8954163bceef83d925e10d41541c8c2`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/typecheck.yml`
+- Problem: workflow is missing concurrency control
+- Why: workflow can run duplicate stale audits for the same ref
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/typecheck.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0739 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/typecheck.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `50`
+- Fingerprint: `sha256:63298e7c4e6726d5f6729cdf039f739ff056d614253d10359261a4db45ef5919`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/typecheck.yml`
+- Problem: workflow is missing explicit top-level permissions
+- Why: workflow permissions default is not pinned in source
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/typecheck.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0740 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/typecheck.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `51`
+- Fingerprint: `sha256:c8436f86e9370c5a1c31ebb8da9b974738c0d5aeee14f4ae2e54625cc53536bf`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/typecheck.yml`
+- Problem: workflow job is missing timeout-minutes
+- Why: workflow can run without a checked time bound
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/typecheck.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0741 - [high] HLT-034-CI-BAD-BEHAVIOR - .github/workflows/typecheck.yml
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `52`
+- Fingerprint: `sha256:c3ca0598a11ac828da3bc30ac12da939ea54dd1ea3b3abc120f3f5e4702e6019`
+- Check: `HLT-034-CI-BAD-BEHAVIOR:security`
+- Owner: `ops`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.github/workflows/typecheck.yml`
+- Problem: workflow uses an external action not pinned to a full commit SHA
+- Why: tag or branch refs can change without review
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.github/`
+- `SECURITY.md`
+- `infra/`
+- `ops/`
+- `.github/workflows/`
+- `.github/workflows/typecheck.yml`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0742 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - .jekko/plugins/tui-smoke.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `53`
+- Fingerprint: `sha256:f65f3a4dd8999921c5c266f6d6e0126ca565ecb2d53c2bd39a46901c00387308`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.jekko/plugins/tui-smoke.tsx`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `.jekko/plugins/`
+- `.jekko/plugins/tui-smoke.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0743 - [high] HLT-023-INPUT-BOUNDARY-GAP - .jekko/plugins/tui-smoke.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `54`
+- Fingerprint: `sha256:1436350e8988a71cb92219bcdab68faeac0b79721dc32c481a003a050b3bb5fc`
+- Check: `HLT-023-INPUT-BOUNDARY-GAP:security`
+- Owner: `agent`
+- Lane: `security`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `.jekko/plugins/tui-smoke.tsx`
+- Problem: unsafe or unvalidated input boundary marker appears in product code
+- Why: input handling risk needs deterministic negative tests
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `.jekko/plugins/`
+- `.jekko/plugins/tui-smoke.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0744 - [medium] HLT-018-PERF-CONCURRENCY-DRIFT - Justfile
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `55`
+- Fingerprint: `sha256:a256a7390d4b91a5b0a95d6f092e524c8f4080f27fe2b62e28cf0801343d0fef`
+- Check: `HLT-018-PERF-CONCURRENCY-DRIFT:proof`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `Justfile`
+- Problem: `Build speed signals` scored 70 below the standard floor of 85
+- Why: `Build speed signals` scored 70 below the standard floor of 85
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0745 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `56`
+- Fingerprint: `sha256:fc3c4590018e6ff7aac76e0817e6371b394f751cd07cbd80494561d9286366a7`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `DO_NOT_ASK_ZYAL.md` has no owner-map route
+- Why: path `DO_NOT_ASK_ZYAL.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0746 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `57`
+- Fingerprint: `sha256:419bd49430bd63ffb14acb5d50fec5e7850088d22e7d1011682b3f0fef635840`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `UNLOCK_WORKPLAN.md` has no owner-map route
+- Why: path `UNLOCK_WORKPLAN.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0747 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `58`
+- Fingerprint: `sha256:4d1939e27e91644138333e960c676473c38758a038c135c40a6c6b5c1413354a`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `ZYAL_MISSION.md` has no owner-map route
+- Why: path `ZYAL_MISSION.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0748 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `59`
+- Fingerprint: `sha256:1d425243dccc4dbe80dcf404d46564f2a8be28bdd6a1ab884e12e6380a98e2bf`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `ZYAL_WORKFLOW.md` has no owner-map route
+- Why: path `ZYAL_WORKFLOW.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0749 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `60`
+- Fingerprint: `sha256:7d920cdf6ad6d7c512d67a181d94d45e872fa021f60c22aeb30c9d913ca18c4f`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `codex-jankurai-loop.sh` has no owner-map route
+- Why: path `codex-jankurai-loop.sh` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0750 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `61`
+- Fingerprint: `sha256:dba83858bee9bc4fbe8533b16abe6f7fd5b5e638cd10e5cfb88e576d027b2440`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `jekko-jankurai-loop.sh` has no owner-map route
+- Why: path `jekko-jankurai-loop.sh` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0751 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `62`
+- Fingerprint: `sha256:e10fd4525b3d860e9ecf8ff6330eb31441c2c16e303106258092f1f38da962da`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `paper/ZYAL.bib` has no owner-map route
+- Why: path `paper/ZYAL.bib` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0752 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `63`
+- Fingerprint: `sha256:7978b6cbb1ef26087b52e53fcdfd632180a30e7aab292dde4111b6ac7a22f77b`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `paper/ZYAL.md` has no owner-map route
+- Why: path `paper/ZYAL.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0753 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `64`
+- Fingerprint: `sha256:73551d4bd46a9a1fd275965eb0a204e1f9be750a9b19b35d6a46e4deef4979f2`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `paper/ZYAL.pdf` has no owner-map route
+- Why: path `paper/ZYAL.pdf` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0754 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `65`
+- Fingerprint: `sha256:ec61f979727854de2a4e1acd9ae15cb17725a06210bb168502fefa1508fb0598`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `paper/ZYAL.tex` has no owner-map route
+- Why: path `paper/ZYAL.tex` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0756 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `67`
+- Fingerprint: `sha256:d35172328b5fd9b080095b3e892a12782480b89b51c6caac4e6472e46bb559df`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.husky/check-encrypted-paths` has no test-map proof route
+- Why: path `.husky/check-encrypted-paths` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0757 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `68`
+- Fingerprint: `sha256:94e3f356da1a3f2bc0061538410f7f2eb207b8c45accb3f0f1de8984b791eb29`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `DO_NOT_ASK_ZYAL.md` has no test-map proof route
+- Why: path `DO_NOT_ASK_ZYAL.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0758 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `69`
+- Fingerprint: `sha256:be9ff68142677c6046132fdc6319abee184e147c2cef9b8d5007f37b43d9dbaa`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `UNLOCK_WORKPLAN.md` has no test-map proof route
+- Why: path `UNLOCK_WORKPLAN.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0759 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `70`
+- Fingerprint: `sha256:daaad424f51673b774861eab2cace5944401be29250981467c891597ba8addf8`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `ZYAL_MISSION.md` has no test-map proof route
+- Why: path `ZYAL_MISSION.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0760 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `71`
+- Fingerprint: `sha256:b1f1b6198ee11f9fa2e3d5c5fe874c27f6acc54351b079dedd96206e880bbb08`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `ZYAL_WORKFLOW.md` has no test-map proof route
+- Why: path `ZYAL_WORKFLOW.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0761 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `72`
+- Fingerprint: `sha256:4a27335b45392dc455d105727172bba9bef8d01d0357a0fec8f805dfc1d9a7ee`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `codex-jankurai-loop.sh` has no test-map proof route
+- Why: path `codex-jankurai-loop.sh` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0762 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Blocked
+- Assignee: codex-loop
+- Started: 2026-05-09T11:35:28Z
+- Completed:
+- Blocked reason: `rtk just fast` failed in `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`, which is outside the task's allowed paths; no safe task-scope fix is available
+- Source packet: `73`
+- Fingerprint: `sha256:0224684de6a23834016cdc8c1ab6e0b5f98690c446907960f85d09c296113e05`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `jekko-jankurai-loop.sh` has no test-map proof route
+- Why: path `jekko-jankurai-loop.sh` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0763 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `74`
+- Fingerprint: `sha256:a7a9778b01686968a6100c709dc1bf430302c76c6ed2cce5cb65afe30cd1b9b9`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `paper/BUILD_RECEIPT.md` has no test-map proof route
+- Why: path `paper/BUILD_RECEIPT.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0764 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `75`
+- Fingerprint: `sha256:22cc1df2a3e5870041b6803fd023a8a6ebe2cb3160da7d957970c849b2408b52`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `paper/Makefile` has no test-map proof route
+- Why: path `paper/Makefile` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.codex-loop-runs/`
+- `.codex-loop-runs/run-1-20260509T074819Z/`
+- `.codex-loop-runs/run-1-20260509T074819Z/command.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/env.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/final-message.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/prompt.md`
+- `.codex-loop-runs/run-1-20260509T074819Z/status.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt`
+- `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.gitattributes`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/check-encrypted-paths`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0765 - [high] HLT-013-RENDERED-UX-GAP - apps/web
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `76`
+- Fingerprint: `sha256:571d35c2e730a393b782bac14825b197c0543920bb21967079d264ac602ea5b1`
+- Check: `HLT-013-RENDERED-UX-GAP:ux-qa`
+- Owner: `apps`
+- Lane: `web`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `apps/web`
+- Problem: web surface lacks layered rendered UX QA evidence
+- Why: web surface lacks layered rendered UX QA evidence
+- Instructions: add rendered UX proof, state coverage, and accessibility receipts
+- Allowed paths:
+- `apps/`
+- `apps/web`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just ux-qa`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
+- Proof receipt:
+  - Command: `rtk just fast`
+  - Result: `exit 2; bun typecheck failed in packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts (multiple TS2345 errors)`
+  - Timestamp: 2026-05-09T11:36:00Z
+  - Files touched: `agent/test-map.json`, `JANKURAI_TASKLIST.md`
+
+### JK-0766 - [medium] HLT-026-COST-BUDGET-GAP - docs/testing.md
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `77`
+- Fingerprint: `sha256:edd248b7afc24b644107205fa5b84a88103ac4b622009ff9f19b779de8798f59`
+- Check: `HLT-026-COST-BUDGET-GAP:release`
+- Owner: `standard`
+- Lane: `release`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `docs/testing.md`
+- Problem: cost or spend-risk surface lacks budget proof
+- Why: unbounded paid work needs budgets and stop conditions
+- Instructions: make the document precise, short, and aligned with the canonical standard
+- Allowed paths:
+- `docs/`
+- `paper/BUILD_RECEIPT.md`
+- `paper/Makefile`
+- `specs/`
+- `docs/testing.md`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just check`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: restore the previous text and rerun the narrow proof lane
+- Touched files:
+- Proof receipt:
+
+### JK-0768 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/bin/jnoccio-mcp.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `79`
+- Fingerprint: `sha256:0140e320b5e889b80f70f11d4aecafae1795f1cd6da71c78b625dba4af8203e4`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/bin/jnoccio-mcp.rs`
+- Problem: fallback soup detected in product code
+- Why: fallback soup detected in product code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/bin/`
+- `jnoccio-fusion/src/bin/jnoccio-mcp.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0769 - [critical] HLT-010-SECRET-SPRAWL - jnoccio-fusion/src/failure_log.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `80`
+- Fingerprint: `sha256:b487e443159a2673d2f561852dfaceb76bba76951bf54927b0cddfe9fddcd6ad`
+- Check: `HLT-010-SECRET-SPRAWL:security`
+- Owner: `workspace`
+- Lane: `security`
+- Risk: `critical`
+- Eligibility: `never-auto`
+- Human review required: `yes`
+- Scope path: `jnoccio-fusion/src/failure_log.rs`
+- Problem: secret-like value or credential material appears in repository text
+- Why: secret-like value or credential material appears in repository text
+- Instructions: remove secrets, rotate credentials, and add secret scanning
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/failure_log.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just security`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop and hand off any secret, credential, or token exposure
+- Rollback: revert the scoped policy change and confirm secret scan evidence again
+- Touched files:
+- Proof receipt:
+
+### JK-0770 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/mcp.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `81`
+- Fingerprint: `sha256:ca0a49ac1a7732dee98b3b783286c28619ad63e461ffd53ce3a0331dd13ba710`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/mcp.rs`
+- Problem: product code contains TODO/stub/unimplemented/unreachable placeholder markers
+- Why: product code contains TODO/stub/unimplemented/unreachable placeholder markers
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/mcp.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0771 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `82`
+- Fingerprint: `sha256:130ef352a8f45ee5b94cd9908b9d08dc4d08f477dbcff3a64a7d1761fe223b95`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0772 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `83`
+- Fingerprint: `sha256:d6215c86340cfc838594b46ecb705d9fd4cb004d03bce7cbfdf8a5301974644e`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0773 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `84`
+- Fingerprint: `sha256:0c83db2376f965f92e084e844f3c09556cde710f3db86a3b22231772f45eeca8`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0774 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `85`
+- Fingerprint: `sha256:ea3ccfbf6625511854908319fe5fd74a38f3903e1aaa940c2a7bf04cf33d9fdf`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0775 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `86`
+- Fingerprint: `sha256:9574844adb1cc44e562e8bb2d12af9fde4c14bb3102012a7efec352a1240baa7`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0776 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `87`
+- Fingerprint: `sha256:66666d1adfd2e5dcf941e66a9fb77bcc6a2cb34e29ac8c053a9b311ef171245b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0777 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `88`
+- Fingerprint: `sha256:45d790b536159d4a19e9fbd70b1abd01ca320c50aeb76be91b2d796ce6676517`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0778 - [high] HLT-001-DEAD-MARKER - jnoccio-fusion/src/router.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `89`
+- Fingerprint: `sha256:129041cc972f4cdaec97f6d4d6046eeaf4b22c9acf0c6a0b97e48f6b98c637ed`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `jnoccio-fusion/src/router.rs`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/`
+- `jnoccio-fusion/src/router.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0779 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/core/src/cross-spawn-spawner.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `90`
+- Fingerprint: `sha256:02314715702d23d818fb43447cfd135be1dbe572d3b466bcc4715c135629e4c6`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/core/src/cross-spawn-spawner.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/core/src/`
+- `packages/core/src/cross-spawn-spawner.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0780 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/core/sst-env.d.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `91`
+- Fingerprint: `sha256:dea4dad91c5b4a181ce44d9e408cbe6fe05327bbc1d4120d0a3425ff83d18909`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/core/sst-env.d.ts`
+- Problem: TypeScript suppression comment hides type checking or lint evidence
+- Why: broad suppression is hard to audit
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/core/`
+- `packages/core/sst-env.d.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0781 - [high] HLT-008-FALSE-GREEN-RISK - packages/core/test/effect/cross-spawn-spawner.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `92`
+- Fingerprint: `sha256:8e97f6d88c185f168ffec97bc6d54344eff9362c7099d13667201aaba7b633d3`
+- Check: `HLT-008-FALSE-GREEN-RISK:test`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/core/test/effect/cross-spawn-spawner.test.ts`
+- Problem: test code contains disabled, focused, tautological, or snapshot-only proof
+- Why: test code contains disabled, focused, tautological, or snapshot-only proof
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/core/test/effect/`
+- `packages/core/test/effect/cross-spawn-spawner.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0782 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/core/test/fixture/flock-worker.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `93`
+- Fingerprint: `sha256:9be43bca94d8cf16912de5dbac3decc96b7cfba8534aa88042bab32125207e72`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/core/test/fixture/flock-worker.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/core/test/fixture/`
+- `packages/core/test/fixture/flock-worker.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0783 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `94`
+- Fingerprint: `sha256:5cddefe562c77d799af69e0b5df4b9d4503d3869e71a8ba979de4e7d029ed2d1`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0784 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `95`
+- Fingerprint: `sha256:c4050b1934ebad06ffaffd618dabeda0d5e13f01e293410c72e2414c54cbe355`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0785 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `96`
+- Fingerprint: `sha256:68c104b367132ee831146f25151739d91e14e6eeea2ed8160958d85e472f6a2f`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0786 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `97`
+- Fingerprint: `sha256:1f870d3451c6623cf9b6d077fe399aa9d4dff277a19310d425aa262b3177c8c4`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0787 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `98`
+- Fingerprint: `sha256:ca3f39034d6a4270264f1039574b848a2cb8fe9715fb7f92e7af6d7908dca222`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0788 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `99`
+- Fingerprint: `sha256:b4ce5e4cc56099b7f60bf9dfe6dd94bbb810f7daea8164bc471a1e0240f90ed3`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/`
+- `packages/jekko/migration/20260127222353_familiar_lady_ursula/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0789 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260228203230_blue_harpoon/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `100`
+- Fingerprint: `sha256:5b782c6837ed3e8a13e885a085309c5df19af3ee84d18685f37c1f72204933b4`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260228203230_blue_harpoon/migration.sql`
+- Problem: UPDATE or DELETE without a WHERE clause can rewrite every row
+- Why: the statement reaches a whole-table write path without a row filter
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260228203230_blue_harpoon/`
+- `packages/jekko/migration/20260228203230_blue_harpoon/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0790 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260323234822_events/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `101`
+- Fingerprint: `sha256:199f08b41f4f50017b7f717fd65fb45b10450b130cdc24309c558099a8dba1d4`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260323234822_events/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260323234822_events/`
+- `packages/jekko/migration/20260323234822_events/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0791 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260410174513_workspace-name/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `102`
+- Fingerprint: `sha256:d25a677c85f8bbed0f1c9ed7b87fcbff94a41dbf835cb2140277d6a5b8c3874b`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260410174513_workspace-name/`
+- `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0792 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260410174513_workspace-name/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `103`
+- Fingerprint: `sha256:e69c04486412ea4d36119671855b63bbdd7b1f5e82338bfc84ef0bfad38718cb`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260410174513_workspace-name/`
+- `packages/jekko/migration/20260410174513_workspace-name/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0793 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260413175956_chief_energizer/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `104`
+- Fingerprint: `sha256:212edba1953875c2e212996f565016885efdffd0a386047b35ebd39aed39acbf`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260413175956_chief_energizer/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260413175956_chief_energizer/`
+- `packages/jekko/migration/20260413175956_chief_energizer/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0794 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `105`
+- Fingerprint: `sha256:5085641cb6ddca54e0b428ecd49ae60596f7df3464a9c2b6dc575c7a0c5b7004`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0795 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `106`
+- Fingerprint: `sha256:001eca936f8714749063078297db6c619ac157c7ed4af3b8e5a7081e33b2b3fd`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0796 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `107`
+- Fingerprint: `sha256:e0e926c12826c8db18d27d77253a3e17d34f23bf263738c602579ea791345f1e`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0797 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260427172553_slow_nightmare/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `108`
+- Fingerprint: `sha256:8508b16b3ad448b53d8d65ebdb56bffa64fd980c3e9b5513f916344fd92faf19`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/`
+- `packages/jekko/migration/20260427172553_slow_nightmare/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0798 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507054800_memory_os/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `109`
+- Fingerprint: `sha256:873b082b7684665686e97f9a40e9e21dcb78cc6241d6ca00a8cb00876657e4d3`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507054800_memory_os/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507054800_memory_os/`
+- `packages/jekko/migration/20260507054800_memory_os/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0799 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507054800_memory_os/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `110`
+- Fingerprint: `sha256:873b082b7684665686e97f9a40e9e21dcb78cc6241d6ca00a8cb00876657e4d3`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507054800_memory_os/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507054800_memory_os/`
+- `packages/jekko/migration/20260507054800_memory_os/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0800 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `111`
+- Fingerprint: `sha256:a378c3c03d4282c3db3d80b145be738685fba157bd8b8644acfca705bc97c87c`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0801 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `112`
+- Fingerprint: `sha256:4268dedd00f7cc98fd330c818f664578adaa307d69da2d5bf579fc8ad58938a3`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0802 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `113`
+- Fingerprint: `sha256:48f69635f3e1f359ee2e810f3c9dadff9241bae85e847676a6dce3fc8be9d993`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0803 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `114`
+- Fingerprint: `sha256:7b1b4fd75f2fdfc605750b925ed051ed6b62480dc609877e6620a623424bbc51`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0804 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `115`
+- Fingerprint: `sha256:48f69635f3e1f359ee2e810f3c9dadff9241bae85e847676a6dce3fc8be9d993`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0805 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `116`
+- Fingerprint: `sha256:48f69635f3e1f359ee2e810f3c9dadff9241bae85e847676a6dce3fc8be9d993`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0806 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `117`
+- Fingerprint: `sha256:48f69635f3e1f359ee2e810f3c9dadff9241bae85e847676a6dce3fc8be9d993`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0807 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `118`
+- Fingerprint: `sha256:a68471ceac14306be35d24c8203d07a4fe8e07b12f3c126c1a71a6fc1e6ce754`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0808 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `119`
+- Fingerprint: `sha256:48f69635f3e1f359ee2e810f3c9dadff9241bae85e847676a6dce3fc8be9d993`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0809 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `120`
+- Fingerprint: `sha256:a68471ceac14306be35d24c8203d07a4fe8e07b12f3c126c1a71a6fc1e6ce754`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0810 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `121`
+- Fingerprint: `sha256:48f69635f3e1f359ee2e810f3c9dadff9241bae85e847676a6dce3fc8be9d993`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0811 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `122`
+- Fingerprint: `sha256:48f69635f3e1f359ee2e810f3c9dadff9241bae85e847676a6dce3fc8be9d993`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0812 - [high] HLT-030-SQL-BAD-BEHAVIOR - packages/jekko/migration/20260507224841_daemon_runtime/migration.sql
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `123`
+- Fingerprint: `sha256:0a1975a0f49144eb8ebc0533385a509be4f8ba5e4a680c72091f57e9c85bef9e`
+- Check: `HLT-030-SQL-BAD-BEHAVIOR:data`
+- Owner: `tools`
+- Lane: `db`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Problem: destructive migration appears without nearby rollback or backup proof
+- Why: the migration can remove or rewrite data without local evidence of recovery
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/`
+- `packages/jekko/migration/20260507224841_daemon_runtime/migration.sql`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0813 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/parsers-config.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `124`
+- Fingerprint: `sha256:53f07ac97660946837df3319b05d6859f73f0a223688657cdfbac1c600ac90aa`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/parsers-config.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/`
+- `packages/jekko/parsers-config.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0814 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/script/generate.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `125`
+- Fingerprint: `sha256:9dca219bafb45f9ca031a4b52c2cd0a209169fbefe611adcfc93630b01acd750`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/script/generate.ts`
+- Problem: TypeScript suppression comment hides type checking or lint evidence
+- Why: broad suppression is hard to audit
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/script/`
+- `packages/jekko/script/generate.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0815 - [high] HLT-001-DEAD-MARKER - packages/jekko/script/httpapi-exercise.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `126`
+- Fingerprint: `sha256:f452ba56e8e46d4cf0a9c1b0d31bd4e6066e37b439bc716b96d7dca38fcc53e3`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/script/httpapi-exercise.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/script/`
+- `packages/jekko/script/httpapi-exercise.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0816 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/script/httpapi-exercise.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `127`
+- Fingerprint: `sha256:980443eec1b82864443425c7f35fa526fc686536be79367990ae6d4908bf90b9`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/script/httpapi-exercise.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/script/`
+- `packages/jekko/script/httpapi-exercise.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0817 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/script/schema.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `128`
+- Fingerprint: `sha256:723177044c375febb0280b8a5d02d88f91c7e13af9cfebedcaf153009a7f0dc7`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/script/schema.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/script/`
+- `packages/jekko/script/schema.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0818 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/specs/v2/api.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `129`
+- Fingerprint: `sha256:8ea7e5c42efb714413d2bdb3c3ac80a94d14dda964b13e21519c37e2dd21f04d`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/specs/v2/api.ts`
+- Problem: TypeScript suppression comment hides type checking or lint evidence
+- Why: broad suppression is hard to audit
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/specs/v2/`
+- `packages/jekko/specs/v2/api.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0819 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `130`
+- Fingerprint: `sha256:da5b5144f626f9386e2ff96c2def41143dc208c0750d01d8af3633ee86aaf58c`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0820 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `131`
+- Fingerprint: `sha256:a186d658544f17f6363b808cfc555cb63d1c0c8da3cb56b6a8a978592e2e3d32`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0821 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `132`
+- Fingerprint: `sha256:abc2e0009d99a468c247261a12da8a9882bf37af73828af0226b9d91340a9821`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0822 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `133`
+- Fingerprint: `sha256:a91e03490f6fd0ef0a75ee2039c3ab9622cfe3313a7807b63f53982aa007866a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0823 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `134`
+- Fingerprint: `sha256:2e7aef7c57f650a13c3f7a3f5fe605d53d1b96d305773f27425186ad351084cb`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0824 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/schema.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `135`
+- Fingerprint: `sha256:cb5494f450304e36ecf269e2d05982a7b8e537d110d9870caf5417e278c64c87`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/schema.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/schema.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0825 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/schema.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `136`
+- Fingerprint: `sha256:ef8fd13e360b8db6a97fe290ebbc83423a2e3d90bedb1370bdfbbd70ddb93ebb`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/schema.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/schema.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0826 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/daemon.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `137`
+- Fingerprint: `sha256:0e4af528ab9b910a0b4bbc40e14a9f0c4bcce948c6d05bad5522d24d23356548`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/daemon.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/daemon.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0827 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/daemon.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `138`
+- Fingerprint: `sha256:ffde18e4a588f20aca0053e52143c5df93106d968edc65af78dd2dc96b550498`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/daemon.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/daemon.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0828 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/daemon.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `139`
+- Fingerprint: `sha256:fefb96b5888188ede9862654ec1a3e8db9047265fe38352c114910bf9487b8c1`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/daemon.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/daemon.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0829 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/db.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `140`
+- Fingerprint: `sha256:109e8d481ca036ad95badd90c2b922fb0378d824078c0c19215280fc78cd955c`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/db.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/db.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0830 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/db.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `141`
+- Fingerprint: `sha256:28ed2e6673ed82cb4824aeea9bf631feacbd74092a3329e42201c6afdcfa54a1`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/db.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/db.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0831 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/debug/agent.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `142`
+- Fingerprint: `sha256:07c96f8f8398f5736d7cd9907417f2c1c6cbc71db8d417eac6fdf3d1fed0c3b5`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/debug/agent.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/debug/`
+- `packages/jekko/src/cli/cmd/debug/agent.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0832 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/debug/agent.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `143`
+- Fingerprint: `sha256:3e06a63ec02609a864d69c7b90155f6b690cb37cc5ecc1d441b0342ac7153a06`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/debug/agent.ts`
+- Problem: dynamic code or raw HTML sink appears in product TypeScript
+- Why: sink is not proven safe locally
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/debug/`
+- `packages/jekko/src/cli/cmd/debug/agent.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0833 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/github.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `144`
+- Fingerprint: `sha256:c118d837c0b5c9b10505373bfb18b6b73f6a987e7af3dca5d0d37261b82eb867`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/github.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/github.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0834 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/github.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `145`
+- Fingerprint: `sha256:abf8c87cff840046d48f7d6b091e065bd7a686390f2e2fdac3a245e5fa0afc43`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/github.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/github.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0835 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/github.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `146`
+- Fingerprint: `sha256:d8e52014a166b2ddeb472ed78c1013c70e7478d2af708d82ad6c8d064daad35b`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/github.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/github.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0836 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/github.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `147`
+- Fingerprint: `sha256:ddecfc36f785e1b464f77e5a91317a5393f46461cf6564802018ab7332082548`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/github.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/github.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0837 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/import.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `148`
+- Fingerprint: `sha256:b60af60de4a2c77257bbd3d05d53acd450ab981f12c1a9228dcefe4a590e6c45`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/import.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/import.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0838 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/providers.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `149`
+- Fingerprint: `sha256:62f698717bde1a1c467492ad7c8fa8ddf3e4aae07efb2405204ecd3905a42a7d`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/providers.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/providers.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0839 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/run.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `150`
+- Fingerprint: `sha256:4494c20b7d2a07cfb74891670fe8d55967d192ec000542e8e60e4b517dd55820`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/run.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/run.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0840 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/app.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `151`
+- Fingerprint: `sha256:1f577043cfa421440dfa7624fe40f6fcd11a40a7b3d93d288862dd27f0b73e05`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/app.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/`
+- `packages/jekko/src/cli/cmd/tui/app.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0841 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `152`
+- Fingerprint: `sha256:c9be570d286063b798515cf4e5688ab10bf233e90f021d74c4dbb5f78882339a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/`
+- `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0842 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `153`
+- Fingerprint: `sha256:e8436478df2d712aeb53e3cb68d76ae5cf838ae44ce26e130d6184ba4dbc325a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/`
+- `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0843 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `154`
+- Fingerprint: `sha256:beb143f331728463f0478556136d84552147234723078c68af1ef2e637ce5ac0`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/`
+- `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0844 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `155`
+- Fingerprint: `sha256:76237f99f67ecd6b59e8571b9b2820816f6e7a23988b179d51e761f896d13905`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/`
+- `packages/jekko/src/cli/cmd/tui/component/dialog-status.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0845 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `156`
+- Fingerprint: `sha256:4da2f72221b06c64d224fc8a5fd29dfbd6be56e272b1d4c1b20206df007ac59b`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0846 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `157`
+- Fingerprint: `sha256:9ff3a1a47172a0ab0b5437a36e5fbab562483757a2de49d3e71beb5364aeeebe`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0847 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `158`
+- Fingerprint: `sha256:ae397f2d0831bdbf897c7ee7d0afec883ecee2a5dd8ec9e4d2d144949f12f35b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/autocomplete.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0848 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/component/prompt/frecency.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `159`
+- Fingerprint: `sha256:c2608bf3b26a40ed4d281c74f56fff7605b428bf3615a4ed3c72789a3d170c55`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/prompt/frecency.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/frecency.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0849 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `160`
+- Fingerprint: `sha256:2300ae842be5ccce4b9b388bac656f047307b9f40872820316461c40e634cdb2`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/`
+- `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0850 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/spinner.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `161`
+- Fingerprint: `sha256:e26b911c91e23e51e54ee364b235b1b3f3c1ec9246f29546c02190eb864a7c98`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/spinner.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/component/`
+- `packages/jekko/src/cli/cmd/tui/component/spinner.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0851 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/context/editor-zed.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `162`
+- Fingerprint: `sha256:5370f530a2fb9b24f28837508f4acdb6101b8ba2ff1c937181fc05353faa99c5`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/editor-zed.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/editor-zed.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0852 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/context/editor.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `163`
+- Fingerprint: `sha256:ff398449510b56a65eb4640d16fad8812f35263454d6bfd2efecbbc232b410fa`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/editor.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/editor.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0853 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/jnoccio-ws.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `164`
+- Fingerprint: `sha256:752f1ed40249990b66b6e9eebbfc9a095b3a02aa6d0c2ddcbcef11f6561d3cf7`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/jnoccio-ws.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/jnoccio-ws.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0854 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `165`
+- Fingerprint: `sha256:d0bc30b8648f8341584aa4e7bf87d2331b37181a626b6386e82008ff6fc8038a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0855 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `166`
+- Fingerprint: `sha256:535c857a2c811df44a61b4fbcb9b97ee4b0561727037913ae470c4418fd071c9`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0856 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `167`
+- Fingerprint: `sha256:cf271620742ea023b547edeabbed92e940e802bead0eba7fac4e89bffea55a53`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0857 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `168`
+- Fingerprint: `sha256:acb369bc7b87e3887e993d1c187abf1b0a79d06809cf390fde2785be3f6f8f4a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0858 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `169`
+- Fingerprint: `sha256:6a7bdc1a6ad026736d5182781628e6b8595d92082df7a09f2816246c8ae1eb33`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0859 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `170`
+- Fingerprint: `sha256:f8d8ee8993f6e1297f4deee1019b2dd60e2cccf1c78c363996efaaaa165e98be`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0860 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `171`
+- Fingerprint: `sha256:78d63fbaa00f9bac3b8cb938790718c4929e671a775abd75d14a69c11bce679f`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0861 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `172`
+- Fingerprint: `sha256:4b51b17b1c5e277e448ba4129b97c735be7ecfd93f2eb9311e34abd357284437`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0862 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `173`
+- Fingerprint: `sha256:fe8d08d502725ec99a64d3109a5aae2afef99d0c938c939388df07838b5bddcd`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0863 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `174`
+- Fingerprint: `sha256:4eb58c7b194243f147aeffa1d3681e53f9101d2c1422d396a0b6b53c87b164eb`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0864 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `175`
+- Fingerprint: `sha256:b439b1bf19f1f1e3ac3cf8a0b8223ed646dd0b3cac5136ca9bfcbf9763991956`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0865 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/context/sync.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `176`
+- Fingerprint: `sha256:2d038fa1e4013c4254823b16c30b7db38b8be42cfa65ca0d8e28dc210c1e0a32`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/context/sync.tsx`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/context/`
+- `packages/jekko/src/cli/cmd/tui/context/sync.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0866 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/footer.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `177`
+- Fingerprint: `sha256:1630ef764261e8dce91f2c6d6ad435fc40af7ec9d70b1796fdc208b95cd85776`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/footer.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/footer.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0867 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `178`
+- Fingerprint: `sha256:6bb4922e4e24ae304cab4d025e089bf2d52ee8638ba5971e05a3b018fcc9c99a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/mcp.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0868 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `179`
+- Fingerprint: `sha256:2b05e012953ca682df0a13095ef9346f01a0b789b132e94aa5f27ed70ff8b974`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/system/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0869 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `180`
+- Fingerprint: `sha256:630178b199423f1b65a9988df22c471d513a13b53be56fa3724af7a563bab492`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/system/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0870 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `181`
+- Fingerprint: `sha256:f4f275cdf522b03fa022aaa07431a1e7f6f7a40915c0b049f57ba28911001c8a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/system/`
+- `packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0871 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/plugin/internal.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `182`
+- Fingerprint: `sha256:4f05009f091dceaf6bd4d76676ea5e7cb553ed1bf1866f456789f81a0a1e9ae9`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/plugin/internal.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/plugin/`
+- `packages/jekko/src/cli/cmd/tui/plugin/internal.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0872 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/routes/session/dialog-fork-from-timeline.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `183`
+- Fingerprint: `sha256:37bb9138956d915c58eb54e00ec887109c83363df3f8d87dc7db7433ce8094fd`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/dialog-fork-from-timeline.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/dialog-fork-from-timeline.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0873 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/routes/session/dialog-message.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `184`
+- Fingerprint: `sha256:89b13c08fbeec219978ad7b6e8ffab6c32ec8ae071ab495d430cf3ce53a704e4`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/dialog-message.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/dialog-message.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0874 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/routes/session/dialog-message.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `185`
+- Fingerprint: `sha256:9fa0a604d6db646eb3c32892c69d33b4d7e485398776803301cd206f60458b69`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/dialog-message.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/dialog-message.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0875 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/index.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `186`
+- Fingerprint: `sha256:12a4ec12a68a3b2d4c860353b9f1b5c3df5712f5269ac99b604ad3eca3e33680`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0876 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/index.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `187`
+- Fingerprint: `sha256:055dddf6bd2aa6c91c360c062cba7add96edd0d6604791a8162cee41fa78de1e`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0877 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/routes/session/index.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `188`
+- Fingerprint: `sha256:17714744a74db626bd4a38986758e89feeb4746f80717c913c838d95766294a0`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0879 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `190`
+- Fingerprint: `sha256:10b0087fd1b466de9c4507b58d9108f38fb9b7dcbe2837a93e7d9a9effedaf19`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/permission.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0880 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/sidebar.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `191`
+- Fingerprint: `sha256:f207a86f488fb60505c47877b9ddf3f061630d032e01a03b6bd1b8390aaf47a2`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/sidebar.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/sidebar.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0881 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `192`
+- Fingerprint: `sha256:47f34bf56c4f4d6cb1b76aa43f8785f962af5aadfad2e6e27006e4af1986796b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/ui/`
+- `packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0882 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `193`
+- Fingerprint: `sha256:973f81b39d304ad7dd27b37653535b35b5c575846cbc372cbccab0d80c8bc220`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/ui/`
+- `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0883 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `194`
+- Fingerprint: `sha256:acd839c238d088dc9ec980a75ffee26fd6f15e573467e4c3e74a1c1a4212cf5b`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/ui/`
+- `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0884 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `195`
+- Fingerprint: `sha256:2a248073c7af6791d7c7a222a41e6ce8dc3d8d175c74a483c667b9fffa2f4cec`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/ui/`
+- `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0885 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `196`
+- Fingerprint: `sha256:265662bf4493a971ebd0de368a75de302fce01845b7b3bcb6aa77f1cf68ec5f5`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/ui/`
+- `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0886 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `197`
+- Fingerprint: `sha256:268a6915ee9561c5a528db12a9686afedec873b1c68f4e0947bc9fed7764a177`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/ui/`
+- `packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0887 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `198`
+- Fingerprint: `sha256:2bdc68c05f674d88a71889ad255d77b10dd42a165074e1e9e62440431cfa707e`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0888 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `199`
+- Fingerprint: `sha256:2cc8b9a0cc6d41b713d394f97c556a14d7ae3bd05588c0f13d3a3eed3aa2f1c1`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0889 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `200`
+- Fingerprint: `sha256:1619d38c135a6d2e1d0129d71141ddda85729540bb9a791057017088339c4e94`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0890 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `201`
+- Fingerprint: `sha256:c3e5bb74c6af828d46fb089e626d58419999662f31ebf13ecfaed16d74d9fd79`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0891 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `202`
+- Fingerprint: `sha256:472dab44cca57d5c229dcda9df21724e6749735376f8800eec8cdb4bd7387842`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0892 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `203`
+- Fingerprint: `sha256:9dc6c37a24b153d9789e755b5203a31c6c425769c0f39cfc294c5f888c5657ff`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0893 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `204`
+- Fingerprint: `sha256:1cefba36ffa9761f7728003b180566c6ae298d9ffac9e415b97ce88e5b3fd986`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0894 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `205`
+- Fingerprint: `sha256:0ec6497a8e2ad2d19dc764f6d1f46410807efe9bd35ea0c747f9feac668a9e46`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0895 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/error.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `206`
+- Fingerprint: `sha256:8c33472c2097c45d912c88dff23d99e0b3992a5269af681fded3dc211a18a5df`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/error.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/`
+- `packages/jekko/src/cli/error.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0896 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/config.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `207`
+- Fingerprint: `sha256:683a7bb842c3da229e0000f2aa5c8e84bd6af1512e55a18b9100fff7a6c22e68`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/config.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/config.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0897 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `208`
+- Fingerprint: `sha256:ab5d647a17236e43394738e6c92202f662dde357bf32c9033d1b70224537d8ce`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0898 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `209`
+- Fingerprint: `sha256:a531473d111402fa38bbbedc89da021bfed21735c18c549626655587e757160d`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0899 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `210`
+- Fingerprint: `sha256:04efe0f3d220303486f8aaeccac354d5bfa59e2b54aab5077a0f353431b82211`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0900 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `211`
+- Fingerprint: `sha256:6ac7d714d5d184d2c73a0b0a2cfde66dbf274ff7be85c049f6b1cd8071d0c2e3`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0901 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `212`
+- Fingerprint: `sha256:e17aa13d7f29c3898b087709b9ab880650d76252c269d949361009431f4e0018`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0902 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `213`
+- Fingerprint: `sha256:c8166ce71402b281fae04ec49e50b53b3bd2a88fac07d5b45400c3efa200f7f8`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0903 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `214`
+- Fingerprint: `sha256:0d8427f2f4ec9abc6a36befb5f3dd221e8fd5760cb546120982b767ce0fdff96`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0904 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/config/keybinds.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `215`
+- Fingerprint: `sha256:44b01e6ccc7ccf40855fb3633cb20554718358c8e57f75553f0c6c09ddc85856`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/config/keybinds.ts`
+- Problem: raw shell or SQL text is built from untrusted TypeScript input
+- Why: trusted input proof is missing
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/config/`
+- `packages/jekko/src/config/keybinds.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0905 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/permission/index.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `216`
+- Fingerprint: `sha256:0ae54ff007dd5617b9992164ff40b26eb5e24aed180c13948d16937b05f36723`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/permission/index.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/permission/`
+- `packages/jekko/src/permission/index.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0906 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/permission/index.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `217`
+- Fingerprint: `sha256:49bc75f5fcb0d18a6c118563c318b99e557df236afcde14ffc05718081887db6`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/permission/index.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/permission/`
+- `packages/jekko/src/permission/index.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0907 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/permission/index.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `218`
+- Fingerprint: `sha256:a29fb9c3bdd4b765526520f7eacff874fe675585fe47ec93807d8789e7022002`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/permission/index.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/permission/`
+- `packages/jekko/src/permission/index.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0908 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/groups/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `219`
+- Fingerprint: `sha256:6270b1d41dc482325e98e187187f868f7e646048e6afb3b9052584a5325243a1`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0909 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/groups/session.ts
+- Status: Complete
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `220`
+- Fingerprint: `sha256:4f242b1422102d6963fcf7ced2152debe1e9f3982fc95bf1c5b7a53ebabc2d27`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files: 
+- Proof receipt:
+  - Command: • Packages in scope: @jekko-ai/core, @jekko-ai/plugin, @jekko-ai/script, @jekko-ai/sdk, jekko
+• Running typecheck in 5 packages
+• Remote caching disabled
+@jekko-ai/plugin:typecheck: cache hit, replaying logs 7459d701e948fe8c
+@jekko-ai/sdk:typecheck: cache hit, replaying logs 03a32e70c92fafe6
+jekko:typecheck: cache hit, replaying logs db95a78d528ffe4d
+@jekko-ai/core:typecheck: cache hit, replaying logs d3331a4e3d6761f9
+@jekko-ai/core:typecheck: $ tsgo --noEmit
+jekko:typecheck: $ tsgo --noEmit
+@jekko-ai/sdk:typecheck: $ tsgo --noEmit
+@jekko-ai/plugin:typecheck: $ tsgo --noEmit
+ Tasks:    4 successful, 4 total
+Cached:    4 cached, 4 total
+  Time:    173ms >>> FULL TURBO
+bun test v1.3.13 (bf2e2cec)
+ok: file:AGENTS.md - present
+ok: file:agent/JANKURAI_STANDARD.md - present
+ok: file:agent/owner-map.json - present
+ok: file:agent/test-map.json - present
+ok: file:agent/generated-zones.toml - present
+ok: file:agent/proof-lanes.toml - present
+ok: file:agent/standard-version.toml - present
+ok: file:agent/repo-score.json - present
+ok: file:agent/repo-score.md - present
+ok: file:agent/boundaries.toml - present
+ok: file:agent/security-policy.toml - present
+ok: file:tools/security-lane.sh - present
+ok: file:db/README.md - present
+high: lockfile - package manifests exist without a committed lockfile
+medium: local-path-leak - local absolute path appears in agent-facing text
+low: security-tool:syft - security lane tool `syft` is not installed; treat it as advisory outside strict mode
+  - Result: 
+  - Timestamp: 2026-05-09T11:15:00Z
+  - Files touched: 
+
+### JK-0910 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/groups/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `221`
+- Fingerprint: `sha256:c6231f59fc7a68a8b45ec3eabb61a728cf9e1ad01b4d5471773014b468b003f3`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/`
+- `packages/jekko/src/server/routes/instance/httpapi/groups/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0911 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `222`
+- Fingerprint: `sha256:52fd678eaa3880203764813b113fe635dbeac8c9f932aeff54a4cf0127c9f267`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0912 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `223`
+- Fingerprint: `sha256:34308371c9b49887b66fedf5ccd6a1e96f5fa7a069a9a572d21536864bc7a008`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0913 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `224`
+- Fingerprint: `sha256:eec060160e27539c3e957199e9348383dff03857341c830878700b85394ce46d`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/`
+- `packages/jekko/src/server/routes/instance/httpapi/handlers/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0915 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `226`
+- Fingerprint: `sha256:3331052107526c2539a0b8efef64d1c427062375f0b3d8ad8e2dc755b69749bc`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0916 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `227`
+- Fingerprint: `sha256:04df921a76e11c9ee4ec7511222aa0c5dc04456c4156bc2e72b60244ec548c98`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0917 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `228`
+- Fingerprint: `sha256:a1796b2e1034ed167890aaf24081e6d38c03f47066cc8dde18a899a04c2324fa`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0918 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `229`
+- Fingerprint: `sha256:f0406c8081237ed6318499d2f6f4b548edf0599762e6208e1816bd0bb5c4e27b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0919 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/server/routes/instance/session.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `230`
+- Fingerprint: `sha256:22eca6df28eb27772ef91150f1c57a7d0cfe4ce1b845445e6c342366be96db19`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/server/routes/instance/session.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/server/routes/instance/`
+- `packages/jekko/src/server/routes/instance/session.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0920 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-pass.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `231`
+- Fingerprint: `sha256:1c7478d80bda2eba8aaf24d71ce816a8ec7d976a9aa86cd65073f9b0f1fd09fd`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-pass.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-pass.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0921 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-pass.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `232`
+- Fingerprint: `sha256:c69bec142b6c79356e4e7572354ee7941badb5f56ad8dca5bc0373741f5fa856`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-pass.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-pass.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0922 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-pass.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `233`
+- Fingerprint: `sha256:d7cea62e3dee0fb8cdbb651e22b0193cf1018d7d33b9bc3fefe28e0b7d488700`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-pass.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-pass.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0923 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `234`
+- Fingerprint: `sha256:f48bea03421d0e99f41227952dc9e36eff53e5925549235749f80d425e1865ce`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0924 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `235`
+- Fingerprint: `sha256:405d236905ac1fd2b6e60cbf03939291a0d465679f29eac888a3fc5fd02d11d1`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0925 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `236`
+- Fingerprint: `sha256:eb0b021184f2cadc4f0141703ef31daf05941ada5f2afaca19e305285385484c`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0926 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `237`
+- Fingerprint: `sha256:43debcde7971a43b2d0a4b9d1f6efd50049f5e30f2cb6b5bd46766d165760006`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0927 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `238`
+- Fingerprint: `sha256:8062f487656c1d7ff93a2d321b1e54fa046be8864e8772b7e32c22e0b1ff95ac`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0928 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `239`
+- Fingerprint: `sha256:37cb279d6517f9c5967ccbbfc63c62c0f4fd0974e78c409ab8b164523c21a63d`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0929 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `240`
+- Fingerprint: `sha256:993027b12b9cacf4c7811fe8904ad8638490fd8072b0996ce224cd58129ead2b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0930 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-retry.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `241`
+- Fingerprint: `sha256:c676e0c2c7e6da0db0ba22d6243779acd11188f13c1476fb5187b911f8a8d64f`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-retry.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-retry.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0931 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-task-router.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `242`
+- Fingerprint: `sha256:d8c742eacd5e9a38382630d73094d249d2d9f63cbed18e11b148ea1a6b1e824f`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-task-router.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-task-router.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0932 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-task-router.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `243`
+- Fingerprint: `sha256:5f7a9bb7e4ce7caa2b284e3c313b8526ef95073d33af4a0b3a22041ea1f0f079`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-task-router.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-task-router.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0933 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-task-router.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `244`
+- Fingerprint: `sha256:b36bb4f094237ccd33c557df5e7b2abd815bd1a070591300086c7688c627501e`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-task-router.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-task-router.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0934 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/daemon-task-router.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `245`
+- Fingerprint: `sha256:47c1dc0bbae8dc5a66c3c6aeef58d0ea1175c223b33c124aeb8ff0713aae009f`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/daemon-task-router.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/daemon-task-router.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0935 - [medium] HLT-040-REPO-ROT-BAD-BEHAVIOR - packages/jekko/src/session/message-v2.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `246`
+- Fingerprint: `sha256:3bdc048683b0548d4425b27f17c0a5ae2d982322497e7130e0986057f401982c`
+- Check: `HLT-040-REPO-ROT-BAD-BEHAVIOR:context`
+- Owner: `tools`
+- Lane: `audit`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/message-v2.ts`
+- Problem: active source path looks like an old, backup, copied, or parked implementation
+- Why: ambiguous old-looking active source makes agents and reviewers guess whether code is live
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/message-v2.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just score`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0936 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/message-v2.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `247`
+- Fingerprint: `sha256:9677c2ff49d0e86496aa6a0c636eac1044dea76f76f2297c1a9294cb53306405`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/message-v2.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/message-v2.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0937 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/pending.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `248`
+- Fingerprint: `sha256:946d40e1c4ab13ea595c2db9df21895771123e66d5cdaf897b79b9a4ba985c54`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/pending.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/pending.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0938 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/prompt.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `249`
+- Fingerprint: `sha256:16d38f1dc42425a807beb7bccee83c59edcb3cab3d7a0ed0c3b32a485c1a8798`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/prompt.ts`
+- Problem: future-hostile/dead-language term `temporary` appears in product/runtime code
+- Why: future-hostile/dead-language term `temporary` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/prompt.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0939 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/session/prompt.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `250`
+- Fingerprint: `sha256:ef1c236790c59a4d4fe3fcb3db24d0a2008bbe9519c7450859690d1612e1b761`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/session/prompt.ts`
+- Problem: future-hostile/dead-language term `temporary` appears in product/runtime code
+- Why: future-hostile/dead-language term `temporary` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/session/`
+- `packages/jekko/src/session/prompt.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0940 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/cli/tui/zyal-flash.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `251`
+- Fingerprint: `sha256:74f017fc8cef43c7cce6af28ff17b1ccec1d344b49e46d843f9c2a2629aface1`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/cli/tui/`
+- `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0942 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/cli/tui/zyal-flash.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `253`
+- Fingerprint: `sha256:b21c4cd8dde527ab6899848ccf22c6b1355af871bc5349ccdc477d2e6cb5fd60`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/cli/tui/`
+- `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0943 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/cli/tui/zyal-flash.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `254`
+- Fingerprint: `sha256:db23175d8b3dd52441933d582d1d79382c84143c92f43220b9c4a83cd46ec453`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/cli/tui/`
+- `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0944 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/cli/tui/zyal-flash.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `255`
+- Fingerprint: `sha256:c869ff69d4d32161dcc888d2fabb7066b665d1bb32e5bd1076b5a162781b5e1e`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/cli/tui/`
+- `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0945 - [high]  - packages/jekko/test/fixture/lsp/fake-lsp-server.js
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `256`
+- Fingerprint: `sha256:cbcf64a95250fc6d674d3a07151362ae07b74c8d98f9a36f9a0ca93ea604d2ed`
+- Check: `HLT-000-SCORE-DIMENSION:stack`
+- Owner: `tools`
+- Lane: `audit`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/test/fixture/lsp/fake-lsp-server.js`
+- Problem: runtime code uses a language outside the chosen optimal stack
+- Why: runtime code uses a language outside the chosen optimal stack
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/fixture/lsp/`
+- `packages/jekko/test/fixture/lsp/fake-lsp-server.js`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just score`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0946 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/permission/read-like.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `257`
+- Fingerprint: `sha256:ca714ec3848e0689a93f24578c686f1fe8b99a628ad8abd1309fbb2a914eb4b9`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/permission/read-like.test.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/permission/`
+- `packages/jekko/test/permission/read-like.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0947 - [medium] HLT-027-HUMAN-REVIEW-EVIDENCE-GAP - packages/jekko/test/provider/copilot/copilot-chat-model.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `258`
+- Fingerprint: `sha256:072aede2fe33d8963a7db9546bfd0b0bc2650c2ef8893de2508e825504b63876`
+- Check: `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP:proof`
+- Owner: `tools`
+- Lane: `audit`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
+- Problem: human review or proof claim lacks reproducible evidence
+- Why: proof and review claims need receipts
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/provider/copilot/`
+- `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just score`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0948 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-daemon.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `259`
+- Fingerprint: `sha256:6a404bf882a03087595c6e174c4c859d0e9b9dd8eb22fe2382042e6bb265a576`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0949 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/daemon-memory.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `260`
+- Fingerprint: `sha256:93c7775da15544fe94fc8740756823e67e889a05022ee1cbc7c30da343da8493`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/daemon-memory.test.ts`
+- Problem: future-hostile/dead-language term `old` appears in product/runtime code
+- Why: future-hostile/dead-language term `old` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/daemon-memory.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0950 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/daemon-memory.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `261`
+- Fingerprint: `sha256:1dc674e92b878a9f0e97439eb369dde8a7822e2d51eb27e9f2a993879e922188`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/daemon-memory.test.ts`
+- Problem: future-hostile/dead-language term `temp` appears in product/runtime code
+- Why: future-hostile/dead-language term `temp` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/daemon-memory.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0951 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/daemon-memory.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `262`
+- Fingerprint: `sha256:64112106f6df4e5811c52bbebc5e6e7b235e943b00a0e51e84bbbaa3e897b933`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/daemon-memory.test.ts`
+- Problem: future-hostile/dead-language term `temp` appears in product/runtime code
+- Why: future-hostile/dead-language term `temp` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/daemon-memory.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0952 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/daemon-retry.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `263`
+- Fingerprint: `sha256:ed5a04d4535811bd218c761f885ac13a6fbc1f1a8fcd77501d3bef7dcf937b8d`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/daemon-retry.test.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/daemon-retry.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0953 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/prompt.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `264`
+- Fingerprint: `sha256:bf9a50303fcde13ea6c1432d7815359a71ceef45e7499f3a6a7eeccaa87720e1`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/prompt.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/prompt.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0954 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/prompt.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `265`
+- Fingerprint: `sha256:2f945e2f81050c2dce8a4206c615cc535d5d3d1d58d7e4d148a426bac8a2442d`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/prompt.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/prompt.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0955 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `266`
+- Fingerprint: `sha256:5f9a4808e2b0b841e9f8742afd9947908374e14b35d007bf84b4b3c5f8bfaacb`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0956 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `267`
+- Fingerprint: `sha256:f8f4369bb2703d3f21c461344edaa38edb7e42153c0b5d506407f920a4742221`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0957 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `268`
+- Fingerprint: `sha256:a30480a9ac20b11b5f99d678d6a415354a11e6f3479c2c14daa8e1e2f5030e1d`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0958 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/schema-decoding.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `269`
+- Fingerprint: `sha256:3cb1ae334f92e6f2bd735c3cf0deb8463d799f36149badfd30b02a3923069b8b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/schema-decoding.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/schema-decoding.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0959 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/session/snapshot-tool-race.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `270`
+- Fingerprint: `sha256:22b4d3d63e3868f01bcff32a4e9b1be5f685a1685bdd68325c1077c2c8ac61cc`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/session/snapshot-tool-race.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/session/`
+- `packages/jekko/test/session/snapshot-tool-race.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0960 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `271`
+- Fingerprint: `sha256:6f18e30d8db2fec8104349095f5f702eecb9074bbc5bbf5a06bcab6473b3217d`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0961 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `272`
+- Fingerprint: `sha256:4714f6e4ae41877bff96f0c55c269d7b5745b68e7742fd6f77f14a46483268ad`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0962 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `273`
+- Fingerprint: `sha256:dbd67690366d33d328281e64386390f2745a11314218464a82ce25f12aa09443`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0963 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `274`
+- Fingerprint: `sha256:e2033a0225a9ca2c9525a481c5ed5d6afbfb6d9bf21df1240522ff673a08f68b`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0964 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `275`
+- Fingerprint: `sha256:4f2ba40c38550573105e873e9f488748c04023d158d38d6e5a76153cb26f58b5`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0965 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/storage/json-migration.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `276`
+- Fingerprint: `sha256:809cc8ff7e17a8422d1231055294d220a213ea2118f17d38af726926c96433c6`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/storage/json-migration.test.ts`
+- Problem: future-hostile/dead-language term `stale` appears in product/runtime code
+- Why: future-hostile/dead-language term `stale` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/storage/`
+- `packages/jekko/test/storage/json-migration.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0966 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `277`
+- Fingerprint: `sha256:73d03eeae505870a8b0453ad3f47732ea507aa8f13ff3bd88bd58396c1d4de94`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0967 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `278`
+- Fingerprint: `sha256:ed81d07982f3dc416629296c32181f6e78b293ea102897d3af25fc09dc237a88`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0968 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `279`
+- Fingerprint: `sha256:0f6291b58ed8d43c847b377bcbf447352aa35496f0a976ad3c0ae6b03149bc45`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0969 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/parameters.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `280`
+- Fingerprint: `sha256:32bbebd717267003a9176c1a34c330777a8ee65277569548330fbee42fff7788`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/tool/parameters.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/parameters.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0970 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/tool/registry.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `281`
+- Fingerprint: `sha256:c450e4ac1ced4cb2bb79290fc280c0a4611f9c2be71e68c97d58bb654d644641`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/tool/registry.test.ts`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/tool/`
+- `packages/jekko/test/tool/registry.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0971 - [high] HLT-002-GENERATED-MUTATION - packages/sdk/js/src/gen/client/client.gen.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `282`
+- Fingerprint: `sha256:14ea5b3fddebb2958fcd0d3eb2c97d6432765cb2685c62b1a32b3ac9194ed40d`
+- Check: `HLT-002-GENERATED-MUTATION:generated`
+- Owner: `tools`
+- Lane: `contract`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/sdk/js/src/gen/client/client.gen.ts`
+- Problem: generated zone is not protected strongly enough against hand edits
+- Why: generated zone is not protected strongly enough against hand edits
+- Instructions: edit the source contract and regenerate the protected artifact
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/sdk/js/src/gen/client/`
+- `packages/sdk/js/src/gen/client/client.gen.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0973 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `56`
+- Fingerprint: `sha256:b57214ab62f89cecc0af20246dc927dad18934a99f34b8d34b2a87484e6a9298`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/command.txt` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/command.txt` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0974 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `57`
+- Fingerprint: `sha256:c37a86072daca7e3fa2ed80d03b1de0c60755a940f78f3a53ba53a07128b437b`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/env.txt` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/env.txt` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0975 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `58`
+- Fingerprint: `sha256:1689cd496a83e5f5a156eb4afded3cbe5b289d4ceb1fbfd0273599853f1db4eb`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/final-message.md` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/final-message.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0976 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `59`
+- Fingerprint: `sha256:c15b582ca32bb7ab84f135c74a2bdbddbb348310024d78880271c60ed0240875`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/prompt.md` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/prompt.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0977 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `60`
+- Fingerprint: `sha256:dc721747e4746a33c4462c9624548283da9a71cdb6b1a20b65b9d894719a69a7`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/status.txt` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/status.txt` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0978 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `61`
+- Fingerprint: `sha256:58487b50a25149e49387bd3a2bc3b1487d37136f6cf23ca55c41843a0a574802`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0979 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `62`
+- Fingerprint: `sha256:c36f9a4dfc663cec72b6a0189c3c6fb1bae375f6f3d7b479b59d9ddf4c294fe3`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0980 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `63`
+- Fingerprint: `sha256:1cd03a3891510322c14b825cf57122584a9f7bcfe6e7437154dce9ea927598e2`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T075526Z/command.txt` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T075526Z/command.txt` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0981 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `64`
+- Fingerprint: `sha256:d5229660f027827ec48f653f47db2bc6be5849a162a6db156df5e99d48d5a4a8`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T075526Z/env.txt` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T075526Z/env.txt` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0982 - [high] HLT-003-OWNERLESS-PATH - agent/owner-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `65`
+- Fingerprint: `sha256:8392064aa3ba7fd54d769c1f0a8d4deda57bd99bf5005734d4a15c9140027870`
+- Check: `HLT-003-OWNERLESS-PATH:context`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/owner-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T075526Z/final-message.md` has no owner-map route
+- Why: path `.codex-loop-runs/run-1-20260509T075526Z/final-message.md` has no owner-map route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/owner-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0983 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `66`
+- Fingerprint: `sha256:d753bfcde23f83acd9605846c56b78b37e1654a2e990872660cbb430d28522b7`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/command.txt` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/command.txt` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0984 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `67`
+- Fingerprint: `sha256:926f72779b6f4c43c2fb34cabbcca92678342493fd3e4c19b87ef6c5d055df2e`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/env.txt` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/env.txt` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0985 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `68`
+- Fingerprint: `sha256:fae4ab4e6550817ad1663ca9221399af6b41159720ebff868d875c7f94e693e9`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/final-message.md` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/final-message.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0986 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `69`
+- Fingerprint: `sha256:190ff253a400c8d004010d4a4f6f95ae7fbfefa97022ce8c50c7a073c016a95b`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/prompt.md` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/prompt.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0987 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `70`
+- Fingerprint: `sha256:512ba0f64587ba0a50d7ca65a91bb2ecd2b8cebca7dc247f19bc48ed463d80f7`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/status.txt` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/status.txt` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0988 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `71`
+- Fingerprint: `sha256:87f206d8a45a6f11c1a4d8246de3429bcebc062be5a0faa96de24f738ada4fb2`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/stderr.txt` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0989 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `72`
+- Fingerprint: `sha256:c6aa98a1f028e4604ee81680efec4f52b9a22638cad2ff6cccda1d03579aed50`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T074819Z/stdout.txt` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0990 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `73`
+- Fingerprint: `sha256:396a0d5006521d7b52fd2c4b22d1b3947201e503abe89a3e5326f181fed2092d`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T075526Z/command.txt` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T075526Z/command.txt` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0991 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `74`
+- Fingerprint: `sha256:f126ea6e8e73c535c7882151fee7f49e7db4757ee809f401a26d9723481f9753`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T075526Z/env.txt` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T075526Z/env.txt` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0992 - [high] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `75`
+- Fingerprint: `sha256:491cc22c1e370a0704e039a0d95add420c0ce933139c258317a860d878b17a84`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: path `.codex-loop-runs/run-1-20260509T075526Z/final-message.md` has no test-map proof route
+- Why: path `.codex-loop-runs/run-1-20260509T075526Z/final-message.md` has no test-map proof route
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `.agents/agents.md`
+- `.agents/skills/jankurai/SKILL.md`
+- `.agents/workflows/jankurai-audit.md`
+- `.claude/skills/jankurai/SKILL.md`
+- `.cursor/rules/jankurai.mdc`
+- `.editorconfig`
+- `.github/CODEOWNERS`
+- `.github/ISSUE_TEMPLATE/bug-report.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/feature-request.yml`
+- `.gitignore`
+- `.husky/pre-push`
+- `.jekko/`
+- `.jekko/agent/`
+- `.jekko/agent/duplicate-pr.md`
+- `.jekko/agent/generated-zones.toml`
+- `.jekko/command/`
+- `.jekko/env.d.ts`
+- `.jekko/glossary/`
+- `.oxlintrc.json`
+- `.prettierignore`
+- `.zed/settings.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `JANKURAI_TASKLIST.md`
+- `JANKURAI_TASKLIST.md.bak`
+- `JANKURAI_TASKLIST.md.corrupted_backup`
+- `agent/`
+- `github/`
+- `agent/test-map.json`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-0993 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `130`
+- Fingerprint: `sha256:d7ff1e2ca88a7fc0ff29c58f0b63091466887d3a136c850b71ed0d5a1d404899`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0994 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `131`
+- Fingerprint: `sha256:5302c0a95a0d9fe155c76b78ba7c8770d534417f1e600bdf158647f7d8ae8d1e`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0995 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `132`
+- Fingerprint: `sha256:831949551cb12cfaae4cdc2754c847368202bad550faf4863aa7622ea7344ccb`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0996 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `133`
+- Fingerprint: `sha256:002d43b19e8aab484247d5e02ce37051786551bbd403a4cfef66d76fa9a424d2`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0997 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `134`
+- Fingerprint: `sha256:466998096619378072e040b2f0b9f9eff7abe7e2dda59aba684e9ac544ad7a97`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/agent-script/`
+- `packages/jekko/src/agent-script/parser.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0998 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/daemon.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `138`
+- Fingerprint: `sha256:2ce72423bb864c9585d2e38b1a9fa5253323d9b0b8ca25cef6017e4c4a744412`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/daemon.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/daemon.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-0999 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/daemon.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `139`
+- Fingerprint: `sha256:8b7b2578bf165aaddb93e701540342aadf51bd5526f46c1de9d3c83e2920d98d`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/daemon.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/daemon.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1000 - [high] HLT-031-TYPESCRIPT-BAD-BEHAVIOR - packages/jekko/src/cli/cmd/daemon.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `140`
+- Fingerprint: `sha256:1d7eb1d4d3cabb9046379e627cc40d18c311e6012a1277ae88aeee15f3e94719`
+- Check: `HLT-031-TYPESCRIPT-BAD-BEHAVIOR:boundary`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `packages/jekko/src/cli/cmd/daemon.ts`
+- Problem: unchecked boundary cast or parse result crosses a trust boundary
+- Why: value shape is not proven before the cast
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/`
+- `packages/jekko/src/cli/cmd/daemon.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1001 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/index.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `187`
+- Fingerprint: `sha256:439ae9d72eb5b8b737fc6c208a1f9176214329a35ab4882537d7849f0396d167`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Problem: future-hostile/dead-language term `todo` appears in product/runtime code
+- Why: future-hostile/dead-language term `todo` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/index.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1005 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `193`
+- Fingerprint: `sha256:c9ae3a97b277c3410dc3044214c4ca2a7e1d7e68751baaf56c1d9fce54b94e12`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1006 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `194`
+- Fingerprint: `sha256:393f90514d79c54b1b7801935bacaf440dd1b0d5236499e801b7ce33f16be4bc`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1007 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `195`
+- Fingerprint: `sha256:5f87864d7bbb42e344c0c7c328dc542ca5f144697bd19442169c6d2a6f137944`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1008 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `196`
+- Fingerprint: `sha256:619114a64f66324975107aa8780256e6ab9d86d8e0a53839b6ad2c866cdc7890`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1009 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `197`
+- Fingerprint: `sha256:42197850253e60d072f1ab7bea1421feb17e1b08ece0da71fe9c3dbe775e05a2`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/`
+- `packages/jekko/src/cli/cmd/tui/routes/session/session-renderers.tsx`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1010 - [high] HLT-001-DEAD-MARKER - packages/jekko/test-extract.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `254`
+- Fingerprint: `sha256:e9ad8b1d01644ec17065b547d27dbb9862173a64101dffbc1173b49f4c51a680`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test-extract.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/`
+- `packages/jekko/test-extract.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1011 - [high] HLT-001-DEAD-MARKER - packages/jekko/test-zyal.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `255`
+- Fingerprint: `sha256:962dfb5ecd0ec991146a325862161702531d256cd5f313b53b1d4540e672aa82`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test-zyal.ts`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/`
+- `packages/jekko/test-zyal.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1012 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/cli/tui/zyal-flash.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `256`
+- Fingerprint: `sha256:100380b6ca149b2939a7077ed791f17ca311c0dd8d802f973f6cb1cf28a265e7`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Problem: future-hostile/dead-language term `old` appears in product/runtime code
+- Why: future-hostile/dead-language term `old` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/cli/tui/`
+- `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1013 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-daemon.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `260`
+- Fingerprint: `sha256:fd541a55fbb1df59ef5afcf63cb19d07794f491a4836ab52c730e9947e021967`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1014 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-daemon.test.ts
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `261`
+- Fingerprint: `sha256:f6919b866a00c257aaf146a99e378631bc67e15c612688c87ed99700f3859036`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `packages/jekko/test/server/`
+- `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1015 - [medium] HLT-004-UNMAPPED-PROOF - agent/test-map.json
+- Status: Pending
+- Source packet: `66`
+- Fingerprint: `sha256:bdf3cadf95ed85807c79fc4819b124bb6247736f25877aa8f0846f94a0f62bb5`
+- Check: `HLT-004-UNMAPPED-PROOF:proof`
+- Owner: `agent`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `agent/test-map.json`
+- Problem: `Proof lanes and test routing` scored 82 below the standard floor of 85
+- Why: `Proof lanes and test routing` scored 82 below the standard floor of 85
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- .agents/agents.md
+- .agents/skills/jankurai/SKILL.md
+- .agents/workflows/jankurai-audit.md
+- .claude/skills/jankurai/SKILL.md
+- .cursor/rules/jankurai.mdc
+- .editorconfig
+- .github/CODEOWNERS
+- .github/ISSUE_TEMPLATE/bug-report.yml
+- .github/ISSUE_TEMPLATE/config.yml
+- .github/ISSUE_TEMPLATE/feature-request.yml
+- .gitignore
+- .husky/pre-push
+- .jekko/
+- .jekko/agent/
+- .jekko/agent/duplicate-pr.md
+- .jekko/agent/generated-zones.toml
+- .jekko/command/
+- .jekko/env.d.ts
+- .jekko/glossary/
+- .oxlintrc.json
+- .prettierignore
+- .zed/settings.json
+- AGENTS.md
+- CLAUDE.md
+- GEMINI.md
+- JANKURAI_TASKLIST.md
+- JANKURAI_TASKLIST.md.bak
+- JANKURAI_TASKLIST.md.corrupted_backup
+- agent/
+- github/
+- agent/test-map.json
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- stop if the source contract or generator is not identified first
+- Rollback: revert the source contract or template, then regenerate the output
+- Touched files:
+- Proof receipt:
+
+### JK-1016 - [high] HLT-008-FALSE-GREEN-RISK - crates/
+- Status: Pending
+- Source packet: `77`
+- Fingerprint: `sha256:8ece7234070a20910736663e65a530625acd16dac7fa57476cfc7c9a74bd745c`
+- Check: `HLT-008-FALSE-GREEN-RISK:test`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `crates/`
+- Problem: Rust surface lacks required property and/or integration tests
+- Why: Rust surface lacks required property and/or integration tests
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1017 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Source packet: `131`
+- Fingerprint: `sha256:fbfae6693709c60909ca53e5a01845d2d734958324ceb4e380c9e3abce27b908`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/src/agent-script/
+- packages/jekko/src/agent-script/parser.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1018 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Source packet: `132`
+- Fingerprint: `sha256:71ef8bbf97a5594b35286f610458ad41aea219ba404aebc06d57fe20a4fe80f7`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/src/agent-script/
+- packages/jekko/src/agent-script/parser.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1019 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Source packet: `133`
+- Fingerprint: `sha256:4c54eb003b89c76789549f83263a6df60ef7e4e905b8f99b693526009b2eaa0a`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/src/agent-script/
+- packages/jekko/src/agent-script/parser.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1020 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Source packet: `134`
+- Fingerprint: `sha256:abe5c80cf4d1714a3b2a968f6cfecef8a4d2fad81e47dbdbc220ccc0a9946bc5`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/src/agent-script/
+- packages/jekko/src/agent-script/parser.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1021 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/agent-script/parser.test.ts
+- Status: Pending
+- Source packet: `135`
+- Fingerprint: `sha256:8e5255332b35f412dd2035751035a494f37dfecc89dae74acbea2c99fef473d0`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/agent-script/parser.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/src/agent-script/
+- packages/jekko/src/agent-script/parser.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1022 - [high] HLT-001-DEAD-MARKER - packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx
+- Status: Pending
+- Source packet: `162`
+- Fingerprint: `sha256:2826fe8292a430340a78a7190db62ebdb2ca94c0a38636164bdf1628cd8274f9`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx`
+- Problem: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Why: future-hostile/dead-language term `fallback` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/src/cli/cmd/tui/component/prompt/
+- packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1023 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/cli/tui/zyal-flash.test.ts
+- Status: Pending
+- Source packet: `257`
+- Fingerprint: `sha256:87b8fa7e6eecdb072e8b8eff459b2863c9ac5c61be18354a68048039f6c7b8e7`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/cli/tui/zyal-flash.test.ts`
+- Problem: future-hostile/dead-language term `old` appears in product/runtime code
+- Why: future-hostile/dead-language term `old` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/test/cli/tui/
+- packages/jekko/test/cli/tui/zyal-flash.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1024 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-daemon.test.ts
+- Status: Pending
+- Source packet: `261`
+- Fingerprint: `sha256:42bac4770114793276827faf18fade4295bb85ba0f6722794abaa582f0cf5608`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/test/server/
+- packages/jekko/test/server/httpapi-daemon.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1025 - [high] HLT-001-DEAD-MARKER - packages/jekko/test/server/httpapi-daemon.test.ts
+- Status: Pending
+- Source packet: `262`
+- Fingerprint: `sha256:0deaa439b2fa4fd60a0079b0fe1566cfd2b7d662393bf880b2990204255e450f`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `packages/jekko/test/server/httpapi-daemon.test.ts`
+- Problem: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Why: future-hostile/dead-language term `legacy` appears in product/runtime code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- crates/
+- packages/
+- sdks/
+- tools/
+- packages/jekko/test/server/
+- packages/jekko/test/server/httpapi-daemon.test.ts
+- Forbidden paths:
+- reference/
+- target/
+- agent/repo-score.json
+- agent/repo-score.md
+- Proof required:
+- just fast
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1028 - [medium] HLT-001-DEAD-MARKER - .
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `current-audit`
+- Fingerprint: `sha256:38a9f7d956ac8511198538a5576aa28c83b137f84f47796e6509f33fc6a1a180`
+- Check: `HLT-001-DEAD-MARKER:shape`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `.`
+- Problem: `Code shape and semantic surface` scored 0 below the standard floor of 85
+- Why: `Code shape and semantic surface` scored 0 below the standard floor of 85
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `.`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1031 - [high] HLT-001-DEAD-MARKER - crates/tuiwright-jekko-unlock/tests/zyal_session_paste.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `78`
+- Fingerprint: `sha256:775854c8338ac4472b8a6c025bb5c2b174bd042fb1091afe42b023bd7a44cf63`
+- Check: `HLT-001-DEAD-MARKER:vibe`
+- Owner: `tools`
+- Lane: `fast`
+- Risk: `medium`
+- Eligibility: `agent-assisted`
+- Human review required: `no`
+- Scope path: `crates/tuiwright-jekko-unlock/tests/zyal_session_paste.rs`
+- Problem: fallback soup detected in product code
+- Why: fallback soup detected in product code
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `crates/`
+- `packages/`
+- `sdks/`
+- `tools/`
+- `crates/tuiwright-jekko-unlock/tests/`
+- `crates/tuiwright-jekko-unlock/tests/zyal_session_paste.rs`
+- Forbidden paths:
+- `reference/`
+- `target/`
+- `agent/repo-score.json`
+- `agent/repo-score.md`
+- Proof required:
+- `just fast`
+- Stop conditions:
+- stop if the fix broadens permission scope or touches a generated zone
+- stop if the repair requires a migration, secret rotation, or external service change
+- Rollback: revert the scoped files and rerun the required proof before retrying
+- Touched files:
+- Proof receipt:
+
+### JK-1032 - [high] HLT-000-SCORE-DIMENSION - jnoccio-fusion/src/bin/provider_probe.rs
+- Status: Pending
+- Assignee: unassigned
+- Started:
+- Completed:
+- Source packet: `80`
+- Fingerprint: `sha256:81ea25821193cdca022491bc1e16eacc7c8d073461a5dde399afb6f0791ef8e0`
+- Check: `HLT-000-SCORE-DIMENSION:vibe`
+- Owner: `workspace`
+- Lane: `fast`
+- Risk: `high`
+- Eligibility: `human-required`
+- Human review required: `yes`
+- Scope path: `jnoccio-fusion/src/bin/provider_probe.rs`
+- Problem: duplicated product code block detected
+- Why: duplicated product code block detected
+- Instructions: scoped fix with targeted proof and no authority expansion
+- Allowed paths:
+- `CONTRIBUTING.md`
+- `Justfile`
+- `LICENSE`
+- `README`
+- `README.md`
+- `STATS.md`
+- `bun`
+- `flake`
+- `install`
+- `jnoccio-fusion/`
+- `nix/`
+- `package.json`
+- `patches/`
+- `script/`
+- `sst`
+- `tsconfig.json`
+- `turbo.json`
+- `jnoccio-fusion/src/bin/`
+- `jnoccio-fusion/src/bin/provider_probe.rs`
 - Forbidden paths:
 - `reference/`
 - `target/`

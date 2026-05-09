@@ -92,6 +92,16 @@ const toPlatformError = (
   })
 }
 
+const isFdName = (value: string): value is `fd${number}` => /^fd\d+$/.test(value)
+
+const toFdName = (fd: number): `fd${number}` => {
+  const name = ChildProcess.fdName(fd)
+  if (!isFdName(name)) {
+    throw new Error(`invalid file descriptor name: ${name}`)
+  }
+  return name
+}
+
 type ExitSignal = Deferred.Deferred<readonly [code: number | null, signal: NodeJS.Signals | null]>
 
 export const make = Effect.gen(function* () {
@@ -481,7 +491,7 @@ export const make = Effect.gen(function* () {
                 ...next.options,
                 additionalFds: {
                   ...next.options.additionalFds,
-                  [ChildProcess.fdName(fd) as `fd${number}`]: { type: "input", stream },
+                  [toFdName(fd)]: { type: "input", stream },
                 },
               }),
             )

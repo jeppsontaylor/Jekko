@@ -3,7 +3,8 @@ import { Config } from "@/config/config"
 import { ModelsDev } from "@/provider/models"
 import { Provider } from "@/provider/provider"
 import { ProviderID } from "@/provider/schema"
-import { unlockJnoccioFusion, type JnoccioUnlockInput } from "@/util/jnoccio-unlock"
+import { unlockJnoccioFusion, findRepoRootFrom, repoRootFromSource, type JnoccioUnlockInput } from "@/util/jnoccio-unlock"
+import * as InstanceState from "@/effect/instance-state"
 import { mapValues } from "remeda"
 import { Effect, Schema } from "effect"
 import { HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
@@ -36,7 +37,9 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
     })
 
     const unlock = Effect.fn("ProviderHttpApi.unlock")(function* (ctx: { payload?: JnoccioUnlockInput }) {
-      return yield* Effect.promise(() => unlockJnoccioFusion(ctx.payload ?? {}))
+      const instCtx = yield* InstanceState.context
+      const repoRoot = findRepoRootFrom(instCtx.worktree) ?? findRepoRootFrom(instCtx.directory) ?? repoRootFromSource()
+      return yield* Effect.promise(() => unlockJnoccioFusion(ctx.payload ?? {}, { repoRoot }))
     })
 
     const auth = Effect.fn("ProviderHttpApi.auth")(function* () {

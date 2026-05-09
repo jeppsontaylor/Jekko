@@ -1,10 +1,21 @@
 import { NotFoundError } from "@/storage/storage"
-import { eq } from "drizzle-orm"
-import { and } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
+import { Database } from "@/storage/db"
 import { SyncEvent } from "@/sync"
 import * as Session from "./session"
 import { MessageV2 } from "./message"
 import { SessionTable, MessageTable, PartTable } from "./session.sql"
+import { SessionID } from "./schema"
+import {
+  DaemonArtifactTable,
+  DaemonEventTable,
+  DaemonIterationTable,
+  DaemonRunTable,
+  DaemonTaskMemoryTable,
+  DaemonTaskPassTable,
+  DaemonTaskTable,
+  DaemonWorkerTable,
+} from "./daemon.sql"
 import { Log } from "@jekko-ai/core/util/log"
 import nextProjectors from "./projectors-next"
 
@@ -35,6 +46,33 @@ function grab<T extends object, K1 extends keyof T, X>(
     )
   }
   return val as X | undefined
+}
+
+function removeDaemonDataForSession(db: Database.TxOrDb, sessionID: SessionID) {
+  const runs = [
+    ...db
+    .select({ id: DaemonRunTable.id })
+    .from(DaemonRunTable)
+    .where(eq(DaemonRunTable.root_session_id, SessionID.make(sessionID)))
+    .all(),
+    ...db
+      .select({ id: DaemonRunTable.id })
+      .from(DaemonRunTable)
+      .where(eq(DaemonRunTable.active_session_id, SessionID.make(sessionID)))
+      .all(),
+  ]
+  const runIDs = [...new Set(runs.map((run) => run.id))]
+
+  for (const runID of runIDs) {
+    db.delete(DaemonArtifactTable).where(eq(DaemonArtifactTable.run_id, runID)).run()
+    db.delete(DaemonTaskMemoryTable).where(eq(DaemonTaskMemoryTable.run_id, runID)).run()
+    db.delete(DaemonTaskPassTable).where(eq(DaemonTaskPassTable.run_id, runID)).run()
+    db.delete(DaemonTaskTable).where(eq(DaemonTaskTable.run_id, runID)).run()
+    db.delete(DaemonWorkerTable).where(eq(DaemonWorkerTable.run_id, runID)).run()
+    db.delete(DaemonIterationTable).where(eq(DaemonIterationTable.run_id, runID)).run()
+    db.delete(DaemonEventTable).where(eq(DaemonEventTable.run_id, runID)).run()
+    db.delete(DaemonRunTable).where(eq(DaemonRunTable.id, runID)).run()
+  }
 }
 
 export function toPartialRow(info: DeepPartial<Session.Info>) {
@@ -83,6 +121,7 @@ export default [
   }),
 
   SyncEvent.project(Session.Event.Deleted, (db, data) => {
+    removeDaemonDataForSession(db, data.sessionID)
     db.delete(SessionTable).where(eq(SessionTable.id, data.sessionID)).run()
   }),
 
