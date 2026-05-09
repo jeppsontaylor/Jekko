@@ -45,10 +45,10 @@ function paint(text: string, rgb: readonly [number, number, number], opts: { bol
 }
 
 // ---------------------------------------------------------------------------
-// Acid Gecko Bloom — 512-stop colormap (synchronized with logo.tsx)
+// Acid Gecko Bloom — 512-step unified diagonal gradient (sync with logo.tsx)
 // ---------------------------------------------------------------------------
 
-const COLORMAP_SIZE = 512
+const GRADIENT_STEPS = 512
 
 function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n))
@@ -56,6 +56,32 @@ function clamp01(n: number): number {
 
 function clamp255(n: number): number {
   return Math.max(0, Math.min(255, Math.round(n)))
+}
+
+function hexToRGB(hex: string): [number, number, number] {
+  const clean = hex.replace("#", "")
+  return [
+    parseInt(clean.slice(0, 2), 16),
+    parseInt(clean.slice(2, 4), 16),
+    parseInt(clean.slice(4, 6), 16),
+  ]
+}
+
+function rgbToHSV(r: number, g: number, b: number): [number, number, number] {
+  const rn = r / 255, gn = g / 255, bn = b / 255
+  const max = Math.max(rn, gn, bn)
+  const min = Math.min(rn, gn, bn)
+  const delta = max - min
+
+  let h = 0
+  if (delta !== 0) {
+    if (max === rn) h = 60 * (((gn - bn) / delta) % 6)
+    else if (max === gn) h = 60 * ((bn - rn) / delta + 2)
+    else h = 60 * ((rn - gn) / delta + 4)
+  }
+  if (h < 0) h += 360
+
+  return [h, max === 0 ? 0 : delta / max, max]
 }
 
 function hsvToRGB(h: number, s: number, v: number): [number, number, number] {
@@ -77,74 +103,55 @@ function hsvToRGB(h: number, s: number, v: number): [number, number, number] {
   return [clamp255((r + m) * 255), clamp255((g + m) * 255), clamp255((b + m) * 255)]
 }
 
-function rgbToHSV(r: number, g: number, b: number): [number, number, number] {
-  const rn = r / 255, gn = g / 255, bn = b / 255
-  const max = Math.max(rn, gn, bn)
-  const min = Math.min(rn, gn, bn)
-  const delta = max - min
-
-  let h = 0
-  if (delta !== 0) {
-    if (max === rn) h = 60 * (((gn - bn) / delta) % 6)
-    else if (max === gn) h = 60 * ((bn - rn) / delta + 2)
-    else h = 60 * ((rn - gn) / delta + 4)
-  }
-  if (h < 0) h += 360
-
-  return [h, max === 0 ? 0 : delta / max, max]
-}
-
 function mixHue(a: number, b: number, t: number): number {
   const delta = ((b - a + 540) % 360) - 180
   return (a + delta * t + 360) % 360
 }
 
-type Keyframe = { pos: number; rgb: [number, number, number] }
-
-const BLOOM_KEYFRAMES: Keyframe[] = [
-  { pos: 0,   rgb: [0, 255, 22] },
-  { pos: 64,  rgb: [68, 255, 0] },
-  { pos: 128, rgb: [0, 255, 204] },
-  { pos: 192, rgb: [51, 0, 255] },
-  { pos: 256, rgb: [119, 0, 255] },
-  { pos: 320, rgb: [204, 0, 255] },
-  { pos: 384, rgb: [255, 0, 170] },
-  { pos: 448, rgb: [255, 0, 102] },
-  { pos: 511, rgb: [255, 0, 68] },
-]
-
-function buildColormap(keyframes: Keyframe[], size: number): [number, number, number][] {
-  const map: [number, number, number][] = new Array(size)
-
-  for (let i = 0; i < size; i++) {
-    let lo = keyframes[0]!
-    let hi = keyframes[keyframes.length - 1]!
-
-    for (let k = 0; k < keyframes.length - 1; k++) {
-      if (i >= keyframes[k]!.pos && i <= keyframes[k + 1]!.pos) {
-        lo = keyframes[k]!
-        hi = keyframes[k + 1]!
-        break
-      }
-    }
-
-    const range = hi.pos - lo.pos
-    const t = range === 0 ? 0 : clamp01((i - lo.pos) / range)
-
-    const loHSV = rgbToHSV(...lo.rgb)
-    const hiHSV = rgbToHSV(...hi.rgb)
-
-    const h = mixHue(loHSV[0], hiHSV[0], t)
-    const s = loHSV[1] + (hiHSV[1] - loHSV[1]) * t
-    const v = loHSV[2] + (hiHSV[2] - loHSV[2]) * t
-
-    map[i] = hsvToRGB(h, Math.max(0.95, s), Math.max(0.95, v))
-  }
-
-  return map
+function smoothstep(t: number): number {
+  const x = clamp01(t)
+  return x * x * (3 - 2 * x)
 }
 
-const ACID_GECKO_BLOOM = buildColormap(BLOOM_KEYFRAMES, COLORMAP_SIZE)
+function forceNeon(rgb: [number, number, number]): [number, number, number] {
+  const [h, _s, _v] = rgbToHSV(rgb[0], rgb[1], rgb[2])
+  return hsvToRGB(h, 1, 1)
+}
+
+const BLOOM_STOPS = [
+  "#00FF16",  // acid green
+  "#66FF00",  // electric lime
+  "#00FFCC",  // neon cyan
+  "#00BBFF",  // electric blue
+  "#6600FF",  // deep violet
+  "#CC00FF",  // vivid magenta
+  "#FF00B8",  // hot pink
+].map(hexToRGB)
+
+function buildGradientLUT(stops: [number, number, number][], steps: number): [number, number, number][] {
+  const out: [number, number, number][] = []
+  const segments = stops.length - 1
+
+  for (let i = 0; i < steps; i++) {
+    const t = i / (steps - 1)
+    const pos = t * segments
+    const seg = Math.min(segments - 1, Math.floor(pos))
+    const localT = smoothstep(pos - seg)
+
+    const lo = rgbToHSV(...stops[seg]!)
+    const hi = rgbToHSV(...stops[seg + 1]!)
+
+    const h = mixHue(lo[0], hi[0], localT)
+    const s = lo[1] + (hi[1] - lo[1]) * localT
+    const v = lo[2] + (hi[2] - lo[2]) * localT
+
+    out.push(forceNeon(hsvToRGB(h, s, v)))
+  }
+
+  return out
+}
+
+const ACID_GECKO_BLOOM = buildGradientLUT(BLOOM_STOPS, GRADIENT_STEPS)
 
 function bloomColor(
   x: number,
@@ -155,34 +162,24 @@ function bloomColor(
   const tx = width <= 1 ? 0 : x / (width - 1)
   const ty = height <= 1 ? 0 : y / (height - 1)
 
-  const t = (tx + ty) / 2
-  const index = Math.max(0, Math.min(COLORMAP_SIZE - 1, Math.round(t * (COLORMAP_SIZE - 1))))
-  return ACID_GECKO_BLOOM[index]!
+  const t = clamp01((tx + ty) / 2)
+  const idx = Math.max(0, Math.min(GRADIENT_STEPS - 1, Math.round(t * (GRADIENT_STEPS - 1))))
+  return ACID_GECKO_BLOOM[idx]!
 }
 
+// Physical X position — whole box is one unified diagonal gradient.
 function gradientLine(
   text: string,
   y: number,
   totalRows: number,
+  totalWidth: number,
   opts: { bold?: boolean } = {},
 ): string {
   const chars = Array.from(text)
-  const visibleCount = chars.filter((c) => c !== " ").length
-
-  let visibleIndex = 0
   let out = ""
-  for (let i = 0; i < chars.length; i++) {
-    const ch = chars[i]!
-    let gx: number, gw: number
-    if (ch === " ") {
-      gx = i
-      gw = Math.max(1, chars.length)
-    } else {
-      gx = visibleIndex++
-      gw = Math.max(1, visibleCount)
-    }
-    const rgb = bloomColor(gx, y, gw, totalRows)
-    out += paint(ch, rgb, { bold: opts.bold })
+  for (let x = 0; x < chars.length; x++) {
+    const rgb = bloomColor(x, y, totalWidth, totalRows)
+    out += paint(chars[x]!, rgb, { bold: opts.bold })
   }
   return out
 }
@@ -252,8 +249,9 @@ export function logo(pad?: string) {
   rows.push({ text: bottom, bold: true })
 
   const totalRows = rows.length
+  const totalWidth = Math.max(...rows.map((r) => r.text.length))
   const rendered = rows.map((row, y) =>
-    (pad || "") + gradientLine(row.text, y, totalRows, { bold: row.bold }),
+    (pad || "") + gradientLine(row.text, y, totalRows, totalWidth, { bold: row.bold }),
   )
 
   return rendered.join(EOL)
