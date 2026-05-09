@@ -479,7 +479,7 @@ export function Prompt(props: PromptProps) {
   // and recomputes display offsets per call — O(N × text). Calling create()
   // or delete() N times in a loop is O(N² × text). For a 600-token ZYAL
   // paste that's ~2 billion ops and translates to multi-second hangs. We
-  // suppress the per-op rebuild by stubbing updateHighlights for the duration
+  // suppress the per-op rebuild by pausing updateHighlights for the duration
   // of the diff and call it exactly once at the end.
   createEffect(() => {
     if (!input || input.isDestroyed) return
