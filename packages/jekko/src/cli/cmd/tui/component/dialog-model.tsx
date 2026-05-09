@@ -17,6 +17,7 @@ export function DialogModel(props: { providerID?: string }) {
   const dialog = useDialog()
   const keybind = useKeybind()
   const [query, setQuery] = createSignal("")
+  const inactiveStatus: string = "inactive"
 
   const connected = useConnected()
   const providers = createDialogProviderOptions()
@@ -74,10 +75,10 @@ export function DialogModel(props: { providerID?: string }) {
         (provider) => provider.name,
       ),
       flatMap((provider) =>
-        pipe(
-          provider.models,
-          entries(),
-          filter(([_, info]) => info.status !== "inactive"),
+          pipe(
+            provider.models,
+            entries(),
+          filter(([_, info]) => info.status !== inactiveStatus),
           filter(([_, info]) => (props.providerID ? info.providerID === props.providerID : true)),
           map(([model, info]) => ({
             value: { providerID: provider.id, modelID: model },

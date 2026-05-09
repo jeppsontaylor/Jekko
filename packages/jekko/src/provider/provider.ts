@@ -1292,7 +1292,7 @@ const layer: Layer.Layer<
           const pluginAuth = yield* auth.get(providerID).pipe(Effect.orDie)
 
           provider.models = yield* Effect.promise(async () => {
-            const next = await models(toPluginProvider(provider), { auth: pluginAuth })
+            const next = await models(toPluginProvider(provider) as any, { auth: pluginAuth })
             return Object.fromEntries(
               Object.entries(next).map(([id, model]) => [
                 id,
@@ -1440,7 +1440,7 @@ const layer: Layer.Layer<
           const options = yield* Effect.promise(() =>
             plugin.auth!.loader!(
               () => bridge.promise(auth.get(providerID).pipe(Effect.orDie)) as any,
-              toPluginProvider(database[plugin.auth!.provider]),
+              toPluginProvider(database[plugin.auth!.provider]) as any,
             ),
           )
           const opts = options ?? {}
