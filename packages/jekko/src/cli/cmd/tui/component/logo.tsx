@@ -50,7 +50,7 @@ export function Logo(props: { shape?: any; ink?: RGBA; idle?: boolean } = {}) {
   const sep = "├" + "─".repeat(w - 2) + "┤"
 
   const subtitlePlain = "[ AI coding gecko • "
-  const zqmlPlain = "ZYML"
+  const zqmlPlain = "ZYAL"
   const suffixPlain = " support ]"
   const totalPlain = subtitlePlain.length + zqmlPlain.length + suffixPlain.length
   const subLeftSpaces = Math.floor((w - 2 - totalPlain) / 2)
@@ -63,21 +63,37 @@ export function Logo(props: { shape?: any; ink?: RGBA; idle?: boolean } = {}) {
   return (
     <box flexDirection="column">
       {/* Top Border */}
-      <text fg={ORANGE} selectable={false}>{top}</text>
+      <text fg={ORANGE} selectable={false}>
+        {top}
+      </text>
 
       {/* Header */}
       <box flexDirection="row">
-        <text fg={ORANGE} selectable={false}>│</text>
-        <text fg={CYAN} attributes={TextAttributes.BOLD} selectable={false}>›_</text>
+        <text fg={ORANGE} selectable={false}>
+          │
+        </text>
+        <text fg={CYAN} attributes={TextAttributes.BOLD} selectable={false}>
+          ›_
+        </text>
         <text selectable={false}>{" ".repeat(w - 8 - 6)}</text>
-        <text fg={ORANGE} selectable={false}>● </text>
-        <text fg={ORANGE_2} selectable={false}>● </text>
-        <text fg={CYAN} selectable={false}>●</text>
-        <text fg={ORANGE} selectable={false}>│</text>
+        <text fg={ORANGE} selectable={false}>
+          ●{" "}
+        </text>
+        <text fg={ORANGE_2} selectable={false}>
+          ●{" "}
+        </text>
+        <text fg={CYAN} selectable={false}>
+          ●
+        </text>
+        <text fg={ORANGE} selectable={false}>
+          │
+        </text>
       </box>
 
       {/* Sep */}
-      <text fg={BORDER} selectable={false}>{sep}</text>
+      <text fg={BORDER} selectable={false}>
+        {sep}
+      </text>
 
       {/* Wordmark */}
       <For each={brandWordmarkLines}>
@@ -94,41 +110,65 @@ export function Logo(props: { shape?: any; ink?: RGBA; idle?: boolean } = {}) {
 
           return (
             <box flexDirection="row">
-              <text fg={ORANGE} selectable={false}>│</text>
+              <text fg={ORANGE} selectable={false}>
+                │
+              </text>
               <GradientText text={prefix} left={ORANGE_2} right={CYAN} />
               <GradientText text={raw} left={ORANGE} right={ORANGE_2} bold />
               <text selectable={false}>{" ".repeat(Math.max(0, padLen))}</text>
-              <text fg={ORANGE} selectable={false}>│</text>
+              <text fg={ORANGE} selectable={false}>
+                │
+              </text>
             </box>
           )
         }}
       </For>
 
       {/* Sep */}
-      <text fg={BORDER} selectable={false}>{sep}</text>
+      <text fg={BORDER} selectable={false}>
+        {sep}
+      </text>
 
       {/* Subtitle */}
       <box flexDirection="row">
-        <text fg={ORANGE} selectable={false}>│</text>
+        <text fg={ORANGE} selectable={false}>
+          │
+        </text>
         <text selectable={false}>{" ".repeat(subLeftSpaces)}</text>
-        <text fg={WHITE} attributes={TextAttributes.BOLD} selectable={false}>{subtitlePlain}</text>
-        <text fg={CYAN} attributes={TextAttributes.BOLD} selectable={false}>{zqmlPlain}</text>
-        <text fg={WHITE} attributes={TextAttributes.BOLD} selectable={false}>{suffixPlain}</text>
+        <text fg={WHITE} attributes={TextAttributes.BOLD} selectable={false}>
+          {subtitlePlain}
+        </text>
+        <text fg={CYAN} attributes={TextAttributes.BOLD} selectable={false}>
+          {zqmlPlain}
+        </text>
+        <text fg={WHITE} attributes={TextAttributes.BOLD} selectable={false}>
+          {suffixPlain}
+        </text>
         <text selectable={false}>{" ".repeat(subRightSpaces)}</text>
-        <text fg={ORANGE} selectable={false}>│</text>
+        <text fg={ORANGE} selectable={false}>
+          │
+        </text>
       </box>
 
       {/* Command Ready */}
       <box flexDirection="row">
-        <text fg={ORANGE} selectable={false}>│</text>
+        <text fg={ORANGE} selectable={false}>
+          │
+        </text>
         <text selectable={false}>{" ".repeat(cmdLeftSpaces)}</text>
-        <text fg={MUTED} attributes={TextAttributes.DIM} selectable={false}>{cmdPlain}</text>
+        <text fg={MUTED} attributes={TextAttributes.DIM} selectable={false}>
+          {cmdPlain}
+        </text>
         <text selectable={false}>{" ".repeat(cmdRightSpaces)}</text>
-        <text fg={ORANGE} selectable={false}>│</text>
+        <text fg={ORANGE} selectable={false}>
+          │
+        </text>
       </box>
 
       {/* Bottom Border */}
-      <text fg={ORANGE} selectable={false}>{bottom}</text>
+      <text fg={ORANGE} selectable={false}>
+        {bottom}
+      </text>
     </box>
   )
 }

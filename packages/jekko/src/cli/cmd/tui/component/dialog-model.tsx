@@ -9,6 +9,7 @@ import { DialogVariant } from "./dialog-variant"
 import { useKeybind } from "../context/keybind"
 import * as fuzzysort from "fuzzysort"
 import { useConnected } from "./use-connected"
+import { DialogJnoccioUnlock } from "./dialog-jnoccio-unlock"
 
 export function DialogModel(props: { providerID?: string }) {
   const local = useLocal()
@@ -21,6 +22,11 @@ export function DialogModel(props: { providerID?: string }) {
   const providers = createDialogProviderOptions()
 
   const showExtra = createMemo(() => connected() && !props.providerID)
+
+  function locked(value: { providerID: string; modelID: string }) {
+    const provider = sync.data.provider.find((x) => x.id === value.providerID)
+    return provider?.models[value.modelID]?.status === "locked"
+  }
 
   const options = createMemo(() => {
     const needle = query().trim()
@@ -35,6 +41,7 @@ export function DialogModel(props: { providerID?: string }) {
         if (!provider) return []
         const model = provider.models[item.modelID]
         if (!model) return []
+        if (model.status === "locked") return []
         return [
           {
             key: item,
@@ -75,14 +82,22 @@ export function DialogModel(props: { providerID?: string }) {
           map(([model, info]) => ({
             value: { providerID: provider.id, modelID: model },
             title: info.name ?? model,
-            description: favorites.some((item) => item.providerID === provider.id && item.modelID === model)
-              ? "(Favorite)"
-              : undefined,
+            description:
+              info.status === "locked"
+                ? "Unlock with your Jnoccio key file."
+                : favorites.some((item) => item.providerID === provider.id && item.modelID === model)
+                  ? "(Favorite)"
+                  : undefined,
             category: connected() ? provider.name : undefined,
             disabled: provider.id === "jekko" && model.includes("-nano"),
-            footer: info.cost?.input === 0 && provider.id === "jekko" ? "Free" : undefined,
+            footer:
+              info.status === "locked"
+                ? "Locked"
+                : info.cost?.input === 0 && provider.id === "jekko"
+                  ? "Free"
+                  : undefined,
             onSelect() {
-              onSelect(provider.id, model)
+              onSelect(provider.id, model, info.status)
             },
           })),
           filter((x) => {
@@ -132,7 +147,11 @@ export function DialogModel(props: { providerID?: string }) {
     return value.name
   })
 
-  function onSelect(providerID: string, modelID: string) {
+  function onSelect(providerID: string, modelID: string, status?: string) {
+    if (status === "locked") {
+      dialog.replace(() => <DialogJnoccioUnlock />)
+      return
+    }
     local.model.set({ providerID, modelID }, { recent: true })
     const list = local.model.variant.list()
     const cur = local.model.variant.selected()
@@ -163,7 +182,9 @@ export function DialogModel(props: { providerID?: string }) {
           title: "Favorite",
           disabled: !connected(),
           onTrigger: (option) => {
-            local.model.toggleFavorite(option.value as { providerID: string; modelID: string })
+            const value = option.value as { providerID: string; modelID: string }
+            if (locked(value)) return
+            local.model.toggleFavorite(value)
           },
         },
       ]}

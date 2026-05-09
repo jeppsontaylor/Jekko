@@ -1065,7 +1065,7 @@ export type ProviderConfig = {
         output: Array<"text" | "audio" | "image" | "video" | "pdf">
       }
       experimental?: boolean
-      status?: "alpha" | "beta" | "deprecated"
+      status?: "alpha" | "beta" | "deprecated" | "locked"
       options?: {
         [key: string]: unknown
       }
@@ -1502,7 +1502,7 @@ export type Model = {
     context: number
     output: number
   }
-  status: "alpha" | "beta" | "deprecated" | "active"
+  status: "alpha" | "beta" | "deprecated" | "active" | "locked"
   options: {
     [key: string]: unknown
   }
@@ -3012,7 +3012,7 @@ export type ProviderListResponses = {
             output: Array<"text" | "audio" | "image" | "video" | "pdf">
           }
           experimental?: boolean
-          status?: "alpha" | "beta" | "deprecated"
+          status?: "alpha" | "beta" | "deprecated" | "locked"
           options: {
             [key: string]: unknown
           }

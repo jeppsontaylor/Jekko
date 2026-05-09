@@ -1,6 +1,7 @@
 import { ProviderAuth } from "@/provider/auth"
 import { Provider } from "@/provider/provider"
 import { ProviderID } from "@/provider/schema"
+import { JnoccioUnlockInput, JnoccioUnlockResult } from "@/util/jnoccio-unlock"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { Authorization } from "../middleware/authorization"
@@ -54,6 +55,16 @@ export const ProviderApi = HttpApi.make("provider")
             identifier: "provider.oauth.callback",
             summary: "Handle OAuth callback",
             description: "Handle the OAuth callback from a provider after user authorization.",
+          }),
+        ),
+        HttpApiEndpoint.post("unlock", `${root}/jnoccio/unlock`, {
+          payload: JnoccioUnlockInput,
+          success: described(JnoccioUnlockResult, "Jnoccio unlock result"),
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "provider.jnoccio.unlock",
+            summary: "Unlock Jnoccio Fusion",
+            description: "Unlock local Jnoccio Fusion source with a git-crypt key file path.",
           }),
         ),
       )

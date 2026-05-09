@@ -25,6 +25,11 @@ Use this file as the checklist for setting up upstream access.
 
 Put the values in `/Users/bentaylor/Code/opencode/jnoccio-fusion/.env.jnoccio`.
 
+From the Jekko TUI, select the locked `Jnoccio Fusion` model and enter the
+path to your local git-crypt key file. A successful unlock creates
+`.env.jnoccio` from `.env.jnoccio.example` when the file does not already
+exist. Existing `.env.jnoccio` files are never overwritten.
+
 That file should contain the following keys:
 
 ```text
@@ -46,3 +51,14 @@ NVIDIA_API_KEY=
 FIREWORKS_API_KEY=
 DASHSCOPE_API_KEY=
 ```
+
+## Local Unlock Test
+
+Authorized keyholders can run the local-only unlock proof with:
+
+```bash
+JNOCCIO_GIT_CRYPT_KEY_PATH=/path/to/jnoccio-fusion.key rtk bun test test/local/jnoccio-unlock.local.test.ts
+```
+
+The test skips in CI, when `JNOCCIO_GIT_CRYPT_KEY_PATH` is unset, or when
+`git-crypt` is unavailable.

@@ -55,7 +55,7 @@ function eventSource(): ControlledEventSource {
   }
 }
 
-function model(providerID: string, id: string, name: string) {
+function model(providerID: string, id: string, name: string, status: "active" | "locked" = "active") {
   return {
     id,
     providerID,
@@ -98,7 +98,7 @@ function model(providerID: string, id: string, name: string) {
       context: 128000,
       output: 32000,
     },
-    status: "active",
+    status,
     options: {},
     headers: {},
     release_date: "2026-05-07",
@@ -113,6 +113,17 @@ const jnoccioProvider = {
   options: {},
   models: {
     "jnoccio-fusion": model("jnoccio", "jnoccio-fusion", "Jnoccio Fusion"),
+  },
+} satisfies Provider
+
+const lockedJnoccioProvider = {
+  id: "jnoccio",
+  name: "Jnoccio",
+  source: "api",
+  env: [],
+  options: {},
+  models: {
+    "jnoccio-fusion": model("jnoccio", "jnoccio-fusion", "Jnoccio Fusion", "locked"),
   },
 } satisfies Provider
 
@@ -138,8 +149,9 @@ const anthropicProvider = {
   },
 } satisfies Provider
 
-function createFetch() {
+function createFetch(options: { lockedJnoccio?: boolean } = {}) {
   const session = [] as URL[]
+  const activeJnoccio = options.lockedJnoccio ? lockedJnoccioProvider : jnoccioProvider
   const fetch = (async (input: RequestInfo | URL) => {
     const url = new URL(input instanceof Request ? input.url : String(input))
     if (url.pathname === "/session") session.push(url)
@@ -161,7 +173,10 @@ function createFetch() {
       case "/session/status":
         return json({})
       case "/config/providers":
-        return json({ providers: [jnoccioProvider], default: { jnoccio: "jnoccio-fusion" } })
+        return json({
+          providers: [activeJnoccio],
+          default: options.lockedJnoccio ? {} : { jnoccio: "jnoccio-fusion" },
+        })
       case "/experimental/console":
         return json({ consoleManagedProviders: [], switchableOrgCount: 0 })
       case "/path":
@@ -170,13 +185,13 @@ function createFetch() {
         return json({ id: "proj_test" })
       case "/provider":
         return json({
-          all: [jnoccioProvider, jekkoProvider, anthropicProvider],
+          all: [activeJnoccio, jekkoProvider, anthropicProvider],
           default: {
-            jnoccio: "jnoccio-fusion",
+            ...(options.lockedJnoccio ? {} : { jnoccio: "jnoccio-fusion" }),
             jekko: "jekko-free",
             anthropic: "claude-test",
           },
-          connected: ["jnoccio"],
+          connected: options.lockedJnoccio ? [] : ["jnoccio"],
         })
       case "/session":
         return json([])
@@ -190,8 +205,8 @@ function createFetch() {
   return { fetch, session }
 }
 
-async function mount() {
-  const calls = createFetch()
+async function mount(options?: Parameters<typeof createFetch>[0]) {
+  const calls = createFetch(options)
   const events = eventSource()
   let sync!: ReturnType<typeof useSync>
   let kv!: ReturnType<typeof useKV>
@@ -354,6 +369,36 @@ describe("tui sync", () => {
         provider: "Jnoccio",
         model: "Jnoccio Fusion",
       })
+    } finally {
+      app.renderer.destroy()
+      Global.Path.state = previous
+    }
+  })
+
+  test("locked Jnoccio is listed but skipped for current model fallback", async () => {
+    const previous = Global.Path.state
+    await using tmp = await tmpdir()
+    Global.Path.state = tmp.path
+    await Bun.write(`${tmp.path}/kv.json`, "{}")
+    await Bun.write(
+      `${tmp.path}/model.json`,
+      JSON.stringify({
+        recent: [{ providerID: "jnoccio", modelID: "jnoccio-fusion" }],
+        favorite: [{ providerID: "jnoccio", modelID: "jnoccio-fusion" }],
+        variant: {},
+      }),
+    )
+    const { app, local, sync } = await mount({ lockedJnoccio: true })
+
+    try {
+      expect(sync.status).toBe("complete")
+      expect(sync.data.provider[0]?.models["jnoccio-fusion"]?.status).toBe("locked")
+      expect(sync.data.provider_next.all.some((provider) => provider.id === "jnoccio")).toBe(true)
+      expect(sync.data.provider_next.connected).not.toContain("jnoccio")
+      expect(sync.data.provider_default.jnoccio).toBeUndefined()
+      expect(local.model.current()).toBeUndefined()
+      local.model.set({ providerID: "jnoccio", modelID: "jnoccio-fusion" }, { recent: true })
+      expect(local.model.current()).toBeUndefined()
     } finally {
       app.renderer.destroy()
       Global.Path.state = previous

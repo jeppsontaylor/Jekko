@@ -1,7 +1,4 @@
-import z from "zod"
 import { EOL } from "os"
-import { NamedError } from "@jekko-ai/core/util/error"
-
 
 function fg(r: number, g: number, b: number) {
   return `\x1b[38;2;${r};${g};${b}m`
@@ -20,6 +17,34 @@ const RESET = "\x1b[0m"
 const BOLD = "\x1b[1m"
 const DIM = "\x1b[2m"
 
+export const Style = {
+  TEXT_NORMAL: RESET,
+  TEXT_NORMAL_BOLD: BOLD,
+  TEXT_DIM: DIM,
+  TEXT_DIM_BOLD: DIM + BOLD,
+  TEXT_DANGER_BOLD: "\x1b[31;1m",
+  TEXT_SUCCESS: "\x1b[32m",
+  TEXT_INFO_BOLD: "\x1b[36;1m",
+  TEXT_SUCCESS_BOLD: "\x1b[32;1m",
+  TEXT_WARNING_BOLD: "\x1b[33;1m",
+  TEXT_HIGHLIGHT_BOLD: "\x1b[35;1m",
+} as const
+
+export class CancelledError extends Error {
+  constructor() {
+    super("Cancelled")
+    this.name = "CancelledError"
+  }
+}
+
+export function println(...args: string[]) {
+  process.stdout.write(args.join(" ") + EOL)
+}
+
+export function empty() {
+  println()
+}
+
 function paint(text: string, rgb: readonly [number, number, number], opts: { bold?: boolean; dim?: boolean } = {}) {
   let res = ""
   if (opts.bold) res += BOLD
@@ -28,14 +53,19 @@ function paint(text: string, rgb: readonly [number, number, number], opts: { bol
   return res
 }
 
-function gradientText(text: string, leftRgb: readonly [number, number, number], rightRgb: readonly [number, number, number], bold = false) {
+function gradientText(
+  text: string,
+  leftRgb: readonly [number, number, number],
+  rightRgb: readonly [number, number, number],
+  bold = false,
+) {
   if (!text) return ""
   let out = ""
   const n = Math.max(1, text.length - 1)
   for (let i = 0; i < text.length; i++) {
-    const r = Math.round(leftRgb[0] + (rightRgb[0] - leftRgb[0]) * i / n)
-    const g = Math.round(leftRgb[1] + (rightRgb[1] - leftRgb[1]) * i / n)
-    const b = Math.round(leftRgb[2] + (rightRgb[2] - leftRgb[2]) * i / n)
+    const r = Math.round(leftRgb[0] + ((rightRgb[0] - leftRgb[0]) * i) / n)
+    const g = Math.round(leftRgb[1] + ((rightRgb[1] - leftRgb[1]) * i) / n)
+    const b = Math.round(leftRgb[2] + ((rightRgb[2] - leftRgb[2]) * i) / n)
     out += paint(text[i]!, [r, g, b], { bold })
   }
   return out
@@ -66,7 +96,7 @@ export function logo(pad?: string) {
   const sep = "├" + "─".repeat(w - 2) + "┤"
 
   const lines: string[] = []
-  
+
   lines.push((pad || "") + paint(top, ORANGE))
 
   const promptLeft = paint("›_", CYAN, { bold: true })
@@ -94,22 +124,32 @@ export function logo(pad?: string) {
   lines.push((pad || "") + paint(sep, BORDER))
 
   const subtitlePlain = "[ AI coding gecko • "
-  const zqmlPlain = "ZYML"
+  const zqmlPlain = "ZYAL"
   const suffixPlain = " support ]"
-  const subtitle = paint(subtitlePlain, WHITE, { bold: true }) +
-                   paint(zqmlPlain, CYAN, { bold: true }) +
-                   paint(suffixPlain, WHITE, { bold: true })
-  
+  const subtitle =
+    paint(subtitlePlain, WHITE, { bold: true }) +
+    paint(zqmlPlain, CYAN, { bold: true }) +
+    paint(suffixPlain, WHITE, { bold: true })
+
   const totalPlain = subtitlePlain.length + zqmlPlain.length + suffixPlain.length
   const leftSpaces = Math.floor((w - 2 - totalPlain) / 2)
   const rightSpaces = w - 2 - totalPlain - leftSpaces
-  lines.push((pad || "") + paint("│", ORANGE) + " ".repeat(leftSpaces) + subtitle + " ".repeat(rightSpaces) + paint("│", ORANGE))
+  lines.push(
+    (pad || "") + paint("│", ORANGE) + " ".repeat(leftSpaces) + subtitle + " ".repeat(rightSpaces) + paint("│", ORANGE),
+  )
 
   const cmdPlain = "gecko:// safe autonomous coding ready"
   const cmd = paint(cmdPlain, MUTED, { dim: true })
   const leftSpacesCmd = Math.floor((w - 2 - cmdPlain.length) / 2)
   const rightSpacesCmd = w - 2 - cmdPlain.length - leftSpacesCmd
-  lines.push((pad || "") + paint("│", ORANGE) + " ".repeat(leftSpacesCmd) + cmd + " ".repeat(rightSpacesCmd) + paint("│", ORANGE))
+  lines.push(
+    (pad || "") +
+      paint("│", ORANGE) +
+      " ".repeat(leftSpacesCmd) +
+      cmd +
+      " ".repeat(rightSpacesCmd) +
+      paint("│", ORANGE),
+  )
 
   lines.push((pad || "") + paint(bottom, ORANGE))
 

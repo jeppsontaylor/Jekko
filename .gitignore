@@ -37,6 +37,7 @@ target/jankurai/
 # git-crypt symmetric key — NEVER commit
 *.git-crypt-key
 jnoccio-fusion.key
+jnoccio-fusion/.env.jnoccio
 
 # Build/debug artifacts
 typecheck_output.txt

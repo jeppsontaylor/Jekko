@@ -6,6 +6,7 @@ import { Provider } from "@/provider/provider"
 import { ModelsDev } from "@/provider/models"
 import { ProviderAuth } from "@/provider/auth"
 import { ProviderID } from "@/provider/schema"
+import { JnoccioUnlockInput, JnoccioUnlockResult, unlockJnoccioFusion } from "@/util/jnoccio-unlock"
 import { mapValues } from "remeda"
 import { errors } from "../../error"
 import { lazy } from "@/util/lazy"
@@ -53,8 +54,31 @@ export const ProviderRoutes = lazy(() =>
           return {
             all: Object.values(providers),
             default: Provider.defaultModelIDs(providers),
-            connected: Object.keys(connected),
+            connected: Provider.connectedProviderIDs(connected),
           }
+        }),
+    )
+    .post(
+      "/jnoccio/unlock",
+      describeRoute({
+        summary: "Unlock Jnoccio Fusion",
+        description: "Unlock local Jnoccio Fusion source with a git-crypt key file path.",
+        operationId: "provider.jnoccio.unlock",
+        responses: {
+          200: {
+            description: "Jnoccio unlock result",
+            content: {
+              "application/json": {
+                schema: resolver(JnoccioUnlockResult.zod),
+              },
+            },
+          },
+        },
+      }),
+      validator("json", JnoccioUnlockInput.zod),
+      async (c) =>
+        jsonRequest("ProviderRoutes.jnoccio.unlock", c, function* () {
+          return yield* Effect.promise(() => unlockJnoccioFusion(c.req.valid("json")))
         }),
     )
     .get(

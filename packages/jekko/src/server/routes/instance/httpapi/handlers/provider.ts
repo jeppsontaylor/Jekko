@@ -3,6 +3,7 @@ import { Config } from "@/config/config"
 import { ModelsDev } from "@/provider/models"
 import { Provider } from "@/provider/provider"
 import { ProviderID } from "@/provider/schema"
+import { unlockJnoccioFusion, type JnoccioUnlockInput } from "@/util/jnoccio-unlock"
 import { mapValues } from "remeda"
 import { Effect, Schema } from "effect"
 import { HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
@@ -11,11 +12,9 @@ import { InstanceHttpApi } from "../api"
 
 export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider", (handlers) =>
   Effect.gen(function* () {
-    const cfg = yield* Config.Service
-    const provider = yield* Provider.Service
-    const svc = yield* ProviderAuth.Service
-
     const list = Effect.fn("ProviderHttpApi.list")(function* () {
+      const cfg = yield* Config.Service
+      const provider = yield* Provider.Service
       const config = yield* cfg.get()
       const all = yield* ModelsDev.Service.use((s) => s.get())
       const disabled = new Set(config.disabled_providers ?? [])
@@ -32,11 +31,16 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       return {
         all: Object.values(providers),
         default: Provider.defaultModelIDs(providers),
-        connected: Object.keys(connected),
+        connected: Provider.connectedProviderIDs(connected),
       }
     })
 
+    const unlock = Effect.fn("ProviderHttpApi.unlock")(function* (ctx: { payload: JnoccioUnlockInput }) {
+      return yield* Effect.promise(() => unlockJnoccioFusion(ctx.payload))
+    })
+
     const auth = Effect.fn("ProviderHttpApi.auth")(function* () {
+      const svc = yield* ProviderAuth.Service
       return yield* svc.methods()
     })
 
@@ -44,6 +48,7 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       params: { providerID: ProviderID }
       payload: ProviderAuth.AuthorizeInput
     }) {
+      const svc = yield* ProviderAuth.Service
       return yield* svc
         .authorize({
           providerID: ctx.params.providerID,
@@ -70,6 +75,7 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       params: { providerID: ProviderID }
       payload: ProviderAuth.CallbackInput
     }) {
+      const svc = yield* ProviderAuth.Service
       yield* svc
         .callback({
           providerID: ctx.params.providerID,
@@ -83,6 +89,7 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
     return handlers
       .handle("list", list)
       .handle("auth", auth)
+      .handle("unlock", unlock)
       .handleRaw("authorize", authorizeRaw)
       .handle("callback", callback)
   }),

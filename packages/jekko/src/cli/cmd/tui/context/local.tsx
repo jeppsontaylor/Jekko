@@ -28,9 +28,14 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
     const sdk = useSDK()
     const toast = useToast()
 
-    function isModelValid(model: { providerID: string; modelID: string }) {
+    function getModelInfo(model: { providerID: string; modelID: string }) {
       const provider = sync.data.provider.find((x) => x.id === model.providerID)
-      return !!provider?.models[model.modelID]
+      return provider?.models[model.modelID]
+    }
+
+    function isModelValid(model: { providerID: string; modelID: string }) {
+      const info = getModelInfo(model)
+      return !!info && info.status !== "locked"
     }
 
     function getFirstValidModel(...modelFns: (() => { providerID: string; modelID: string } | undefined)[]) {
@@ -185,11 +190,17 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           }
         }
 
-        const provider = sync.data.provider[0]
+        const provider = sync.data.provider.find((provider) =>
+          Object.values(provider.models).some((model) => model.status !== "locked"),
+        )
         if (!provider) return undefined
         const defaultModel = sync.data.provider_default[provider.id]
-        const firstModel = Object.values(provider.models)[0]
-        const model = defaultModel ?? firstModel?.id
+        const defaultInfo = defaultModel ? provider.models[defaultModel] : undefined
+        const firstModel =
+          defaultInfo && defaultInfo.status !== "locked"
+            ? defaultInfo
+            : Object.values(provider.models).find((model) => model.status !== "locked")
+        const model = firstModel?.id
         if (!model) return undefined
         return {
           providerID: provider.id,

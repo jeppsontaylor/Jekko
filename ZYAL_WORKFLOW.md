@@ -10,9 +10,56 @@ coordination notes live above.
 
 ## Active claims / open coordination
 
-No active codex claim. The 2026-05-09T00:36:01Z codex claim is closed by the 2026-05-09T00:42:17Z Done receipt below.
+2026-05-09T00:57:58Z — Active — codex — Locked Jnoccio Fusion provider + TUI unlock flow.
+
+- Scope: public locked `jnoccio/jnoccio-fusion` metadata, unlock API/service, TUI unlock dialog, `.env.jnoccio` placeholder creation, encryption checker hardening, docs, SDK regeneration, and focused tests.
+- Detailed coordination lives in `UNLOCK_WORKPLAN.md`.
+
+— codex
+
+2026-05-09T01:24:46Z — Closed — codex — Locked Jnoccio Fusion provider + TUI unlock flow.
+
+- Implementation is in the worktree. Detailed receipts, touched files, validation commands, skips, and blockers live in `UNLOCK_WORKPLAN.md`.
+
+— codex
 
 ## Recent receipts
+
+### 2026-05-09T01:24:46Z — Done with validation blockers — codex — Locked Jnoccio unlock surface
+
+- Completed:
+  - Public locked `jnoccio/jnoccio-fusion` provider/model metadata, default/current/connected filtering for locked models, and configured-provider override behavior.
+  - Local unlock service plus legacy and experimental `POST /provider/jnoccio/unlock` route surfaces.
+  - TUI locked model/provider rows and retryable key-file unlock dialog that refreshes providers and selects Jnoccio on success.
+  - `.env.jnoccio` ignored local placeholder flow, expanded docs/env example, and hardened encrypted-index checker.
+  - Focused provider, unlock, encryption, TUI sync, local real-key skip, SDK type/client, and ZYAL token cleanup edits.
+- Verification passed:
+  - `rtk bun test test/jnoccio/unlock.test.ts test/provider/jnoccio-locked.test.ts` → 9 pass.
+  - `rtk bun test test/jnoccio/encryption-check.test.ts` → 3 pass.
+  - `rtk bun test test/cli/cmd/tui/sync.test.tsx` → 4 pass.
+  - `rtk bun test test/session/llm.test.ts` → 17 pass.
+  - `rtk bun run typecheck` in `packages/jekko` → pass.
+  - `rtk cargo test` in `jnoccio-fusion` → 77 pass.
+  - `rtk tools/check-encrypted-paths.sh --index`, `rtk git diff --check`, and `rtk just fast` → pass, with existing `just fast` advisories documented in `UNLOCK_WORKPLAN.md`.
+- Remaining blockers:
+  - `test/server/httpapi-provider.test.ts` fails before OAuth assertion with `Service not found: @jekko/Config`; `sync.test.tsx` passes in the combined command.
+  - `rtk bun run --cwd packages/sdk/js build` did not complete because OpenAPI generation emitted a zero-byte spec/hung; generated SDK files were patched manually.
+  - Strict legacy-token scan still has pre-existing/noisy matches in archived tips and substring false positives.
+
+— codex
+
+### 2026-05-09T02:17:29Z — Verified — codex — Local Jnoccio key unlock
+
+- `~/jnoccio-fusion.key` exists locally and was used as the unlock path.
+- Fixed the unlock service already-unlocked path and the `--index` checker syntax.
+- Verification:
+  - `JNOCCIO_GIT_CRYPT_KEY_PATH=~/jnoccio-fusion.key rtk bun test test/local/jnoccio-unlock.local.test.ts` in `packages/jekko` → 1 pass.
+  - Direct `unlockJnoccioFusion({ keyPath: "~/jnoccio-fusion.key" })` → `status: "unlocked"`, `unlocked: true`, created ignored `jnoccio-fusion/.env.jnoccio`.
+  - `rtk cargo metadata --manifest-path jnoccio-fusion/Cargo.toml --no-deps --format-version 1` → pass.
+  - `rtk tools/check-encrypted-paths.sh --index` → pass, 46 encrypted protected blobs.
+  - `rtk bun test test/jnoccio/unlock.test.ts test/provider/jnoccio-locked.test.ts` → 10 pass.
+
+— codex
 
 ### 2026-05-09T00:42:17Z — Done — codex — Gap A + Run Card + docs verified
 

@@ -92,6 +92,7 @@ import type {
   ProjectUpdateResponses,
   Prompt,
   ProviderAuthResponses,
+  ProviderJnoccioUnlockResponses,
   ProviderListResponses,
   ProviderOauthAuthorizeErrors,
   ProviderOauthAuthorizeResponses,
@@ -2788,6 +2789,43 @@ export class Provider extends HeyApiClient {
       url: "/provider/auth",
       ...options,
       ...params,
+    })
+  }
+
+  /**
+   * Unlock Jnoccio Fusion
+   *
+   * Unlock local Jnoccio Fusion source with a git-crypt key file path.
+   */
+  public unlock<ThrowOnError extends boolean = false>(
+    parameters: {
+      directory?: string
+      workspace?: string
+      keyPath: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "keyPath" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<ProviderJnoccioUnlockResponses, unknown, ThrowOnError>({
+      url: "/provider/jnoccio/unlock",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
     })
   }
 

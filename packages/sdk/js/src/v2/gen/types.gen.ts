@@ -1029,7 +1029,7 @@ export type ProviderConfig = {
         output: Array<"text" | "audio" | "image" | "video" | "pdf">
       }
       experimental?: boolean
-      status?: "alpha" | "beta" | "deprecated" | "active"
+      status?: "alpha" | "beta" | "deprecated" | "active" | "locked"
       provider?: {
         npm?: string
         api?: string
@@ -1293,7 +1293,7 @@ export type Model = {
     input?: number
     output: number
   }
-  status: "alpha" | "beta" | "deprecated" | "active"
+  status: "alpha" | "beta" | "deprecated" | "active" | "locked"
   options: {
     [key: string]: unknown
   }
@@ -4883,6 +4883,32 @@ export type ProviderAuthResponses = {
 }
 
 export type ProviderAuthResponse = ProviderAuthResponses[keyof ProviderAuthResponses]
+
+export type ProviderJnoccioUnlockData = {
+  body: {
+    keyPath: string
+  }
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/provider/jnoccio/unlock"
+}
+
+export type ProviderJnoccioUnlockResponses = {
+  /**
+   * Jnoccio unlock result
+   */
+  200: {
+    status: "unlocked" | "error"
+    message: string
+    envPath?: string
+    envCreated: boolean
+  }
+}
+
+export type ProviderJnoccioUnlockResponse = ProviderJnoccioUnlockResponses[keyof ProviderJnoccioUnlockResponses]
 
 export type ProviderOauthAuthorizeData = {
   body?: {

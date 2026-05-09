@@ -173,6 +173,7 @@ fi
 if ! grep -q 'jnoccio-fusion/\*\* .*diff=git-crypt' .gitattributes 2>/dev/null; then
   echo "❌ .gitattributes is missing the diff=git-crypt rule for jnoccio-fusion/**" >&2
   ERRORS=$((ERRORS + 1))
+fi
 
 
 if [[ "$ERRORS" -gt 0 ]]; then

@@ -10,6 +10,7 @@ import { useTheme } from "../context/theme"
 import { TextAttributes } from "@opentui/core"
 import type { ProviderAuthAuthorization, ProviderAuthMethod } from "@jekko-ai/sdk/v2"
 import { DialogModel } from "./dialog-model"
+import { DialogJnoccioUnlock } from "./dialog-jnoccio-unlock"
 import { useKeyboard } from "@opentui/solid"
 import * as Clipboard from "@tui/util/clipboard"
 import { useToast } from "../ui/toast"
@@ -39,21 +40,28 @@ export function createDialogProviderOptions() {
       map((provider) => {
         const consoleManaged = isConsoleManagedProvider(sync.data.console_state.consoleManagedProviders, provider.id)
         const connected = sync.data.provider_next.connected.includes(provider.id)
+        const locked =
+          provider.id === "jnoccio" && Object.values(provider.models).every((model) => model.status === "locked")
 
         return {
           title: provider.name,
           value: provider.id,
-          description: {
-            jekko: "(Recommended)",
-            anthropic: "(API key)",
-            openai: "(ChatGPT Plus/Pro or API key)",
-            "jekko-go": "Low cost subscription for everyone",
-          }[provider.id],
-          footer: consoleManaged ? sync.data.console_state.activeOrgName : undefined,
+          description:
+            {
+              jekko: "(Recommended)",
+              anthropic: "(API key)",
+              openai: "(ChatGPT Plus/Pro or API key)",
+              "jekko-go": "Low cost subscription for everyone",
+            }[provider.id] ?? (locked ? "Unlock with your Jnoccio key file." : undefined),
+          footer: locked ? "Locked" : consoleManaged ? sync.data.console_state.activeOrgName : undefined,
           category: provider.id in PROVIDER_PRIORITY ? "Popular" : "Other",
           gutter: connected && onboarded() ? () => <text fg={theme.success}>✓</text> : undefined,
           async onSelect() {
             if (consoleManaged) return
+            if (locked) {
+              dialog.replace(() => <DialogJnoccioUnlock />)
+              return
+            }
 
             const methods = sync.data.provider_auth[provider.id] ?? [
               {
@@ -272,8 +280,7 @@ function ApiMethod(props: ApiMethodProps) {
           jekko: (
             <box gap={1}>
               <text fg={theme.textMuted}>
-                Jekko Zen gives you access to all the best coding models at the cheapest prices with a single API
-                key.
+                Jekko Zen gives you access to all the best coding models at the cheapest prices with a single API key.
               </text>
               <text fg={theme.text}>
                 Go to <span style={{ fg: theme.primary }}>https://jekko.ai/zen</span> to get a key
@@ -350,7 +357,11 @@ async function PromptsMethod(props: PromptsMethodProps) {
     const value = await new Promise<string | null>((resolve) => {
       props.dialog.replace(
         () => (
-          <DialogPrompt title={prompt.message} default_value={prompt.default_value ?? "Enter text"} onConfirm={(value) => resolve(value)} />
+          <DialogPrompt
+            title={prompt.message}
+            default_value={prompt.default_value ?? "Enter text"}
+            onConfirm={(value) => resolve(value)}
+          />
         ),
         () => resolve(null),
       )

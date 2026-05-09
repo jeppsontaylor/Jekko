@@ -114,7 +114,7 @@ export class Info extends Schema.Class<Info>("Model.Info")({
     released: DateTimeUtcFromMillis,
   }),
   cost: Cost.pipe(Schema.Array),
-  status: Schema.Literals(["alpha", "beta", "deprecated", "active"]),
+  status: Schema.Literals(["alpha", "beta", "deprecated", "active", "locked"]),
   limit: Schema.Struct({
     context: Schema.Int,
     input: Schema.Int.pipe(Schema.optional),

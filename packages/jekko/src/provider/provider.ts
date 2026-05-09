@@ -1,5 +1,12 @@
 import os from "os"
 import fuzzysort from "fuzzysort"
+import {
+  isJnoccioFusionConfigured,
+  JNOCCIO_DEFAULT_API_KEY,
+  JNOCCIO_DEFAULT_BASE_URL,
+  JNOCCIO_MODEL_ID,
+  JNOCCIO_PROVIDER_ID,
+} from "@/util/jnoccio-unlock"
 import { Config } from "@/config/config"
 import { mapValues, mergeDeep, omit, pickBy, sortBy } from "remeda"
 import { NoSuchModelError, type Provider as SDK } from "ai"
@@ -888,11 +895,10 @@ const ProviderLimit = Schema.Struct({
   output: Schema.Finite,
 })
 
-function normalizeModelStatus(
-  status: string | undefined,
-): "alpha" | "beta" | "deprecated" | "active" {
+function normalizeModelStatus(status: string | undefined): "alpha" | "beta" | "deprecated" | "active" | "locked" {
   if (status === "discouraged") return "deprecated"
-  if (status === "alpha" || status === "beta" || status === "deprecated" || status === "active") return status
+  if (status === "alpha" || status === "beta" || status === "deprecated" || status === "active" || status === "locked")
+    return status
   return "active"
 }
 
@@ -928,7 +934,7 @@ export const Model = Schema.Struct({
   capabilities: ProviderCapabilities,
   cost: ProviderCost,
   limit: ProviderLimit,
-  status: Schema.Literals(["alpha", "beta", "deprecated", "active"]),
+  status: Schema.Literals(["alpha", "beta", "deprecated", "active", "locked"]),
   options: Schema.Record(Schema.String, Schema.Any),
   headers: Schema.Record(Schema.String, Schema.String),
   release_date: Schema.String,
@@ -966,8 +972,102 @@ export const ConfigProvidersResult = Schema.Struct({
 }).pipe(withStatics((s) => ({ zod: zod(s) })))
 export type ConfigProvidersResult = Types.DeepMutable<Schema.Schema.Type<typeof ConfigProvidersResult>>
 
-export function defaultModelIDs<T extends { models: Record<string, { id: string }> }>(providers: Record<string, T>) {
-  return mapValues(providers, (item) => sort(Object.values(item.models))[0].id)
+export function isLockedModel(model: { status?: string }) {
+  return model.status === "locked"
+}
+
+export function isLockedProvider(provider: { models: Record<string, { status?: string }> }) {
+  const models = Object.values(provider.models)
+  return models.length > 0 && models.every(isLockedModel)
+}
+
+export function connectedProviderIDs<T extends { models: Record<string, { status?: string }> }>(
+  providers: Record<string, T>,
+) {
+  return Object.entries(providers)
+    .filter(([_, provider]) => !isLockedProvider(provider))
+    .map(([id]) => id)
+}
+
+export function defaultModelIDs<T extends { models: Record<string, { id: string; status?: string }> }>(
+  providers: Record<string, T>,
+) {
+  return Object.fromEntries(
+    Object.entries(providers).flatMap(([id, item]) => {
+      const model = sort(Object.values(item.models).filter((model) => !isLockedModel(model)))[0]
+      return model ? [[id, model.id]] : []
+    }),
+  )
+}
+
+export function jnoccioProviderInfo(repoRoot?: string): Info {
+  const configured = isJnoccioFusionConfigured(repoRoot)
+  const status = configured ? "active" : "locked"
+  const options = configured
+    ? {
+        baseURL: JNOCCIO_DEFAULT_BASE_URL,
+        apiKey: JNOCCIO_DEFAULT_API_KEY,
+      }
+    : {}
+
+  return {
+    id: ProviderID.make(JNOCCIO_PROVIDER_ID),
+    name: "Jnoccio",
+    source: "api",
+    env: [],
+    options,
+    models: {
+      [JNOCCIO_MODEL_ID]: {
+        id: ModelID.make(JNOCCIO_MODEL_ID),
+        providerID: ProviderID.make(JNOCCIO_PROVIDER_ID),
+        name: "Jnoccio Fusion",
+        family: "fusion",
+        api: {
+          id: JNOCCIO_MODEL_ID,
+          url: JNOCCIO_DEFAULT_BASE_URL,
+          npm: "@ai-sdk/openai-compatible",
+        },
+        status,
+        headers: {},
+        options: {},
+        cost: {
+          input: 0,
+          output: 0,
+          cache: {
+            read: 0,
+            write: 0,
+          },
+        },
+        limit: {
+          context: 128000,
+          output: 32000,
+        },
+        capabilities: {
+          temperature: true,
+          reasoning: true,
+          attachment: true,
+          toolcall: true,
+          input: {
+            text: true,
+            audio: false,
+            image: true,
+            video: false,
+            pdf: true,
+          },
+          output: {
+            text: true,
+            audio: false,
+            image: false,
+            video: false,
+            pdf: false,
+          },
+          interleaved: false,
+        },
+        release_date: "",
+        variants: {},
+      },
+    },
+  }
 }
 
 export interface Interface {
@@ -1430,6 +1530,15 @@ const layer: Layer.Layer<
           log.info("found", { providerID })
         }
 
+        const jnoccioProviderID = ProviderID.make(JNOCCIO_PROVIDER_ID)
+        if (!providers[jnoccioProviderID] && isProviderAllowed(jnoccioProviderID)) {
+          providers[jnoccioProviderID] = jnoccioProviderInfo()
+          log.info("found", {
+            providerID: jnoccioProviderID,
+            status: providers[jnoccioProviderID].models[JNOCCIO_MODEL_ID]?.status,
+          })
+        }
+
         return {
           models: languages,
           providers,
@@ -1608,6 +1717,13 @@ const layer: Layer.Layer<
     })
 
     const getLanguage = Effect.fn("Provider.getLanguage")(function* (model: Model) {
+      if (isLockedModel(model)) {
+        throw new InitError(
+          { providerID: model.providerID },
+          { cause: new Error("Jnoccio Fusion is locked. Unlock it with your Jnoccio git-crypt key file.") },
+        )
+      }
+
       const s = yield* InstanceState.get(state)
       const envs = yield* env.all()
       const key = `${model.providerID}/${model.id}`
@@ -1728,13 +1844,18 @@ const layer: Layer.Layer<
       for (const entry of recent) {
         const provider = s.providers[entry.providerID]
         if (!provider) continue
-        if (!provider.models[entry.modelID]) continue
+        const model = provider.models[entry.modelID]
+        if (!model || isLockedModel(model)) continue
         return { providerID: entry.providerID, modelID: entry.modelID }
       }
 
-      const provider = Object.values(s.providers).find((p) => !cfg.provider || Object.keys(cfg.provider).includes(p.id))
+      const provider = Object.values(s.providers).find(
+        (p) =>
+          (!cfg.provider || Object.keys(cfg.provider).includes(p.id)) &&
+          Object.values(p.models).some((model) => !isLockedModel(model)),
+      )
       if (!provider) throw new Error("no providers found")
-      const [model] = sort(Object.values(provider.models))
+      const [model] = sort(Object.values(provider.models).filter((model) => !isLockedModel(model)))
       if (!model) throw new Error("no models found")
       return {
         providerID: provider.id,
