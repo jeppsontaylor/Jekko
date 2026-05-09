@@ -33,10 +33,10 @@ const GECKO = {
 }
 
 const JEKKO_PALETTE: CornerPalette = {
-  topLeft: GECKO.lime,
-  topRight: GECKO.cyan,
-  bottomLeft: GECKO.gold,
-  bottomRight: GECKO.orange,
+  topLeft: RGBA.fromInts(80, 255, 0),      // electric green
+  topRight: RGBA.fromInts(0, 255, 255),    // pure cyan
+  bottomLeft: RGBA.fromInts(255, 200, 0),  // vivid gold
+  bottomRight: RGBA.fromInts(255, 60, 0),  // hot orange-red
 }
 
 const GO_PALETTE: CornerPalette = {
@@ -47,10 +47,10 @@ const GO_PALETTE: CornerPalette = {
 }
 
 const IDLE_PALETTE: CornerPalette = {
-  topLeft: RGBA.fromInts(86, 128, 96),
-  topRight: RGBA.fromInts(68, 126, 132),
-  bottomLeft: RGBA.fromInts(126, 112, 72),
-  bottomRight: RGBA.fromInts(128, 78, 62),
+  topLeft: RGBA.fromInts(120, 180, 100),
+  topRight: RGBA.fromInts(80, 170, 160),
+  bottomLeft: RGBA.fromInts(180, 155, 60),
+  bottomRight: RGBA.fromInts(180, 90, 50),
 }
 
 function clamp01(n: number): number {
@@ -196,16 +196,6 @@ function GradientRow(props: { row: LogoRow; y: number; totalRows: number }) {
   )
 }
 
-const GECKO_CREST = [
-  "           _..-''  .-...-.  ''-.._           ",
-  "      _..-'      .'  o o  '.      '-.._      ",
-  "   .-'       .--.|    Y    |.--.       '-.   ",
-  "  /     _   /  _ \\  '---'  / _  \\   _     \\  ",
-  "  \\____/ \\__\\_/ \\_\\___|___/_/ \\_/__/ \\____/  ",
-  "             /_/    / \\    \\_\\              ",
-  "                  __/   \\__                  ",
-]
-
 const JEKKO_WORDMARK = [
   "     ██╗███████╗██╗  ██╗██╗  ██╗ ██████╗ ",
   "     ██║██╔════╝██║ ██╔╝██║ ██╔╝██╔═══██╗",
@@ -242,19 +232,6 @@ function buildLogoRows(props: {
       palette,
     },
     { text: divider(), palette },
-
-    { text: framed(), palette },
-    ...GECKO_CREST.map((line) => ({
-      text: framed(line),
-      bold: true,
-      palette,
-    })),
-
-    {
-      text: framed("sticky toes • sharp eyes • quick tail"),
-      dim: true,
-      palette,
-    },
 
     { text: framed(), palette },
     ...JEKKO_WORDMARK.map((line) => ({

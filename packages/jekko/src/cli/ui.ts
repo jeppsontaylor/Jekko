@@ -79,10 +79,10 @@ type Palette = {
 }
 
 const JEKKO_PALETTE: Palette = {
-  topLeft: GECKO.lime,
-  topRight: GECKO.cyan,
-  bottomLeft: GECKO.gold,
-  bottomRight: GECKO.orange,
+  topLeft: [80, 255, 0],      // electric green
+  topRight: [0, 255, 255],    // pure cyan
+  bottomLeft: [255, 200, 0],  // vivid gold
+  bottomRight: [255, 60, 0],  // hot orange-red
 }
 
 function geckoColor(
@@ -138,16 +138,6 @@ function pairStr(left: string, right: string, width = INNER_WIDTH): string {
   return left + " ".repeat(gap) + right
 }
 
-const GECKO_CREST = [
-  "           _..-''  .-...-.  ''-.._           ",
-  "      _..-'      .'  o o  '.      '-.._      ",
-  "   .-'       .--.|    Y    |.--.       '-.   ",
-  "  /     _   /  _ \\  '---'  / _  \\   _     \\  ",
-  "  \\____/ \\__\\_/ \\_\\___|___/_/ \\_/__/ \\____/  ",
-  "             /_/    / \\    \\_\\              ",
-  "                  __/   \\__                  ",
-]
-
 const JEKKO_WORDMARK = [
   "     ██╗███████╗██╗  ██╗██╗  ██╗ ██████╗ ",
   "     ██║██╔════╝██║ ██╔╝██║ ██╔╝██╔═══██╗",
@@ -182,16 +172,6 @@ export function logo(pad?: string) {
     bold: true,
   })
   rows.push({ text: sep })
-  rows.push({ text: `│${fit("", INNER_WIDTH)}│` })
-
-  for (const line of GECKO_CREST) {
-    rows.push({ text: `│${fit(line, INNER_WIDTH)}│`, bold: true })
-  }
-
-  rows.push({
-    text: `│${fit("sticky toes • sharp eyes • quick tail", INNER_WIDTH)}│`,
-    dim: true,
-  })
   rows.push({ text: `│${fit("", INNER_WIDTH)}│` })
 
   for (const line of JEKKO_WORDMARK) {
