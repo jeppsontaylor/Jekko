@@ -90,5 +90,3 @@ jobs:
           sarif_file: target/jankurai/jankurai.sarif
       - name: Dependency review
         uses: actions/dependency-review-action@v5.0.0
-      - name: SLSA provenance
-        uses: slsa-framework/slsa-github-generator/.github/actions/generator-generic@v2.1.0
