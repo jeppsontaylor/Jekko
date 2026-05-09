@@ -6,6 +6,7 @@ import fs from "fs/promises"
 import { Database } from "bun:sqlite"
 import { setTimeout as sleep } from "node:timers/promises"
 import { afterAll } from "bun:test"
+import { migrationHash } from "../src/storage/migration-repair"
 
 // Set XDG env vars FIRST, before any src/ imports
 const dir = path.join(os.tmpdir(), "jekko-test-data-" + process.pid)
@@ -88,13 +89,44 @@ seedDb.exec("PRAGMA synchronous = NORMAL")
 seedDb.exec("PRAGMA busy_timeout = 5000")
 
 const migrationDir = path.join(import.meta.dir, "..", "migration")
-for (const entry of (await fs.readdir(migrationDir, { withFileTypes: true }))
+const entries = (await fs.readdir(migrationDir, { withFileTypes: true }))
   .filter((item) => item.isDirectory())
   .map((item) => item.name)
-  .sort()) {
+  .sort()
+for (const entry of entries) {
   const sqlPath = path.join(migrationDir, entry, "migration.sql")
   const sql = await fs.readFile(sqlPath, "utf8")
   seedDb.exec(sql)
+}
+seedDb.exec(`
+  CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
+    id INTEGER PRIMARY KEY,
+    hash text NOT NULL,
+    created_at numeric,
+    name text,
+    applied_at TEXT
+  )
+`)
+const insert = seedDb.prepare(
+  `INSERT INTO "__drizzle_migrations" ("hash", "created_at", "name", "applied_at") VALUES (?, ?, ?, ?)`,
+)
+const migrationTime = (tag: string) => {
+  const match = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(tag)
+  if (!match) return 0
+  return Date.UTC(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+    Number(match[4]),
+    Number(match[5]),
+    Number(match[6]),
+  )
+}
+const appliedAt = new Date().toISOString()
+for (const entry of entries) {
+  const sqlPath = path.join(migrationDir, entry, "migration.sql")
+  const sql = await fs.readFile(sqlPath, "utf8")
+  insert.run(migrationHash({ sql }), migrationTime(entry), entry, appliedAt)
 }
 seedDb.close()
 

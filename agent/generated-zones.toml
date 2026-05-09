@@ -1,3 +1,7 @@
+# Auto-generated file markers
+# This file lists generated zones that should not be edited directly.
+# Use the corresponding source contract to modify generated artifacts.
+
 [[zone]]
 path = "agent/repo-score.json"
 source = "installed jankurai binary"
@@ -8,4 +12,10 @@ read_only = false
 path = "agent/repo-score.md"
 source = "installed jankurai binary"
 command = "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md"
+read_only = false
+
+[[zone]]
+path = "packages/sdk/js/src/gen/client/client.gen.ts"
+source = "generated"
+command = "@hey-api/openapi-ts"
 read_only = false
