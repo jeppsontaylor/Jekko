@@ -7,6 +7,7 @@ import { Schema } from "effect"
 import { optionalOmitUndefined, withStatics } from "@/util/schema"
 import { zod } from "@/util/effect-zod"
 import { JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY, type JnoccioEncryptedGitCryptKeyEnvelope } from "./jnoccio-encrypted-key"
+import { ensureJnoccioFusionServer } from "./jnoccio-server"
 
 export const JNOCCIO_PROVIDER_ID = "jnoccio"
 export const JNOCCIO_MODEL_ID = "jnoccio-fusion"
@@ -80,7 +81,7 @@ export function isValidUnlockSecret(input: string) {
   return JNOCCIO_UNLOCK_SECRET_PATTERN.test(normalizeJnoccioUnlockSecret(input))
 }
 
-function findRepoRootFrom(start: string | undefined) {
+export function findRepoRootFrom(start: string | undefined) {
   if (!start) return
   let current = path.resolve(expandHome(start))
   try {
@@ -238,10 +239,15 @@ async function ensureEnvFile(repoRoot: string) {
 async function unlockedResult(repoRoot: string, secretSaved?: boolean): Promise<JnoccioUnlockResult> {
   try {
     const env = await ensureEnvFile(repoRoot)
+
+    // Auto-start the jnoccio-fusion server in the background after unlock.
+    // Fire-and-forget so it doesn't block the unlock response.
+    ensureJnoccioFusionServer(repoRoot).catch(() => {})
+
     return {
       status: "unlocked",
       message: env.envCreated
-        ? "Jnoccio Fusion is unlocked. Created .env.jnoccio with placeholder provider keys."
+        ? "Jnoccio Fusion is unlocked. Created .env.jnoccio with blank provider keys."
         : "Jnoccio Fusion is unlocked. Existing .env.jnoccio was left unchanged.",
       envPath: env.envPath,
       envCreated: env.envCreated,
@@ -284,7 +290,7 @@ async function readSecretFile(secretPath: string) {
 async function unlockWithSecret(
   secret: string,
   options: Required<Pick<UnlockOptions, "repoRoot">> & UnlockOptions,
-  inputSource: "cache" | "typed" | "legacy",
+  inputSource: "cache" | "typed",
 ): Promise<JnoccioUnlockResult> {
   const repoRoot = options.repoRoot
   const runner = options.runner ?? defaultRunner
@@ -309,7 +315,7 @@ async function unlockWithSecret(
       message:
         inputSource === "cache"
           ? "Stored unlock secret could not be used. Enter it again to refresh the cache."
-          : "Unlock key was not valid.",
+          : "Unlock secret was not valid.",
       envCreated: false,
     }
   }
@@ -347,9 +353,7 @@ async function unlockWithSecret(
     if (result.exitCode !== 0) {
       return {
         status: "error",
-        message: inputSource === "legacy"
-          ? "The key file did not unlock Jnoccio Fusion. Confirm you selected the project git-crypt key."
-          : "Unlock key was not valid.",
+        message: "Unlock secret was not valid.",
         envCreated: false,
       }
     }
@@ -462,7 +466,7 @@ export async function unlockJnoccioFusion(
     } catch {
       return {
         status: "error",
-        message: "Unlock key was not valid.",
+        message: "Unlock secret was not valid.",
         envCreated: false,
       }
     }

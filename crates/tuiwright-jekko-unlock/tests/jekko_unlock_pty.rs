@@ -29,8 +29,8 @@ fn enabled() -> bool {
     std::env::var("JNOCCIO_TUIWRIGHT_E2E").as_deref() == Ok("1")
 }
 
-fn jekko_bin() -> PathBuf {
-    PathBuf::from(std::env::var("JEKKO_BIN").unwrap_or_else(|_| "/opt/homebrew/bin/jekko".into()))
+fn jekko_bin() -> Option<PathBuf> {
+    std::env::var("JEKKO_BIN").ok().map(PathBuf::from)
 }
 
 fn secret_path() -> PathBuf {
@@ -88,8 +88,12 @@ fn jekko_tui_paste_unlocks_jnoccio_fusion() -> Result<()> {
         eprintln!("skipped: set JNOCCIO_TUIWRIGHT_E2E=1 to run");
         return Ok(());
     }
-    if !jekko_bin().exists() {
-        eprintln!("skipped: jekko binary {:?} missing", jekko_bin());
+    let Some(jekko_bin) = jekko_bin() else {
+        eprintln!("skipped: set JEKKO_BIN to the jekko binary path");
+        return Ok(());
+    };
+    if !jekko_bin.exists() {
+        eprintln!("skipped: jekko binary {:?} missing", jekko_bin);
         return Ok(());
     }
     let secret = match read_secret() {
@@ -113,7 +117,7 @@ fn jekko_tui_paste_unlocks_jnoccio_fusion() -> Result<()> {
 
     let artifact_dir = ensure_artifact_dir()?;
 
-    let mut cfg = SpawnConfig::new(jekko_bin().to_string_lossy().as_ref())
+    let mut cfg = SpawnConfig::new(jekko_bin.to_string_lossy().as_ref())
         .arg("--pure")
         .arg(clone.to_string_lossy().as_ref())
         .cwd(&clone)

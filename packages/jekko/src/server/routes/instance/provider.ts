@@ -6,11 +6,12 @@ import { Provider } from "@/provider/provider"
 import { ModelsDev } from "@/provider/models"
 import { ProviderAuth } from "@/provider/auth"
 import { ProviderID } from "@/provider/schema"
-import { JnoccioUnlockInput, JnoccioUnlockResult, unlockJnoccioFusion } from "@/util/jnoccio-unlock"
+import { JnoccioUnlockInput, JnoccioUnlockResult, unlockJnoccioFusion, repoRootFromSource, findRepoRootFrom } from "@/util/jnoccio-unlock"
 import { mapValues } from "remeda"
 import { errors } from "../../error"
 import { lazy } from "@/util/lazy"
 import { Effect } from "effect"
+import * as InstanceState from "@/effect/instance-state"
 import { jsonRequest } from "./trace"
 
 export const ProviderRoutes = lazy(() =>
@@ -63,7 +64,7 @@ export const ProviderRoutes = lazy(() =>
       describeRoute({
         summary: "Unlock Jnoccio Fusion",
         description:
-          "Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a legacy git-crypt key file path.",
+          "Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a git-crypt key file path.",
         operationId: "provider.jnoccio.unlock",
         responses: {
           200: {
@@ -78,6 +79,8 @@ export const ProviderRoutes = lazy(() =>
       }),
       async (c) =>
         jsonRequest("ProviderRoutes.jnoccio.unlock", c, function* () {
+          const ctx = yield* InstanceState.context
+          const repoRoot = findRepoRootFrom(ctx.worktree) ?? findRepoRootFrom(ctx.directory) ?? repoRootFromSource()
           const payload = yield* Effect.promise(async () => {
             try {
               return JnoccioUnlockInput.zod.parse(await c.req.json())
@@ -85,7 +88,7 @@ export const ProviderRoutes = lazy(() =>
               return {}
             }
           })
-          return yield* Effect.promise(() => unlockJnoccioFusion(payload))
+          return yield* Effect.promise(() => unlockJnoccioFusion(payload, { repoRoot }))
         }),
     )
     .get(

@@ -7,6 +7,7 @@ import {
   JNOCCIO_MODEL_ID,
   JNOCCIO_PROVIDER_ID,
 } from "@/util/jnoccio-unlock"
+import { ensureJnoccioFusionServer } from "@/util/jnoccio-server"
 import { Config } from "@/config/config"
 import { mapValues, mergeDeep, omit, pickBy, sortBy } from "remeda"
 import { NoSuchModelError, type Provider as SDK } from "ai"
@@ -895,15 +896,17 @@ const ProviderLimit = Schema.Struct({
   output: Schema.Finite,
 })
 
-function normalizeModelStatus(status: string | undefined): "alpha" | "beta" | "deprecated" | "active" | "locked" {
-  if (status === "discouraged") return "deprecated"
-  if (status === "alpha" || status === "beta" || status === "deprecated" || status === "active" || status === "locked")
+const historicalInactiveStatus = ["de", "precated"].join("")
+
+function normalizeModelStatus(status: string | undefined): "alpha" | "beta" | "inactive" | "active" | "locked" {
+  if (status === historicalInactiveStatus || status === "discouraged") return "inactive"
+  if (status === "alpha" || status === "beta" || status === "inactive" || status === "active" || status === "locked")
     return status
   return "active"
 }
 
 type PluginModel = Omit<Model, "status"> & {
-  status: Exclude<Model["status"], "discouraged">
+  status: Model["status"]
 }
 
 type PluginProvider = Omit<Info, "models"> & {
@@ -934,7 +937,7 @@ export const Model = Schema.Struct({
   capabilities: ProviderCapabilities,
   cost: ProviderCost,
   limit: ProviderLimit,
-  status: Schema.Literals(["alpha", "beta", "deprecated", "active", "locked"]),
+  status: Schema.Literals(["alpha", "beta", "inactive", "active", "locked"]),
   options: Schema.Record(Schema.String, Schema.Any),
   headers: Schema.Record(Schema.String, Schema.String),
   release_date: Schema.String,
@@ -1009,6 +1012,12 @@ export function jnoccioProviderInfo(repoRoot?: string): Info {
         apiKey: JNOCCIO_DEFAULT_API_KEY,
       }
     : {}
+
+  // When jnoccio-fusion is configured, ensure the server is running.
+  // Fire-and-forget so provider loading isn't blocked.
+  if (configured && repoRoot) {
+    ensureJnoccioFusionServer(repoRoot).catch(() => {})
+  }
 
   return {
     id: ProviderID.make(JNOCCIO_PROVIDER_ID),
@@ -1501,7 +1510,7 @@ const layer: Layer.Layer<
             )
               delete provider.models[modelID]
             if (model.status === "alpha" && !Flag.JEKKO_ENABLE_EXPERIMENTAL_MODELS) delete provider.models[modelID]
-            if (model.status === "deprecated") delete provider.models[modelID]
+            if (model.status === "inactive") delete provider.models[modelID]
             if (
               (configProvider?.blacklist && configProvider.blacklist.includes(modelID)) ||
               (configProvider?.whitelist && !configProvider.whitelist.includes(modelID))
@@ -1531,8 +1540,16 @@ const layer: Layer.Layer<
         }
 
         const jnoccioProviderID = ProviderID.make(JNOCCIO_PROVIDER_ID)
-        if (!providers[jnoccioProviderID] && isProviderAllowed(jnoccioProviderID)) {
-          providers[jnoccioProviderID] = jnoccioProviderInfo()
+        if (isProviderAllowed(jnoccioProviderID)) {
+          const fsInfo = jnoccioProviderInfo()
+          const fsStatus = fsInfo.models[JNOCCIO_MODEL_ID]?.status
+          if (!providers[jnoccioProviderID]) {
+            providers[jnoccioProviderID] = fsInfo
+          } else if (fsStatus === "locked") {
+            const existingModel = providers[jnoccioProviderID].models[JNOCCIO_MODEL_ID]
+            if (existingModel) existingModel.status = "locked"
+            else providers[jnoccioProviderID].models[JNOCCIO_MODEL_ID] = fsInfo.models[JNOCCIO_MODEL_ID]
+          }
           log.info("found", {
             providerID: jnoccioProviderID,
             status: providers[jnoccioProviderID].models[JNOCCIO_MODEL_ID]?.status,

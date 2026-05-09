@@ -71,7 +71,7 @@ export const Model = Schema.Struct({
       ),
     }),
   ),
-  status: Schema.optional(Schema.Literals(["alpha", "beta", "deprecated", "active", "locked"])),
+  status: Schema.optional(Schema.Literals(["alpha", "beta", "inactive", "active", "locked"])),
   provider: Schema.optional(
     Schema.Struct({ npm: Schema.optional(Schema.String), api: Schema.optional(Schema.String) }),
   ),
@@ -147,9 +147,9 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | HttpClie
     const populate = Effect.gen(function* () {
       const fromDisk = yield* loadFromDisk
       if (fromDisk) return fromDisk
+      if (Flag.JEKKO_DISABLE_MODELS_FETCH) return {}
       const snapshot = yield* loadSnapshot
       if (snapshot) return snapshot
-      if (Flag.JEKKO_DISABLE_MODELS_FETCH) return {}
       // Flock is cross-process: concurrent jekko CLIs can race on this cache file.
       const text = yield* Effect.scoped(
         Effect.gen(function* () {

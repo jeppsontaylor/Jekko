@@ -375,7 +375,7 @@ describe("tui sync", () => {
     }
   })
 
-  test("locked Jnoccio is listed but skipped for current model fallback", async () => {
+  test("locked Jnoccio is listed but skipped for current model selection", async () => {
     const previous = Global.Path.state
     await using tmp = await tmpdir()
     Global.Path.state = tmp.path

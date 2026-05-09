@@ -204,7 +204,7 @@ describe("unlockJnoccioFusion", () => {
     expect(calls).toBe(0)
   })
 
-  test("unlocks with a typed secret, writes the cache file, and deletes the temporary raw key", async () => {
+  test("unlocks with a typed secret, writes the cache file, and deletes the ephemeral raw key", async () => {
     const repo = await tempRepo({ plaintext: false })
     const secret = unlockSecret()
     const rawKey = Buffer.from("fake-git-crypt-key")
@@ -345,7 +345,7 @@ describe("unlockJnoccioFusion", () => {
     )
 
     expect(result.status).toBe("error")
-    expect(result.message).toContain("Unlock key was not valid")
+    expect(result.message).toContain("Unlock secret was not valid")
     expect(calls).toBe(0)
     await expect(fsp.access(secretPath)).rejects.toThrow()
   })
@@ -362,7 +362,7 @@ describe("unlockJnoccioFusion", () => {
     },
   )
 
-  test("deletes the temporary raw key file after a failed unlock", async () => {
+  test("deletes the ephemeral raw key file after a failed unlock", async () => {
     const repo = await tempRepo({ plaintext: false })
     const secret = unlockSecret()
     const rawKey = Buffer.from("fake-git-crypt-key")
@@ -382,7 +382,7 @@ describe("unlockJnoccioFusion", () => {
     )
 
     expect(result.status).toBe("error")
-    expect(result.message).toContain("Unlock key was not valid")
+    expect(result.message).toContain("Unlock secret was not valid")
     expect(tempKeyPaths.length).toBe(1)
     await expect(fsp.stat(tempKeyPaths[0])).rejects.toThrow()
     await expect(fsp.access(path.join(repo.root, "jnoccio-fusion.unlock"))).rejects.toThrow()

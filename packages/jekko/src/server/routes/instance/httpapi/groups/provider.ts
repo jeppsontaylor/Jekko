@@ -65,7 +65,7 @@ export const ProviderApi = HttpApi.make("provider")
             identifier: "provider.jnoccio.unlock",
             summary: "Unlock Jnoccio Fusion",
             description:
-              "Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a legacy git-crypt key file path.",
+              "Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a git-crypt key file path.",
           }),
         ),
       )

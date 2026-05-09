@@ -38,8 +38,8 @@ async function getJson(serverApp: ReturnType<typeof app>, route: string, directo
   })
 }
 
-async function exerciseLegacyBackend(secret: string) {
-  const { clone, cloneParent } = await cloneRepo("jnoccio-unlock-route-legacy-", tempDirs)
+async function exerciseHonoBackend(secret: string) {
+  const { clone, cloneParent } = await cloneRepo("jnoccio-unlock-route-historical-", tempDirs)
   const secretCachePath = path.join(cloneParent, "jnoccio-fusion.unlock")
 
   expect(isJnoccioFusionUnlocked(clone)).toBe(false)
@@ -81,7 +81,7 @@ async function exerciseLegacyBackend(secret: string) {
       expect(body.default.jnoccio).toBe("jnoccio-fusion")
       expect(body.connected).toContain("jnoccio")
 
-      return { backend: "legacy" as const, clone }
+      return { backend: "hono" as const, clone }
     },
   )
 }
@@ -101,13 +101,13 @@ afterEach(async () => {
 
 describe("Jnoccio unlock route local proof", () => {
   localTest(
-    "unlocks a fresh clone through the legacy Hono route",
+    "unlocks a fresh clone through the historical Hono route",
     async () => {
       if (!preflight.ok) throw new Error(`local unlock proof skipped: ${preflight.reason}`)
 
-      const legacy = await exerciseLegacyBackend(preflight.secret)
+      const historical = await exerciseHonoBackend(preflight.secret)
 
-      expect(legacy.backend).toBe("legacy")
+      expect(historical.backend).toBe("hono")
     },
     120000,
   )

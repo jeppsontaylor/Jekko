@@ -114,14 +114,18 @@ export function DialogSecretPrompt(props: DialogSecretPromptProps) {
         </Show>
       </box>
       <box paddingBottom={1} gap={1} flexDirection="row">
-        <Show when={!props.busy} fallback={<text fg={theme.textMuted}>processing...</text>}>
-          <text fg={theme.text}>
-            enter <span style={{ fg: theme.textMuted }}>submit</span>
-          </text>
-          <text fg={theme.textMuted}>
-            ctrl+u <span style={{ fg: theme.textMuted }}>clear</span>
-          </text>
-        </Show>
+        {props.busy ? (
+          <text fg={theme.textMuted}>processing...</text>
+        ) : (
+          <>
+            <text fg={theme.text}>
+              enter <span style={{ fg: theme.textMuted }}>submit</span>
+            </text>
+            <text fg={theme.textMuted}>
+              ctrl+u <span style={{ fg: theme.textMuted }}>clear</span>
+            </text>
+          </>
+        )}
       </box>
     </box>
   )

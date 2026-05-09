@@ -5,15 +5,16 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: jankurai-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: read
-    concurrency:
-      group: jankurai-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -83,8 +84,8 @@ jobs:
             target/jankurai/security/lane-status.txt
       - name: Upload SARIF to code scanning
         if: always()
-        uses: github/codeql-action/upload-sarif@v4.35.4
+        uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e
         with:
           sarif_file: target/jankurai/jankurai.sarif
       - name: Dependency review
-        uses: actions/dependency-review-action@v5.0.0
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294
