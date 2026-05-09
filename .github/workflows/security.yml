@@ -25,10 +25,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
 
       - name: Install jankurai
-        run: cargo install --git https://github.com/jeppsontaylor/Jankurai --locked jankurai
+        run: cargo install --git https://github.com/jeppsontaylor/Jankurai --tag v0.8.13 --locked jankurai
 
       - name: Jankurai security lane
-        run: jankurai security run . --out target/jankurai/security/evidence.json
+        run: bash tools/security-lane.sh
 
       - name: Secret scanning (trufflehog)
         uses: trufflesecurity/trufflehog@ba0a524d6e51744d9d4e306bc57ac5d6ca5173ea

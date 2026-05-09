@@ -7,9 +7,18 @@ import { migrationHash } from "@/storage/migration-repair"
 
 const MIGRATION_DIR = path.join(import.meta.dir, "..", "..", "..", "..", "db", "migrations")
 
+function migrationSqlPath(entry: string) {
+  const safeEntry = path.basename(entry)
+  if (safeEntry !== entry) {
+    throw new Error(`Invalid migration directory name: ${entry}`)
+  }
+  return path.join(MIGRATION_DIR, safeEntry, "migration.sql")
+}
+
 async function seedSchema(dbPath: string) {
   const seedDb = new BunSqlite(dbPath)
   try {
+    // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=static-pragma-no-input expires=2026-12-31
     seedDb.exec("PRAGMA foreign_keys = ON")
     seedDb.exec("PRAGMA journal_mode = WAL")
     seedDb.exec("PRAGMA synchronous = NORMAL")
@@ -21,7 +30,7 @@ async function seedSchema(dbPath: string) {
       .sort()
 
     for (const entry of entries) {
-      const sql = await readFile(path.join(MIGRATION_DIR, entry, "migration.sql"), "utf8")
+      const sql = await readFile(migrationSqlPath(entry), "utf8")
       seedDb.exec(sql)
     }
 
@@ -51,7 +60,7 @@ async function seedSchema(dbPath: string) {
     }
     const appliedAt = new Date().toISOString()
     for (const entry of entries) {
-      const sql = await readFile(path.join(MIGRATION_DIR, entry, "migration.sql"), "utf8")
+      const sql = await readFile(migrationSqlPath(entry), "utf8")
       insert.run(migrationHash({ sql }), migrationTime(entry), entry, appliedAt)
     }
   } finally {

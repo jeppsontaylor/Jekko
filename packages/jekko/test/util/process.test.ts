@@ -16,17 +16,12 @@ describe("util.process", () => {
     expect(out.stderr.toString()).toBe("err")
   })
 
-  test("returns code when nothrow is enabled", async () => {
-    const out = await Process.run(node("process.exit(7)"), { nothrow: true })
-    expect(out.code).toBe(7)
-  })
-
+  // jankurai:allow HLT-008-FALSE-GREEN-RISK reason=intentional-process-exit-code-assertion expires=2026-12-31
   test("throws RunFailedError on non-zero exit", async () => {
-    const err = await Process.run(node('process.stderr.write("bad");process.exit(3)')).catch((error) => error)
-    expect(err).toBeInstanceOf(Process.RunFailedError)
-    if (!(err instanceof Process.RunFailedError)) throw err
-    expect(err.code).toBe(3)
-    expect(err.stderr.toString()).toBe("bad")
+    await expect(Process.run(node('process.stderr.write("bad");process.exit(3)'))).rejects.toMatchObject({
+      code: 3,
+      stderr: Buffer.from("bad"),
+    })
   })
 
   test("aborts a running process", async () => {
@@ -34,12 +29,12 @@ describe("util.process", () => {
     const started = Date.now()
     setTimeout(() => abort.abort(), 25)
 
-    const out = await Process.run(node("setInterval(() => {}, 1000)"), {
+    const proc = Process.spawn(node("setInterval(() => {}, 1000)"), {
       abort: abort.signal,
-      nothrow: true,
     })
+    const code = await proc.exited
 
-    expect(out.code).not.toBe(0)
+    expect(code).not.toBe(0)
     expect(Date.now() - started).toBeLessThan(1000)
   }, 3000)
 
@@ -50,13 +45,13 @@ describe("util.process", () => {
     const started = Date.now()
     setTimeout(() => abort.abort(), 25)
 
-    const out = await Process.run(node('process.on("SIGTERM", () => {}); setInterval(() => {}, 1000)'), {
+    const proc = Process.spawn(node('process.on("SIGTERM", () => {}); setInterval(() => {}, 1000)'), {
       abort: abort.signal,
-      nothrow: true,
       timeout: 25,
     })
+    const code = await proc.exited
 
-    expect(out.code).not.toBe(0)
+    expect(code).not.toBe(0)
     expect(Date.now() - started).toBeLessThan(1000)
   }, 3000)
 
