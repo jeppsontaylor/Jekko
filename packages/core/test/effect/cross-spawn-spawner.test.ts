@@ -97,22 +97,12 @@ describe("cross-spawn spawner", () => {
     fx.effect(
       "returns non-zero exit code",
       Effect.gen(function* () {
-        const tmp = yield* Effect.acquireRelease(
-          Effect.promise(() => tmpdir()),
-          (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
-        )
-        const marker = path.join(tmp.path, "non-zero-exit.txt")
-        const handle = yield* jsFile(
-          path.join(import.meta.dir, "../fixture/cross-spawn-non-zero-exit.js"),
-          {
-            env: { JEKKO_NON_ZERO_EXIT_MARKER: marker, JEKKO_NON_ZERO_EXIT_CODE: "42" },
-            extendEnv: true,
-          },
-        )
+        const handle = yield* js('process.stdout.write("done"); process.exit(42)')
+        const out = yield* decodeByteStream(handle.stdout)
         const code = yield* handle.exitCode
-        const wrote = yield* Effect.promise(() => fs.readFile(marker, "utf8"))
-        expect(wrote).toBe("ran")
+        expect(out).toBe("done")
         expect(code).toBe(ChildProcessSpawner.ExitCode(42))
+        expect(yield* handle.isRunning).toBe(false)
       }),
     )
   })
@@ -125,12 +115,13 @@ describe("cross-spawn spawner", () => {
           Effect.promise(() => tmpdir()),
           (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
         )
+        const expected = yield* Effect.promise(() => fs.realpath(tmp.path))
         const out = yield* ChildProcessSpawner.ChildProcessSpawner.use((svc) =>
           svc.string(
             ChildProcess.make(process.execPath, ["-e", "process.stdout.write(process.cwd())"], { cwd: tmp.path }),
           ),
         )
-        expect(out).toBe(tmp.path)
+        expect(out).toBe(expected)
       }),
     )
 
@@ -292,9 +283,12 @@ describe("cross-spawn spawner", () => {
       "isRunning reflects process state",
       Effect.gen(function* () {
         const handle = yield* js('process.stdout.write("done")')
-        yield* handle.exitCode
+        const pid = Number(handle.pid)
+        const code = yield* handle.exitCode
+        expect(code).toBe(ChildProcessSpawner.ExitCode(0))
         const running = yield* handle.isRunning
         expect(running).toBe(false)
+        expect(yield* Effect.promise(() => gone(pid))).toBe(true)
       }),
     )
   })
