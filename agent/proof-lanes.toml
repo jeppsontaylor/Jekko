@@ -1,19 +1,145 @@
+# Proof lane definitions for opencode. Mirror canonical structure from jankurai
+# upstream (agent/proof-lanes.toml) so jankurai audit can reason about coverage.
+
 [[lane]]
 name = "fast"
 command = "just fast"
-purpose = "deterministic local health proof"
+purpose = "deterministic local health proof: typecheck + narrow jekko test slice"
+command_id = "lane.fast"
+kind = "validation"
+cost = 5
+rules_covered = ["HLT-001-DEAD-MARKER", "HLT-003-OWNERLESS-PATH", "HLT-004-UNMAPPED-PROOF", "HLT-031-TYPESCRIPT-BAD-BEHAVIOR"]
+required_artifacts = []
+timeout_seconds = 900
+requires_network = false
+destructive = false
+
+[[lane]]
+name = "typecheck-fast"
+command = "just typecheck-fast"
+purpose = "narrow turbo-cached typecheck across all packages"
+command_id = "lane.typecheck-fast"
+kind = "validation"
+cost = 3
+rules_covered = ["HLT-031-TYPESCRIPT-BAD-BEHAVIOR"]
+required_artifacts = []
+timeout_seconds = 600
+requires_network = false
+destructive = false
+
+[[lane]]
+name = "core-test"
+command = "just core-test"
+purpose = "@jekko-ai/core unit + effect tests"
+command_id = "lane.core-test"
+kind = "validation"
+cost = 8
+rules_covered = ["HLT-008-FALSE-GREEN-RISK", "HLT-029-RUST-BAD-BEHAVIOR"]
+required_artifacts = []
+timeout_seconds = 900
+requires_network = false
+destructive = false
 
 [[lane]]
 name = "audit"
 command = "just score"
-purpose = "write jankurai score artifacts"
+purpose = "write agent/repo-score.json + agent/repo-score.md and append score history"
+command_id = "lane.audit"
+kind = "audit"
+cost = 10
+rules_covered = ["HLT-001-DEAD-MARKER", "HLT-002-GENERATED-MUTATION", "HLT-003-OWNERLESS-PATH", "HLT-004-UNMAPPED-PROOF", "HLT-008-FALSE-GREEN-RISK"]
+required_artifacts = ["agent/repo-score.json", "agent/repo-score.md", "agent/score-history.jsonl", "agent/score-history.csv"]
+timeout_seconds = 900
+requires_network = false
+destructive = false
 
 [[lane]]
 name = "security"
 command = "just security"
-purpose = "secret, dependency, and workflow proof"
+purpose = "secret, dependency, and workflow proof via tools/security-lane.sh"
+command_id = "lane.security"
+kind = "security"
+cost = 20
+rules_covered = ["HLT-009-GENERATED-SECURITY", "HLT-010-SECRET-SPRAWL", "HLT-011-PROMPT-INJECTION", "HLT-012-OVERBROAD-AGENCY", "HLT-016-SUPPLY-CHAIN-DRIFT", "HLT-020-CI-HARDENING-GAP"]
+required_artifacts = ["target/jankurai/security/evidence.json"]
+timeout_seconds = 1800
+requires_network = false
+destructive = false
+
+[[lane]]
+name = "doctor"
+command = "jankurai doctor --fail-on high"
+purpose = "validate that required canonical files exist and lockfiles are committed"
+command_id = "lane.doctor"
+kind = "validation"
+cost = 4
+rules_covered = ["HLT-016-SUPPLY-CHAIN-DRIFT"]
+required_artifacts = []
+timeout_seconds = 300
+requires_network = false
+destructive = false
+
+[[lane]]
+name = "db-migration-analyze"
+command = "jankurai migrate . --analyze --json target/jankurai/migration-report.json"
+purpose = "write migration liability report for DB and modernization evidence"
+command_id = "lane.db-migration-analyze"
+kind = "analysis"
+cost = 15
+rules_covered = ["HLT-006-DIRECT-DB-WRONG-LAYER", "HLT-021-DESTRUCTIVE-MIGRATION", "HLT-030-SQL-BAD-BEHAVIOR"]
+required_artifacts = ["target/jankurai/migration-report.json"]
+timeout_seconds = 1800
+requires_network = false
+destructive = false
+
+[[lane]]
+name = "contract-drift"
+command = "bun --cwd packages/sdk/js run build"
+purpose = "regenerate SDK from OpenAPI spec; CI compares against committed gen output"
+command_id = "lane.contract-drift"
+kind = "analysis"
+cost = 12
+rules_covered = ["HLT-002-GENERATED-MUTATION", "HLT-007-HANDWRITTEN-CONTRACT"]
+required_artifacts = ["packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/"]
+timeout_seconds = 600
+requires_network = false
+destructive = false
+
+[[lane]]
+name = "rust-fusion"
+command = "cargo test --manifest-path jnoccio-fusion/Cargo.toml --no-fail-fast"
+purpose = "jnoccio-fusion gateway full test suite"
+command_id = "lane.rust-fusion"
+kind = "validation"
+cost = 12
+rules_covered = ["HLT-008-FALSE-GREEN-RISK", "HLT-029-RUST-BAD-BEHAVIOR"]
+required_artifacts = []
+timeout_seconds = 1800
+requires_network = false
+destructive = false
+
+[[lane]]
+name = "rust-tuiwright"
+command = "cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml --no-run"
+purpose = "tuiwright-jekko-unlock E2E test compile-clean check"
+command_id = "lane.rust-tuiwright"
+kind = "validation"
+cost = 6
+rules_covered = ["HLT-029-RUST-BAD-BEHAVIOR"]
+required_artifacts = []
+timeout_seconds = 900
+requires_network = false
+destructive = false
 
 [[lane]]
 name = "release"
 command = "just check"
-purpose = "full merge gate"
+purpose = "full merge gate: fast + doctor + score + security"
+command_id = "lane.release"
+kind = "release"
+cost = 50
+supersedes = ["fast", "audit", "security", "doctor"]
+required_artifacts = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/security/evidence.json"]
+timeout_seconds = 3600
+requires_network = false
+destructive = false

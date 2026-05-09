@@ -1,6 +1,88 @@
 standard = "jankurai"
 standard_version = "0.8.0"
 paper_edition = "2026.05-ed8"
-auditor_version = "0.8.11"
-schema_version = "1.6.0"
+auditor_version = "0.8.12"
+schema_version = "1.6.1"
 target_stack = "rust-ts-vite-react-postgres-bounded-python"
+published = "2026-05-09"
+release_tag = "v0.8.12"
+
+[[artifact]]
+id = "agent-standard-brief"
+path = "agent/JANKURAI_STANDARD.md"
+kind = "agent-brief"
+version_field = "standard_version"
+version = "0.8.0"
+source = "https://github.com/jeppsontaylor/Jankurai/blob/v0.8.12/agent/JANKURAI_STANDARD.md"
+command = "manual vendor from upstream tag"
+generated = false
+
+[[artifact]]
+id = "owner-map"
+path = "agent/owner-map.json"
+kind = "owner-routing"
+version_field = "schema_version"
+version = "1.6.1"
+source = "agent/owner-map.json"
+command = "manual owner edit + jankurai audit verification"
+generated = false
+
+[[artifact]]
+id = "test-map"
+path = "agent/test-map.json"
+kind = "proof-routing"
+version_field = "schema_version"
+version = "1.6.1"
+source = "agent/test-map.json"
+command = "manual test routing edit + jankurai audit verification"
+generated = false
+
+[[artifact]]
+id = "repo-score-json"
+path = "agent/repo-score.json"
+kind = "audit-report"
+version_field = "auditor_version"
+version = "0.8.12"
+source = "installed jankurai binary"
+command = "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md --score-history agent/score-history.jsonl --score-history-csv agent/score-history.csv"
+generated = true
+
+[[artifact]]
+id = "repo-score-md"
+path = "agent/repo-score.md"
+kind = "audit-report"
+version_field = "auditor_version"
+version = "0.8.12"
+source = "installed jankurai binary"
+command = "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md"
+generated = true
+
+[[artifact]]
+id = "bun-lockfile"
+path = "bun.lock"
+kind = "lockfile"
+version_field = "schema_version"
+version = "1.6.1"
+source = "package.json"
+command = "bun install"
+generated = true
+
+[[artifact]]
+id = "jnoccio-fusion-cargo-lock"
+path = "jnoccio-fusion/Cargo.lock"
+kind = "lockfile"
+version_field = "schema_version"
+version = "1.6.1"
+source = "jnoccio-fusion/Cargo.toml"
+command = "cargo build --manifest-path jnoccio-fusion/Cargo.toml"
+generated = true
+
+[[artifact]]
+id = "tuiwright-jekko-unlock-cargo-lock"
+path = "crates/tuiwright-jekko-unlock/Cargo.lock"
+kind = "lockfile"
+version_field = "schema_version"
+version = "1.6.1"
+source = "crates/tuiwright-jekko-unlock/Cargo.toml"
+command = "cargo build --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml"
+generated = true
