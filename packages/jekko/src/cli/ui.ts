@@ -72,11 +72,11 @@ function gradientText(
 }
 
 const brandWordmarkLines = [
-  "   █████       ████████ ██   ██ ██   ██  ██████ ",
-  "       ██      ██       ██  ██  ██  ██  ██    ██",
-  "       ██      █████    █████   █████   ██    ██",
-  "██     ██      ██       ██  ██  ██  ██  ██    ██",
-  " ███████       ████████ ██   ██ ██   ██  ██████ ",
+  " ██████  ███████  ██   ██  ██   ██   █████ ",
+  "     ██  ██       ██  ██   ██  ██   ██   ██",
+  "     ██  █████    █████    █████    ██   ██",
+  "██   ██  ██       ██  ██   ██  ██   ██   ██",
+  " █████   ███████  ██   ██  ██   ██   █████ ",
 ]
 
 export function logo(pad?: string) {
@@ -106,21 +106,21 @@ export function logo(pad?: string) {
 
   lines.push((pad || "") + paint(sep, BORDER))
 
-  // Per-letter segment boundaries within each wordmark line
+  // Per-letter segment boundaries — each letter is 7 cols, 2-col gaps
   const letterSegs = [
-    { start: 0, end: 14 },   // J + gap
-    { start: 15, end: 23 },  // E + gap
-    { start: 24, end: 31 },  // K1 + gap
-    { start: 32, end: 39 },  // K2 + gap
-    { start: 40, end: 48 },  // O + trailing
+    { start: 0, end: 9 },    // J + gap
+    { start: 9, end: 18 },   // E + gap
+    { start: 18, end: 27 },  // K1 + gap
+    { start: 27, end: 36 },  // K2 + gap
+    { start: 36, end: 43 },  // O
   ]
   // One color per letter: amber-gold → deep orange gradient
   const letterRgb: readonly (readonly [number, number, number])[] = [
-    [255, 180, 40],   // J  – bright amber
-    [255, 160, 25],   // E  – warm gold
-    [255, 145, 15],   // K1 – deeper gold
-    [255, 130, 5],    // K2 – rich orange
-    [255, 115, 0],    // O  – deep orange
+    [255, 185, 40],   // J  – bright amber
+    [255, 160, 20],   // E  – warm gold
+    [255, 140, 10],   // K1 – deeper gold
+    [255, 120, 0],    // K2 – rich orange
+    [245, 100, 0],    // O  – deep orange
   ]
 
   const wordmarkWidth = brandWordmarkLines[0]!.length

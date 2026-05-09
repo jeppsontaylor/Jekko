@@ -35,32 +35,32 @@ function GradientText(props: { text: string; left: RGBA; right: RGBA; bold?: boo
   )
 }
 
-// Each letter segment: [startCol, endCol] (inclusive) within the wordmark line.
-// J = cols  0-8,  E = cols 15-23,  K = cols 24-30,  K = cols 32-38,  O = cols 40-47
-// Gaps between letters are included in the preceding segment as trailing spaces.
+// Each letter is exactly 7 columns wide, with 2-column gaps between them.
+// J = cols 0-6, E = cols 9-15, K1 = cols 18-24, K2 = cols 27-33, O = cols 36-42
+// Segments include trailing gap for coloring continuity.
 const letterSegments = [
-  { start: 0, end: 14 },   // J + gap
-  { start: 15, end: 23 },  // E + gap
-  { start: 24, end: 31 },  // K1 + gap
-  { start: 32, end: 39 },  // K2 + gap
-  { start: 40, end: 48 },  // O + trailing
+  { start: 0, end: 9 },    // J + gap
+  { start: 9, end: 18 },   // E + gap
+  { start: 18, end: 27 },  // K1 + gap
+  { start: 27, end: 36 },  // K2 + gap
+  { start: 36, end: 43 },  // O
 ]
 
-// 5 colors: one per letter, gradient from amber-gold → orange
+// 5 colors: one per letter, gradient from amber-gold → deep orange
 const letterColors = [
-  RGBA.fromInts(255, 180, 40),   // J  – bright amber
-  RGBA.fromInts(255, 160, 25),   // E  – warm gold
-  RGBA.fromInts(255, 145, 15),   // K1 – deeper gold
-  RGBA.fromInts(255, 130, 5),    // K2 – rich orange
-  RGBA.fromInts(255, 115, 0),    // O  – deep orange
+  RGBA.fromInts(255, 185, 40),   // J  – bright amber
+  RGBA.fromInts(255, 160, 20),   // E  – warm gold
+  RGBA.fromInts(255, 140, 10),   // K1 – deeper gold
+  RGBA.fromInts(255, 120, 0),    // K2 – rich orange
+  RGBA.fromInts(245, 100, 0),    // O  – deep orange
 ]
 
 const brandWordmarkLines = [
-  "   █████       ████████ ██   ██ ██   ██  ██████ ",
-  "       ██      ██       ██  ██  ██  ██  ██    ██",
-  "       ██      █████    █████   █████   ██    ██",
-  "██     ██      ██       ██  ██  ██  ██  ██    ██",
-  " ███████       ████████ ██   ██ ██   ██  ██████ ",
+  " ██████  ███████  ██   ██  ██   ██   █████ ",
+  "     ██  ██       ██  ██   ██  ██   ██   ██",
+  "     ██  █████    █████    █████    ██   ██",
+  "██   ██  ██       ██  ██   ██  ██   ██   ██",
+  " █████   ███████  ██   ██  ██   ██   █████ ",
 ]
 
 export function Logo(props: { shape?: any; ink?: RGBA; idle?: boolean } = {}) {
