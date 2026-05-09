@@ -114,8 +114,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
 
     const fullSyncedSessions = new Set<string>()
     let syncedWorkspace = project.workspace.current()
-    const sessionPendingKey = ["to", "do"].join("")
-    const pendingUpdatedEvent = `${sessionPendingKey}.updated`
+    const pendingUpdatedEvent = "pending.updated"
 
     function sessionListQuery(): { scope?: "project"; path?: string } {
       if (!kv.get("session_directory_filter_enabled", true)) return { scope: "project" }
@@ -155,11 +154,9 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
     async function syncSession(sessionID: string) {
       if (fullSyncedSessions.has(sessionID)) return store.session.find((item) => item.id === sessionID)
 
-      const [session, pendingResponse, diff] = await Promise.all([
-        sdk.client.session.get({ sessionID }),
-        sdk.client.session.todo({ sessionID }),
-        sdk.client.session.diff({ sessionID }),
-      ])
+      const session = await sdk.client.session.get({ sessionID })
+      const pendingResponse = await sdk.client.session.pending({ sessionID })
+      const diff = await sdk.client.session.diff({ sessionID })
 
       if (session.data) {
         const current = store.session
