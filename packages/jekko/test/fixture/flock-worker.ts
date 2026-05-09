@@ -14,6 +14,22 @@ type Msg = {
   done?: string
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function isMsg(value: unknown): value is Msg {
+  if (!isRecord(value)) return false
+  if (typeof value.key !== "string" || typeof value.dir !== "string") return false
+  for (const field of ["maxAgeMs", "timeoutMs", "baseDelayMs", "maxDelayMs", "holdMs"] as const) {
+    if (field in value && typeof value[field] !== "number") return false
+  }
+  for (const field of ["ready", "active", "done"] as const) {
+    if (field in value && typeof value[field] !== "string") return false
+  }
+  return true
+}
+
 function sleep(ms: number) {
   return new Promise<void>((resolve) => {
     setTimeout(resolve, ms)
@@ -26,7 +42,11 @@ function input() {
     throw new Error("Missing flock worker input")
   }
 
-  return JSON.parse(raw) as Msg
+  const parsed = JSON.parse(raw)
+  if (!isMsg(parsed)) {
+    throw new Error("Invalid flock worker input")
+  }
+  return parsed
 }
 
 async function job(input: Msg) {

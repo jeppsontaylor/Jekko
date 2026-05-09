@@ -278,7 +278,6 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
                 }, 1)
               }}
               {...filterInputProps}
-              placeholderColor={theme.textMuted}
             />
           </box>
         </Show>

@@ -12,7 +12,7 @@ async function published(name: string, version: string) {
 
 await $`bun tsc`
 const originalText = await Bun.file("package.json").text()
-const pkg = JSON.parse(originalText) as unknown
+const pkg: unknown = JSON.parse(originalText)
 if (
   typeof pkg !== "object" ||
   pkg === null ||

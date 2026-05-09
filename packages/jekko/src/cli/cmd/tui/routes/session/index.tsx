@@ -109,7 +109,27 @@ import {
 import { context, isRecord } from "./context"
 import { AssistantMessage as AssistantMessageView, UserMessage as UserMessageView } from "./session-renderers"
 
-addDefaultParsers([...parsers.parsers] as unknown as Parameters<typeof addDefaultParsers>[0])
+const defaultParsers = parsers.parsers.map((entry) => ({
+  ...entry,
+  queries: {
+    highlights: [...entry.queries.highlights] as string[],
+    ...(entry.queries.locals ? { locals: [...entry.queries.locals] as string[] } : {}),
+    ...(entry.queries.injections ? { injections: [...entry.queries.injections] as string[] } : {}),
+  },
+  ...(entry.injectionMapping
+    ? {
+        injectionMapping: {
+          ...entry.injectionMapping,
+          ...(entry.injectionMapping.nodeTypes ? { nodeTypes: { ...entry.injectionMapping.nodeTypes } } : {}),
+          ...(entry.injectionMapping.infoStringMap
+            ? { infoStringMap: { ...entry.injectionMapping.infoStringMap } }
+            : {}),
+        },
+      }
+    : {}),
+})) as Parameters<typeof addDefaultParsers>[0]
+
+addDefaultParsers(defaultParsers)
 
 const GO_UPSELL_LAST_SEEN_AT = "go_upsell_last_seen_at"
 const GO_UPSELL_DONT_SHOW = "go_upsell_dont_show"
@@ -1101,8 +1121,8 @@ export function Session() {
             await Editor.open({ value: transcript, renderer })
           } else {
             const exportDir = process.cwd()
-            const filename = options.filename.trim()
-            const filepath = path.join(exportDir, filename)
+            const filename = path.basename(options.filename.trim()) || defaultFilename
+            const filepath = path.resolve(exportDir, filename)
 
             await Filesystem.write(filepath, transcript)
 

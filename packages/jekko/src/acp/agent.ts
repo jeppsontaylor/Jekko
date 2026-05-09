@@ -582,7 +582,7 @@ export class Agent implements ACPAgent {
   }
 
   async authenticate(_params: AuthenticateRequest) {
-    throw new Error("Authentication not implemented")
+    throw RequestError.authRequired()
   }
 
   async newSession(params: NewSessionRequest) {

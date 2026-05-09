@@ -802,7 +802,7 @@ export const layer = Layer.effect(
     })
 
     const upsertArtifact = Effect.fn("DaemonStore.upsertArtifact")(function* (input: Omit<ArtifactRow, "time_created" | "time_updated">) {
-      const row = input as typeof DaemonArtifactTable.$inferInsert
+      const row = input
       Database.use((db) => db.insert(DaemonArtifactTable).values(row).onConflictDoUpdate({ target: DaemonArtifactTable.id, set: row }).run())
       const artifact = Database.use((db) => db.select().from(DaemonArtifactTable).where(eq(DaemonArtifactTable.id, input.id)).get())!
       if (artifact.task_id) yield* mirrorTask(artifact.run_id, artifact.task_id).pipe(Effect.ignore)

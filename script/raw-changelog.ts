@@ -22,6 +22,16 @@ type Diff = {
   message: string
 }
 
+function isDiff(value: unknown): value is Diff {
+  if (!value || typeof value !== "object") return false
+  const record = value as Record<string, unknown>
+  return (
+    typeof record.sha === "string" &&
+    (typeof record.login === "string" || record.login === null) &&
+    typeof record.message === "string"
+  )
+}
+
 const repo = process.env.GH_REPO ?? "anomalyco/jekko"
 const bot = ["actions-user", "github-actions[bot]", "jekko", "jekko-agent[bot]"]
 const team = [
@@ -63,10 +73,12 @@ async function diff(base: string, head: string) {
   for (let page = 1; ; page++) {
     const text =
       await $`gh api "/repos/${repo}/compare/${base}...${head}?per_page=100&page=${page}" --jq '.commits[] | {sha: .sha, login: .author.login, message: .commit.message}'`.text()
-    const batch = text
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => JSON.parse(line) as Diff)
+    const batch: Diff[] = []
+    for (const line of text.split("\n").filter(Boolean)) {
+      const parsed: unknown = JSON.parse(line)
+      if (!isDiff(parsed)) throw new Error(`invalid diff response: ${line}`)
+      batch.push(parsed)
+    }
     if (batch.length === 0) break
     list.push(...batch)
     if (batch.length < 100) break

@@ -199,8 +199,8 @@ function websearch(info: ToolProps<WebSearchInput>) {
   })
 }
 
-function task(info: ToolProps<unknown>) {
-  const input = info.part.state.input as TaskInput
+function task(info: ToolProps<TaskInput>) {
+  const input = info.input
   const status = info.part.state.status
   const subagent =
     typeof input.subagent_type === "string" && input.subagent_type.trim().length > 0 ? input.subagent_type : "unknown"

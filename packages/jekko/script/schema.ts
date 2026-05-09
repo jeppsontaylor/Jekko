@@ -4,8 +4,11 @@ import { z } from "zod"
 import { Config } from "@/config/config"
 import { TuiConfig } from "../src/cli/cmd/tui/config/tui"
 
+const JsonSchemaObject = z.object({}).passthrough()
+
 function generate(schema: z.ZodType) {
-  const result = z.toJSONSchema(schema, {
+  const result = JsonSchemaObject.parse(
+    z.toJSONSchema(schema, {
     io: "input", // Generate input shape (treats optional().default() as not required)
     /**
      * We'll use the `default` values of the field as the only value in `examples`.
@@ -39,10 +42,8 @@ function generate(schema: z.ZodType) {
           .trim()
       }
     },
-  }) as Record<string, unknown> & {
-    allowComments?: boolean
-    allowTrailingCommas?: boolean
-  }
+    }),
+  )
 
   // used for json lsps since config supports jsonc
   result.allowComments = true

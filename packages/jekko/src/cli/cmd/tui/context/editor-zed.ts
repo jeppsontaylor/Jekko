@@ -271,9 +271,9 @@ function pathContains(parent: string, child: string) {
   return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative))
 }
 
-function parseJson(value: string) {
+function parseJson(value: string): unknown {
   try {
-    return JSON.parse(value) as unknown
+    return JSON.parse(value)
   } catch {
     return
   }

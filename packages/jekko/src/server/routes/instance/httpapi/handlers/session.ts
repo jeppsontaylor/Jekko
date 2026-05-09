@@ -151,7 +151,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       if (body.trim().length === 0) return yield* create({})
 
       const json = yield* Effect.try({
-        try: () => JSON.parse(body) as unknown,
+        try: () => JSON.parse(body),
         catch: () => new HttpApiError.BadRequest({}),
       })
       const payload = yield* Schema.decodeUnknownEffect(Session.CreateInput)(json).pipe(

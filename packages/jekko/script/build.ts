@@ -18,6 +18,23 @@ import { Script } from "@jekko-ai/script"
 import pkg from "../package.json"
 
 // Load migrations from migration directories
+function parseMigrationTimestamp(name: string) {
+  if (name.length < 14) return 0
+  for (let i = 0; i < 14; i++) {
+    const code = name.charCodeAt(i)
+    if (code < 48 || code > 57) return 0
+  }
+
+  return Date.UTC(
+    Number(name.slice(0, 4)),
+    Number(name.slice(4, 6)) - 1,
+    Number(name.slice(6, 8)),
+    Number(name.slice(8, 10)),
+    Number(name.slice(10, 12)),
+    Number(name.slice(12, 14)),
+  )
+}
+
 const migrationDirs = (
   await fs.promises.readdir(path.join(dir, "migration"), {
     withFileTypes: true,
@@ -31,17 +48,7 @@ const migrations = await Promise.all(
   migrationDirs.map(async (name) => {
     const file = path.join(dir, "migration", name, "migration.sql")
     const sql = await Bun.file(file).text()
-    const match = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(name)
-    const timestamp = match
-      ? Date.UTC(
-          Number(match[1]),
-          Number(match[2]) - 1,
-          Number(match[3]),
-          Number(match[4]),
-          Number(match[5]),
-          Number(match[6]),
-        )
-      : 0
+    const timestamp = parseMigrationTimestamp(name)
     return { sql, timestamp, name }
   }),
 )

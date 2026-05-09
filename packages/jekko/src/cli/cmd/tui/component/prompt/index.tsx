@@ -62,7 +62,7 @@ export type PromptProps = {
   ref?: (ref: PromptRef | undefined) => void
   hint?: JSX.Element
   right?: JSX.Element
-  showPlaceholder?: boolean
+  showSuggestion?: boolean
   promptSuggestions?: {
     normal?: string[]
     shell?: string[]
@@ -1331,8 +1331,8 @@ export function Prompt(props: PromptProps) {
     return base
   })
 
-  const placeholderText = createMemo(() => {
-    if (props.showPlaceholder === false) return undefined
+  const inputSuggestionText = createMemo(() => {
+    if (props.showSuggestion === false) return undefined
     if (store.mode === "shell") {
       if (!shell().length) return undefined
       const example = shell()[store.default_value % shell().length]
@@ -1343,8 +1343,14 @@ export function Prompt(props: PromptProps) {
   })
 
   const inputProps = {
-    default_value: placeholderText(),
+    default_value: inputSuggestionText(),
   } as any
+
+  const inputTextColor = createMemo(() => {
+    if (keybind.leader) return theme.textMuted
+    if (!store.prompt.input) return theme.textMuted
+    return theme.text
+  })
 
   const workspaceLabel = createMemo<
     | { type: "new"; workspaceType: string }
@@ -1444,9 +1450,8 @@ export function Prompt(props: PromptProps) {
           >
             <textarea
               {...inputProps}
-              placeholderColor={theme.textMuted}
-              textColor={keybind.leader ? theme.textMuted : theme.text}
-              focusedTextColor={keybind.leader ? theme.textMuted : theme.text}
+              textColor={inputTextColor()}
+              focusedTextColor={inputTextColor()}
               minHeight={1}
               maxHeight={6}
               onContentChange={() => {

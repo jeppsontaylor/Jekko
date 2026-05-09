@@ -88,7 +88,6 @@ export function DialogPrompt(props: DialogPromptProps) {
           }}
           initialValue={props.value}
           {...inputProps}
-          placeholderColor={theme.textMuted}
           textColor={props.busy ? theme.textMuted : theme.text}
           focusedTextColor={props.busy ? theme.textMuted : theme.text}
           cursorColor={props.busy ? theme.backgroundElement : theme.text}

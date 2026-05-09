@@ -19,7 +19,7 @@ This is the canonical release gate: no paid or unbounded work starts without bot
 
 ## Release budget gate
 
-Before any paid or unbounded lane starts, record all of the following in the task receipt:
+Release lanes are paid or otherwise spend-risky operations. Before any paid or unbounded lane starts, record all of the following in the task receipt:
 
 - `budget_usd`
 - `cost_usd`
@@ -30,7 +30,7 @@ Before any paid or unbounded lane starts, record all of the following in the tas
 - `approval_ref`
 - `timestamp_utc`
 
-If any field is missing, or if the stop condition is already met, stop and mark the task blocked.
+The receipt must make the stop condition and kill switch machine-readable. If either one is missing, or if the stop condition is already met, stop and mark the task blocked.
 
 If a proof lane is blocked, record the block in the task and do not mark the task complete.
 
@@ -43,7 +43,7 @@ If a proof lane is blocked, record the block in the task and do not mark the tas
 
 ## Cost budget proof
 
-- Record `budget_usd`, `cost_usd`, `owner`, `quota_requests`, `stop_condition`, `kill_switch`, `approval_ref`, and `timestamp_utc` before starting a release lane.
+- Record `budget_usd`, `cost_usd`, `owner`, `quota_requests`, `stop_condition`, `kill_switch`, `approval_ref`, `timestamp_utc`, and `proof_command` before starting a release lane.
 - Keep the proof short, machine-readable, and attached to the release task before the lane begins.
 
 ```json

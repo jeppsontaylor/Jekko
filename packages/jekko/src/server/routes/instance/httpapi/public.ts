@@ -81,19 +81,23 @@ const InstanceQueryParameters = [
 // server still decodes string query params at runtime.
 const QueryNumberParameters = new Set(["start", "cursor", "limit", "method"])
 const QueryBooleanParameters = new Set(["roots", "archived"])
-const QueryParameterSchemas = {
+const QueryParameterSchemas: Record<string, OpenApiSchema> = {
   "GET /find/file limit": { type: "integer", minimum: 1, maximum: 200 },
   "GET /session/{sessionID}/diff messageID": { type: "string", pattern: "^msg.*" },
   "GET /session/{sessionID}/message limit": { type: "integer", minimum: 0, maximum: Number.MAX_SAFE_INTEGER },
-} satisfies Record<string, OpenApiSchema>
+}
 
-const PathParameterSchemas = {
+function hasQueryParameterSchema(key: string): key is keyof typeof QueryParameterSchemas {
+  return Object.prototype.hasOwnProperty.call(QueryParameterSchemas, key)
+}
+
+const PathParameterSchemas: Record<string, OpenApiSchema> = {
   sessionID: { type: "string", pattern: "^ses.*" },
   messageID: { type: "string", pattern: "^msg.*" },
   partID: { type: "string", pattern: "^prt.*" },
   permissionID: { type: "string", pattern: "^per.*" },
   ptyID: { type: "string", pattern: "^pty.*" },
-} satisfies Record<string, OpenApiSchema>
+}
 
 const LegacyComponentDescriptions = {
   LogLevel: "Log level",
@@ -516,7 +520,8 @@ function normalizeParameter(param: OpenApiParameter, route: string) {
     return
   }
   if (param.in === "query") {
-    const override = QueryParameterSchemas[`${route} ${param.name}` as keyof typeof QueryParameterSchemas]
+    const overrideKey = `${route} ${param.name}`
+    const override = hasQueryParameterSchema(overrideKey) ? QueryParameterSchemas[overrideKey] : undefined
     if (override) {
       param.schema = override
       return

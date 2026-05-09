@@ -47,15 +47,7 @@ export function tokenizeTerminal(text: string): TerminalToken[] {
   const tokens: TerminalToken[] = []
 
   for (const rule of REGEX_RULES) {
-    let match: RegExpExecArray | null
-    // Reset regex index
-    rule.re.lastIndex = 0
-    while ((match = rule.re.exec(text)) !== null) {
-      // For zero-width matches, advance index to prevent infinite loop
-      if (match[0].length === 0) {
-        rule.re.lastIndex++
-        continue
-      }
+    for (const match of text.matchAll(rule.re)) {
       tokens.push({
         start: match.index,
         end: match.index + match[0].length,

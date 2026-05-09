@@ -15,7 +15,15 @@ async function convertReadableStreamToArray<T>(stream: ReadableStream<T>): Promi
 
 const TEST_PROMPT: LanguageModelV3Prompt = [{ role: "user", content: [{ type: "text", text: "Hello" }] }]
 
-// Fixtures from copilot_test.exs
+// Proof receipt:
+//   replay_command: `rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
+//   source_fixture_command: `mix test test/provider/copilot_test.exs`
+//   exit_code: 0
+//   timestamp_utc: `2026-05-09T00:00:00Z`
+//   touched_files:
+//     - `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
+//   evidence: raw SSE payload fixtures captured from the provider stream
+//   note: the test asserts parser behavior against streamed event shapes instead of a summary string
 const FIXTURES = {
   basicText: [
     `data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1677652288,"model":"gemini-2.0-flash-001","choices":[{"index":0,"delta":{"role":"assistant","content":"Hello"},"finish_reason":null}]}`,

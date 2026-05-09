@@ -29,6 +29,20 @@ import { jnoccioIdentityHeaders, startJnoccioHeartbeat, type JnoccioProcessMetad
 const log = Log.create({ service: "llm" })
 export const OUTPUT_TOKEN_MAX = ProviderTransform.OUTPUT_TOKEN_MAX
 type Result = Awaited<ReturnType<typeof streamText>>
+type JsonObject = { [key: string]: unknown }
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function parseJsonObject(value: string): JsonObject | undefined {
+  try {
+    const parsed = JSON.parse(value)
+    return isJsonObject(parsed) ? parsed : undefined
+  } catch {
+    return
+  }
+}
 
 /**
  * Build the universal daemon telemetry headers attached to every outbound
@@ -308,15 +322,16 @@ const live: Layer.Layer<
               if (evt.properties.requestID === id) void evt.properties.reply
             })
             const toolPatterns = approvalTools.map((t: { name: string; args: string }) => {
-              try {
-                const parsed = JSON.parse(t.args) as Record<string, unknown>
-                const title = (parsed?.title ?? parsed?.name ?? "") as string
-                return title ? `${t.name}: ${title}` : t.name
-              } catch {
-                return t.name
-              }
+              const parsed = parseJsonObject(t.args)
+              const title =
+                typeof parsed?.title === "string"
+                  ? parsed.title
+                  : typeof parsed?.name === "string"
+                    ? parsed.name
+                    : ""
+              return title ? `${t.name}: ${title}` : t.name
             })
-            const uniquePatterns = [...new Set(toolPatterns)] as string[]
+            const uniquePatterns = [...new Set(toolPatterns)]
             await bridge.promise(
               perm.ask({
                 id,

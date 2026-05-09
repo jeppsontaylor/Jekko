@@ -12,11 +12,7 @@ async function published(name: string, version: string) {
 }
 
 const originalText = await Bun.file("package.json").text()
-const pkg = JSON.parse(originalText) as {
-  name: string
-  version: string
-  exports: Record<string, unknown>
-}
+const pkg = parsePackageJson(originalText)
 function transformExports(exports: Record<string, unknown>) {
   return Object.fromEntries(
     Object.entries(exports).map(([key, value]) => {
@@ -42,4 +38,20 @@ if (await published(pkg.name, pkg.version)) {
   } finally {
     await Bun.write("package.json", originalText)
   }
+}
+
+function parsePackageJson(text: string): { name: string; version: string; exports: Record<string, unknown> } {
+  const parsed: unknown = JSON.parse(text)
+  if (!isPackageJson(parsed)) {
+    throw new Error("package.json must contain string name/version and object exports")
+  }
+  return parsed
+}
+
+function isPackageJson(value: unknown): value is { name: string; version: string; exports: Record<string, unknown> } {
+  return isRecord(value) && typeof value.name === "string" && typeof value.version === "string" && isRecord(value.exports)
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value)
 }

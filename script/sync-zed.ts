@@ -8,6 +8,26 @@ const FORK_REPO = "anomalyco/zed-extensions"
 const UPSTREAM_REPO = "zed-industries/extensions"
 const EXTENSION_NAME = "jekko"
 
+async function execText(argv: string[]) {
+  const proc = Bun.spawn(argv, { stdout: "pipe", stderr: "pipe" })
+  const [stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
+  const exitCode = await proc.exited
+  if (exitCode !== 0) {
+    throw new Error(`Command failed (${exitCode}): ${argv.join(" ")}` + (stderr ? `\n${stderr}` : ""))
+  }
+  return stdout
+}
+
+function toEnvRecord(source: NodeJS.ProcessEnv) {
+  const env: Record<string, string> = {}
+  for (const [key, value] of Object.entries(source)) {
+    if (typeof value === "string") {
+      env[key] = value
+    }
+  }
+  return env
+}
+
 async function main() {
   const version = process.argv[2]
   if (!version) throw new Error("Version argument required, ex: bun script/sync-zed.ts v1.0.52")
@@ -25,11 +45,11 @@ async function main() {
   const cleanVersion = version.replace(/^v/, "")
   console.log(`📦 Syncing Zed extension for version ${cleanVersion}`)
 
-  const commitSha = await $`git rev-parse ${version}`.text()
+  const commitSha = await execText(["git", "rev-parse", version])
   const sha = commitSha.trim()
   console.log(`🔍 Found commit SHA: ${sha}`)
 
-  const extensionToml = await $`git show ${version}:packages/extensions/zed/extension.toml`.text()
+  const extensionToml = await execText(["git", "show", `${version}:packages/extensions/zed/extension.toml`])
   const parsed = Bun.TOML.parse(extensionToml) as { version: string }
   const extensionVersion = parsed.version
 
@@ -113,17 +133,40 @@ async function main() {
   await $`git push https://x-access-token:${token}@github.com/${FORK_REPO}.git ${branchName}`
 
   console.log(`📬 Creating pull request...`)
-  const prResult =
-    await $`gh pr create --repo ${UPSTREAM_REPO} --base main --head ${FORK_REPO.split("/")[0]}:${branchName} --title "Update ${EXTENSION_NAME} to v${cleanVersion}" --body "Updating Jekko extension to v${cleanVersion}"`
-      .env({ ...process.env, GH_TOKEN: prToken })
-      .nothrow()
+  const prProc = Bun.spawn(
+    [
+      "gh",
+      "pr",
+      "create",
+      "--repo",
+      UPSTREAM_REPO,
+      "--base",
+      "main",
+      "--head",
+      `${FORK_REPO.split("/")[0]}:${branchName}`,
+      "--title",
+      `Update ${EXTENSION_NAME} to v${cleanVersion}`,
+      "--body",
+      `Updating Jekko extension to v${cleanVersion}`,
+    ],
+    {
+      stdout: "pipe",
+      stderr: "pipe",
+      env: { ...toEnvRecord(process.env), GH_TOKEN: prToken },
+    },
+  )
+  const [prStdout, prStderr] = await Promise.all([
+    new Response(prProc.stdout).text(),
+    new Response(prProc.stderr).text(),
+  ])
+  const prExitCode = await prProc.exited
 
-  if (prResult.exitCode !== 0) {
-    console.error("stderr:", prResult.stderr.toString())
-    throw new Error(`Failed with exit code ${prResult.exitCode}`)
+  if (prExitCode !== 0) {
+    console.error("stderr:", prStderr)
+    throw new Error(`Failed with exit code ${prExitCode}`)
   }
 
-  const prUrl = prResult.stdout.toString().trim()
+  const prUrl = prStdout.trim()
   console.log(`✅ Pull request created: ${prUrl}`)
   console.log(`🎉 Done!`)
 }

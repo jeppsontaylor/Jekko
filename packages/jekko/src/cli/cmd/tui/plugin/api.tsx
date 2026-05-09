@@ -44,6 +44,15 @@ type Input = {
   renderer: TuiPluginApi["renderer"]
 }
 
+type PromptSuggestions = {
+  normal?: string[]
+  shell?: string[]
+}
+
+function hasPromptSuggestions(props: object): props is { promptSuggestions?: PromptSuggestions } {
+  return "promptSuggestions" in props
+}
+
 function routeRegister(routes: RouteMap, list: TuiRouteDefinition[], bump: () => void) {
   const key = Symbol()
   for (const item of list) {
@@ -262,6 +271,7 @@ export function createTuiApi(input: Input): TuiPluginApi {
         return <HostSlot {...props} />
       },
       Prompt(props) {
+        const promptSuggestions = hasPromptSuggestions(props) ? props.promptSuggestions : undefined
         return (
           <Prompt
             sessionID={props.sessionID}
@@ -272,8 +282,8 @@ export function createTuiApi(input: Input): TuiPluginApi {
             ref={props.ref}
             hint={props.hint}
             right={props.right}
-            showPlaceholder={props.showPlaceholder}
-            promptSuggestions={props.promptSuggestions}
+            showSuggestion={props.showSuggestion}
+            promptSuggestions={promptSuggestions}
           />
         )
       },

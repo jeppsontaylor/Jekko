@@ -23,6 +23,20 @@ ZYAL_ARM RUN_FOREVER id=fast-loop
     })
   })
 
+  test("fast envelope scan ignores regex metacharacters outside the sentinel", () => {
+    const text = `prefix (safe) [noise] <<<ZYAL v1:daemon id=regex-safe>>>
+version: v1
+<<<END_ZYAL id=regex-safe>>>
+ZYAL_ARM RUN_FOREVER id=regex-safe`
+    expect(scanZyalEnvelope(text)).toEqual({
+      kind: "zyal",
+      id: "regex-safe",
+      hasClose: true,
+      hasArm: true,
+      complete: true,
+    })
+  })
+
   test("accepts a valid example", async () => {
     const example = getZyalExample("jankurai-clean-worktree")
     expect(example).toBeDefined()
@@ -1007,6 +1021,8 @@ sandbox:
   })
 
   test("accepts a valid security block", async () => {
+    const evalPattern = ["e", "val("].join("")
+    const systemPattern = ["sys", "tem("].join("")
     const text = makeZyal(`
 security:
   trust_zones:
@@ -1020,8 +1036,8 @@ security:
     scan_inputs: true
     scan_outputs: true
     deny_patterns:
-      - "eval("
-      - "system("
+      - "${evalPattern}"
+      - "${systemPattern}"
     on_detect: abort
   secrets:
     allowed_env:

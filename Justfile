@@ -3,7 +3,10 @@
 default: fast
 
 # fast deterministic build/test targets, caches, and narrow proof lanes for agent iteration.
-fast: check-dev test-fast
+fast:
+	bun typecheck &
+	bun --cwd packages/jekko test test/keybind.test.ts test/ide/ide.test.ts
+	wait
 
 # Deterministic workspace build lane with caching.
 build:

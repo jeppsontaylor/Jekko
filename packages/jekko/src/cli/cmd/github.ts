@@ -1,5 +1,4 @@
 import path from "path"
-import { exec } from "child_process"
 import { Filesystem } from "@/util/filesystem"
 import * as prompts from "@clack/prompts"
 import { map, pipe, sortBy, values } from "remeda"
@@ -357,15 +356,13 @@ export const GithubInstallCommand = effectCmd({
           const url = "https://github.com/apps/jekko-agent"
           const command =
             process.platform === "darwin"
-              ? `open "${url}"`
+              ? ["open", url]
               : process.platform === "win32"
-                ? `start "" "${url}"`
-                : `xdg-open "${url}"`
+                ? ["cmd", "/c", "start", "", url]
+                : ["xdg-open", url]
 
-          exec(command, (error) => {
-            if (error) {
-              prompts.log.warn(`Could not open browser. Please visit: ${url}`)
-            }
+          void Process.spawn(command).exited.catch(() => {
+            prompts.log.warn(`Could not open browser. Please visit: ${url}`)
           })
 
           // Wait for installation

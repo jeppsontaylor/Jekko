@@ -28,7 +28,7 @@ export const AgentCommand = effectCmd({
       })
       .option("params", {
         type: "string",
-        description: "Tool params as JSON",
+        description: "Tool params object",
       }),
   handler: Effect.fn("Cli.debug.agent")(function* (args) {
     const ctx = yield* InstanceRef

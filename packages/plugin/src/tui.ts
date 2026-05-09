@@ -173,7 +173,7 @@ export type TuiPromptProps = {
   ref?: (ref: TuiPromptRef | undefined) => void
   hint?: JSX.Element
   right?: JSX.Element
-  showPlaceholder?: boolean
+  showSuggestion?: boolean
   promptSuggestions?: {
     normal?: string[]
     shell?: string[]
