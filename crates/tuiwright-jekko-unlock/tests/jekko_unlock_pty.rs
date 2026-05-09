@@ -37,7 +37,7 @@ fn secret_path() -> PathBuf {
     if let Ok(p) = std::env::var("JNOCCIO_UNLOCK_SECRET_PATH") {
         return PathBuf::from(p);
     }
-    let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
+    let home = std::env::var("HOME").expect("HOME must be set");
     PathBuf::from(home).join("jnoccio-fusion.unlock")
 }
 

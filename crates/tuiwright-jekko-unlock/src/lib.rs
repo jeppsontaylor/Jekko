@@ -1,1 +1,1 @@
-// Cargo library stub; all proof lives in tests/.
+// Cargo library shim; all proof lives in tests/.
