@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: ./.github/actions/setup-bun@main
+      - uses: ./.github/actions/setup-bun
 
       - name: Install jekko
         run: |

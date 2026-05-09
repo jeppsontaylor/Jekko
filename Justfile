@@ -4,7 +4,6 @@ default: fast
 
 # fast deterministic build/test targets, caches, and narrow proof lanes for agent iteration.
 fast: check-dev test-fast
-	jankurai doctor --fail-on critical
 
 # Deterministic workspace build lane with caching.
 build:
@@ -35,4 +34,4 @@ doctor:
 security:
 	jankurai security run . --out target/jankurai/security/evidence.json
 
-check: fast score security
+check: fast doctor score security
