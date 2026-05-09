@@ -63,7 +63,7 @@ export type PromptProps = {
   hint?: JSX.Element
   right?: JSX.Element
   showPlaceholder?: boolean
-  placeholders?: {
+  promptSuggestions?: {
     normal?: string[]
     shell?: string[]
   }
@@ -206,8 +206,8 @@ export function Prompt(props: PromptProps) {
   const { theme, syntax, yamlSyntax, setOverlay } = useTheme()
   const kv = useKV()
   const animationsEnabled = createMemo(() => kv.get("animations_enabled", true))
-  const list = createMemo(() => props.placeholders?.normal ?? [])
-  const shell = createMemo(() => props.placeholders?.shell ?? [])
+  const list = createMemo(() => props.promptSuggestions?.normal ?? [])
+  const shell = createMemo(() => props.promptSuggestions?.shell ?? [])
   const fileContextEnabled = createMemo(() => kv.get("file_context_enabled", true))
   const [dismissedEditorSelectionKey, setDismissedEditorSelectionKey] = createSignal<string>()
   const editorContext = createMemo(() => {

@@ -21,7 +21,7 @@ const ZYAL_OPEN_FAST_RE = /<<<ZYAL v1:daemon id=([A-Za-z0-9._-]+)>>>/
 
 export function scanZyalEnvelope(text: string | undefined | null): ZyalEnvelopeScan {
   if (!text) return { kind: "none" }
-  const open = ZYAL_OPEN_FAST_RE.exec(text)
+  const open = text.match(ZYAL_OPEN_FAST_RE)
   const id = open?.[1]
   if (!id) return { kind: "none" }
   const escaped = escapeRegExp(id)

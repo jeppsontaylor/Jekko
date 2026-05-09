@@ -273,7 +273,7 @@ export function createTuiApi(input: Input): TuiPluginApi {
             hint={props.hint}
             right={props.right}
             showPlaceholder={props.showPlaceholder}
-            placeholders={props.placeholders}
+            promptSuggestions={props.promptSuggestions}
           />
         )
       },
