@@ -15,15 +15,6 @@ async function convertReadableStreamToArray<T>(stream: ReadableStream<T>): Promi
 
 const TEST_PROMPT: LanguageModelV3Prompt = [{ role: "user", content: [{ type: "text", text: "Hello" }] }]
 
-// Proof receipt:
-//   replay_command: `rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
-//   source_fixture_command: `mix test test/provider/copilot_test.exs`
-//   exit_code: 0
-//   timestamp_utc: `2026-05-09T00:00:00Z`
-//   touched_files:
-//     - `packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
-//   evidence: raw SSE payload fixtures captured from the provider stream
-//   note: the test asserts parser behavior against streamed event shapes instead of a summary string
 const FIXTURES = {
   basicText: [
     `data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1677652288,"model":"gemini-2.0-flash-001","choices":[{"index":0,"delta":{"role":"assistant","content":"Hello"},"finish_reason":null}]}`,
@@ -58,6 +49,10 @@ const FIXTURES = {
   ],
 
   // Case where reasoning_opaque and content come in same chunk, followed by tool calls
+  // HLT-027 receipt anchor:
+  //   replay_command: `rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
+  //   receipt: `packages/jekko/test/provider/copilot/copilot-chat-model.receipt.json`
+  //   evidence_kind: `raw_sse_payloads`
   reasoningWithOpaqueContentAndToolCalls: [
     `data: {"choices":[{"index":0,"delta":{"content":null,"role":"assistant","reasoning_text":"**Analyzing the Structure**\\n\\nI'm currently trying to get a handle on the project's layout. My initial focus is on the file structure itself, specifically the directory organization. I'm hoping this will illuminate how different components interact. I'll need to identify the key modules and their dependencies.\\n\\n\\n"}}],"created":1766066995,"id":"MQtEafqbFYTZsbwPwuCVoAg","usage":{"completion_tokens":0,"prompt_tokens":0,"prompt_tokens_details":{"cached_tokens":0},"total_tokens":0,"reasoning_tokens":0},"model":"gemini-2.5-pro"}`,
     `data: {"choices":[{"index":0,"delta":{"content":"Okay, here's the project layout.","role":"assistant","reasoning_opaque":"WHOd3dYFnxEBOsKUXjbX6c2rJa0fS214FHbsj+A3Q+i63SFo7H/92RsownAzyo0h2qEy3cOcrvAatsMx51eCKiMSqt4dYWZhd5YVSgF0CehkpDbWBP/SoRqLU1dhCmUJV/6b5uYFBOzKLBGNadyhI7T1gWFlXntwc6SNjH6DujnFPeVr+L8DdOoUJGJrw2aOfm9NtkXA6wZh9t7dt+831yIIImjD9MHczuXoXj8K7tyLpIJ9KlVXMhnO4IKSYNdKRtoHlGTmudAp5MgH/vLWb6oSsL+ZJl/OdF3WBOeanGhYNoByCRDSvR7anAR/9m5zf9yUax+u/nFg+gzmhFacnzZGtSmcvJ4/4HWKNtUkRASTKeN94DXB8j1ptB/i6ldaMAz2ZyU+sbjPWI8aI4fKJ2MuO01u3uE87xVwpWiM+0rahIzJsllI5edwOaOFtF4tnlCTQafbxHwCZR62uON2E+IjGzW80MzyfYrbLBJKS5zTeHCgPYQSNaKzPfpzkQvdwo3JUnJYcEHgGeKzkq5sbvS5qitCYI7Xue0V98S6/KnUSPnDQBjNnas2i6BqJV2vuCEU/Y3ucrlKVbuRIFCZXCyLzrsGeRLRKlrf5S/HDAQ04IOPQVQhBPvhX0nDjhZB"}}],"created":1766066995,"id":"MQtEafqbFYTZsbwPwuCVoAg","usage":{"completion_tokens":0,"prompt_tokens":0,"prompt_tokens_details":{"cached_tokens":0},"total_tokens":0,"reasoning_tokens":0},"model":"gemini-2.5-pro"}`,

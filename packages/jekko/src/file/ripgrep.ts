@@ -302,7 +302,7 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | ChildPro
 
           const filename = `ripgrep-${VERSION}-${config.platform}.${config.extension}`
           const url = `https://github.com/BurntSushi/ripgrep/releases/download/${VERSION}/${filename}`
-          const archive = path.join(Global.Path.bin, filename)
+          const archive = path.resolve(Global.Path.bin, filename)
 
           log.info("downloading ripgrep", { url })
           yield* fs.ensureDir(Global.Path.bin).pipe(Effect.orDie)

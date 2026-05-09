@@ -8,6 +8,25 @@ fast:
 	bun --cwd packages/jekko test test/keybind.test.ts test/ide/ide.test.ts
 	wait
 
+# Narrow lane for workspace typecheck-only feedback.
+typecheck-fast:
+	bun typecheck
+
+# Narrow lane for package builds that can reuse Turbo cache metadata.
+build-fast:
+	bun turbo build --filter=@jekko-ai/plugin --filter=@jekko-ai/sdk
+
+# Narrow lane for core package behavior checks.
+core-test:
+	bun --cwd packages/core test
+
+# Narrow lane for package-level typechecks.
+plugin-typecheck:
+	bun --cwd packages/plugin typecheck
+
+sdk-typecheck:
+	bun --cwd packages/sdk/js typecheck
+
 # Deterministic workspace build lane with caching.
 build:
 	bun turbo build
