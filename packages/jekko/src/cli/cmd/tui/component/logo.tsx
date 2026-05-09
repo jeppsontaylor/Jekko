@@ -59,11 +59,14 @@ function clamp01(n: number): number {
 
 function mixRGB(left: RGBA, right: RGBA, t: number): RGBA {
   const k = clamp01(t)
+  // RGBA.r/g/b return normalized 0-1 floats; scale to 0-255 for fromInts
+  const lr = left.r * 255, lg = left.g * 255, lb = left.b * 255
+  const rr = right.r * 255, rg = right.g * 255, rb = right.b * 255
 
   return RGBA.fromInts(
-    Math.round(left.r + (right.r - left.r) * k),
-    Math.round(left.g + (right.g - left.g) * k),
-    Math.round(left.b + (right.b - left.b) * k),
+    Math.round(lr + (rr - lr) * k),
+    Math.round(lg + (rg - lg) * k),
+    Math.round(lb + (rb - lb) * k),
     255,
   )
 }
