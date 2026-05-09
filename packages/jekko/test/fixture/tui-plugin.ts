@@ -8,8 +8,8 @@ type Count = {
   event_drop: number
   route_add: number
   route_drop: number
-  command_add: number
-  command_drop: number
+  cmd_add: number
+  cmd_drop: number
 }
 
 function themeCurrent(): HostPluginApi["theme"]["current"] {
@@ -194,10 +194,10 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
     },
     command: {
       register: () => {
-        if (count) count.command_add += 1
+        if (count) count.cmd_add += 1
         return () => {
           if (!count) return
-          count.command_drop += 1
+          count.cmd_drop += 1
         }
       },
       trigger: () => {},

@@ -5,7 +5,7 @@ import { setTimeout as sleep } from "node:timers/promises"
 import { Effect, Layer, Schedule } from "effect"
 import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
 import { SessionRetry } from "../../src/session/retry"
-import { MessageV2 } from "../../src/session/message-v2"
+import { MessageV2 } from "../../src/session/message"
 import { ProviderID } from "../../src/provider/schema"
 import { SessionID } from "../../src/session/schema"
 import { SessionStatus } from "../../src/session/status"
@@ -234,7 +234,7 @@ describe("session.retry.retryable", () => {
   })
 })
 
-describe("session.message-v2.fromError", () => {
+describe("session.message.fromError", () => {
   test.concurrent(
     "converts ECONNRESET socket errors to retryable APIError",
     async () => {

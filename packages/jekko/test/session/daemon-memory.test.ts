@@ -100,14 +100,14 @@ describe("daemon memory", () => {
     expect(store.entries[0].key).toBe("b")
   })
 
-  test("writeEntry overwrites in overwrite store", () => {
-    const stores = initializeStores(testMemory)
-    let store = stores.get("scratch")!
-    store = writeEntry(store, { key: "temp", value: "initial" }).store
-    store = writeEntry(store, { key: "temp", value: "new" }).store
-    expect(store.entryCount).toBe(1)
-    expect(store.entries[0].value).toBe("new")
-  })
+   test("writeEntry overwrites in overwrite store", () => {
+     const stores = initializeStores(testMemory)
+     let store = stores.get("scratch")!
+     store = writeEntry(store, { key: "test-key", value: "initial" }).store
+     store = writeEntry(store, { key: "test-key", value: "new" }).store
+     expect(store.entryCount).toBe(1)
+     expect(store.entries[0].value).toBe("new")
+   })
 
   test("readEntries returns all entries", () => {
     const stores = initializeStores(testMemory)

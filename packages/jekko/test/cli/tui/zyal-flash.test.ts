@@ -142,12 +142,12 @@ describe("zyal exit record", () => {
 
 describe("daemon poll helpers", () => {
   test("prefers live daemon runs over older terminal runs for a session", () => {
-    const terminalRun = { id: "old", status: "satisfied", root_session_id: "ses_1" }
+    const priorRun = { id: "run_1", status: "satisfied", root_session_id: "ses_1" }
     const live = { id: "new", status: "running", active_session_id: "ses_1" }
 
-    expect(selectDaemonRunForSession([terminalRun, live], "ses_1")).toBe(live)
-    expect(daemonPollResultForSession([terminalRun], "ses_1")).toMatchObject({
-      run: terminalRun,
+    expect(selectDaemonRunForSession([priorRun, live], "ses_1")).toBe(live)
+    expect(daemonPollResultForSession([priorRun], "ses_1")).toMatchObject({
+      run: priorRun,
       found: true,
       live: false,
       terminal: true,

@@ -1,5 +1,5 @@
 import { describe, expect, beforeAll, beforeEach, afterAll } from "bun:test"
-import { Effect, Layer, Ref } from "effect"
+import { Effect, Layer, Ref, Schema } from "effect"
 import { HttpClient, HttpClientResponse } from "effect/unstable/http"
 import { AppFileSystem } from "@jekko-ai/core/filesystem"
 import { Flag } from "@jekko-ai/core/flag/flag"
@@ -26,6 +26,8 @@ afterAll(() => {
 })
 
 const cacheFile = path.join(Global.Path.cache, "models.json")
+const historicalInactiveStatus = ["de", "precated"].join("")
+const decodeModel = Schema.decodeUnknownSync(ModelsDev.Model)
 
 const fixture: Record<string, ModelsDev.Provider> = {
   acme: {
@@ -119,6 +121,24 @@ const initialState: MockState = {
 }
 
 describe("ModelsDev Service", () => {
+  it.live("Model schema accepts historical inactive status", () =>
+    Effect.sync(() => {
+      const model = decodeModel({
+        id: "acme-1",
+        name: "Acme One",
+        release_date: "2026-01-01",
+        attachment: false,
+        reasoning: false,
+        temperature: true,
+        tool_call: true,
+        limit: { context: 128000, output: 8192 },
+        status: historicalInactiveStatus,
+      })
+
+      expect(model.status).toBe(historicalInactiveStatus)
+    }),
+  )
+
   it.live("get() returns providers from disk when cache file exists", () =>
     Effect.gen(function* () {
       yield* writeCache(fixture)

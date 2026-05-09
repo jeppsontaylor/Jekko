@@ -48,7 +48,7 @@ describe("daemon retry", () => {
     expect(policy.backoff).toBe("exponential")
   })
 
-  test("resolveRetryPolicy returns fallback when retry is undefined", () => {
+  test("resolveRetryPolicy uses built-in policy when retry is undefined", () => {
     const policy = resolveRetryPolicy(undefined, "shell_checks")
     expect(policy.max_attempts).toBe(1)
     expect(policy.backoff).toBe("none")

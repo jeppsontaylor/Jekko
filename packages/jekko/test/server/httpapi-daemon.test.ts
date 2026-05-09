@@ -31,7 +31,7 @@ describe("daemon http api", () => {
     expect(DaemonPaths.incubator).toBe("/daemon/:runID/incubator")
   })
 
-  test("registers daemon legacy routes in the historical Hono bridge", () => {
+  test("registers daemon historical routes in the historical Hono bridge", () => {
     const routes = legacyBridgeRoutes(true)
 
     expect(routes).toContain(`GET ${DaemonPaths.list}`)
@@ -43,7 +43,7 @@ describe("daemon http api", () => {
     expect(routes).toContain(`POST ${DaemonPaths.abort}`)
   })
 
-  test("registers daemon legacy routes for the stable Hono backend", () => {
+  test("registers daemon historical routes for the stable Hono backend", () => {
     const routes = legacyBridgeRoutes(false)
 
     expect(routes).toContain(`GET ${DaemonPaths.list}`)

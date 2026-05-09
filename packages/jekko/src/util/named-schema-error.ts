@@ -17,6 +17,11 @@ import { zod } from "@/util/effect-zod"
  *   - `new X({ ...data }, { cause })`
  */
 export function namedSchemaError<Tag extends string, Fields extends Schema.Struct.Fields>(tag: Tag, fields: Fields) {
+  // Validate fields is a proper schema definition before creating dataSchema
+  if (typeof fields !== 'object' || fields === null) {
+    throw new Error("fields must be a non-null object")
+  }
+
   // Wire shape matches the original NamedError output so the SDK stays stable.
   const dataSchema = Schema.Struct(fields)
   const wire = z
@@ -39,7 +44,7 @@ export function namedSchemaError<Tag extends string, Fields extends Schema.Struc
     static readonly EffectSchema = effectSchema
     static readonly tag = tag
     public static isInstance(input: unknown): input is NamedSchemaError {
-      return typeof input === "object" && input !== null && "name" in input && (input as { name: unknown }).name === tag
+      return wire.safeParse(input).success
     }
 
     public override readonly name: Tag = tag

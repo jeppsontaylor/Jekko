@@ -6,7 +6,7 @@ import { SessionPrompt } from "../../src/session/prompt"
 import * as Log from "@jekko-ai/core/util/log"
 import { Instance } from "../../src/project/instance"
 import { WithInstance } from "../../src/project/with-instance"
-import { MessageV2 } from "../../src/session/message-v2"
+import { MessageV2 } from "../../src/session/message"
 
 const projectRoot = path.join(__dirname, "../..")
 void Log.init({ print: false })
