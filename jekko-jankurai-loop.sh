@@ -10,7 +10,7 @@ export JEKKO_AUTO_ALLOW_READS="${JEKKO_AUTO_ALLOW_READS:-1}"
 
 PROMPT_FILE="${PROMPT_FILE:-./prompt.md}"
 REPO_DIR="${REPO_DIR:-$PWD}"
-LOG_DIR="${LOG_DIR:-./.jekko-loop-runs}"
+LOG_DIR="${LOG_DIR:-$HOME/.jekko-loop-runs}"
 SLEEP_SECONDS="${SLEEP_SECONDS:-5}"
 MAX_RUNS="${MAX_RUNS:-0}" # 0 = forever
 MODEL="${MODEL:-jnoccio/jnoccio-fusion}"

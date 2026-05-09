@@ -1,0 +1,191 @@
+# ZYAL v1 - minimal Jankurai fleet loop
+<<<ZYAL v1:daemon id=jankurai-min-loop>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+
+job:
+  name: "Jankurai min loop"
+  objective: |
+    UNATTENDED JOB — never ask the user anything; make best-effort decisions always.
+    Loop cold: run `jankurai audit . --mode advisory --json target/jankurai/
+    repo-score.json --md target/jankurai/repo-score.md`, inspect the audit
+    findings, and claim ONE issue at random from the eligible set. Fix it,
+    verify it, and repeat until the audit returns zero findings or the run
+    hits 1000 iterations, whichever comes first. If the random issue is already
+    in progress and appears stalled or unfinished, continue that work if it is
+    safe and local to do so. Keep state in files, not chat; never paste full
+    audit output. If a file or path appears missing, check git history first
+    (`git log -- <path>`, `git show <rev>:<path>`) before treating it as gone.
+    If an issue is blocked or ambiguous: skip it (Status: Blocked + reason)
+    and claim the next random one. If a proof fails because of unrelated
+    pre-existing dirty files, treat that as blocker work first: inspect the
+    dirty files, use git history for missing context, and repair the blocker if
+    it is safe and local before deciding the issue is truly blocked.
+
+    RANDOM SELECTION — REQUIRED. Multiple workers run this loop in parallel.
+    Never pick the first / top / lowest-id issue — that causes collisions.
+    Filter the current audit findings to eligible candidates first (apply the
+    safety filter from agent/JANKURAI_STANDARD.md), then pick exactly one at
+    random (e.g. `shuf -n 1` over the candidate list, or `awk` with `srand()`).
+    Re-randomise on every iteration; never bias toward the same issue across
+    iterations.
+
+    HARD CONTEXT RESET — REQUIRED. `context.strategy: hard` with
+    `hard_clear_every: 1` means every iteration starts with a wiped context
+    window. The ONLY state that survives is on disk: the repo files, the audit
+    outputs under `target/jankurai/`, and the `preserve:` keys (`objective`,
+    `current_task_id`). Never rely on prior-turn memory; re-read AGENTS.md,
+    JANKURAI_STANDARD.md, and the current audit output at the start of every
+    iteration.
+
+    TOOL SCHEMA — jekko camelCase, every call must match:
+    - bash:  {"command":"...","description":"..."}
+    - read:  {"filePath":"/absolute/path"}
+    - edit:  {"filePath":"...","oldString":"...","newString":"..."}
+    - write: {"filePath":"...","content":"..."}
+    - task:  {"description":"...","prompt":"...","subagent_type":"..."}
+
+    Boot: read {"filePath":"<repo-root>/AGENTS.md"} then
+          read {"filePath":"<repo-root>/agent/JANKURAI_STANDARD.md"}
+
+interaction:
+  user: none
+  on_ambiguity: best_effort
+  on_blocked: skip_and_next
+  system_inject: |
+    UNATTENDED ZYAL JOB (interaction.user=none).
+    Never ask the user a question. Never write "Should I…" or list choices.
+    When uncertain: make your best judgment and proceed.
+    When blocked: mark the issue blocked with the reason and move on.
+    If no pending audit work is available, switch to worktree cleanup: pick a
+    file from the dirty worktree or recent changes, especially anything
+    blocking tests or proofs. Study it carefully, verify it is correct, use
+    git history if context is missing, make the minimal fix if needed, commit
+    it, and push it.
+
+    RANDOM ISSUE SELECTION — REQUIRED. Multiple workers share this loop.
+    Never claim the first/top/lowest-id issue — that produces collisions.
+    Run the audit, filter the current findings to eligible candidates first
+    (safety filter from agent/JANKURAI_STANDARD.md), then pick one uniformly at
+    random (`shuf -n 1` or `awk 'BEGIN{srand()}{a[NR]=$0}END{print a[int(rand()*NR)+1]}'`).
+    If the selected issue is already in progress and looks stalled, crashed, or
+    abandoned, continue that work if the scope is safe and local.
+
+    HARD CONTEXT RESET — REQUIRED. Every iteration starts with a wiped context
+    window (`context.hard_clear_every: 1`). State lives on disk only — re-read
+    AGENTS.md, agent/JANKURAI_STANDARD.md, and the current audit output on
+    each iteration. Never depend on prior-turn memory.
+
+    TOOL SCHEMAS — jekko camelCase:
+    - bash:  {"command":"...","description":"..."}
+    - read:  {"filePath":"/abs/path"}
+    - edit:  {"filePath":"/abs/path","oldString":"...","newString":"..."}
+    - write: {"filePath":"/abs/path","content":"..."}
+    - task:  {"description":"...","prompt":"...","subagent_type":"..."}
+
+models:
+  profiles:
+    build: { provider: jnoccio, model: jnoccio-fusion }
+  routes:
+    implement: build
+  fallback:
+    on_rate_limit: build
+    cooldown: 10s
+
+agents:
+  workers:
+    - id: worker
+      count: 10
+      agent: build          # → models.profiles.build (jnoccio-fusion)
+      isolation: git_worktree
+
+fleet:
+  max_workers: 10
+  isolation: git_worktree
+  jnoccio:
+    enabled: true
+    base_url: "http://127.0.0.1:4317"
+    spawn_on_demand: true
+    max_instances: 10           # must equal workers count
+    register_workers: true
+    heartbeat_path: "/v1/jnoccio/agents/heartbeat"
+    heartbeat_interval: 30s
+    metrics_ws: "/v1/jnoccio/metrics/ws"
+  telemetry:
+    publish_to: jnoccio
+    headers:
+      x-jekko-run-id: "${run.id}"
+      x-jekko-session: "${session.id}"
+      x-jekko-process-role: worker
+
+loop:
+  policy: bounded
+  sleep: 5s
+  continue_on:
+    - assistant_stop
+    - max_steps
+    - compaction
+    - permission_denied
+    - checkpoint_failed
+    - error
+  pause_on: []
+  circuit_breaker:
+    max_consecutive_errors: 10
+    on_trip: continue
+
+budgets:
+  run:
+    iterations: 1000
+    on_exhaust: park
+
+context:
+  strategy: hard
+  hard_clear_every: 1
+  preserve: [objective, current_task_id]
+
+stop:
+  all:
+    - shell:
+        command: "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md >/dev/null 2>&1 && jq -e '(.findings // []) | length == 0' target/jankurai/repo-score.json"
+        timeout: 120s
+        assert: { exit_code: 0 }
+    - git_clean: { allow_untracked: false }
+
+tasks:
+  ledger: sqlite
+  # Discover current audit findings in RANDOM order so parallel workers never
+  # collide on the same top-of-list issue. The agent must still apply the
+  # safety filter from agent/JANKURAI_STANDARD.md before claiming. If the issue
+  # looks stalled or already in progress, take it over if it is safe to continue.
+  discover:
+    - command: "jq -r '.findings[]? | [.fingerprint, .summary] | @tsv' target/jankurai/repo-score.json 2>/dev/null | shuf | head -20"
+      timeout: 5s
+    - command: "git status --short | awk 'NF {print $2}' | shuf | head -20"
+      timeout: 5s
+
+checkpoint:
+  when: after_verified_change
+  noop_if_clean: true
+  verify:
+    - command: "just fast"
+      timeout: 300s
+      assert: { exit_code: 0 }
+  git:
+    add: ["."]
+    commit_message: "jankurai: verified task"
+    push: allow
+
+permissions:
+  shell: allow
+  edit: allow
+  git_commit: allow
+  git_push: allow
+  workers: allow
+  mcp: allow
+
+ui:
+  theme: jekko-gold
+  banner: forever
+<<<END_ZYAL id=jankurai-min-loop>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-min-loop

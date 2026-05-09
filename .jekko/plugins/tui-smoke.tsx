@@ -32,21 +32,21 @@ const bind = {
   host: "z",
 }
 
-const pick = (value: unknown, alternative_path: string) => {
-  if (typeof value !== "string") return alternative_path
-  if (!value.trim()) return alternative_path
-  return value
-}
+const pick = (value: unknown, alternative_path: string): string => {
+   if (typeof value !== "string") return alternative_path
+   if (!value.trim()) return alternative_path
+   return value
+ }
 
-const num = (value: unknown, alternative_path: number) => {
-  if (typeof value !== "number") return alternative_path
-  return value
-}
+const num = (value: unknown, alternative_path: number): number => {
+   if (typeof value !== "number") return alternative_path
+   return value
+ }
 
-const rec = (value: unknown) => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return
-  return Object.fromEntries(Object.entries(value))
-}
+const rec = (value: unknown): Record<string, unknown> | undefined => {
+   if (!value || typeof value !== "object" || Array.isArray(value)) return
+   return Object.fromEntries(Object.entries(value))
+ }
 
 type Cfg = {
   label: string
@@ -69,21 +69,21 @@ type State = {
   local: number
 }
 
-const cfg = (options: Record<string, unknown> | undefined) => {
-  return {
-    label: pick(options?.label, "smoke"),
-    route: pick(options?.route, "workspace-smoke"),
-    vignette: Math.max(0, num(options?.vignette, 0.35)),
-    keybinds: rec(options?.keybinds),
-  }
-}
+const cfg = (options: Record<string, unknown> | undefined): Cfg => {
+   return {
+     label: pick(options?.label, "smoke"),
+     route: pick(options?.route, "workspace-smoke"),
+     vignette: Math.max(0, num(options?.vignette, 0.35)),
+     keybinds: rec(options?.keybinds),
+   }
+ }
 
-const names = (input: Cfg) => {
-  return {
-    modal: `${input.route}.modal`,
-    screen: `${input.route}.screen`,
-  }
-}
+const names = (input: Cfg): Route => {
+   return {
+     modal: `${input.route}.modal`,
+     screen: `${input.route}.screen`,
+   }
+ }
 
 type Keys = TuiKeybindSet
 const ui = {
@@ -103,20 +103,20 @@ const ink = (map: Record<string, unknown>, name: string, alternative_path: strin
   return alternative_path
 }
 
-const look = (map: Record<string, unknown>) => {
-  return {
-    panel: ink(map, "backgroundPanel", ui.panel),
-    border: ink(map, "border", ui.border),
-    text: ink(map, "text", ui.text),
-    muted: ink(map, "textMuted", ui.muted),
-    accent: ink(map, "primary", ui.accent),
-    selected: ink(map, "selectedListItemText", ui.text),
-  }
-}
+const look = (map: Record<string, unknown>): Skin => {
+   return {
+     panel: ink(map, "backgroundPanel", ui.panel),
+     border: ink(map, "border", ui.border),
+     text: ink(map, "text", ui.text),
+     muted: ink(map, "textMuted", ui.muted),
+     accent: ink(map, "primary", ui.accent),
+     selected: ink(map, "selectedListItemText", ui.text),
+   }
+ }
 
-const tone = (api: TuiPluginApi) => {
-  return look(api.theme.current)
-}
+const tone = (api: TuiPluginApi): Skin => {
+   return look(api.theme.current)
+ }
 
 type Skin = {
   panel: Color
@@ -127,7 +127,7 @@ type Skin = {
   selected: Color
 }
 
-const Btn = (props: { txt: string; run: () => void; skin: Skin; on?: boolean }) => {
+const Btn = (props: { txt: string; run: () => void; skin: Skin; on?: boolean }): JSX.Element => {
   return (
     <box
       onMouseUp={() => {
@@ -142,30 +142,30 @@ const Btn = (props: { txt: string; run: () => void; skin: Skin; on?: boolean }) 
   )
 }
 
-const parse = (params: Record<string, unknown> | undefined) => {
-  const tab = typeof params?.tab === "number" ? params.tab : 0
-  const count = typeof params?.count === "number" ? params.count : 0
-  const source = typeof params?.source === "string" ? params.source : ""
-  const note = typeof params?.note === "string" ? params.note : ""
-  const selected = typeof params?.selected === "string" ? params.selected : ""
-  const local = typeof params?.local === "number" ? params.local : 0
-  return {
-    tab: Math.max(0, Math.min(tab, tabs.length - 1)),
-    count,
-    source,
-    note,
-    selected,
-    local: Math.max(0, local),
-  }
-}
+const parse = (params: Record<string, unknown> | undefined): State => {
+   const tab = typeof params?.tab === "number" ? params.tab : 0
+   const count = typeof params?.count === "number" ? params.count : 0
+   const source = typeof params?.source === "string" ? params.source : ""
+   const note = typeof params?.note === "string" ? params.note : ""
+   const selected = typeof params?.selected === "string" ? params.selected : ""
+   const local = typeof params?.local === "number" ? params.local : 0
+   return {
+     tab: Math.max(0, Math.min(tab, tabs.length - 1)),
+     count,
+     source,
+     note,
+     selected,
+     local: Math.max(0, local),
+   }
+ }
 
-const current = (api: TuiPluginApi, route: Route) => {
-  const value = api.route.current
-  const ok = Object.values(route).includes(value.name)
-  if (!ok) return parse(undefined)
-  if (!("params" in value)) return parse(undefined)
-  return parse(value.params)
-}
+const current = (api: TuiPluginApi, route: Route): State => {
+   const value = api.route.current
+   const ok = Object.values(route).includes(value.name)
+   if (!ok) return parse(undefined)
+   if (!("params" in value)) return parse(undefined)
+   return parse(value.params)
+ }
 
 const opts = [
   {
@@ -185,7 +185,7 @@ const opts = [
   },
 ]
 
-const host = (api: TuiPluginApi, input: Cfg, skin: Skin) => {
+const host = (api: TuiPluginApi, input: Cfg, skin: Skin): void => {
   api.ui.dialog.setSize("medium")
   api.ui.dialog.replace(() => (
     <box paddingBottom={1} paddingLeft={2} paddingRight={2} gap={1} flexDirection="column">
@@ -201,7 +201,7 @@ const host = (api: TuiPluginApi, input: Cfg, skin: Skin) => {
   ))
 }
 
-const warn = (api: TuiPluginApi, route: Route, value: State) => {
+const warn = (api: TuiPluginApi, route: Route, value: State): void => {
   const DialogAlert = api.ui.DialogAlert
   api.ui.dialog.setSize("medium")
   api.ui.dialog.replace(() => (
@@ -213,7 +213,7 @@ const warn = (api: TuiPluginApi, route: Route, value: State) => {
   ))
 }
 
-const check = (api: TuiPluginApi, route: Route, value: State) => {
+const check = (api: TuiPluginApi, route: Route, value: State): void => {
   const DialogConfirm = api.ui.DialogConfirm
   api.ui.dialog.setSize("medium")
   api.ui.dialog.replace(() => (
@@ -226,7 +226,7 @@ const check = (api: TuiPluginApi, route: Route, value: State) => {
   ))
 }
 
-const entry = (api: TuiPluginApi, route: Route, value: State) => {
+const entry = (api: TuiPluginApi, route: Route, value: State): void => {
   const DialogPrompt = api.ui.DialogPrompt
   api.ui.dialog.setSize("medium")
   api.ui.dialog.replace(() => (
@@ -245,7 +245,7 @@ const entry = (api: TuiPluginApi, route: Route, value: State) => {
   ))
 }
 
-const picker = (api: TuiPluginApi, route: Route, value: State) => {
+const picker = (api: TuiPluginApi, route: Route, value: State): void => {
   const DialogSelect = api.ui.DialogSelect
   api.ui.dialog.setSize("medium")
   api.ui.dialog.replace(() => (
@@ -273,29 +273,29 @@ const Screen = (props: {
   keys: Keys
   meta: TuiPluginMeta
   params?: Record<string, unknown>
-}) => {
+}): JSX.Element => {
   const dim = useTerminalDimensions()
   const value = parse(props.params)
   const skin = tone(props.api)
-  const set = (local: number, base?: State) => {
+   const set = (local: number, base?: State): void => {
     const next = base ?? current(props.api, props.route)
     props.api.route.navigate(props.route.screen, { ...next, local: Math.max(0, local), source: "local" })
   }
-  const push = (base?: State) => {
+  const push = (base?: State): void => {
     const next = base ?? current(props.api, props.route)
     set(next.local + 1, next)
   }
-  const open = () => {
+  const open = (): void => {
     const next = current(props.api, props.route)
     if (next.local > 0) return
     set(1, next)
   }
-  const pop = (base?: State) => {
+  const pop = (base?: State): void => {
     const next = base ?? current(props.api, props.route)
     const local = Math.max(0, next.local - 1)
     set(local, next)
   }
-  const show = () => {
+  const show = (): void => {
     setTimeout(() => {
       open()
     }, 0)
@@ -675,7 +675,7 @@ const home = (api: TuiPluginApi, input: Cfg) => ({
           />
         )
       },
-home_prompt_right(ctx, value) {
+home_prompt_right(ctx, value): JSX.Element {
       const skin = look(ctx.theme.current)
       const id = typeof value.workspace_id === 'string' && value.workspace_id.match(/^[a-z0-9]+$/) 
         ? value.workspace_id.slice(0, 8) 
@@ -686,7 +686,7 @@ home_prompt_right(ctx, value) {
         </text>
       )
     },
-    session_prompt_right(ctx, value) {
+    session_prompt_right(ctx, value): JSX.Element {
       const skin = look(ctx.theme.current)
       const sessionId = typeof value.session_id === 'string' && value.session_id.match(/^[a-z0-9]+$/) 
         ? value.session_id.slice(0, 8) 
@@ -697,7 +697,7 @@ home_prompt_right(ctx, value) {
         </text>
       )
     },
-    smoke_prompt_right(ctx, value) {
+    smoke_prompt_right(ctx, value): JSX.Element {
        const skin = look(ctx.theme.current)
        // Validate workspace_id is a string matching alphanumeric before slicing to avoid unvalidated input
        const id = typeof value.workspace_id === "string" && value.workspace_id.match(/^[a-z0-9]+$/) 
@@ -710,7 +710,7 @@ home_prompt_right(ctx, value) {
          </text>
        )
      },
-    home_bottom(ctx) {
+    home_bottom(ctx): JSX.Element {
       const skin = look(ctx.theme.current)
       const text = "extra content in the unified home bottom slot"
 
@@ -743,7 +743,7 @@ home_prompt_right(ctx, value) {
 const block = (input: Cfg, order: number, title: string, text: string): TuiSlotPlugin => ({
   order,
   slots: {
-    sidebar_content(ctx, value) {
+    sidebar_content(ctx, value): JSX.Element {
       const skin = look(ctx.theme.current)
 
       return (
@@ -782,11 +782,11 @@ const slot = (api: TuiPluginApi, input: Cfg): TuiSlotPlugin[] => [
   block(input, 650, "Smoke below", "renders below internal sidebar blocks"),
 ]
 
-const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
+const reg = (api: TuiPluginApi, input: Cfg, keys: Keys): void => {
   const route = names(input)
   api.command.register(() => [
     {
-      title: `${input.label} modal`,
+      title: "Smoke modal",
       value: "plugin.smoke.modal",
       keybind: keys.get("modal"),
       category: "Plugin",
@@ -798,7 +798,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} screen`,
+      title: "Smoke screen",
       value: "plugin.smoke.screen",
       keybind: keys.get("screen"),
       category: "Plugin",
@@ -810,7 +810,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} alert dialog`,
+      title: "Smoke alert dialog",
       value: "plugin.smoke.alert",
       category: "Plugin",
       slash: {
@@ -821,7 +821,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} confirm dialog`,
+      title: "Smoke confirm dialog",
       value: "plugin.smoke.confirm",
       category: "Plugin",
       slash: {
@@ -832,7 +832,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} prompt dialog`,
+      title: "Smoke prompt dialog",
       value: "plugin.smoke.prompt",
       category: "Plugin",
       slash: {
@@ -843,7 +843,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} select dialog`,
+      title: "Smoke select dialog",
       value: "plugin.smoke.select",
       category: "Plugin",
       slash: {
@@ -854,7 +854,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} host overlay`,
+      title: "Smoke host overlay",
       value: "plugin.smoke.host",
       category: "Plugin",
       slash: {
@@ -865,7 +865,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} go home`,
+      title: "Smoke go home",
       value: "plugin.smoke.home",
       category: "Plugin",
       enabled: api.route.current.name !== "home",
@@ -874,7 +874,7 @@ const reg = (api: TuiPluginApi, input: Cfg, keys: Keys) => {
       },
     },
     {
-      title: `${input.label} toast`,
+      title: "Smoke toast",
       value: "plugin.smoke.toast",
       category: "Plugin",
       onSelect: () => {

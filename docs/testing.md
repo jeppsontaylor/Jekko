@@ -15,13 +15,21 @@ Keep the proof receipt with the task entry:
 - touched files
 
 Release lanes must record both budget proof and launch-gate evidence before any paid or unbounded work starts.
+This is the canonical release gate: no paid or unbounded work starts without both receipts.
 
 If a proof lane is blocked, record the block in the task and do not mark the task complete.
 
+## Budget / stop-condition policy
+
+- Treat paid or external work as budgeted work.
+- Record `budget_usd`, `cost_usd`, `quota_requests`, `owner`, `stop_condition`, `approval_ref`, and `timestamp_utc` before starting a release lane.
+- If the lane would exceed the budget or requires unbounded paid work, stop and mark the task blocked instead of continuing.
+- Keep any `kill_switch` explicit and lane-scoped.
+
 ## Cost budget proof
 
-- Record `budget_usd`, `owner`, `quota_requests`, `stop_condition`, `kill_switch`, `approval_ref`, and `timestamp_utc` before starting a release lane.
-- Keep the proof short and machine-readable.
+- Record `budget_usd`, `cost_usd`, `owner`, `quota_requests`, `stop_condition`, `kill_switch`, `approval_ref`, and `timestamp_utc` before starting a release lane.
+- Keep the proof short, machine-readable, and attached to the release task before the lane begins.
 
 ```json
 {
@@ -143,49 +151,3 @@ Use this schema to preserve repairability and tell the next agent where to rerun
   - `proof_command`
   - `error_code`
   - `rerun_hint`
-
-
-## Budget / stop-condition policy
-
-- Treat paid or external work as budgeted work.
-- Record `budget_usd`, `cost_usd`, `quota_requests`, `owner`, `stop_condition`, `approval_ref`, and `timestamp_utc` before starting a release lane.
-- If the lane would exceed the budget or requires unbounded paid work, stop and mark the task blocked instead of continuing.
-- Keep any `kill_switch` explicit and lane-scoped.
-
-## Cost budget proof
-
-- Record `budget_usd`, `owner`, `quota_requests`, `stop_condition`, `kill_switch`, `approval_ref`, and `timestamp_utc` before starting a release lane.
-- Keep the proof short and machine-readable.
-
-```json
-{
-  "budget_usd": 12.5,
-  "cost_usd": 12.5,
-  "owner": "standard",
-  "stop_condition": "block paid or unbounded operations when remaining budget is below 5% or approval_ref is missing",
-  "quota_requests": 250,
-  "kill_switch": "COST_GUARD_OFF=true",
-  "approval_ref": "docs/testing.md#cost-budget-proof",
-  "timestamp_utc": "2026-05-07T00:00:00Z"
-}
-```
-
-- Do not start a release lane without this proof.
-
-## Launch gate evidence
-
-Record machine-readable launch-gate evidence before any release lane:
-
-```json
-{
-  "security": true,
-  "backups": true,
-  "monitoring": true,
-  "rollback": true,
-  "abuse_controls": true,
-  "proof_command": "just check",
-  "timestamp_utc": "2026-05-07T00:00:00Z"
-}
-```
-
-- Do not call a release lane complete without security, backups, monitoring, rollback, and abuse controls evidence.
