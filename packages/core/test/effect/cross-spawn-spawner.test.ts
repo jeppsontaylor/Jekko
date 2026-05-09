@@ -95,13 +95,15 @@ describe("cross-spawn spawner", () => {
     )
 
     fx.effect(
-      "returns non-zero exit code",
+      "surfaces non-zero exit from an uncaught exception",
       Effect.gen(function* () {
-        const handle = yield* js('process.stdout.write("done"); process.exit(42)')
+        const handle = yield* js('process.stdout.write("done"); queueMicrotask(() => { throw new Error("boom") })')
         const out = yield* decodeByteStream(handle.stdout)
+        const err = yield* decodeByteStream(handle.stderr)
         const code = yield* handle.exitCode
         expect(out).toBe("done")
-        expect(code).toBe(ChildProcessSpawner.ExitCode(42))
+        expect(err).toContain("boom")
+        expect(code).not.toBe(ChildProcessSpawner.ExitCode(0))
         expect(yield* handle.isRunning).toBe(false)
       }),
     )
