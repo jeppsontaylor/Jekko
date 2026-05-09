@@ -106,18 +106,35 @@ export function logo(pad?: string) {
 
   lines.push((pad || "") + paint(sep, BORDER))
 
-  brandWordmarkLines.forEach((raw, idx) => {
-    let prefix = ""
-    if (idx === 0) prefix = "     "
-    else if (idx === 1) prefix = "  ╭─╮"
-    else if (idx === 2) prefix = " ╭╯●╰"
-    else if (idx === 3) prefix = " ╰╮ ╭"
-    else prefix = "  ╰─╯"
+  // Per-letter segment boundaries within each wordmark line
+  const letterSegs = [
+    { start: 0, end: 14 },   // J + gap
+    { start: 15, end: 23 },  // E + gap
+    { start: 24, end: 31 },  // K1 + gap
+    { start: 32, end: 39 },  // K2 + gap
+    { start: 40, end: 48 },  // O + trailing
+  ]
+  // One color per letter: amber-gold → deep orange gradient
+  const letterRgb: readonly (readonly [number, number, number])[] = [
+    [255, 180, 40],   // J  – bright amber
+    [255, 160, 25],   // E  – warm gold
+    [255, 145, 15],   // K1 – deeper gold
+    [255, 130, 5],    // K2 – rich orange
+    [255, 115, 0],    // O  – deep orange
+  ]
 
-    const prefixColored = gradientText(prefix, ORANGE_2, CYAN)
-    const wordmark = gradientText(raw, ORANGE, ORANGE_2, true)
-    const padLen = w - 2 - prefix.length - raw.length
-    const inner = prefixColored + wordmark + " ".repeat(Math.max(0, padLen))
+  const wordmarkWidth = brandWordmarkLines[0]!.length
+  const wmLeftPad = Math.floor((w - 2 - wordmarkWidth) / 2)
+  const wmRightPad = w - 2 - wordmarkWidth - wmLeftPad
+
+  brandWordmarkLines.forEach((raw) => {
+    let inner = " ".repeat(wmLeftPad)
+    for (let s = 0; s < letterSegs.length; s++) {
+      const seg = letterSegs[s]!
+      const slice = raw.substring(seg.start, Math.min(seg.end, raw.length))
+      inner += paint(slice, letterRgb[s]!, { bold: true })
+    }
+    inner += " ".repeat(wmRightPad)
     lines.push((pad || "") + paint("│", ORANGE) + inner + paint("│", ORANGE))
   })
 

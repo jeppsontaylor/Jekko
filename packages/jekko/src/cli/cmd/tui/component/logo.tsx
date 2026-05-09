@@ -35,6 +35,26 @@ function GradientText(props: { text: string; left: RGBA; right: RGBA; bold?: boo
   )
 }
 
+// Each letter segment: [startCol, endCol] (inclusive) within the wordmark line.
+// J = cols  0-8,  E = cols 15-23,  K = cols 24-30,  K = cols 32-38,  O = cols 40-47
+// Gaps between letters are included in the preceding segment as trailing spaces.
+const letterSegments = [
+  { start: 0, end: 14 },   // J + gap
+  { start: 15, end: 23 },  // E + gap
+  { start: 24, end: 31 },  // K1 + gap
+  { start: 32, end: 39 },  // K2 + gap
+  { start: 40, end: 48 },  // O + trailing
+]
+
+// 5 colors: one per letter, gradient from amber-gold → orange
+const letterColors = [
+  RGBA.fromInts(255, 180, 40),   // J  – bright amber
+  RGBA.fromInts(255, 160, 25),   // E  – warm gold
+  RGBA.fromInts(255, 145, 15),   // K1 – deeper gold
+  RGBA.fromInts(255, 130, 5),    // K2 – rich orange
+  RGBA.fromInts(255, 115, 0),    // O  – deep orange
+]
+
 const brandWordmarkLines = [
   "   █████       ████████ ██   ██ ██   ██  ██████ ",
   "       ██      ██       ██  ██  ██  ██  ██    ██",
@@ -59,6 +79,11 @@ export function Logo(props: { shape?: any; ink?: RGBA; idle?: boolean } = {}) {
   const cmdPlain = "gecko:// safe autonomous coding ready"
   const cmdLeftSpaces = Math.floor((w - 2 - cmdPlain.length) / 2)
   const cmdRightSpaces = w - 2 - cmdPlain.length - cmdLeftSpaces
+
+  // The wordmark is 48 chars wide. Center it in the 72-char inner width.
+  const wordmarkWidth = brandWordmarkLines[0]!.length
+  const wmLeftPad = Math.floor((w - 2 - wordmarkWidth) / 2)
+  const wmRightPad = w - 2 - wordmarkWidth - wmLeftPad
 
   return (
     <box flexDirection="column">
@@ -95,27 +120,28 @@ export function Logo(props: { shape?: any; ink?: RGBA; idle?: boolean } = {}) {
         {sep}
       </text>
 
-      {/* Wordmark */}
+      {/* Wordmark — per-letter coloring, no gecko prefix */}
       <For each={brandWordmarkLines}>
-        {(raw, idx) => {
-          let prefix = ""
-          const i = idx()
-          if (i === 0) prefix = "     "
-          else if (i === 1) prefix = "  ╭─╮"
-          else if (i === 2) prefix = " ╭╯●╰"
-          else if (i === 3) prefix = " ╰╮ ╭"
-          else prefix = "  ╰─╯"
-
-          const padLen = w - 2 - prefix.length - raw.length
-
+        {(raw) => {
           return (
             <box flexDirection="row">
               <text fg={ORANGE} selectable={false}>
                 │
               </text>
-              <GradientText text={prefix} left={ORANGE_2} right={CYAN} />
-              <GradientText text={raw} left={ORANGE} right={ORANGE_2} bold />
-              <text selectable={false}>{" ".repeat(Math.max(0, padLen))}</text>
+              <text selectable={false}>{" ".repeat(wmLeftPad)}</text>
+              {/* Render each letter segment with its own solid color */}
+              <For each={letterSegments}>
+                {(seg, segIdx) => {
+                  const slice = raw.substring(seg.start, Math.min(seg.end, raw.length))
+                  const color = letterColors[segIdx()]!
+                  return (
+                    <text fg={color} attributes={TextAttributes.BOLD} selectable={false}>
+                      {slice}
+                    </text>
+                  )
+                }}
+              </For>
+              <text selectable={false}>{" ".repeat(wmRightPad)}</text>
               <text fg={ORANGE} selectable={false}>
                 │
               </text>
