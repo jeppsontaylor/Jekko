@@ -306,4 +306,4 @@ export const { use: useSyncV2, provider: SyncProviderV2 } = createSimpleContext(
   },
 })
 
-export { useSync, SyncProvider } from "./sync-legacy"
+export { useSync, SyncProvider } from "./sync-store"
