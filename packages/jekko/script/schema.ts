@@ -6,9 +6,16 @@ import { TuiConfig } from "../src/cli/cmd/tui/config/tui"
 
 const JsonSchemaObject = z.object({}).passthrough()
 
-function generate(schema: z.ZodType) {
-  const result = JsonSchemaObject.parse(
-    z.toJSONSchema(schema, {
+function isObjectSchema(schema: z.ZodType<unknown>): schema is z.ZodObject<any> {
+  return schema.type === "object"
+}
+
+function generate(schema: z.ZodType<unknown>) {
+  if (!isObjectSchema(schema)) {
+    throw new Error("generate expects an object schema")
+  }
+
+  const generated: unknown = z.toJSONSchema(schema, {
     io: "input", // Generate input shape (treats optional().default() as not required)
     /**
      * We'll use the `default` values of the field as the only value in `examples`.
@@ -42,8 +49,9 @@ function generate(schema: z.ZodType) {
           .trim()
       }
     },
-    }),
-  )
+  })
+
+  const result = JsonSchemaObject.parse(generated)
 
   // used for json lsps since config supports jsonc
   result.allowComments = true

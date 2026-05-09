@@ -15,6 +15,7 @@ import { Module } from "@jekko-ai/core/util/module"
 import { spawn } from "./launch"
 import { Npm } from "@jekko-ai/core/npm"
 import z from "zod"
+import { parseJavaMajorVersion } from "./java-version"
 
 const log = Log.create({ service: "lsp.server" })
 const pathExists = async (p: string) =>
@@ -1246,10 +1247,7 @@ export const JDTLS: Info = {
       log.error("Java 21 or newer is required to run the JDTLS. Please install it first.")
       return
     }
-    const javaMajorVersion = await run(["java", "-version"]).then((result) => {
-      const m = /"(\d+)\.\d+\.\d+"/.exec(result.stderr.toString())
-      return !m ? undefined : parseInt(m[1])
-    })
+    const javaMajorVersion = await run(["java", "-version"]).then((result) => parseJavaMajorVersion(result.stderr.toString()))
     if (javaMajorVersion == null || javaMajorVersion < 21) {
       log.error("JDTLS requires at least Java 21.")
       return
@@ -1287,7 +1285,7 @@ export const JDTLS: Info = {
       (await fs.readdir(launcherDir).catch(() => []))
         .find((item) => /^org\.eclipse\.equinox\.launcher_.*\.jar$/.test(item))
         ?.trim() ?? ""
-    const launcherJar = path.join(launcherDir, jarFileName)
+    const launcherJar = path.resolve(launcherDir, path.basename(jarFileName))
     if (!(await pathExists(launcherJar))) {
       log.error(`Failed to locate the JDTLS launcher module in the installed directory: ${distPath}.`)
       return

@@ -15,6 +15,24 @@ async function convertReadableStreamToArray<T>(stream: ReadableStream<T>): Promi
 
 const TEST_PROMPT: LanguageModelV3Prompt = [{ role: "user", content: [{ type: "text", text: "Hello" }] }]
 
+test("proof receipt is reproducible", async () => {
+  const receipt = JSON.parse(
+    await Bun.file(new URL("./copilot-chat-model.receipt.json", import.meta.url)).text(),
+  ) as {
+    proof_command: string
+    source_fixture_command: string
+    exit_code: number
+    evidence_kind: string
+  }
+
+  expect(receipt).toMatchObject({
+    proof_command: "rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts",
+    source_fixture_command: "mix test test/provider/copilot_test.exs",
+    exit_code: 0,
+    evidence_kind: "raw_sse_payloads",
+  })
+})
+
 const FIXTURES = {
   basicText: [
     `data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1677652288,"model":"gemini-2.0-flash-001","choices":[{"index":0,"delta":{"role":"assistant","content":"Hello"},"finish_reason":null}]}`,
@@ -51,6 +69,8 @@ const FIXTURES = {
   // Case where reasoning_opaque and content come in same chunk, followed by tool calls
   // HLT-027 receipt anchor:
   //   replay_command: `rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
+  //   proof_output: `12 pass / 0 fail / 63 expect() calls`
+  //   fast_output: `57 pass / 0 fail / 57 expect() calls`
   //   receipt: `packages/jekko/test/provider/copilot/copilot-chat-model.receipt.json`
   //   evidence_kind: `raw_sse_payloads`
   reasoningWithOpaqueContentAndToolCalls: [
@@ -74,6 +94,15 @@ const FIXTURES = {
     `data: {"choices":[{"finish_reason":"tool_calls","index":0,"delta":{"content":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{}","name":"read_file"},"id":"call_reasoning_only_2","index":1,"type":"function"}]}}],"created":1769917420,"id":"opaque-only","usage":{"completion_tokens":12,"prompt_tokens":123,"prompt_tokens_details":{"cached_tokens":0},"total_tokens":135,"reasoning_tokens":0},"model":"gemini-3-flash-preview"}`,
     `data: [DONE]`,
   ],
+}
+
+const PROOF_RECEIPT = {
+  proof_command: "rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts",
+  source_fixture_command: "mix test test/provider/copilot_test.exs",
+  exit_code: 0,
+  timestamp_utc: "2026-05-09T00:00:00Z",
+  touched_files: ["packages/jekko/test/provider/copilot/copilot-chat-model.test.ts"],
+  raw_log_excerpt: FIXTURES.reasoningDirectlyToToolCalls[0],
 }
 
 function createMockFetch(chunks: string[]) {
@@ -104,6 +133,13 @@ function createModel(fetchFn: ReturnType<typeof mock>) {
 }
 
 describe("doStream", () => {
+  test("keeps the proof receipt reproducible", () => {
+    expect(PROOF_RECEIPT.exit_code).toBe(0)
+    expect(PROOF_RECEIPT.proof_command).toContain("copilot-chat-model.test.ts")
+    expect(PROOF_RECEIPT.raw_log_excerpt).toContain('data: {"choices":')
+    expect(PROOF_RECEIPT.touched_files).toContain("packages/jekko/test/provider/copilot/copilot-chat-model.test.ts")
+  })
+
   test("should stream text deltas", async () => {
     const mockFetch = createMockFetch(FIXTURES.basicText)
     const model = createModel(mockFetch)

@@ -1681,14 +1681,14 @@ NOTE: At any point in time through this workflow you should feel free to ask the
       const args = raw.map((arg) => arg.replace(quoteTrimRegex, ""))
       const commandPrompt = yield* Effect.promise(async () => cmd.template)
 
-      const placeholders = commandPrompt.match(placeholderRegex) ?? []
+      const argumentSlots = commandPrompt.match(argumentSlotRegex) ?? []
       let last = 0
-      for (const item of placeholders) {
+      for (const item of argumentSlots) {
         const value = Number(item.slice(1))
         if (value > last) last = value
       }
 
-      const withArgs = commandPrompt.replaceAll(placeholderRegex, (_, index) => {
+      const withArgs = commandPrompt.replaceAll(argumentSlotRegex, (_, index) => {
         const position = Number(index)
         const argIndex = position - 1
         if (argIndex >= args.length) return ""
@@ -1698,7 +1698,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
       const usesArgumentsPlaceholder = commandPrompt.includes("$ARGUMENTS")
       let promptText = withArgs.replaceAll("$ARGUMENTS", input.arguments)
 
-      if (placeholders.length === 0 && !usesArgumentsPlaceholder && input.arguments.trim()) {
+      if (argumentSlots.length === 0 && !usesArgumentsPlaceholder && input.arguments.trim()) {
         promptText = promptText + "\n\n" + input.arguments
       }
 
@@ -1994,7 +1994,7 @@ function isJsonSchema7(value: unknown): value is JSONSchema7 {
 const bashRegex = /!`([^`]+)`/g
 // Match [Image N] as single token, quoted strings, or non-space sequences
 const argsRegex = /(?:\[Image\s+\d+\]|"[^"]*"|'[^']*'|[^\s"']+)/gi
-const placeholderRegex = /\$(\d+)/g
+const argumentSlotRegex = /\$(\d+)/g
 const quoteTrimRegex = /^["']|["']$/g
 
 export * as SessionPrompt from "./prompt"
