@@ -1,6 +1,6 @@
-import { createSignal, Show } from "solid-js"
+import { createSignal, onMount, Show } from "solid-js"
 import { useDialog } from "@tui/ui/dialog"
-import { DialogPrompt } from "@tui/ui/dialog-prompt"
+import { DialogSecretPrompt } from "@tui/ui/dialog-secret-prompt"
 import { useSDK } from "@tui/context/sdk"
 import { useSync } from "@tui/context/sync"
 import { useLocal } from "@tui/context/local"
@@ -14,61 +14,85 @@ export function DialogJnoccioUnlock() {
   const local = useLocal()
   const toast = useToast()
   const { theme } = useTheme()
-  const [busy, setBusy] = createSignal(false)
+  const [busy, setBusy] = createSignal(true)
   const [error, setError] = createSignal<string>()
-  const [value, setValue] = createSignal("")
+  const [checking, setChecking] = createSignal(true)
+
+  async function finalizeUnlocked(source: "cache" | "typed", secretSaved?: boolean) {
+    await sdk.client.instance.dispose()
+    await sync.bootstrap()
+    local.model.set({ providerID: "jnoccio", modelID: "jnoccio-fusion" }, { recent: true })
+    toast.show({
+      variant: "info",
+      message:
+        source === "cache"
+          ? "Jnoccio Fusion unlocked locally."
+          : secretSaved
+            ? "Jnoccio Fusion unlocked and cached your unlock secret."
+            : "Jnoccio Fusion unlocked.",
+    })
+    dialog.clear()
+  }
+
+  async function attempt(payload: { unlockSecret?: string; keyPath?: string }, source: "cache" | "typed" = "cache") {
+    setBusy(true)
+    setError(undefined)
+    try {
+      const result = await sdk.client.provider.unlock(payload)
+      if (result.error) {
+        setError("Unlock failed. Try again.")
+        return
+      }
+      const data = result.data
+      if (!data) {
+        setError("Unlock failed. Try again.")
+        return
+      }
+      if (data.status === "needs_secret") {
+        setError(data.message)
+        return
+      }
+      if (data.status === "error") {
+        setError(data.message)
+        return
+      }
+
+      await finalizeUnlocked(source, data.secretSaved)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unlock failed. Try again.")
+    } finally {
+      setBusy(false)
+      setChecking(false)
+    }
+  }
+
+  onMount(() => {
+    void attempt({})
+  })
 
   return (
-    <DialogPrompt
+    <DialogSecretPrompt
       title="Unlock Jnoccio Fusion"
-      default_value="Path to git-crypt key file"
-      value={value()}
-      busy={busy()}
-      busyText="Testing key locally..."
       description={() => (
         <box gap={1}>
-          <text fg={theme.textMuted}>Unlock with your Jnoccio key file.</text>
+          <Show when={checking()}>
+            <text fg={theme.textMuted}>Checking local unlock secret...</text>
+          </Show>
+          <text fg={theme.textMuted}>
+            Paste the 128-character unlock secret to unlock Jnoccio Fusion and cache it locally.
+          </text>
           <Show when={error()}>
             <text fg={theme.error}>{error()}</text>
           </Show>
         </box>
       )}
-      onConfirm={async (keyPath) => {
-        const next = keyPath.trim()
-        if (!next) {
-          setError("Choose a local key file.")
-          return
-        }
-        setValue(next)
-        setError(undefined)
-        setBusy(true)
-        try {
-          const result = await sdk.client.provider.unlock({ keyPath: next })
-          const data = result.data
-          if (result.error || !data) {
-            setError("Unlock failed. Try the key file again.")
-            return
-          }
-          if (data.status !== "unlocked") {
-            setError(data.message)
-            return
-          }
-
-          await sdk.client.instance.dispose()
-          await sync.bootstrap()
-          local.model.set({ providerID: "jnoccio", modelID: "jnoccio-fusion" }, { recent: true })
-          toast.show({
-            variant: "info",
-            message: data.envCreated
-              ? "Jnoccio Fusion unlocked. .env.jnoccio was created."
-              : "Jnoccio Fusion unlocked. Existing .env.jnoccio was left unchanged.",
-          })
-          dialog.clear()
-        } catch (err) {
-          setError(err instanceof Error ? err.message : "Unlock failed. Try the key file again.")
-        } finally {
-          setBusy(false)
-        }
+      busy={busy() && !checking()}
+      busyText="Unlocking Jnoccio Fusion..."
+      error={error()}
+      onCancel={() => dialog.clear()}
+      onConfirm={(value) => {
+        const next = value.trim()
+        void attempt({ unlockSecret: next }, "typed")
       }}
     />
   )
