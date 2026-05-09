@@ -7,15 +7,15 @@
 - Target stack ID: `rust-ts-vite-react-postgres-bounded-python`
 - Target stack: `Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service`
 - Repo: `.`
-- Run ID: `1778367096`
-- Started at: `1778367096`
-- Elapsed: `25530` ms
+- Run ID: `1778367256`
+- Started at: `1778367256`
+- Elapsed: `25858` ms
 - Scope: `full`
-- Raw score: `77`
+- Raw score: `79`
 - Final score: `60`
 - Decision: `advisory`
 - Minimum score: `85`
-- Caps applied: `fallback-soup-in-product-code, severe-duplication-in-product-code, missing-rendered-ux-qa-lane, secret-like-content-detected, input-boundary-gap, sql-bad-behavior`
+- Caps applied: `fallback-soup-in-product-code, severe-duplication-in-product-code, secret-like-content-detected, input-boundary-gap, sql-bad-behavior`
 
 ## Hard Rule Caps
 
@@ -40,7 +40,7 @@
 | `generated-zone-mutation-risk` | 76 | no |
 | `direct-db-access-from-wrong-layer` | 66 | no |
 | `missing-web-e2e-lane` | 82 | no |
-| `missing-rendered-ux-qa-lane` | 84 | yes |
+| `missing-rendered-ux-qa-lane` | 84 | no |
 | `prompt-injection-risk` | 78 | no |
 | `overbroad-agent-agency` | 65 | no |
 | `secret-like-content-detected` | 60 | yes |
@@ -72,7 +72,7 @@
 | --- | ---: | ---: | ---: | --- |
 | Ownership and navigation surface | 13 | 100 | 13.00 | root `AGENTS.md` present; `CODEOWNERS` present |
 | Contract and boundary integrity | 13 | 98 | 12.74 | contract surface found; generated contract artifacts found |
-| Proof lanes and test routing | 12 | 88 | 10.56 | one-command setup/validation lane found; deterministic fast lane found |
+| Proof lanes and test routing | 12 | 100 | 12.00 | one-command setup/validation lane found; deterministic fast lane found |
 | Security and supply-chain posture | 12 | 86 | 10.32 | lockfile present; secret or dependency scan tooling found |
 | Code shape and semantic surface | 12 | 0 | 0.00 | largest authored code file: packages/jekko/test/session/compaction.test.ts (2194 LOC); code file exceeds 500 LOC |
 | Data truth and workflow safety | 8 | 95 | 7.60 | database surface present; structured db boundary manifest present |
@@ -102,8 +102,8 @@
 ## Rendered UX QA
 
 - Web surface: `true`
-- Layered UX lane: `false`
-- Missing: `design token discipline`
+- Layered UX lane: `true`
+- Missing: `none`
 
 ## Tool Adoption
 
@@ -169,7 +169,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:a256a7390d4b91a5b0a95d6f092e524c8f4080f27fe2b62e28cf0801343d0fef`
    Evidence: build acceleration markers found, targeted test/build commands found, locked dependency graph present, CI cache hint found
-3. `medium` `proof` `agent/repo-score.json:1434`
+3. `medium` `proof` `agent/repo-score.json:1371`
    Rule: `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP`
    Check: `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP:proof` `soft` confidence `0.88`
    Route: TLR `Repair`, lane `audit`, owner `workspace`
@@ -178,19 +178,9 @@ No audited runtime boundary reclassifications declared.
    Reason: proof and review claims need receipts
    Fix: attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries
    Rerun: `just score`
-   Fingerprint: `sha256:a0cb4a57f721a1d4c1dda3b3dac435c23420157fb150524f1a5b538aa9aaf94d`
-   Evidence: "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"delta: \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"Looks good\\\\\\\\\\\\\\\\
-4. `high` `ux-qa` `apps/web`
-   Rule: `HLT-013-RENDERED-UX-GAP`
-   Check: `HLT-013-RENDERED-UX-GAP:ux-qa` `hard` confidence `0.88`
-   Route: TLR `Verification and rendered UX`, lane `web`, owner `apps`
-   Docs: `docs/testing.md`
-   Reason: web surface lacks layered rendered UX QA evidence
-   Fix: add Storybook state coverage, Playwright screenshots, visual review or `@jankurai/ux-qa`, accessibility scans, CLS checks, generated mocks, and design tokens
-   Rerun: `just ux-qa`
-   Fingerprint: `sha256:571d35c2e730a393b782bac14825b197c0543920bb21967079d264ac602ea5b1`
-   Evidence: rendered UX QA lane missing
-5. `high` `data` `db/migrations/20260413175956_chief_energizer/migration.sql:12`
+   Fingerprint: `sha256:bf32a9bdb185b674c1d008c82b3ccf44cc340fffa0f91b3886e5c38c1126e634`
+   Evidence: "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"delta: \\\\\\\\\\\\\\\\\\\\\\\\\\
+4. `high` `data` `db/migrations/20260413175956_chief_energizer/migration.sql:12`
    Rule: `HLT-030-SQL-BAD-BEHAVIOR`
    Check: `HLT-030-SQL-BAD-BEHAVIOR:data` `hard` confidence `0.95`
    Route: TLR `Contracts/data`, lane `db`, owner `data`
@@ -201,7 +191,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:4ecf9093e7808de6cbc5263829297ad9d1619855c4f64ffb33c3d43216048fbd`
    Evidence: detector=sql.migration.destructive-no-proof, proof-window=nearby-proof, snippet=CONSTRAINT `fk_session_entry_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
-6. `high` `vibe` `jnoccio-fusion/src/fusion.rs:1`
+5. `high` `vibe` `jnoccio-fusion/src/fusion.rs:1`
    Check: `HLT-000-SCORE-DIMENSION:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `workspace`
    Reason: duplicated product code block detected
@@ -209,7 +199,7 @@ No audited runtime boundary reclassifications declared.
    Rerun: `just fast`
    Fingerprint: `sha256:78c7374c9415f4837d9a4f8ec8f516e425c1fc722c1af1ad7e4dddf1a6ecb269`
    Evidence: duplicate block also appears at jnoccio-fusion/src/fusion.rs:1
-7. `high` `vibe` `jnoccio-fusion/src/fusion.rs:617`
+6. `high` `vibe` `jnoccio-fusion/src/fusion.rs:848`
    Rule: `HLT-001-DEAD-MARKER`
    Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
    Route: TLR `Entropy`, lane `fast`, owner `workspace`
@@ -217,9 +207,9 @@ No audited runtime boundary reclassifications declared.
    Reason: fallback soup detected in product code
    Fix: collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance
    Rerun: `just fast`
-   Fingerprint: `sha256:8e82a967cbcd9b5afb370e2c690674c2505efdbdcf5c68bf07327975171bef32`
-   Evidence: jnoccio-fusion/src/fusion.rs:617 .or_else(|| draft_candidates.first().cloned())
-8. `critical` `security` `packages/jekko/src/agent-script/examples.ts:790`
+   Fingerprint: `sha256:95ecf274cdc0d96dac2810c767fcf29657b65b4af51303e8092d202e3a6d50ba`
+   Evidence: jnoccio-fusion/src/fusion.rs:848 .unwrap_or_else(|| "none".to_string())
+7. `critical` `security` `packages/jekko/test/auth/auth.test.ts:76`
    Rule: `HLT-010-SECRET-SPRAWL`
    Check: `HLT-010-SECRET-SPRAWL:security` `hard` confidence `0.95`
    Route: TLR `Security, secrets, agency`, lane `security`, owner `tools`
@@ -227,9 +217,9 @@ No audited runtime boundary reclassifications declared.
    Reason: secret-like value or credential material appears in repository text
    Fix: remove and rotate the credential, add local and CI secret scanning, and scan transcripts/artifacts/MCP config for related exposure
    Rerun: `just security`
-   Fingerprint: `sha256:593b2d0acebca8b2935725bb75279fea593c66099968530998fac59d4a51909a`
-   Evidence: - "AKIA*"
-9. `high` `security` `packages/jekko/test/fixture/db.ts:24`
+   Fingerprint: `sha256:74fa3d67989b9ba25abf8a7fee90daf8165735c28f2b76844ea61b86241128cd`
+   Evidence: key: "sk-test",
+8. `high` `security` `packages/jekko/test/fixture/db.ts:24`
    Rule: `HLT-023-INPUT-BOUNDARY-GAP`
    Check: `HLT-023-INPUT-BOUNDARY-GAP:security` `hard` confidence `0.88`
    Route: TLR `Security, secrets, agency`, lane `security`, owner `tools`
@@ -255,15 +245,13 @@ No audited runtime boundary reclassifications declared.
    Route: `Verification`/`fast`
 3. `medium` `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP` `agent/repo-score.json` - attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries
    Route: `Repair`/`audit`
-4. `critical` `HLT-010-SECRET-SPRAWL` `packages/jekko/src/agent-script/examples.ts` - remove and rotate the credential, add local and CI secret scanning, and scan transcripts/artifacts/MCP config for related exposure
+4. `critical` `HLT-010-SECRET-SPRAWL` `packages/jekko/test/auth/auth.test.ts` - remove and rotate the credential, add local and CI secret scanning, and scan transcripts/artifacts/MCP config for related exposure
    Route: `Security, secrets, agency`/`security`
-5. `high` `HLT-013-RENDERED-UX-GAP` `apps/web` - add Storybook state coverage, Playwright screenshots, visual review or `@jankurai/ux-qa`, accessibility scans, CLS checks, generated mocks, and design tokens
-   Route: `Verification and rendered UX`/`web`
-6. `high` `jnoccio-fusion/src/fusion.rs` - extract the duplicated behavior behind one named boundary and add focused tests before changing behavior
+5. `high` `jnoccio-fusion/src/fusion.rs` - extract the duplicated behavior behind one named boundary and add focused tests before changing behavior
    Route: `Entropy`/`fast`
-7. `high` `HLT-001-DEAD-MARKER` `jnoccio-fusion/src/fusion.rs` - collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance
+6. `high` `HLT-001-DEAD-MARKER` `jnoccio-fusion/src/fusion.rs` - collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance
    Route: `Entropy`/`fast`
-8. `high` `HLT-023-INPUT-BOUNDARY-GAP` `packages/jekko/test/fixture/db.ts` - replace unsafe sinks with typed schemas, parameterized APIs, allowlists, or sandboxed execution plus negative tests
+7. `high` `HLT-023-INPUT-BOUNDARY-GAP` `packages/jekko/test/fixture/db.ts` - replace unsafe sinks with typed schemas, parameterized APIs, allowlists, or sandboxed execution plus negative tests
    Route: `Security, secrets, agency`/`security`
-9. `medium` `HLT-001-DEAD-MARKER` `.` - split large or ambiguous authored code into smaller semantic modules with focused tests
+8. `medium` `HLT-001-DEAD-MARKER` `.` - split large or ambiguous authored code into smaller semantic modules with focused tests
    Route: `Entropy`/`fast`

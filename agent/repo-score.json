@@ -1,6 +1,6 @@
 {
-  "report_fingerprint": "sha256:db6e3807743aa23b99d1dbdea6c10ff95129164ef573216f141feaefa4a7d7da",
-  "input_fingerprint": "sha256:81d22d41771380c1d81d05ceb98a5be869d69729f00292b6f2b57dbe06a4624f",
+  "report_fingerprint": "sha256:e244af66c7a3a326dd750a591442ce4dd33e9f6fc1d4cba6243b88e6aa889b8d",
+  "input_fingerprint": "sha256:aea086a111e1384d8580d7c13f54ef73ad22bdeab3ff2251e9a4d847e33a9aad",
   "policy_fingerprint": "sha256:1344c6682471353eb10a07a55a14e5fdd73676dd9aafd00b9f60dffd43c8b443",
   "manifest_fingerprints": {
     "owner_map": "sha256:48f806efcabeb1db4c078ac5d3f120c0236219502aba2ae2aaedb4cb8719bbac",
@@ -11,7 +11,7 @@
     "standard_version": "sha256:d3e612ca82dbc3221910d7bcbe8837827cd36256841279e962066c701a1c7954"
   },
   "dirty_worktree": true,
-  "generated_at": "1778367096",
+  "generated_at": "1778367256",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -24,28 +24,27 @@
   "observed_conformance_level": "HL2",
   "conformance_decision": "block",
   "conformance_blockers": [
-    "HLT-013-RENDERED-UX-GAP on apps/web",
     "HLT-030-SQL-BAD-BEHAVIOR on db/migrations/20260413175956_chief_energizer/migration.sql",
     "HLT-000-SCORE-DIMENSION:vibe on jnoccio-fusion/src/fusion.rs",
     "HLT-001-DEAD-MARKER on jnoccio-fusion/src/fusion.rs",
-    "HLT-010-SECRET-SPRAWL on packages/jekko/src/agent-script/examples.ts",
+    "HLT-010-SECRET-SPRAWL on packages/jekko/test/auth/auth.test.ts",
     "HLT-023-INPUT-BOUNDARY-GAP on packages/jekko/test/fixture/db.ts"
   ],
   "repo": ".",
-  "run_id": "1778367096",
-  "started_at": "1778367096",
-  "elapsed_ms": 25530,
+  "run_id": "1778367256",
+  "started_at": "1778367256",
+  "elapsed_ms": 25858,
   "scope": {
     "mode": "full",
     "paths": []
   },
   "score": 60,
-  "raw_score": 77,
+  "raw_score": 79,
   "decision": {
     "status": "advisory",
     "minimum_score": 85,
     "passed": true,
-    "hard_findings": 6,
+    "hard_findings": 5,
     "soft_findings": 3,
     "ratchet": {
       "baseline_score": 60,
@@ -61,7 +60,7 @@
     }
   },
   "git": {
-    "head": "428050aaf",
+    "head": "404ea778b",
     "base": null,
     "changed_files": 0,
     "mode": "full",
@@ -88,7 +87,6 @@
   "caps_applied": [
     "fallback-soup-in-product-code",
     "severe-duplication-in-product-code",
-    "missing-rendered-ux-qa-lane",
     "secret-like-content-detected",
     "input-boundary-gap",
     "sql-bad-behavior"
@@ -325,8 +323,8 @@
     {
       "name": "Proof lanes and test routing",
       "weight": 12,
-      "score": 88,
-      "weighted_points": 10.56,
+      "score": 100,
+      "weighted_points": 12.0,
       "evidence": [
         "one-command setup/validation lane found",
         "deterministic fast lane found",
@@ -334,12 +332,12 @@
         "test/proof routing map present",
         "jankurai audit lane found in CI",
         "web e2e lane present or no web surface",
+        "rendered UX QA lane present or no web surface",
         "DOM geometry UX QA runtime found",
         "Rust property/integration tests present or no Rust surface",
         "proofbind artifact found: surfaces=15 missing=15 high_or_critical_missing=7 verdict=review"
       ],
       "notes": [
-        "web surface lacks layered rendered UX QA",
         "proofbind reports 15 unresolved obligation(s)",
         "proofbind reports 7 missing high/critical semantic proof obligation(s)"
       ]
@@ -483,10 +481,8 @@
   ],
   "ux_qa": {
     "web_surface": true,
-    "has_rendered_ux_lane": false,
-    "missing_categories": [
-      "design token discipline"
-    ],
+    "has_rendered_ux_lane": true,
+    "missing_categories": [],
     "evidence": {
       "accessibility": [
         "agent/repo-score.json",
@@ -502,11 +498,18 @@
         "crates/tuiwright-jekko-unlock/tests/jekko_unlock_pty.rs",
         "crates/tuiwright-jekko-unlock/tests/zyal_paste_perf.rs"
       ],
-      "design_tokens": [],
+      "design_tokens": [
+        "agent/repo-score.json",
+        "agent/repo-score.md"
+      ],
       "geometry_runtime": [
+        "agent/repo-score.json",
+        "agent/repo-score.md",
         "agent/ux-qa.toml"
       ],
       "layout_stability": [
+        "agent/repo-score.json",
+        "agent/repo-score.md",
         "jnoccio-fusion/web/package-lock.json",
         "packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx"
       ],
@@ -518,11 +521,13 @@
       "storybook": [
         ".gitignore",
         "agent/repo-score.json",
+        "agent/repo-score.md",
         "agent/test-map.json",
-        "packages/jekko/src/project/vcs.ts",
-        "packages/jekko/test/fixture/lsp/fake-lsp-server.ts"
+        "packages/jekko/src/project/vcs.ts"
       ],
       "visual_review": [
+        "agent/repo-score.json",
+        "agent/repo-score.md",
         "packages/jekko/src/cli/cmd/tui/component/logo.tsx"
       ]
     }
@@ -1368,43 +1373,22 @@
       "problem": "human review or proof claim lacks reproducible evidence",
       "agent_fix": "attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries",
       "evidence": [
-        "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"delta: \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"Looks good\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
+        "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"delta: \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
       ],
       "check_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP:proof",
       "hardness": "soft",
       "confidence": 0.88,
       "evidence_kind": "receipt",
       "rerun_command": "just score",
-      "fingerprint": "sha256:a0cb4a57f721a1d4c1dda3b3dac435c23420157fb150524f1a5b538aa9aaf94d",
+      "fingerprint": "sha256:bf32a9bdb185b674c1d008c82b3ccf44cc340fffa0f91b3886e5c38c1126e634",
       "rule_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP",
       "tlr": "Repair",
       "lane": "audit",
       "docs_url": "docs/testing.md",
       "owner": "workspace",
-      "line": 1434,
+      "line": 1371,
       "matched_term": "review evidence",
       "reason": "proof and review claims need receipts"
-    },
-    {
-      "severity": "high",
-      "category": "ux-qa",
-      "path": "apps/web",
-      "problem": "web surface lacks layered rendered UX QA evidence",
-      "agent_fix": "add Storybook state coverage, Playwright screenshots, visual review or `@jankurai/ux-qa`, accessibility scans, CLS checks, generated mocks, and design tokens",
-      "evidence": [
-        "rendered UX QA lane missing"
-      ],
-      "check_id": "HLT-013-RENDERED-UX-GAP:ux-qa",
-      "hardness": "hard",
-      "confidence": 0.88,
-      "evidence_kind": "ux-proof",
-      "rerun_command": "just ux-qa",
-      "fingerprint": "sha256:571d35c2e730a393b782bac14825b197c0543920bb21967079d264ac602ea5b1",
-      "rule_id": "HLT-013-RENDERED-UX-GAP",
-      "tlr": "Verification and rendered UX",
-      "lane": "web",
-      "docs_url": "docs/testing.md",
-      "owner": "apps"
     },
     {
       "severity": "high",
@@ -1459,42 +1443,42 @@
       "problem": "fallback soup detected in product code",
       "agent_fix": "collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance",
       "evidence": [
-        "jnoccio-fusion/src/fusion.rs:617 .or_else(|| draft_candidates.first().cloned())"
+        "jnoccio-fusion/src/fusion.rs:848 .unwrap_or_else(|| \"none\".to_string())"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
       "hardness": "hard",
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:8e82a967cbcd9b5afb370e2c690674c2505efdbdcf5c68bf07327975171bef32",
+      "fingerprint": "sha256:95ecf274cdc0d96dac2810c767fcf29657b65b4af51303e8092d202e3a6d50ba",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
       "owner": "workspace",
-      "line": 617
+      "line": 848
     },
     {
       "severity": "critical",
       "category": "security",
-      "path": "packages/jekko/src/agent-script/examples.ts",
+      "path": "packages/jekko/test/auth/auth.test.ts",
       "problem": "secret-like value or credential material appears in repository text",
       "agent_fix": "remove and rotate the credential, add local and CI secret scanning, and scan transcripts/artifacts/MCP config for related exposure",
       "evidence": [
-        "- \"AKIA*\""
+        "key: \"sk-test\","
       ],
       "check_id": "HLT-010-SECRET-SPRAWL:security",
       "hardness": "hard",
       "confidence": 0.95,
       "evidence_kind": "repository-scan",
       "rerun_command": "just security",
-      "fingerprint": "sha256:593b2d0acebca8b2935725bb75279fea593c66099968530998fac59d4a51909a",
+      "fingerprint": "sha256:74fa3d67989b9ba25abf8a7fee90daf8165735c28f2b76844ea61b86241128cd",
       "rule_id": "HLT-010-SECRET-SPRAWL",
       "tlr": "Security, secrets, agency",
       "lane": "security",
       "docs_url": "docs/audit-rubric.md#top-level-risk-mapping",
       "owner": "tools",
-      "line": 790
+      "line": 76
     },
     {
       "severity": "high",
@@ -1553,7 +1537,7 @@
       "why": "human review or proof claim lacks reproducible evidence"
     },
     {
-      "path": "packages/jekko/src/agent-script/examples.ts",
+      "path": "packages/jekko/test/auth/auth.test.ts",
       "priority": "critical",
       "rule_id": "HLT-010-SECRET-SPRAWL",
       "tlr": "Security, secrets, agency",
@@ -1561,16 +1545,6 @@
       "owner": "tools",
       "task": "remove and rotate the credential, add local and CI secret scanning, and scan transcripts/artifacts/MCP config for related exposure",
       "why": "secret-like value or credential material appears in repository text"
-    },
-    {
-      "path": "apps/web",
-      "priority": "high",
-      "rule_id": "HLT-013-RENDERED-UX-GAP",
-      "tlr": "Verification and rendered UX",
-      "lane": "web",
-      "owner": "apps",
-      "task": "add Storybook state coverage, Playwright screenshots, visual review or `@jankurai/ux-qa`, accessibility scans, CLS checks, generated mocks, and design tokens",
-      "why": "web surface lacks layered rendered UX QA evidence"
     },
     {
       "path": "jnoccio-fusion/src/fusion.rs",
