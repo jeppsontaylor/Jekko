@@ -1,7 +1,7 @@
 import type { Argv } from "yargs"
 import path from "path"
 import { pathToFileURL } from "url"
-import { Effect } from "effect"
+import { Effect, Schema } from "effect"
 import { UI } from "../ui"
 import { effectCmd } from "../effect-cmd"
 import { Flag } from "@jekko-ai/core/flag/flag"
@@ -13,32 +13,79 @@ import { Server } from "../../server/server"
 import { Provider } from "@/provider/provider"
 import { Agent } from "../../agent/agent"
 import { Permission } from "../../permission"
-import { Tool } from "@/tool/tool"
-import { GlobTool } from "../../tool/glob"
-import { GrepTool } from "../../tool/grep"
-import { ReadTool } from "../../tool/read"
-import { WebFetchTool } from "../../tool/webfetch"
-import { EditTool } from "../../tool/edit"
-import { WriteTool } from "../../tool/write"
-import { WebSearchTool } from "../../tool/websearch"
-import { TaskTool } from "../../tool/task"
-import { SkillTool } from "../../tool/skill"
-import { ShellTool } from "../../tool/shell"
 import { ShellID } from "../../tool/shell/id"
 import { PendingWriteTool } from "../../tool/pending"
 import { Locale } from "@/util/locale"
+import { Parameters as GlobParameters } from "../../tool/glob"
+import { Parameters as GrepParameters } from "../../tool/grep"
+import { Parameters as ReadParameters } from "../../tool/read"
+import { Parameters as WebFetchParameters } from "../../tool/webfetch"
+import { Parameters as EditParameters } from "../../tool/edit"
+import { Parameters as WriteParameters } from "../../tool/write"
+import { Parameters as WebSearchParameters } from "../../tool/websearch"
+import { Parameters as TaskParameters } from "../../tool/task"
+import { Parameters as SkillParameters } from "../../tool/skill"
+import { Parameters as ShellParameters } from "../../tool/shell"
+import { Parameters as PendingParameters } from "../../tool/pending"
 
-type ToolProps<T> = {
-  input: Tool.InferParameters<T>
-  metadata: Tool.InferMetadata<T>
+type ToolProps<Input, Metadata extends object = never> = {
+  input: Input
+  metadata?: Metadata
   part: ToolPart
 }
 
-function props<T>(part: ToolPart): ToolProps<T> {
+type GlobMetadata = {
+  count?: number
+  truncated?: boolean
+}
+
+type GrepMetadata = {
+  matches?: number
+  truncated?: boolean
+}
+
+type EditMetadata = {
+  diff?: string
+}
+
+type GlobInput = Schema.Schema.Type<typeof GlobParameters>
+type GrepInput = Schema.Schema.Type<typeof GrepParameters>
+type ReadInput = Schema.Schema.Type<typeof ReadParameters>
+type WebFetchInput = Schema.Schema.Type<typeof WebFetchParameters>
+type EditInput = Schema.Schema.Type<typeof EditParameters>
+type WriteInput = Schema.Schema.Type<typeof WriteParameters>
+type WebSearchInput = Schema.Schema.Type<typeof WebSearchParameters>
+type TaskInput = Schema.Schema.Type<typeof TaskParameters>
+type SkillInput = Schema.Schema.Type<typeof SkillParameters>
+type ShellInput = Schema.Schema.Type<typeof ShellParameters>
+type PendingInput = Schema.Schema.Type<typeof PendingParameters>
+
+function isRecord(input: unknown): input is Record<string, unknown> {
+  return typeof input === "object" && input !== null
+}
+
+function isGlobMetadata(input: unknown): input is GlobMetadata {
+  return isRecord(input)
+}
+
+function isGrepMetadata(input: unknown): input is GrepMetadata {
+  return isRecord(input)
+}
+
+function isEditMetadata(input: unknown): input is EditMetadata {
+  return isRecord(input)
+}
+
+function props<Input, Metadata extends object = never>(
+  part: ToolPart,
+  decode: (input: unknown) => Input,
+  isMetadata?: (input: unknown) => input is Metadata,
+): ToolProps<Input, Metadata> {
   const state = part.state
+  const metadata = "metadata" in state && isMetadata && isMetadata(state.metadata) ? state.metadata : undefined
   return {
-    input: state.input as Tool.InferParameters<T>,
-    metadata: ("metadata" in state ? state.metadata : {}) as Tool.InferMetadata<T>,
+    input: decode(state.input),
+    metadata,
     part,
   }
 }
@@ -74,11 +121,11 @@ function alternative_path(part: ToolPart) {
   })
 }
 
-function glob(info: ToolProps<typeof GlobTool>) {
+function glob(info: ToolProps<GlobInput, GlobMetadata>) {
   const root = info.input.path ?? ""
   const title = `Glob "${info.input.pattern}"`
   const suffix = root ? `in ${normalizePath(root)}` : ""
-  const num = info.metadata.count
+  const num = info.metadata?.count
   const description =
     num === undefined ? suffix : `${suffix}${suffix ? " · " : ""}${num} ${num === 1 ? "match" : "matches"}`
   inline({
@@ -88,11 +135,11 @@ function glob(info: ToolProps<typeof GlobTool>) {
   })
 }
 
-function grep(info: ToolProps<typeof GrepTool>) {
+function grep(info: ToolProps<GrepInput, GrepMetadata>) {
   const root = info.input.path ?? ""
   const title = `Grep "${info.input.pattern}"`
   const suffix = root ? `in ${normalizePath(root)}` : ""
-  const num = info.metadata.matches
+  const num = info.metadata?.matches
   const description =
     num === undefined ? suffix : `${suffix}${suffix ? " · " : ""}${num} ${num === 1 ? "match" : "matches"}`
   inline({
@@ -102,7 +149,7 @@ function grep(info: ToolProps<typeof GrepTool>) {
   })
 }
 
-function read(info: ToolProps<typeof ReadTool>) {
+function read(info: ToolProps<ReadInput>) {
   const file = normalizePath(info.input.filePath)
   const pairs = Object.entries(info.input).filter(([key, value]) => {
     if (key === "filePath") return false
@@ -116,7 +163,7 @@ function read(info: ToolProps<typeof ReadTool>) {
   })
 }
 
-function write(info: ToolProps<typeof WriteTool>) {
+function write(info: ToolProps<WriteInput>) {
   block(
     {
       icon: "←",
@@ -126,16 +173,16 @@ function write(info: ToolProps<typeof WriteTool>) {
   )
 }
 
-function webfetch(info: ToolProps<typeof WebFetchTool>) {
+function webfetch(info: ToolProps<WebFetchInput>) {
   inline({
     icon: "%",
     title: `WebFetch ${info.input.url}`,
   })
 }
 
-function edit(info: ToolProps<typeof EditTool>) {
+function edit(info: ToolProps<EditInput, EditMetadata>) {
   const title = normalizePath(info.input.filePath)
-  const diff = info.metadata.diff
+  const diff = info.metadata?.diff
   block(
     {
       icon: "←",
@@ -145,15 +192,15 @@ function edit(info: ToolProps<typeof EditTool>) {
   )
 }
 
-function websearch(info: ToolProps<typeof WebSearchTool>) {
+function websearch(info: ToolProps<WebSearchInput>) {
   inline({
     icon: "◈",
     title: `Exa Web Search "${info.input.query}"`,
   })
 }
 
-function task(info: ToolProps<typeof TaskTool>) {
-  const input = info.part.state.input
+function task(info: ToolProps<unknown>) {
+  const input = info.part.state.input as TaskInput
   const status = info.part.state.status
   const subagent =
     typeof input.subagent_type === "string" && input.subagent_type.trim().length > 0 ? input.subagent_type : "unknown"
@@ -169,14 +216,14 @@ function task(info: ToolProps<typeof TaskTool>) {
   })
 }
 
-function skill(info: ToolProps<typeof SkillTool>) {
+function skill(info: ToolProps<SkillInput>) {
   inline({
     icon: "→",
     title: `Skill "${info.input.name}"`,
   })
 }
 
-function shell(info: ToolProps<typeof ShellTool>) {
+function shell(info: ToolProps<ShellInput>) {
   const output = info.part.state.status === "completed" ? info.part.state.output?.trim() : undefined
   block(
     {
@@ -187,7 +234,7 @@ function shell(info: ToolProps<typeof ShellTool>) {
   )
 }
 
-function pending(info: ToolProps<typeof PendingWriteTool>) {
+function pending(info: ToolProps<PendingInput>) {
   block(
     {
       icon: "#",
@@ -477,17 +524,17 @@ export const RunCommand = effectCmd({
       async function execute(sdk: OpencodeClient) {
         function tool(part: ToolPart) {
           try {
-            if (part.tool === ShellID.ToolID) return shell(props<typeof ShellTool>(part))
-            if (part.tool === "glob") return glob(props<typeof GlobTool>(part))
-            if (part.tool === "grep") return grep(props<typeof GrepTool>(part))
-            if (part.tool === "read") return read(props<typeof ReadTool>(part))
-            if (part.tool === "write") return write(props<typeof WriteTool>(part))
-            if (part.tool === "webfetch") return webfetch(props<typeof WebFetchTool>(part))
-            if (part.tool === "edit") return edit(props<typeof EditTool>(part))
-            if (part.tool === "websearch") return websearch(props<typeof WebSearchTool>(part))
-            if (part.tool === "task") return task(props<typeof TaskTool>(part))
-            if (part.tool === PendingWriteTool.id) return pending(props<typeof PendingWriteTool>(part))
-            if (part.tool === "skill") return skill(props<typeof SkillTool>(part))
+            if (part.tool === ShellID.ToolID) return shell(props(part, Schema.decodeUnknownSync(ShellParameters)))
+            if (part.tool === "glob") return glob(props(part, Schema.decodeUnknownSync(GlobParameters), isGlobMetadata))
+            if (part.tool === "grep") return grep(props(part, Schema.decodeUnknownSync(GrepParameters), isGrepMetadata))
+            if (part.tool === "read") return read(props(part, Schema.decodeUnknownSync(ReadParameters)))
+            if (part.tool === "write") return write(props(part, Schema.decodeUnknownSync(WriteParameters)))
+            if (part.tool === "webfetch") return webfetch(props(part, Schema.decodeUnknownSync(WebFetchParameters)))
+            if (part.tool === "edit") return edit(props(part, Schema.decodeUnknownSync(EditParameters), isEditMetadata))
+            if (part.tool === "websearch") return websearch(props(part, Schema.decodeUnknownSync(WebSearchParameters)))
+            if (part.tool === "task") return task(props(part, Schema.decodeUnknownSync(TaskParameters)))
+            if (part.tool === PendingWriteTool.id) return pending(props(part, Schema.decodeUnknownSync(PendingParameters)))
+            if (part.tool === "skill") return skill(props(part, Schema.decodeUnknownSync(SkillParameters)))
             return alternative_path(part)
           } catch {
             return alternative_path(part)
@@ -547,7 +594,7 @@ export const RunCommand = effectCmd({
                 args.format !== "json"
               ) {
                 if (toggles.get(part.id) === true) continue
-                task(props<typeof TaskTool>(part))
+                task(props(part, Schema.decodeUnknownSync(TaskParameters)))
                 toggles.set(part.id, true)
               }
 
