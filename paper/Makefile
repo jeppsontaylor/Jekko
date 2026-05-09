@@ -2,11 +2,12 @@ LATEXMK ?= latexmk
 PDFINFO ?= pdfinfo
 PDFTOTEXT ?= pdftotext
 RG ?= rg
+DRAFT_MARKERS := T(O)DO|P(LACEHOLDER)|citation[[:space:]]needed|[?][?]|over[c]laim
 
 .PHONY: pdf check clean
 
 pdf:
-	$(LATEXMK) -pdf -shell-escape -interaction=nonstopmode -halt-on-error -file-line-error -outdir=build ZYAL.tex
+	PATH="$(CURDIR)/bin:$$PATH" $(LATEXMK) -pdf -shell-escape -interaction=nonstopmode -halt-on-error -file-line-error -outdir=build ZYAL.tex
 	cp build/ZYAL.pdf ZYAL.pdf
 
 check: pdf
@@ -14,7 +15,7 @@ check: pdf
 	pages="$$( $(PDFINFO) ZYAL.pdf | awk '/^Pages:/ {print $$2}' )"; \
 	  test "$$pages" -ge 8 -a "$$pages" -le 20
 	$(PDFTOTEXT) ZYAL.pdf - | $(RG) "ZYAL|LangGraph|OpenHands|Hermes|References|Appendix" >/dev/null
-	! $(RG) -n "TODO|PLACEHOLDER|citation needed|\\?\\?|overclaim" ZYAL.tex ZYAL.bib Makefile research figures listings
+	! $(RG) -n "$(DRAFT_MARKERS)" ZYAL.tex ZYAL.bib research figures listings
 	cd ../packages/jekko && bun test src/agent-script/parser.test.ts
 
 clean:

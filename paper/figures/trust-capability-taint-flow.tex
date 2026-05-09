@@ -4,7 +4,7 @@
   node distance=8mm and 8mm,
   box/.style={draw, rounded corners=2pt, align=center, minimum width=23mm, minimum height=8mm, fill=white},
   taint/.style={box, fill=red!8, draw=red!55!black},
-  cap/.style={box, fill=blue!8, draw=blue!55!black},
+  capbox/.style={box, fill=blue!8, draw=blue!55!black},
   gate/.style={box, diamond, aspect=1.7, fill=yellow!12, draw=yellow!55!black, inner sep=1pt},
   sink/.style={box, fill=green!8, draw=green!50!black},
   edge/.style={->, thick}
@@ -12,7 +12,7 @@
 \node[box] (source) {Source origin\\user, repo, tool, web, MCP};
 \node[taint, right=of source] (label) {Taint label\\rank + provenance};
 \node[gate, right=of label] (action) {Privileged\\action?};
-\node[cap, above right=of action] (lease) {Capability lease\\tool, path, time};
+\node[capbox, above right=of action] (lease) {Capability lease\\tool, path, time};
 \node[gate, right=of action] (floor) {Command\\floor};
 \node[gate, right=of floor] (approval) {Human or\\signed sanitizer};
 \node[sink, right=of approval] (exec) {Execution\\and event log};
