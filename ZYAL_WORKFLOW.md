@@ -25,6 +25,23 @@ coordination notes live above.
 
 ## Recent receipts
 
+### 2026-05-09T05:29:02Z — Fixed — codex — Jnoccio TUI pbcopy paste unlock
+
+- Fixed the real TUI paste fallback: keypress input now preserves uppercase `evt.sequence`, prompt/dialog/service normalization strips whitespace, `%`, CSI paste controls, and `200`/`201` bracketed-paste marker remnants before submit/decrypt/cache.
+- Verification: new TUI paste/dialog tests 5 pass; unlock/provider/TUI sync tests 21 pass; local route suite 2 pass / 1 existing HttpApi skip; typecheck, encrypted-path scan, `rtk git diff --check`, and `rtk just fast` passed.
+- Rebuilt, installed, and ad-hoc signed `/opt/homebrew/bin/jekko`; installed version is `0.0.0-codex/jnoccio-unlock-flow-202605090527`, and the gated installed unlock smoke passes 1/1.
+
+— codex
+
+### 2026-05-09T05:02:11Z — Verified with one route blocker — codex — Jnoccio paste and installed unlock proof
+
+- Added TUI bracketed-paste tests, TUI unlock-dialog SDK integration proof, local fresh-clone legacy route proof, and gated installed-binary smoke proof.
+- Verification: new TUI tests 3 pass; prior unlock/provider/TUI sync tests 20 pass; local route suite 2 pass / 1 skip; installed smoke skips by default and passes when gated with `/opt/homebrew/bin/jekko`; `rtk bun run typecheck`, encrypted-path scan, `rtk git diff --check`, and `rtk just fast` passed with the existing advisories already logged in `UNLOCK_WORKPLAN.md`.
+- Installed binary version: `0.0.0-codex/jnoccio-unlock-flow-202605090452`.
+- Remaining blocker: the experimental provider HttpApi unlock-route proof is skipped because the route still fails on missing `@jekko/Config`; legacy Hono route, service, TUI input, git-crypt clone unlock, and installed binary are verified.
+
+— codex
+
 ### 2026-05-09T01:24:46Z — Done with validation blockers — codex — Locked Jnoccio unlock surface
 
 - Completed:
@@ -133,3 +150,4 @@ NOT touched (codex territory): `jnoccio-fusion/src/router.rs`, `packages/jekko/s
 - **2026-05-09T03:05:15Z — codex** — Jnoccio unlock validation complete: repair-aware migration startup, `todo -> pending` schema rename, encrypted unlock envelope regeneration, local secret cache proof, `rtk bun run typecheck`, storage/unlock/provider/TUI tests, `rtk tools/check-encrypted-paths.sh --index`, `rtk cargo test`, `rtk just fast`, and `rtk bun run build --single --skip-install` smoke test all passed.
 - **2026-05-09T04:15:00Z — codex** — TUI unlock failure root-caused to stale installed `/opt/homebrew/bin/jekko` plus packaged repo-root resolution. Patched unlock repo-root discovery to prefer `JNOCCIO_REPO_ROOT`/`process.cwd()`, removed invalid JSX span props blocking typecheck, rebuilt and installed `0.0.0-codex/jnoccio-unlock-flow-202605090414`, ad-hoc signed the installed binary, and verified cached-secret unlock through the installed server route. Proof: installed `jekko --version`, installed-server `POST /provider/jnoccio/unlock` with `{}`, focused storage/unlock/provider/TUI/local tests, typecheck, encrypted-path scan, `rtk cargo test`, `rtk just fast`, and single-binary build smoke all passed.
 - **2026-05-09T04:26:00Z — codex** — Rotated `/Users/bentaylor/jnoccio-fusion.unlock` to a 128-character A-Z0-9 software key, regenerated the encrypted Jnoccio git-crypt-key envelope, and rebuilt/installed/signed `/opt/homebrew/bin/jekko` `0.0.0-codex/jnoccio-unlock-flow-202605090425`. Proof: no repo hit for the software key, local fresh-clone unlock, source unlock, installed-server cached and typed unlocks, focused unlock/provider/encryption tests, TUI sync, typecheck, encrypted-path scan, and `rtk just fast`.
+- **2026-05-09T05:50:00Z — claude** — Re-bound stale envelope (post-rotation drift) to `~/jnoccio-fusion.unlock` and added end-to-end TUI paste-to-unlock proof. `rtk bun packages/jekko/script/encrypt-jnoccio-key.ts --key-file .git/git-crypt/keys/default --secret-file ~/jnoccio-fusion.unlock` rewrote the embedded envelope. New tests: env-gated round-trip in `test/jnoccio/unlock.test.ts` (envelope → raw key) and `test/local/jnoccio-tui-paste-unlock.local.test.tsx` driving `<DialogJnoccioUnlock/>` via `@opentui/solid` `testRender` + `mockInput.pasteBracketedText` against a real `cloneRepo()` + real `unlockJnoccioFusion()`. Rebuilt `/opt/homebrew/bin/jekko` `0.0.0-codex/jnoccio-unlock-flow-202605090548`, ad-hoc resigned to clear `com.apple.provenance` SIGKILL. Proof: 15/15 unlock tests, 1/1 local route, 1/1 TUI paste-to-unlock, 1/1 installed-binary smoke (`JNOCCIO_INSTALLED_UNLOCK_E2E=1`), 34/35 jnoccio+TUI aggregate (1 pre-existing skip), `rtk bun run typecheck` clean, `rtk git diff --check` clean.

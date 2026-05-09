@@ -63,12 +63,21 @@ type EnvelopeParams = {
   maxmem: number
 }
 
-function normalizeSecret(input: string) {
-  return input.trim()
+export function normalizeJnoccioUnlockSecret(input: string) {
+  const compact = input
+    .replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, "")
+    .replace(/\s+/g, "")
+    .replace(/[^A-Za-z0-9_-]/g, "")
+
+  if (compact.length === 134 && compact.startsWith("200") && compact.endsWith("201")) {
+    return compact.slice(3, -3)
+  }
+
+  return compact
 }
 
 export function isValidUnlockSecret(input: string) {
-  return JNOCCIO_UNLOCK_SECRET_PATTERN.test(normalizeSecret(input))
+  return JNOCCIO_UNLOCK_SECRET_PATTERN.test(normalizeJnoccioUnlockSecret(input))
 }
 
 function findRepoRootFrom(start: string | undefined) {
@@ -142,7 +151,7 @@ export function isJnoccioFusionConfigured(repoRoot = repoRootFromSource()) {
 }
 
 function deriveKey(secret: string, salt: Buffer, params: EnvelopeParams) {
-  return scryptSync(Buffer.from(normalizeSecret(secret), "utf8"), salt, 32, params)
+  return scryptSync(Buffer.from(normalizeJnoccioUnlockSecret(secret), "utf8"), salt, 32, params)
 }
 
 export function encryptJnoccioGitCryptKey(
@@ -265,7 +274,7 @@ async function writeSecretFile(secretPath: string, secret: string) {
 async function readSecretFile(secretPath: string) {
   try {
     const content = await fsp.readFile(secretPath, "utf8")
-    const secret = normalizeSecret(content)
+    const secret = normalizeJnoccioUnlockSecret(content)
     return isValidUnlockSecret(secret) ? secret : undefined
   } catch {
     return undefined
@@ -281,7 +290,7 @@ async function unlockWithSecret(
   const runner = options.runner ?? defaultRunner
   const envelope = options.envelope ?? JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY
   const secretPath = options.secretPath ?? jnoccioUnlockSecretPath()
-  const normalized = normalizeSecret(secret)
+  const normalized = normalizeJnoccioUnlockSecret(secret)
 
   if (!isValidUnlockSecret(normalized)) {
     return {

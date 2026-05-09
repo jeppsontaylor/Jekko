@@ -40,13 +40,9 @@
             jekko = final.callPackage ./nix/jekko.nix {
               inherit node_modules;
             };
-            desktop = final.callPackage ./nix/desktop.nix {
-              inherit jekko;
-            };
           in
           {
             inherit jekko;
-            jekko-desktop = desktop;
           };
       };
 
@@ -59,13 +55,10 @@
           jekko = pkgs.callPackage ./nix/jekko.nix {
             inherit node_modules;
           };
-          desktop = pkgs.callPackage ./nix/desktop.nix {
-            inherit jekko;
-          };
         in
         {
           default = jekko;
-          inherit jekko desktop;
+          inherit jekko;
           # Updater derivation with fakeHash - build fails and reveals correct hash
           node_modules_updater = node_modules.override {
             hash = pkgs.lib.fakeHash;

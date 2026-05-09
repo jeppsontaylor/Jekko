@@ -73,7 +73,6 @@ Replace `<platform>` with your platform (e.g., `darwin-arm64`, `linux-x64`).
   - `packages/jekko`: Jekko core business logic & server.
   - `packages/jekko/src/cli/cmd/tui/`: The TUI code, written in SolidJS with [opentui](https://github.com/sst/opentui)
   - `packages/app`: The shared web UI components, written in SolidJS
-  - `packages/desktop`: The native desktop app, built with Electron (wraps `packages/app`)
   - `packages/plugin`: Source for `@jekko-ai/plugin`
 
 ### Understanding bun dev vs jekko
@@ -120,23 +119,6 @@ bun run --cwd packages/app dev
 ```
 
 This starts a local dev server at http://localhost:5173 (or similar port shown in output). Most UI changes can be tested here, but the server must be running for full functionality.
-
-### Running the Desktop App
-
-The desktop app is an Electron application that wraps the web UI.
-
-To run the desktop app in development:
-
-```bash
-bun run --cwd packages/desktop dev
-```
-
-To create a production build and package the app:
-
-```bash
-bun run --cwd packages/desktop build
-bun run --cwd packages/desktop package
-```
 
 > [!NOTE]
 > If you make changes to the API or SDK (e.g. `packages/jekko/src/server/server.ts`), run `./script/generate.ts` to regenerate the SDK and related files.
@@ -223,7 +205,6 @@ PR titles should follow conventional commit standards:
 You can optionally include a scope to indicate which package is affected:
 
 - `feat(app):` feature in the app package
-- `fix(desktop):` bug fix in the desktop package
 - `chore(jekko):` maintenance in the jekko package
 
 Examples:
@@ -232,7 +213,6 @@ Examples:
 - `fix: resolve crash on startup`
 - `feat: add dark mode support`
 - `feat(app): add dark mode support`
-- `fix(desktop): resolve crash on startup`
 - `chore: bump dependency versions`
 
 ### Style Preferences

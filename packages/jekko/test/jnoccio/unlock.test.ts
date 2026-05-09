@@ -2,7 +2,14 @@ import { afterEach, describe, expect, test } from "bun:test"
 import fsp from "fs/promises"
 import os from "os"
 import path from "path"
-import { encryptJnoccioGitCryptKey, unlockJnoccioFusion, type CommandRunner } from "../../src/util/jnoccio-unlock"
+import {
+  decryptJnoccioGitCryptKey,
+  encryptJnoccioGitCryptKey,
+  normalizeJnoccioUnlockSecret,
+  unlockJnoccioFusion,
+  type CommandRunner,
+} from "../../src/util/jnoccio-unlock"
+import { JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY } from "../../src/util/jnoccio-encrypted-key"
 
 const tempDirs: string[] = []
 
@@ -235,6 +242,37 @@ describe("unlockJnoccioFusion", () => {
     await expect(fsp.stat(tempKeyPaths[0])).rejects.toThrow()
   })
 
+  test("normalizes terminal paste artifacts around a typed secret", async () => {
+    const repo = await tempRepo({ plaintext: false })
+    const secret = unlockSecret()
+    const rawKey = Buffer.from("fake-git-crypt-key")
+    const secretPath = path.join(repo.root, "jnoccio-fusion.unlock")
+    let calls = 0
+
+    const result = await unlockJnoccioFusion(
+      { unlockSecret: `200\x1b[200~${secret}\x1b[201~201` },
+      {
+        repoRoot: repo.root,
+        secretPath,
+        envelope: encryptedEnvelope(secret, rawKey),
+        runner: async (_command, args) => {
+          calls += 1
+          await expect(fsp.readFile(args[1])).resolves.toEqual(rawKey)
+          await writeUnlockedSignals(repo.fusion)
+          return { exitCode: 0 }
+        },
+      },
+    )
+
+    expect(result).toMatchObject({
+      status: "unlocked",
+      envCreated: true,
+      secretSaved: true,
+    })
+    expect(calls).toBe(1)
+    await expect(fsp.readFile(secretPath, "utf8")).resolves.toBe(secret)
+  })
+
   test("uses the cached secret without prompting and leaves the cache file intact", async () => {
     const repo = await tempRepo({ plaintext: false })
     const secret = unlockSecret()
@@ -311,6 +349,18 @@ describe("unlockJnoccioFusion", () => {
     expect(calls).toBe(0)
     await expect(fsp.access(secretPath)).rejects.toThrow()
   })
+
+  const localRawKey = process.env.JNOCCIO_RAW_KEY_PATH
+  const localSecretPath = process.env.JNOCCIO_UNLOCK_SECRET_PATH
+  test.skipIf(!localRawKey || !localSecretPath)(
+    "embedded envelope round-trips with the local unlock secret",
+    async () => {
+      const secret = normalizeJnoccioUnlockSecret(await fsp.readFile(localSecretPath!, "utf8"))
+      const expected = await fsp.readFile(localRawKey!)
+      const decrypted = decryptJnoccioGitCryptKey(JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY, secret)
+      expect(decrypted.equals(expected)).toBe(true)
+    },
+  )
 
   test("deletes the temporary raw key file after a failed unlock", async () => {
     const repo = await tempRepo({ plaintext: false })

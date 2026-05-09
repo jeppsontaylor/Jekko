@@ -64,24 +64,6 @@ nix run nixpkgs#jekko           # ili github:anomalyco/jekko za najnoviji dev br
 > [!TIP]
 > Ukloni verzije starije od 0.1.x prije instalacije.
 
-### Desktop aplikacija (BETA)
-
-Jekko je dostupan i kao desktop aplikacija. Preuzmi je direktno sa [stranice izdanja](https://github.com/anomalyco/jekko/releases) ili sa [jekko.ai/download](https://jekko.ai/download).
-
-| Platforma             | Preuzimanje                        |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, ili AppImage       |
-
-```bash
-# macOS (Homebrew)
-brew install --cask jekko-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
-```
-
 #### Instalacijski direktorij
 
 Instalacijska skripta koristi sljedeći redoslijed prioriteta za putanju instalacije:

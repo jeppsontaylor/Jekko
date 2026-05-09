@@ -64,24 +64,6 @@ nix run nixpkgs#jekko           # ή github:anomalyco/jekko με βάση την
 > [!TIP]
 > Αφαίρεσε παλαιότερες εκδόσεις από τη 0.1.x πριν από την εγκατάσταση.
 
-### Εφαρμογή Desktop (BETA)
-
-Το Jekko είναι επίσης διαθέσιμο ως εφαρμογή. Κατέβασε το απευθείας από τη [σελίδα εκδόσεων](https://github.com/anomalyco/jekko/releases) ή το [jekko.ai/download](https://jekko.ai/download).
-
-| Πλατφόρμα             | Λήψη                               |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, ή AppImage         |
-
-```bash
-# macOS (Homebrew)
-brew install --cask jekko-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
-```
-
 #### Κατάλογος Εγκατάστασης
 
 Το script εγκατάστασης τηρεί την ακόλουθη σειρά προτεραιότητας για τη διαδρομή εγκατάστασης:

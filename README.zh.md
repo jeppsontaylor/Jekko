@@ -64,24 +64,6 @@ nix run nixpkgs#jekko           # 或用 github:anomalyco/jekko 获取最新 dev
 > [!TIP]
 > 安装前请先移除 0.1.x 之前的旧版本。
 
-### 桌面应用程序 (BETA)
-
-Jekko 也提供桌面版应用。可直接从 [发布页 (releases page)](https://github.com/anomalyco/jekko/releases) 或 [jekko.ai/download](https://jekko.ai/download) 下载。
-
-| 平台                  | 下载文件                           |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb`、`.rpm` 或 AppImage         |
-
-```bash
-# macOS (Homebrew Cask)
-brew install --cask jekko-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
-```
-
 #### 安装目录
 
 安装脚本按照以下优先级决定安装路径：

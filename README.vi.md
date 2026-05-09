@@ -64,24 +64,6 @@ nix run nixpkgs#jekko           # hoặc github:anomalyco/jekko cho nhánh dev m
 > [!TIP]
 > Hãy xóa các phiên bản cũ hơn 0.1.x trước khi cài đặt.
 
-### Ứng dụng Desktop (BETA)
-
-Jekko cũng có sẵn dưới dạng ứng dụng desktop. Tải trực tiếp từ [trang releases](https://github.com/anomalyco/jekko/releases) hoặc [jekko.ai/download](https://jekko.ai/download).
-
-| Nền tảng              | Tải xuống                          |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, hoặc AppImage      |
-
-```bash
-# macOS (Homebrew)
-brew install --cask jekko-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
-```
-
 #### Thư mục cài đặt
 
 Tập lệnh cài đặt tuân theo thứ tự ưu tiên sau cho đường dẫn cài đặt:

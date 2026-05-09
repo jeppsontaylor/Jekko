@@ -64,24 +64,6 @@ nix run nixpkgs#jekko           # او github:anomalyco/jekko لاحدث فرع 
 > [!TIP]
 > احذف الاصدارات الاقدم من 0.1.x قبل التثبيت.
 
-### تطبيق سطح المكتب (BETA)
-
-يتوفر Jekko ايضا كتطبيق سطح مكتب. قم بالتنزيل مباشرة من [صفحة الاصدارات](https://github.com/anomalyco/jekko/releases) او من [jekko.ai/download](https://jekko.ai/download).
-
-| المنصة                | التنزيل                            |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb` او `.rpm` او AppImage       |
-
-```bash
-# macOS (Homebrew)
-brew install --cask jekko-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
-```
-
 #### مجلد التثبيت
 
 يحترم سكربت التثبيت ترتيب الاولوية التالي لمسار التثبيت:

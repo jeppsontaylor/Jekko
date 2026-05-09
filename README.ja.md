@@ -64,24 +64,6 @@ nix run nixpkgs#jekko           # または github:anomalyco/jekko で最新 dev
 > [!TIP]
 > インストール前に 0.1.x より古いバージョンを削除してください。
 
-### デスクトップアプリ (BETA)
-
-Jekko はデスクトップアプリとしても利用できます。[releases page](https://github.com/anomalyco/jekko/releases) から直接ダウンロードするか、[jekko.ai/download](https://jekko.ai/download) を利用してください。
-
-| プラットフォーム      | ダウンロード                       |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb`、`.rpm`、または AppImage    |
-
-```bash
-# macOS (Homebrew)
-brew install --cask jekko-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
-```
-
 #### インストールディレクトリ
 
 インストールスクリプトは、インストール先パスを次の優先順位で決定します。

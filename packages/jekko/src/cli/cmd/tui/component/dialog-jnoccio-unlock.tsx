@@ -6,6 +6,7 @@ import { useSync } from "@tui/context/sync"
 import { useLocal } from "@tui/context/local"
 import { useTheme } from "@tui/context/theme"
 import { useToast } from "@tui/ui/toast"
+import { normalizeJnoccioUnlockSecret } from "@/util/jnoccio-unlock"
 
 export function DialogJnoccioUnlock() {
   const dialog = useDialog()
@@ -91,7 +92,7 @@ export function DialogJnoccioUnlock() {
       error={error()}
       onCancel={() => dialog.clear()}
       onConfirm={(value) => {
-        const next = value.trim()
+        const next = normalizeJnoccioUnlockSecret(value)
         void attempt({ unlockSecret: next }, "typed")
       }}
     />

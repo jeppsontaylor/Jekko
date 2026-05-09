@@ -64,22 +64,9 @@ nix run nixpkgs#jekko           # veya en güncel geliştirme dalı için github
 > [!TIP]
 > Kurulumdan önce 0.1.x'ten eski sürümleri kaldırın.
 
-### Masaüstü Uygulaması (BETA)
-
-Jekko ayrıca masaüstü uygulaması olarak da mevcuttur. Doğrudan [sürüm sayfasından](https://github.com/anomalyco/jekko/releases) veya [jekko.ai/download](https://jekko.ai/download) adresinden indirebilirsiniz.
-
-| Platform              | İndirme                            |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm` veya AppImage       |
-
-```bash
+bash
 # macOS (Homebrew)
-brew install --cask jekko-desktop
 # Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
 ```
 
 #### Kurulum Dizini (Installation Directory)

@@ -4,6 +4,7 @@ import { createSignal, onMount, Show, type JSX } from "solid-js"
 import { useDialog, type DialogContext } from "./dialog"
 import { useTheme } from "../context/theme"
 import { Spinner } from "../component/spinner"
+import { normalizeJnoccioUnlockSecret } from "@/util/jnoccio-unlock"
 
 export type DialogSecretPromptProps = {
   title: string
@@ -24,7 +25,7 @@ function maskSecret(value: string) {
 }
 
 function sanitizePaste(value: string) {
-  return value.replace(/\s+/g, "").replace(/[^A-Za-z0-9_-]/g, "")
+  return normalizeJnoccioUnlockSecret(value)
 }
 
 export function DialogSecretPrompt(props: DialogSecretPromptProps) {
@@ -50,7 +51,7 @@ export function DialogSecretPrompt(props: DialogSecretPromptProps) {
     if (evt.name === "return") {
       evt.preventDefault()
       evt.stopPropagation()
-      props.onConfirm?.(value())
+      props.onConfirm?.(sanitizePaste(value()))
       return
     }
 
@@ -69,11 +70,12 @@ export function DialogSecretPrompt(props: DialogSecretPromptProps) {
     }
 
     if (evt.ctrl || evt.meta) return
-    if (evt.name.length !== 1) return
-    if (!/^[A-Za-z0-9_-]$/.test(evt.name)) return
+    const text = evt.sequence.length === 1 ? evt.sequence : evt.name
+    if (text.length !== 1) return
+    if (!/^[A-Za-z0-9_-]$/.test(text)) return
     evt.preventDefault()
     evt.stopPropagation()
-    setValue((current) => current + evt.name)
+    setValue((current) => sanitizePaste(current + text))
   })
 
   usePaste((evt) => {
@@ -82,7 +84,7 @@ export function DialogSecretPrompt(props: DialogSecretPromptProps) {
     evt.stopPropagation()
     const pasted = sanitizePaste(new TextDecoder().decode(evt.bytes))
     if (!pasted) return
-    setValue((current) => current + pasted)
+    setValue((current) => sanitizePaste(current + pasted))
   })
 
   onMount(() => {

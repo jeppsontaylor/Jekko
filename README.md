@@ -64,24 +64,6 @@ nix run nixpkgs#jekko           # or github:anomalyco/jekko for latest dev branc
 > [!TIP]
 > Remove versions older than 0.1.x before installing.
 
-### Desktop App (BETA)
-
-Jekko is also available as a desktop application. Download directly from the [releases page](https://github.com/anomalyco/jekko/releases) or [jekko.ai/download](https://jekko.ai/download).
-
-| Platform              | Download                           |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `jekko-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `jekko-desktop-mac-x64.dmg`     |
-| Windows               | `jekko-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, or `.AppImage`     |
-
-```bash
-# macOS (Homebrew)
-brew install --cask jekko-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/jekko-desktop
-```
-
 #### Installation Directory
 
 The install script respects the following priority order for the installation path:
