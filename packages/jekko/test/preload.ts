@@ -88,7 +88,7 @@ seedDb.exec("PRAGMA journal_mode = WAL")
 seedDb.exec("PRAGMA synchronous = NORMAL")
 seedDb.exec("PRAGMA busy_timeout = 5000")
 
-const migrationDir = path.join(import.meta.dir, "..", "migration")
+const migrationDir = path.join(import.meta.dir, "..", "..", "..", "db", "migrations")
 const entries = (await fs.readdir(migrationDir, { withFileTypes: true }))
   .filter((item) => item.isDirectory())
   .map((item) => item.name)

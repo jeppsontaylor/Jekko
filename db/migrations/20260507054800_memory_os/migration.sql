@@ -18,7 +18,7 @@ CREATE TABLE `memory_evidence` (
 	`evidence_hash` text,
 	`time_created` integer NOT NULL,
 	`time_updated` integer NOT NULL,
-	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade
+		FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE restrict
 );
 --> statement-breakpoint
 CREATE INDEX `memory_evidence_project_tier_idx` ON `memory_evidence`(`project_id`, `tier`, `time_updated` DESC);
@@ -39,7 +39,7 @@ CREATE TABLE `failed_attempt` (
 	`time_created` integer NOT NULL,
 	`time_updated` integer NOT NULL,
 	PRIMARY KEY(`project_id`, `signature`, `failure_kind`, `owner`, `attempted_fix_hash`, `evidence_hash`),
-	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE restrict
 );
 --> statement-breakpoint
 CREATE INDEX `failed_attempt_sig_idx` ON `failed_attempt`(`project_id`, `signature`, `failure_kind`, `time_updated` DESC);

@@ -123,7 +123,7 @@ export async function seedTestDatabase() {
   db.exec("PRAGMA synchronous = NORMAL")
   db.exec("PRAGMA busy_timeout = 5000")
 
-  const migrationDir = path.join(import.meta.dir, "..", "..", "migration")
+  const migrationDir = path.join(import.meta.dir, "..", "..", "..", "..", "db", "migrations")
   const entries = (await fsp.readdir(migrationDir, { withFileTypes: true }))
     .filter((item) => item.isDirectory())
     .map((item) => item.name)

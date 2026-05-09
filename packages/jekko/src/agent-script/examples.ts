@@ -199,7 +199,7 @@ incubator:
       - risk_score_gte: 0.7
       - touches_paths:
           - "packages/jekko/src/session/**"
-          - "packages/jekko/migration/**"
+          - "db/migrations/**"
   exclude_when:
     any:
       - readiness_score_lt: 0.25
@@ -680,7 +680,7 @@ assertions:
 constraints:
   - name: migration-stability
     check:
-      shell: "ls migration/ 2>/dev/null | wc -l"
+      shell: "ls db/migrations/ 2>/dev/null | wc -l"
     baseline: capture_on_start
     invariant: gte_baseline
     on_violation: abort

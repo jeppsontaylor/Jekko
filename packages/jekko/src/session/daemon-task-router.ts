@@ -199,7 +199,7 @@ function isCriticalPath(value: string) {
     "packages/jekko/src/session/",
     "packages/jekko/src/server/",
     "packages/jekko/src/agent-script/",
-    "packages/jekko/migration/",
+    "db/migrations/",
   ].some((prefix) => value.startsWith(prefix))
 }
 

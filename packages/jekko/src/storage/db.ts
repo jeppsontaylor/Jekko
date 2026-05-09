@@ -95,16 +95,22 @@ export function applyMigrationJournal(db: SQLiteBunDatabase, entries: Journal) {
   }
 }
 
-function time(tag: string) {
-  const match = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(tag)
-  if (!match) return 0
+export function migrationTimestamp(tag: string) {
+  if (tag.length < 14) return 0
+  const year = Number(tag.slice(0, 4))
+  const month = Number(tag.slice(4, 6))
+  const day = Number(tag.slice(6, 8))
+  const hour = Number(tag.slice(8, 10))
+  const minute = Number(tag.slice(10, 12))
+  const second = Number(tag.slice(12, 14))
+  if ([year, month, day, hour, minute, second].some((value) => Number.isNaN(value))) return 0
   return Date.UTC(
-    Number(match[1]),
-    Number(match[2]) - 1,
-    Number(match[3]),
-    Number(match[4]),
-    Number(match[5]),
-    Number(match[6]),
+    year,
+    month - 1,
+    day,
+    hour,
+    minute,
+    second,
   )
 }
 
@@ -120,7 +126,7 @@ function migrations(dir: string): Journal {
       const text = readFileSync(file, "utf-8")
       return {
         sql: text,
-        timestamp: time(name),
+        timestamp: migrationTimestamp(name),
         name,
         hash: migrationHash({ sql: text }),
       }
@@ -155,7 +161,7 @@ export const Client = lazy(() => {
   const entries =
     typeof JEKKO_MIGRATIONS !== "undefined"
       ? withMigrationHashes(JEKKO_MIGRATIONS)
-      : migrations(path.join(import.meta.dirname, "../../migration"))
+      : migrations(path.join(import.meta.dirname, "../../../../db/migrations"))
   if (entries.length > 0) {
     log.info("applying migrations", {
       count: entries.length,

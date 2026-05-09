@@ -78,7 +78,7 @@ const seed = (url: string, org?: string) =>
       id: AccountID.make("account-1"),
       email: "user@example.com",
       url,
-      accessToken: AccessToken.make("st_test_token"),
+      token: AccessToken.make("st_test_token"),
       refreshToken: RefreshToken.make("rt_test_token"),
       expiry: Date.now() + 10 * 60_000,
       orgID: org ? Option.some(OrgID.make(org)) : Option.none(),
