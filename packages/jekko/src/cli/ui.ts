@@ -45,11 +45,10 @@ function paint(text: string, rgb: readonly [number, number, number], opts: { bol
 }
 
 // ---------------------------------------------------------------------------
-// HSV neon color engine (synchronized with logo.tsx)
+// Acid Gecko Bloom — 512-stop colormap (synchronized with logo.tsx)
 // ---------------------------------------------------------------------------
 
-type RGB3 = readonly [number, number, number]
-type HSV = { h: number; s: number; v: number }
+const COLORMAP_SIZE = 512
 
 function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n))
@@ -59,28 +58,10 @@ function clamp255(n: number): number {
   return Math.max(0, Math.min(255, Math.round(n)))
 }
 
-function rgbToHSV(r: number, g: number, b: number): HSV {
-  const rn = r / 255, gn = g / 255, bn = b / 255
-  const max = Math.max(rn, gn, bn)
-  const min = Math.min(rn, gn, bn)
-  const delta = max - min
-
-  let h = 0
-  if (delta !== 0) {
-    if (max === rn) h = 60 * (((gn - bn) / delta) % 6)
-    else if (max === gn) h = 60 * ((bn - rn) / delta + 2)
-    else h = 60 * ((rn - gn) / delta + 4)
-  }
-  if (h < 0) h += 360
-
-  return { h, s: max === 0 ? 0 : delta / max, v: max }
-}
-
 function hsvToRGB(h: number, s: number, v: number): [number, number, number] {
   const hue = ((h % 360) + 360) % 360
   const sat = clamp01(s)
   const val = clamp01(v)
-
   const c = val * sat
   const x = c * (1 - Math.abs(((hue / 60) % 2) - 1))
   const m = val - c
@@ -96,84 +77,94 @@ function hsvToRGB(h: number, s: number, v: number): [number, number, number] {
   return [clamp255((r + m) * 255), clamp255((g + m) * 255), clamp255((b + m) * 255)]
 }
 
-function mixHue(left: number, right: number, t: number): number {
-  const delta = ((right - left + 540) % 360) - 180
-  return (left + delta * t + 360) % 360
+function rgbToHSV(r: number, g: number, b: number): [number, number, number] {
+  const rn = r / 255, gn = g / 255, bn = b / 255
+  const max = Math.max(rn, gn, bn)
+  const min = Math.min(rn, gn, bn)
+  const delta = max - min
+
+  let h = 0
+  if (delta !== 0) {
+    if (max === rn) h = 60 * (((gn - bn) / delta) % 6)
+    else if (max === gn) h = 60 * ((bn - rn) / delta + 2)
+    else h = 60 * ((rn - gn) / delta + 4)
+  }
+  if (h < 0) h += 360
+
+  return [h, max === 0 ? 0 : delta / max, max]
 }
 
-function neonMix(left: RGB3, right: RGB3, t: number): [number, number, number] {
-  const k = clamp01(t)
-  const l = rgbToHSV(left[0], left[1], left[2])
-  const r = rgbToHSV(right[0], right[1], right[2])
-
-  return hsvToRGB(
-    mixHue(l.h, r.h, k),
-    1, // force full saturation
-    Math.max(0.98, l.v + (r.v - l.v) * k), // force near-max brightness
-  )
+function mixHue(a: number, b: number, t: number): number {
+  const delta = ((b - a + 540) % 360) - 180
+  return (a + delta * t + 360) % 360
 }
 
-function punchContrast(rgb: [number, number, number], amount = 1.42): [number, number, number] {
-  return [
-    clamp255(128 + (rgb[0] - 128) * amount),
-    clamp255(128 + (rgb[1] - 128) * amount),
-    clamp255(128 + (rgb[2] - 128) * amount),
-  ]
+type Keyframe = { pos: number; rgb: [number, number, number] }
+
+const BLOOM_KEYFRAMES: Keyframe[] = [
+  { pos: 0,   rgb: [0, 255, 22] },
+  { pos: 64,  rgb: [68, 255, 0] },
+  { pos: 128, rgb: [0, 255, 204] },
+  { pos: 192, rgb: [51, 0, 255] },
+  { pos: 256, rgb: [119, 0, 255] },
+  { pos: 320, rgb: [204, 0, 255] },
+  { pos: 384, rgb: [255, 0, 170] },
+  { pos: 448, rgb: [255, 0, 102] },
+  { pos: 511, rgb: [255, 0, 68] },
+]
+
+function buildColormap(keyframes: Keyframe[], size: number): [number, number, number][] {
+  const map: [number, number, number][] = new Array(size)
+
+  for (let i = 0; i < size; i++) {
+    let lo = keyframes[0]!
+    let hi = keyframes[keyframes.length - 1]!
+
+    for (let k = 0; k < keyframes.length - 1; k++) {
+      if (i >= keyframes[k]!.pos && i <= keyframes[k + 1]!.pos) {
+        lo = keyframes[k]!
+        hi = keyframes[k + 1]!
+        break
+      }
+    }
+
+    const range = hi.pos - lo.pos
+    const t = range === 0 ? 0 : clamp01((i - lo.pos) / range)
+
+    const loHSV = rgbToHSV(...lo.rgb)
+    const hiHSV = rgbToHSV(...hi.rgb)
+
+    const h = mixHue(loHSV[0], hiHSV[0], t)
+    const s = loHSV[1] + (hiHSV[1] - loHSV[1]) * t
+    const v = loHSV[2] + (hiHSV[2] - loHSV[2]) * t
+
+    map[i] = hsvToRGB(h, Math.max(0.95, s), Math.max(0.95, v))
+  }
+
+  return map
 }
 
-function forceNeon(rgb: [number, number, number], hueShift = 0): [number, number, number] {
-  const hsv = rgbToHSV(rgb[0], rgb[1], rgb[2])
-  return hsvToRGB(hsv.h + hueShift, 1, Math.max(0.98, hsv.v))
-}
+const ACID_GECKO_BLOOM = buildColormap(BLOOM_KEYFRAMES, COLORMAP_SIZE)
 
-type Palette = {
-  topLeft: RGB3
-  topRight: RGB3
-  bottomLeft: RGB3
-  bottomRight: RGB3
-}
-
-const JEKKO_PALETTE: Palette = {
-  topLeft:     [0, 255, 22],     // acid green
-  topRight:    [0, 255, 255],    // pure cyan
-  bottomLeft:  [255, 255, 0],    // solar yellow
-  bottomRight: [255, 0, 220],    // hot magenta
-}
-
-function geckoColor(
+function bloomColor(
   x: number,
   y: number,
   width: number,
   height: number,
-  palette: Palette,
-  quieter = false,
 ): [number, number, number] {
   const tx = width <= 1 ? 0 : x / (width - 1)
   const ty = height <= 1 ? 0 : y / (height - 1)
 
-  const top = neonMix(palette.topLeft, palette.topRight, tx)
-  const bottom = neonMix(palette.bottomLeft, palette.bottomRight, tx)
-  const base = neonMix(top, bottom, ty)
-
-  const contrasted = punchContrast(base, 1.42)
-
-  const hueShift = (tx - 0.5) * 16 + (ty - 0.5) * 8
-
-  if (quieter) {
-    const hsv = rgbToHSV(contrasted[0], contrasted[1], contrasted[2])
-    return hsvToRGB(hsv.h + hueShift, Math.max(0.85, hsv.s), Math.max(0.72, hsv.v))
-  }
-
-  return forceNeon(contrasted, hueShift)
+  const t = (tx + ty) / 2
+  const index = Math.max(0, Math.min(COLORMAP_SIZE - 1, Math.round(t * (COLORMAP_SIZE - 1))))
+  return ACID_GECKO_BLOOM[index]!
 }
 
-// Visible-glyph gradient stretching: map gradient X to non-space chars only.
 function gradientLine(
   text: string,
   y: number,
   totalRows: number,
-  palette: Palette,
-  opts: { bold?: boolean; dim?: boolean } = {},
+  opts: { bold?: boolean } = {},
 ): string {
   const chars = Array.from(text)
   const visibleCount = chars.filter((c) => c !== " ").length
@@ -190,7 +181,7 @@ function gradientLine(
       gx = visibleIndex++
       gw = Math.max(1, visibleCount)
     }
-    const rgb = geckoColor(gx, y, gw, totalRows, palette, opts.dim)
+    const rgb = bloomColor(gx, y, gw, totalRows)
     out += paint(ch, rgb, { bold: opts.bold })
   }
   return out
@@ -234,7 +225,7 @@ export function logo(pad?: string) {
   const bottom = `╰${"─".repeat(INNER_WIDTH)}╯`
   const sep = `├${"─".repeat(INNER_WIDTH)}┤`
 
-  type Row = { text: string; bold?: boolean; dim?: boolean }
+  type Row = { text: string; bold?: boolean }
   const rows: Row[] = []
 
   rows.push({ text: top, bold: true })
@@ -262,7 +253,7 @@ export function logo(pad?: string) {
 
   const totalRows = rows.length
   const rendered = rows.map((row, y) =>
-    (pad || "") + gradientLine(row.text, y, totalRows, JEKKO_PALETTE, { bold: row.bold, dim: row.dim }),
+    (pad || "") + gradientLine(row.text, y, totalRows, { bold: row.bold }),
   )
 
   return rendered.join(EOL)
