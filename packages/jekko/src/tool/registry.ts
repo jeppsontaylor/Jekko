@@ -175,7 +175,7 @@ export const layer = Layer.effect(
 
         yield* config.get()
         const questionEnabled =
-          ["app", "cli", "desktop"].includes(Flag.JEKKO_CLIENT) || Flag.JEKKO_ENABLE_QUESTION_TOOL
+          ["app", "cli"].includes(Flag.JEKKO_CLIENT) || Flag.JEKKO_ENABLE_QUESTION_TOOL
 
         const tool = yield* Effect.all({
           invalid: Tool.init(invalid),
