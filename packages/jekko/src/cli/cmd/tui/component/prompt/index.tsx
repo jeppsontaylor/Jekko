@@ -612,7 +612,7 @@ export function Prompt(props: PromptProps) {
         onSelect: (dialog) => {
           if (autocomplete.visible) return
           if (!input.focused) return
-          // pending: this should be its own command
+          // this interrupt handling should live in its own command
           if (store.mode === "shell") {
             setStore("mode", "normal")
             return
