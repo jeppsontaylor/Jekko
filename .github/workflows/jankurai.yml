@@ -42,7 +42,7 @@ jobs:
       - name: Proofmark rust
         run: jankurai proofmark rust . --obligations target/jankurai/proofbind/obligations.json
       - name: Rust witness build
-        run: cd jnoccio-fusion && jankurai rust witness build .
+        run: cd crates/tuiwright-jekko-unlock && jankurai rust witness build .
       - name: UX QA smoke
         run: jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json
       - name: Security scan
