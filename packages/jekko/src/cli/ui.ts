@@ -1,58 +1,58 @@
 import z from "zod"
 import { EOL } from "os"
 import { NamedError } from "@jekko-ai/core/util/error"
-import { logo as glyphs } from "./logo"
 
-const wordmark = [
-  `                              `,
-  `█▀▀█ █▀▀▀ █ █▀ █ █▀ █▀▀█     `,
-  ` __█ █^^^ ██▀  ██▀  █__█     `,
-  `▀▀▀  ▀▀▀▀ ▀ ▀▀ ▀ ▀▀ ▀▀▀▀     `,
+
+function fg(r: number, g: number, b: number) {
+  return `\x1b[38;2;${r};${g};${b}m`
+}
+
+const ORANGE = [255, 170, 24] as const
+const ORANGE_2 = [255, 140, 0] as const
+const CYAN = [0, 224, 214] as const
+const CYAN_2 = [58, 201, 255] as const
+const WHITE = [241, 244, 248] as const
+const MUTED = [151, 163, 176] as const
+const INK = [8, 11, 15] as const
+const BORDER = [28, 34, 40] as const
+
+const RESET = "\x1b[0m"
+const BOLD = "\x1b[1m"
+const DIM = "\x1b[2m"
+
+function paint(text: string, rgb: readonly [number, number, number], opts: { bold?: boolean; dim?: boolean } = {}) {
+  let res = ""
+  if (opts.bold) res += BOLD
+  if (opts.dim) res += DIM
+  res += fg(...rgb) + text + RESET
+  return res
+}
+
+function gradientText(text: string, leftRgb: readonly [number, number, number], rightRgb: readonly [number, number, number], bold = false) {
+  if (!text) return ""
+  let out = ""
+  const n = Math.max(1, text.length - 1)
+  for (let i = 0; i < text.length; i++) {
+    const r = Math.round(leftRgb[0] + (rightRgb[0] - leftRgb[0]) * i / n)
+    const g = Math.round(leftRgb[1] + (rightRgb[1] - leftRgb[1]) * i / n)
+    const b = Math.round(leftRgb[2] + (rightRgb[2] - leftRgb[2]) * i / n)
+    out += paint(text[i]!, [r, g, b], { bold })
+  }
+  return out
+}
+
+const brandWordmarkLines = [
+  "   █████       ████████ ██   ██ ██   ██  ██████ ",
+  "       ██      ██       ██  ██  ██  ██  ██    ██",
+  "       ██      █████    █████   █████   ██    ██",
+  "██     ██      ██       ██  ██  ██  ██  ██    ██",
+  " ███████       ████████ ██   ██ ██   ██  ██████ ",
 ]
-
-
-
-
-export const CancelledError = NamedError.create("UICancelledError", z.void())
-
-export const Style = {
-  TEXT_HIGHLIGHT: "\x1b[96m",
-  TEXT_HIGHLIGHT_BOLD: "\x1b[96m\x1b[1m",
-  TEXT_DIM: "\x1b[90m",
-  TEXT_DIM_BOLD: "\x1b[90m\x1b[1m",
-  TEXT_NORMAL: "\x1b[0m",
-  TEXT_NORMAL_BOLD: "\x1b[1m",
-  TEXT_WARNING: "\x1b[93m",
-  TEXT_WARNING_BOLD: "\x1b[93m\x1b[1m",
-  TEXT_DANGER: "\x1b[91m",
-  TEXT_DANGER_BOLD: "\x1b[91m\x1b[1m",
-  TEXT_SUCCESS: "\x1b[92m",
-  TEXT_SUCCESS_BOLD: "\x1b[92m\x1b[1m",
-  TEXT_INFO: "\x1b[94m",
-  TEXT_INFO_BOLD: "\x1b[94m\x1b[1m",
-}
-
-export function println(...message: string[]) {
-  print(...message)
-  process.stderr.write(EOL)
-}
-
-export function print(...message: string[]) {
-  blank = false
-  process.stderr.write(message.join(" "))
-}
-
-let blank = false
-export function empty() {
-  if (blank) return
-  println("" + Style.TEXT_NORMAL)
-  blank = true
-}
 
 export function logo(pad?: string) {
   if (!process.stdout.isTTY && !process.stderr.isTTY) {
     const result = []
-    for (const row of wordmark) {
+    for (const row of brandWordmarkLines) {
       if (pad) result.push(pad)
       result.push(row)
       result.push(EOL)
@@ -60,51 +60,60 @@ export function logo(pad?: string) {
     return result.join("").trimEnd()
   }
 
-  const result: string[] = []
-  const reset = "\x1b[0m"
-  const left = {
-    fg: "\x1b[90m",
-    shadow: "\x1b[38;5;235m",
-    bg: "\x1b[48;5;235m",
-  }
-  const right = {
-    fg: reset,
-    shadow: "\x1b[38;5;238m",
-    bg: "\x1b[48;5;238m",
-  }
-  const gap = " "
-  const draw = (line: string, fg: string, shadow: string, bg: string) => {
-    const parts: string[] = []
-    for (const char of line) {
-      if (char === "_") {
-        parts.push(bg, " ", reset)
-        continue
-      }
-      if (char === "^") {
-        parts.push(fg, bg, "▀", reset)
-        continue
-      }
-      if (char === "~") {
-        parts.push(shadow, "▀", reset)
-        continue
-      }
-      if (char === " ") {
-        parts.push(" ")
-        continue
-      }
-      parts.push(fg, char, reset)
-    }
-    return parts.join("")
-  }
-  glyphs.left.forEach((row, index) => {
-    if (pad) result.push(pad)
-    result.push(draw(row, left.fg, left.shadow, left.bg))
-    result.push(gap)
-    const other = glyphs.right[index] ?? ""
-    result.push(draw(other, right.fg, right.shadow, right.bg))
-    result.push(EOL)
+  const w = 74
+  const top = "╭" + "─".repeat(w - 2) + "╮"
+  const bottom = "╰" + "─".repeat(w - 2) + "╯"
+  const sep = "├" + "─".repeat(w - 2) + "┤"
+
+  const lines: string[] = []
+  
+  lines.push((pad || "") + paint(top, ORANGE))
+
+  const promptLeft = paint("›_", CYAN, { bold: true })
+  const dots = paint("●", ORANGE) + " " + paint("●", ORANGE_2) + " " + paint("●", CYAN)
+  const headerInner = promptLeft + " ".repeat(w - 8 - 6) + dots
+  lines.push((pad || "") + paint("│", ORANGE) + headerInner + paint("│", ORANGE))
+
+  lines.push((pad || "") + paint(sep, BORDER))
+
+  brandWordmarkLines.forEach((raw, idx) => {
+    let prefix = ""
+    if (idx === 0) prefix = "     "
+    else if (idx === 1) prefix = "  ╭─╮"
+    else if (idx === 2) prefix = " ╭╯●╰"
+    else if (idx === 3) prefix = " ╰╮ ╭"
+    else prefix = "  ╰─╯"
+
+    const prefixColored = gradientText(prefix, ORANGE_2, CYAN)
+    const wordmark = gradientText(raw, ORANGE, ORANGE_2, true)
+    const padLen = w - 2 - prefix.length - raw.length
+    const inner = prefixColored + wordmark + " ".repeat(Math.max(0, padLen))
+    lines.push((pad || "") + paint("│", ORANGE) + inner + paint("│", ORANGE))
   })
-  return result.join("").trimEnd()
+
+  lines.push((pad || "") + paint(sep, BORDER))
+
+  const subtitlePlain = "[ AI coding gecko • "
+  const zqmlPlain = "ZYML"
+  const suffixPlain = " support ]"
+  const subtitle = paint(subtitlePlain, WHITE, { bold: true }) +
+                   paint(zqmlPlain, CYAN, { bold: true }) +
+                   paint(suffixPlain, WHITE, { bold: true })
+  
+  const totalPlain = subtitlePlain.length + zqmlPlain.length + suffixPlain.length
+  const leftSpaces = Math.floor((w - 2 - totalPlain) / 2)
+  const rightSpaces = w - 2 - totalPlain - leftSpaces
+  lines.push((pad || "") + paint("│", ORANGE) + " ".repeat(leftSpaces) + subtitle + " ".repeat(rightSpaces) + paint("│", ORANGE))
+
+  const cmdPlain = "gecko:// safe autonomous coding ready"
+  const cmd = paint(cmdPlain, MUTED, { dim: true })
+  const leftSpacesCmd = Math.floor((w - 2 - cmdPlain.length) / 2)
+  const rightSpacesCmd = w - 2 - cmdPlain.length - leftSpacesCmd
+  lines.push((pad || "") + paint("│", ORANGE) + " ".repeat(leftSpacesCmd) + cmd + " ".repeat(rightSpacesCmd) + paint("│", ORANGE))
+
+  lines.push((pad || "") + paint(bottom, ORANGE))
+
+  return lines.join(EOL)
 }
 
 export async function input(prompt: string): Promise<string> {
