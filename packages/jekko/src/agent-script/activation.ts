@@ -24,9 +24,8 @@ export function scanZyalEnvelope(text: string | undefined | null): ZyalEnvelopeS
   const open = ZYAL_OPEN_FAST_RE.exec(text)
   const id = open?.[1]
   if (!id) return { kind: "none" }
-  const escaped = escapeRegExp(id)
-  const hasClose = new RegExp(`<<<END_ZYAL id=${escaped}>>>`).test(text)
-  const hasArm = new RegExp(`ZYAL_ARM RUN_FOREVER id=${escaped}\\b`).test(text)
+  const hasClose = text.includes(`<<<END_ZYAL id=${id}>>>`)
+  const hasArm = text.includes(`ZYAL_ARM RUN_FOREVER id=${id}`)
   return { kind: "zyal", id, hasClose, hasArm, complete: hasClose && hasArm }
 }
 
@@ -38,8 +37,4 @@ export function detectZyal(text: string): ZyalDetection {
     return { kind: "invalid", error: String(Cause.squash(exit.cause)) }
   }
   return { kind: "preview", parsed: exit.value, preview: exit.value.preview }
-}
-
-function escapeRegExp(input: string) {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }
