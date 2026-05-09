@@ -1,4 +1,5 @@
 import { createMemo, createSignal, onMount, Show } from "solid-js"
+import { RGBA, TextAttributes } from "@opentui/core"
 import { useSync } from "@tui/context/sync"
 import { map, pipe, sortBy } from "remeda"
 import { DialogSelect } from "@tui/ui/dialog-select"
@@ -7,7 +8,7 @@ import { useSDK } from "../context/sdk"
 import { DialogPrompt } from "../ui/dialog-prompt"
 import { Link } from "../ui/link"
 import { useTheme } from "../context/theme"
-import { TextAttributes } from "@opentui/core"
+
 import type { ProviderAuthAuthorization, ProviderAuthMethod } from "@jekko-ai/sdk/v2"
 import { DialogModel } from "./dialog-model"
 import { DialogJnoccioUnlock } from "./dialog-jnoccio-unlock"
@@ -18,6 +19,7 @@ import { isConsoleManagedProvider } from "@tui/util/provider-origin"
 import { useConnected } from "./use-connected"
 
 const PROVIDER_PRIORITY: Record<string, number> = {
+  jnoccio: -1,
   jekko: 0,
   "jekko-go": 1,
   openai: 2,
@@ -25,6 +27,10 @@ const PROVIDER_PRIORITY: Record<string, number> = {
   anthropic: 4,
   google: 5,
 }
+
+const FUSION_GREEN = RGBA.fromInts(80, 255, 0)
+const FUSION_CYAN = RGBA.fromInts(0, 235, 216)
+const FUSION_GOLD = RGBA.fromInts(255, 200, 0)
 
 export function createDialogProviderOptions() {
   const sync = useSync()
@@ -40,22 +46,44 @@ export function createDialogProviderOptions() {
       map((provider) => {
         const consoleManaged = isConsoleManagedProvider(sync.data.console_state.consoleManagedProviders, provider.id)
         const connected = sync.data.provider_next.connected.includes(provider.id)
+        const isJnoccio = provider.id === "jnoccio"
         const locked =
-          provider.id === "jnoccio" && Object.values(provider.models).every((model) => model.status === "locked")
+          isJnoccio && Object.values(provider.models).every((model) => model.status === "locked")
 
         return {
-          title: provider.name,
+          title: isJnoccio ? `🔒 ${provider.name}` : provider.name,
           value: provider.id,
           description:
-            {
-              jekko: "(Recommended)",
-              anthropic: "(API key)",
-              openai: "(ChatGPT Plus/Pro or API key)",
-              "jekko-go": "Low cost subscription for everyone",
-            }[provider.id] ?? (locked ? "Unlock with your Jnoccio key file." : undefined),
+            isJnoccio
+              ? (locked ? "Paste your 128-char secret to unlock" : "Local AI fusion engine")
+              : {
+                  jekko: "(Recommended)",
+                  anthropic: "(API key)",
+                  openai: "(ChatGPT Plus/Pro or API key)",
+                  "jekko-go": "Low cost subscription for everyone",
+                }[provider.id] ?? undefined,
           footer: locked ? "Locked" : consoleManaged ? sync.data.console_state.activeOrgName : undefined,
-          category: provider.id in PROVIDER_PRIORITY ? "Popular" : "Other",
-          gutter: connected && onboarded() ? () => <text fg={theme.success}>✓</text> : undefined,
+          category: isJnoccio
+            ? "Fusion"
+            : provider.id in PROVIDER_PRIORITY
+              ? "Popular"
+              : "Other",
+          categoryView: isJnoccio
+            ? (
+                <text>
+                  <span style={{ fg: FUSION_GREEN }} attributes={TextAttributes.BOLD}>⚡ </span>
+                  <span style={{ fg: FUSION_CYAN }} attributes={TextAttributes.BOLD}>F</span>
+                  <span style={{ fg: FUSION_GREEN }} attributes={TextAttributes.BOLD}>u</span>
+                  <span style={{ fg: FUSION_GOLD }} attributes={TextAttributes.BOLD}>s</span>
+                  <span style={{ fg: FUSION_CYAN }} attributes={TextAttributes.BOLD}>i</span>
+                  <span style={{ fg: FUSION_GREEN }} attributes={TextAttributes.BOLD}>o</span>
+                  <span style={{ fg: FUSION_GOLD }} attributes={TextAttributes.BOLD}>n</span>
+                </text>
+              )
+            : undefined,
+          gutter: isJnoccio
+            ? () => <text fg={locked ? FUSION_GOLD : FUSION_GREEN}>{locked ? "🔒" : "✓"}</text>
+            : connected && onboarded() ? () => <text fg={theme.success}>✓</text> : undefined,
           async onSelect() {
             if (consoleManaged) return
             if (locked) {
