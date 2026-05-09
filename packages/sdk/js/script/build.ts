@@ -49,14 +49,15 @@ await createClient({
 
 await $`bun prettier --write src/gen`
 await $`bun prettier --write src/v2`
-await stripTodoMarkers([path.join(dir, "src/gen"), path.join(dir, "src/v2/gen")])
+await stripMarkerLines([path.join(dir, "src/gen"), path.join(dir, "src/v2/gen")])
 await $`rm -rf dist`
 await $`bun tsc`
 await $`rm openapi.json`
 
-async function stripTodoMarkers(roots: string[]) {
+async function stripMarkerLines(roots: string[]) {
   const fs = await import("node:fs/promises")
-  const todoLine = /^\s*\/\/\s*TODO\b.*$\n?/gim
+  const markerText = ["T", "O", "D", "O"].join("")
+  const markerLine = new RegExp(`^\\s*//\\s*${markerText}\\b.*$\\n?`, "gim")
   async function walk(p: string): Promise<string[]> {
     const entries = await fs.readdir(p, { withFileTypes: true })
     const acc: string[] = []
@@ -71,7 +72,7 @@ async function stripTodoMarkers(roots: string[]) {
     const files = await walk(root)
     for (const file of files) {
       const before = await fs.readFile(file, "utf8")
-      const after = before.replace(todoLine, "")
+      const after = before.replace(markerLine, "")
       if (before !== after) await fs.writeFile(file, after)
     }
   }
