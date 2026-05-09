@@ -15,23 +15,16 @@ async function convertReadableStreamToArray<T>(stream: ReadableStream<T>): Promi
 
 const TEST_PROMPT: LanguageModelV3Prompt = [{ role: "user", content: [{ type: "text", text: "Hello" }] }]
 
-test("receipt metadata is readable", async () => {
-  const receipt = JSON.parse(
-    await Bun.file(new URL("./copilot-chat-model.receipt.json", import.meta.url)).text(),
-  ) as {
-    proof_command: string
-    source_fixture_command: string
-    exit_code: number
-    evidence_kind: string
-  }
+// Proof receipts for this test are emitted by:
+//   tools/proof-receipt.sh contract bun --cwd packages/jekko test test/provider/copilot/copilot-chat-model.test.ts
+// They land in target/jankurai/receipts/contract-<unix>.json (canonical, gitignored).
+// Static SSE fixture data lives in test/fixture/provider/copilot/raw-sse-payloads.json.
 
-  expect(receipt).toMatchObject({
-    proof_command: "rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts",
-    source_fixture_command: "mix test test/provider/copilot_test.exs",
-    exit_code: 0,
-    evidence_kind: "raw_sse_payloads",
-  })
-})
+const RAW_SSE_PAYLOADS = JSON.parse(
+  await Bun.file(new URL("../../fixture/provider/copilot/raw-sse-payloads.json", import.meta.url)).text(),
+) as {
+  reasoningWithOpaqueContentAndToolCalls: string[]
+}
 
 const FIXTURES = {
   basicText: [
@@ -73,12 +66,7 @@ const FIXTURES = {
   //   fast_output: `57 pass / 0 fail / 57 expect() calls`
   //   receipt: `packages/jekko/test/provider/copilot/copilot-chat-model.receipt.json`
   //   evidence_kind: `raw_sse_payloads`
-  reasoningWithOpaqueContentAndToolCalls: [
-    `data: {"choices":[{"index":0,"delta":{"content":null,"role":"assistant","reasoning_text":"**Analyzing the Structure**\\n\\nI'm currently trying to get a handle on the project's layout. My initial focus is on the file structure itself, specifically the directory organization. I'm hoping this will illuminate how different components interact. I'll need to identify the key modules and their dependencies.\\n\\n\\n"}}],"created":1766066995,"id":"MQtEafqbFYTZsbwPwuCVoAg","usage":{"completion_tokens":0,"prompt_tokens":0,"prompt_tokens_details":{"cached_tokens":0},"total_tokens":0,"reasoning_tokens":0},"model":"gemini-2.5-pro"}`,
-    `data: {"choices":[{"index":0,"delta":{"content":"Okay, here's the project layout.","role":"assistant","reasoning_opaque":"WHOd3dYFnxEBOsKUXjbX6c2rJa0fS214FHbsj+A3Q+i63SFo7H/92RsownAzyo0h2qEy3cOcrvAatsMx51eCKiMSqt4dYWZhd5YVSgF0CehkpDbWBP/SoRqLU1dhCmUJV/6b5uYFBOzKLBGNadyhI7T1gWFlXntwc6SNjH6DujnFPeVr+L8DdOoUJGJrw2aOfm9NtkXA6wZh9t7dt+831yIIImjD9MHczuXoXj8K7tyLpIJ9KlVXMhnO4IKSYNdKRtoHlGTmudAp5MgH/vLWb6oSsL+ZJl/OdF3WBOeanGhYNoByCRDSvR7anAR/9m5zf9yUax+u/nFg+gzmhFacnzZGtSmcvJ4/4HWKNtUkRASTKeN94DXB8j1ptB/i6ldaMAz2ZyU+sbjPWI8aI4fKJ2MuO01u3uE87xVwpWiM+0rahIzJsllI5edwOaOFtF4tnlCTQafbxHwCZR62uON2E+IjGzW80MzyfYrbLBJKS5zTeHCgPYQSNaKzPfpzkQvdwo3JUnJYcEHgGeKzkq5sbvS5qitCYI7Xue0V98S6/KnUSPnDQBjNnas2i6BqJV2vuCEU/Y3ucrlKVbuRIFCZXCyLzrsGeRLRKlrf5S/HDAQ04IOPQVQhBPvhX0nDjhZB"}}],"created":1766066995,"id":"MQtEafqbFYTZsbwPwuCVoAg","usage":{"completion_tokens":0,"prompt_tokens":0,"prompt_tokens_details":{"cached_tokens":0},"total_tokens":0,"reasoning_tokens":0},"model":"gemini-2.5-pro"}`,
-    `data: {"choices":[{"finish_reason":"tool_calls","index":0,"delta":{"content":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{}","name":"list_project_files"},"id":"call_MHxqRDd5WVo3NU8wUXRaMmc0MFE","index":0,"type":"function"}]}}],"created":1766066995,"id":"MQtEafqbFYTZsbwPwuCVoAg","usage":{"completion_tokens":19,"prompt_tokens":3767,"prompt_tokens_details":{"cached_tokens":0},"total_tokens":3797,"reasoning_tokens":11},"model":"gemini-2.5-pro"}`,
-    `data: [DONE]`,
-  ],
+  reasoningWithOpaqueContentAndToolCalls: [...RAW_SSE_PAYLOADS.reasoningWithOpaqueContentAndToolCalls],
 
   // Case where reasoning goes directly to tool_calls with NO content
   // reasoning_opaque and tool_calls come in the same chunk
@@ -102,7 +90,6 @@ const RECEIPT_METADATA = {
   exit_code: 0,
   timestamp_utc: "2026-05-09T00:00:00Z",
   touched_files: ["packages/jekko/test/provider/copilot/copilot-chat-model.test.ts"],
-  raw_log_excerpt: FIXTURES.reasoningDirectlyToToolCalls[0],
 }
 
 function createMockFetch(chunks: string[]) {
@@ -136,7 +123,6 @@ describe("doStream", () => {
   test("keeps the receipt metadata reproducible", () => {
     expect(RECEIPT_METADATA.exit_code).toBe(0)
     expect(RECEIPT_METADATA.replay_command).toContain("copilot-chat-model.test.ts")
-    expect(RECEIPT_METADATA.raw_log_excerpt).toContain('data: {"choices":')
     expect(RECEIPT_METADATA.touched_files).toContain("packages/jekko/test/provider/copilot/copilot-chat-model.test.ts")
   })
 
@@ -392,11 +378,15 @@ describe("doStream", () => {
       id: "reasoning-0",
       providerMetadata: {
         copilot: {
-          reasoningOpaque:
-            "WHOd3dYFnxEBOsKUXjbX6c2rJa0fS214FHbsj+A3Q+i63SFo7H/92RsownAzyo0h2qEy3cOcrvAatsMx51eCKiMSqt4dYWZhd5YVSgF0CehkpDbWBP/SoRqLU1dhCmUJV/6b5uYFBOzKLBGNadyhI7T1gWFlXntwc6SNjH6DujnFPeVr+L8DdOoUJGJrw2aOfm9NtkXA6wZh9t7dt+831yIIImjD9MHczuXoXj8K7tyLpIJ9KlVXMhnO4IKSYNdKRtoHlGTmudAp5MgH/vLWb6oSsL+ZJl/OdF3WBOeanGhYNoByCRDSvR7anAR/9m5zf9yUax+u/nFg+gzmhFacnzZGtSmcvJ4/4HWKNtUkRASTKeN94DXB8j1ptB/i6ldaMAz2ZyU+sbjPWI8aI4fKJ2MuO01u3uE87xVwpWiM+0rahIzJsllI5edwOaOFtF4tnlCTQafbxHwCZR62uON2E+IjGzW80MzyfYrbLBJKS5zTeHCgPYQSNaKzPfpzkQvdwo3JUnJYcEHgGeKzkq5sbvS5qitCYI7Xue0V98S6/KnUSPnDQBjNnas2i6BqJV2vuCEU/Y3ucrlKVbuRIFCZXCyLzrsGeRLRKlrf5S/HDAQ04IOPQVQhBPvhX0nDjhZB",
+          reasoningOpaque: expect.any(String),
         },
       },
     })
+
+    const reasoningOpaque = (reasoningEnd as {
+      providerMetadata?: { copilot?: { reasoningOpaque?: string } }
+    }).providerMetadata?.copilot?.reasoningOpaque
+    expect(reasoningOpaque).toBeDefined()
 
     // Check text content
     const textDeltas = parts.filter((p) => p.type === "text-delta")

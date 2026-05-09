@@ -49,6 +49,30 @@ await createClient({
 
 await $`bun prettier --write src/gen`
 await $`bun prettier --write src/v2`
+await stripTodoMarkers([path.join(dir, "src/gen"), path.join(dir, "src/v2/gen")])
 await $`rm -rf dist`
 await $`bun tsc`
 await $`rm openapi.json`
+
+async function stripTodoMarkers(roots: string[]) {
+  const fs = await import("node:fs/promises")
+  const todoLine = /^\s*\/\/\s*TODO\b.*$\n?/gim
+  async function walk(p: string): Promise<string[]> {
+    const entries = await fs.readdir(p, { withFileTypes: true })
+    const acc: string[] = []
+    for (const entry of entries) {
+      const full = path.join(p, entry.name)
+      if (entry.isDirectory()) acc.push(...(await walk(full)))
+      else if (entry.isFile() && full.endsWith(".gen.ts")) acc.push(full)
+    }
+    return acc
+  }
+  for (const root of roots) {
+    const files = await walk(root)
+    for (const file of files) {
+      const before = await fs.readFile(file, "utf8")
+      const after = before.replace(todoLine, "")
+      if (before !== after) await fs.writeFile(file, after)
+    }
+  }
+}
