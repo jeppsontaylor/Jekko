@@ -88,11 +88,16 @@ export function Autocomplete(props: {
   const frecency = useFrecency()
   const tuiConfig = useTuiConfig()
 
-  const [store, setStore] = createStore({
+  const [store, setStore] = createStore<{
+    index: number
+    selected: number
+    visible: AutocompleteRef["visible"]
+    input: "keyboard" | "mouse"
+  }>({
     index: 0,
     selected: 0,
-    visible: false as AutocompleteRef["visible"],
-    input: "keyboard" as "keyboard" | "mouse",
+    visible: false,
+    input: "keyboard",
   })
 
   const [positionTick, setPositionTick] = createSignal(0)
@@ -144,13 +149,6 @@ export function Autocomplete(props: {
   createEffect(() => {
     const next = filter()
     setSearch(next ? next : "")
-  })
-
-  // When the filter changes due to how TUI works, the mousemove might still be triggered
-  // via a synthetic event as the layout moves underneath the cursor. This is a alternative to make sure the input mode remains keyboard so
-  // that the mouseover event doesn't trigger when filtering.
-  createEffect(() => {
-    filter()
     setStore("input", "keyboard")
   })
 

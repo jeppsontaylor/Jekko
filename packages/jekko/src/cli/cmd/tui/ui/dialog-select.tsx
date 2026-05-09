@@ -62,10 +62,14 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
     default_value: props.default_value ?? "Search",
   } as { default_value: string }
 
-  const [store, setStore] = createStore({
+  const [store, setStore] = createStore<{
+    selected: number
+    filter: string
+    input: "keyboard" | "mouse"
+  }>({
     selected: 0,
     filter: "",
-    input: "keyboard" as "keyboard" | "mouse",
+    input: "keyboard",
   })
 
   createEffect(
@@ -105,9 +109,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
     return result
   })
 
-  // When the filter changes due to how TUI works, the mousemove might still be triggered
-  // via a synthetic event as the layout moves underneath the cursor. This is a alternative to make sure the input mode remains keyboard
-  // that the mouseover event doesn't trigger when filtering.
+  // Keep keyboard mode after filtering because layout shifts can synthesize mousemove events.
   createEffect(() => {
     filtered()
     setStore("input", "keyboard")
@@ -281,14 +283,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
           </box>
         </Show>
       </box>
-      <Show
-        when={grouped().length > 0}
-        fallback={
-          <box paddingLeft={4} paddingRight={4} paddingTop={1}>
-            <text fg={theme.textMuted}>No results found</text>
-          </box>
-        }
-      >
+      {grouped().length > 0 ? (
         <scrollbox
           paddingLeft={1}
           paddingRight={1}
@@ -302,16 +297,11 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
               <>
                 <Show when={category}>
                   <box paddingTop={index() > 0 ? 1 : 0} paddingLeft={3}>
-                    <Show
-                      when={options[0]?.categoryView}
-                      fallback={
-                        <text fg={theme.accent} attributes={TextAttributes.BOLD}>
-                          {category}
-                        </text>
-                      }
-                    >
-                      {options[0]?.categoryView}
-                    </Show>
+                    {options[0]?.categoryView ?? (
+                      <text fg={theme.accent} attributes={TextAttributes.BOLD}>
+                        {category}
+                      </text>
+                    )}
                   </box>
                 </Show>
                 <For each={options}>
@@ -367,8 +357,12 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
             )}
           </For>
         </scrollbox>
-      </Show>
-      <Show when={keybinds().length} fallback={<box flexShrink={0} />}>
+      ) : (
+        <box paddingLeft={4} paddingRight={4} paddingTop={1}>
+          <text fg={theme.textMuted}>No results found</text>
+        </box>
+      )}
+      {keybinds().length ? (
         <box
           paddingRight={2}
           paddingLeft={4}
@@ -402,7 +396,9 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
             </For>
           </box>
         </box>
-      </Show>
+      ) : (
+        <box flexShrink={0} />
+      )}
     </box>
   )
 }

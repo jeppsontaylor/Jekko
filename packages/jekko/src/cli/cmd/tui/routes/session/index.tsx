@@ -66,7 +66,6 @@ import { useCommandDialog } from "@tui/component/dialog-command"
 import type { DialogContext } from "@tui/ui/dialog"
 import { useKeybind } from "@tui/context/keybind"
 import { useDialog } from "../../ui/dialog"
-import { TodoItem } from "../../component/todo-item"
 import { DialogMessage } from "./dialog-message"
 import type { PromptInfo } from "../../component/prompt/history"
 import { DialogConfirm } from "@tui/ui/dialog-confirm"
@@ -115,6 +114,10 @@ addDefaultParsers(parsers.parsers)
 const GO_UPSELL_LAST_SEEN_AT = "go_upsell_last_seen_at"
 const GO_UPSELL_DONT_SHOW = "go_upsell_dont_show"
 const GO_UPSELL_WINDOW = 86_400_000 // 24 hrs
+
+function emptyPromptParts(): PromptInfo["parts"] {
+  return []
+}
 
 // Pulls a human-readable reason out of the daemon run's `last_exit_result_json`
 // payload. The shape varies by exit path — stop checks return `{satisfied,
@@ -670,7 +673,7 @@ export function Session() {
         dialog.replace(() => (
           <DialogDaemon
             onSelect={(text) => {
-              prompt?.set({ input: text, parts: [] })
+              prompt?.set({ input: text, parts: emptyPromptParts() })
               prompt?.focus()
             }}
           />
@@ -733,7 +736,7 @@ export function Session() {
               if (part.type === "file") agg.parts.push(part)
               return agg
             },
-            { input: "", parts: [] as PromptInfo["parts"] },
+            { input: "", parts: emptyPromptParts() },
           ),
         )
         dialog.clear()
@@ -757,7 +760,7 @@ export function Session() {
           void sdk.client.session.unrevert({
             sessionID: route.sessionID,
           })
-          prompt?.set({ input: "", parts: [] })
+          prompt?.set({ input: "", parts: emptyPromptParts() })
           return
         }
         void sdk.client.session.revert({

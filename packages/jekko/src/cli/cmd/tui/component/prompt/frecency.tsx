@@ -26,7 +26,11 @@ export const { use: useFrecency, provider: FrecencyProvider } = createSimpleCont
         .filter(Boolean)
         .map((line) => {
           try {
-            return JSON.parse(line) as { path: string; frequency: number; lastOpen: number }
+            const parsed = JSON.parse(line)
+            if (typeof parsed === "object" && parsed !== null && "path" in parsed && "frequency" in parsed && "lastOpen" in parsed) {
+              return parsed as { path: string; frequency: number; lastOpen: number }
+            }
+            return null
           } catch {
             return null
           }

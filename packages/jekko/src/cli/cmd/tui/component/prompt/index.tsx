@@ -1681,27 +1681,18 @@ export function Prompt(props: PromptProps) {
               </box>
               <Show when={isZyalInput()}>
                 <box flexDirection="row" gap={1} alignItems="center">
-                  <Switch
-                    fallback={
-                      <text fg={theme.warning}>
-                        <b>✓ ZYAL</b>
-                      </text>
-                    }
-                  >
-                    <Match when={daemonDraft().kind === "preview"}>
-                      <text fg={theme.warning}>
-                        <b>✓ ZYAL</b>
-                      </text>
-                    </Match>
-                    <Match when={daemonDraft().kind === "invalid"}>
-                      <text fg={theme.error}>
-                        <b>✗ ZYAL</b>
-                        <span style={{ fg: theme.textMuted }}>
-                          {" "}{(daemonDraft() as { kind: "invalid"; error: string }).error.slice(0, 40)}
-                        </span>
-                      </text>
-                    </Match>
-                  </Switch>
+                  {daemonDraft().kind === "invalid" ? (
+                    <text fg={theme.error}>
+                      <b>✗ ZYAL</b>
+                      <span style={{ fg: theme.textMuted }}>
+                        {" "}{(daemonDraft() as { kind: "invalid"; error: string }).error.slice(0, 40)}
+                      </span>
+                    </text>
+                  ) : (
+                    <text fg={theme.warning}>
+                      <b>✓ ZYAL</b>
+                    </text>
+                  )}
                 </box>
               </Show>
               <Show when={hasRightContent()}>
@@ -1749,9 +1740,11 @@ export function Prompt(props: PromptProps) {
               >
                 <box flexShrink={0} flexDirection="row" gap={1}>
                   <box marginLeft={1}>
-                    <Show when={kv.get("animations_enabled", true)} fallback={<text fg={theme.textMuted}>[⋯]</text>}>
+                    {kv.get("animations_enabled", true) ? (
                       <spinner color={spinnerDef().color} frames={spinnerDef().frames} interval={40} />
-                    </Show>
+                    ) : (
+                      <text fg={theme.textMuted}>[⋯]</text>
+                    )}
                   </box>
                   <box flexDirection="row" gap={1} flexShrink={0}>
                     {(() => {

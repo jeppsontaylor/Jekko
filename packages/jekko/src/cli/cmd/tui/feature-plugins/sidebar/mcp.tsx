@@ -57,7 +57,7 @@ function View(props: { api: TuiPluginApi }) {
                 <text fg={theme().text} wrapMode="word">
                   {item.name}{" "}
                   <span style={{ fg: theme().textMuted }}>
-                    <Switch fallback={item.status}>
+                    <Switch>
                       <Match when={item.status === "connected"}>Connected</Match>
                       <Match when={item.status === "failed"}>
                         <i>{item.error}</i>
@@ -65,6 +65,7 @@ function View(props: { api: TuiPluginApi }) {
                       <Match when={item.status === "disabled"}>Disabled</Match>
                       <Match when={item.status === "needs_auth"}>Needs auth</Match>
                       <Match when={item.status === "needs_client_registration"}>Needs client ID</Match>
+                      <Match when={true}>{item.status}</Match>
                     </Switch>
                   </span>
                 </text>

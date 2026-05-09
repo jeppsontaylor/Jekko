@@ -4,7 +4,6 @@ import path from "node:path"
 import { onCleanup, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 import z from "zod"
-import { isRecord } from "@/util/record"
 import { createSimpleContext } from "./helper"
 import { resolveZedDbPath, resolveZedSelection } from "./editor-zed"
 
@@ -82,6 +81,12 @@ const EditorServerInfoSchema = z.object({
       version: z.string().optional(),
     })
     .optional(),
+})
+
+const EditorLockFileSchema = z.object({
+  authToken: z.string().optional(),
+  transport: z.literal("ws").optional(),
+  workspaceFolders: z.array(z.string()).optional(),
 })
 
 type JsonRpcMessage = z.infer<typeof JsonRpcMessageSchema>
@@ -395,17 +400,14 @@ function readEditorLockFile(filePath: string): EditorLockFile | undefined {
   if (!port) return
 
   try {
-    const parsed = JSON.parse(readFileSync(filePath, "utf-8")) as unknown
-    if (!isRecord(parsed)) return
-    if (parsed.transport !== undefined && parsed.transport !== "ws") return
+    const parsed = EditorLockFileSchema.safeParse(JSON.parse(readFileSync(filePath, "utf-8")))
+    if (!parsed.success) return
 
     return {
       port,
-      authToken: typeof parsed.authToken === "string" ? parsed.authToken : undefined,
-      transport: typeof parsed.transport === "string" ? parsed.transport : undefined,
-      workspaceFolders: Array.isArray(parsed.workspaceFolders)
-        ? parsed.workspaceFolders.filter((value): value is string => typeof value === "string")
-        : [],
+      authToken: parsed.data.authToken,
+      transport: parsed.data.transport,
+      workspaceFolders: parsed.data.workspaceFolders ?? [],
       mtimeMs: statSync(filePath).mtimeMs,
     }
   } catch {

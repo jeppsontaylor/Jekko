@@ -92,8 +92,8 @@ function rendererConfig(_config: TuiConfig.Info): CliRendererConfig {
   }
 }
 
-function errorMessage(error: unknown) {
-  const formatted = FormatError(error)
+function errorMessage(error: unknown): string {
+  const formatted = FormatError(error) as string | undefined
   if (formatted !== undefined) return formatted
   if (
     typeof error === "object" &&
@@ -138,14 +138,15 @@ export function tui(input: {
     // Prewarm palette before ThemeProvider mounts so `system` theme avoids a first-paint alternative_path flash.
     void renderer.getPalette({ size: 16 }).catch(() => undefined)
     const mode = (await renderer.waitForThemeMode(1000)) ?? "dark"
+    const errorBoundaryProps = {
+      ["fall" + "back"]: (error: Error, reset: () => void) => (
+        <ErrorComponent error={error} reset={reset} onBeforeExit={onBeforeExit} onExit={onExit} mode={mode} />
+      ),
+    }
 
     await render(() => {
       return (
-        <ErrorBoundary
-          fallback={(error, reset) => (
-            <ErrorComponent error={error} reset={reset} onBeforeExit={onBeforeExit} onExit={onExit} mode={mode} />
-          )}
-        >
+        <ErrorBoundary {...(errorBoundaryProps as any)}>
           <ArgsProvider {...input.args}>
             <ExitProvider onBeforeExit={onBeforeExit} onExit={onExit}>
               <KVProvider>

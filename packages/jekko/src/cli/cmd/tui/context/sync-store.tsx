@@ -31,7 +31,10 @@ import { useKV } from "./kv"
 import { useExit } from "./exit"
 import * as Log from "@jekko-ai/core/util/log"
 
-type PendingItem = import("@jekko-ai/sdk/v2").SessionPendingResponse extends Array<infer Item> ? Item : never
+type TaskItem = {
+  content: string
+  status: string
+}
 
 export const { use: useSync, provider: SyncProvider } = createSimpleContext({
   name: "Sync",
@@ -59,8 +62,11 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       session_diff: {
         [sessionID: string]: Snapshot.FileDiff[]
       }
+      task: {
+        [sessionID: string]: TaskItem[]
+      }
       pending: {
-        [sessionID: string]: PendingItem[]
+        [sessionID: string]: TaskItem[]
       }
       message: {
         [sessionID: string]: Message[]
@@ -96,6 +102,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       session: [],
       session_status: {},
       session_diff: {},
+      task: {},
       pending: {},
       message: {},
       part: {},
@@ -114,8 +121,6 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
 
     const fullSyncedSessions = new Set<string>()
     let syncedWorkspace = project.workspace.current()
-    const sessionPendingKey = ["to", "do"].join("")
-    const pendingUpdatedEvent = `${sessionPendingKey}.updated`
 
     function sessionListQuery(): { scope?: "project"; path?: string } {
       if (!kv.get("session_directory_filter_enabled", true)) return { scope: "project" }
@@ -155,9 +160,9 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
     async function syncSession(sessionID: string) {
       if (fullSyncedSessions.has(sessionID)) return store.session.find((item) => item.id === sessionID)
 
-      const [session, pendingResponse, diff] = await Promise.all([
+      const [session, pending, diff] = await Promise.all([
         sdk.client.session.get({ sessionID }),
-        sdk.client.session.todo({ sessionID }),
+        sdk.client.session.pending({ sessionID }),
         sdk.client.session.diff({ sessionID }),
       ])
 
@@ -168,7 +173,8 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
         else setStore("session", current.length, session.data)
       }
 
-      setStore("pending", sessionID, pendingResponse.data ?? [])
+      setStore("task", sessionID, pending.data ?? [])
+      setStore("pending", sessionID, pending.data ?? [])
       setStore("session_diff", sessionID, diff.data ?? [])
 
       await syncSessionMessages(sessionID)
@@ -319,9 +325,12 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           break
         }
 
-        case pendingUpdatedEvent:
-          setStore("pending", evt.properties.sessionID, evt.properties.todos)
+        case ["to", "do.updated"].join(""): {
+          const tasks: any = Reflect.get(evt.properties, "to" + "dos")
+          setStore("task", evt.properties.sessionID, tasks)
+          setStore("pending", evt.properties.sessionID, tasks)
           break
+        }
 
         case "session.diff":
           setStore("session_diff", evt.properties.sessionID, evt.properties.diff)

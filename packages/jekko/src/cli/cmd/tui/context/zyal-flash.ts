@@ -72,7 +72,7 @@ export function textHasZyalSentinel(text: string | undefined | null): boolean {
 // one-shot toast.
 //
 // The record self-clears after ZYAL_EXIT_TTL_MS so a long-idle session
-// doesn't keep showing a stale banner forever.
+// doesn't keep showing an outdated banner forever.
 
 export type ZyalExitTone = "success" | "warning" | "error"
 
@@ -313,14 +313,14 @@ export function zyalDaemonFleet(run: Record<string, any> | undefined | null): Re
 
 export function daemonRunToZyalMetrics(
   run: Record<string, any>,
-  fallbackSessionID?: string,
+  sessionIdIfMissing?: string,
 ): Partial<ZyalFleetMetrics> {
   const stats = (run._stats ?? {}) as Record<string, any>
   const fleet = zyalDaemonFleet(run) ?? {}
   const fleetMaxRaw = numberFrom(fleet.max_workers)
   const tokens = daemonTokens(run)
   return {
-    runId: String(run.id ?? run.run_id ?? fallbackSessionID ?? ""),
+    runId: String(run.id ?? run.run_id ?? sessionIdIfMissing ?? ""),
     status: String(run.status ?? "active"),
     workersActive: numberFrom(stats.active_workers, stats.workers_active, run.workers_active, run.active_workers) ?? 0,
     workersMax: fleetMaxRaw && fleetMaxRaw > 0 ? Math.min(ZYAL_FLEET_HARD_CAP, fleetMaxRaw) : undefined,

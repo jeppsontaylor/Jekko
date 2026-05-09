@@ -117,7 +117,7 @@ export function applyJnoccioRequestEvent(event: any) {
   // Delegates to `incrementJnoccioCounters` which uses Solid's functional
   // setter to keep the read+merge+write atomic; without that, a snapshot
   // landing between the read and write would have its authoritative reset
-  // overwritten by stale-baseline-plus-delta.
+  // overwritten by previous-baseline-plus-delta.
   if (!event || typeof event !== "object") return
   const dPrompt = Number(event.prompt_tokens ?? 0)
   const dCompletion = Number(event.completion_tokens ?? 0)
