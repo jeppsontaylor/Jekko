@@ -26,7 +26,7 @@ jobs:
       - name: jankurai audit
         run: jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl
       - name: Upload SARIF to code scanning
-        uses: github/codeql-action/upload-sarif@87ee52e02e94f35331f6f3e669e5b5654a492427
+        uses: github/codeql-action/upload-sarif@v4.35.4
         with:
           sarif_file: target/jankurai/jankurai.sarif
       - name: Proofbind verify
@@ -85,10 +85,10 @@ jobs:
             target/jankurai/security/lane-status.txt
       - name: Upload SARIF to code scanning
         if: always()
-        uses: github/codeql-action/upload-sarif@7851e55dc3be31ec4bcc3ef98453de2cb306e698
+        uses: github/codeql-action/upload-sarif@v4.35.4
         with:
           sarif_file: target/jankurai/jankurai.sarif
       - name: Dependency review
-        uses: actions/dependency-review-action@5f95995a508f4247e8dcd9dc70b4e1dd2a76b8da
+        uses: actions/dependency-review-action@v5.0.0
       - name: SLSA provenance
-        uses: slsa-framework/slsa-github-generator/.github/actions/generator-generic@53eccc4420b7522e11420f013472e2195a175b23
+        uses: slsa-framework/slsa-github-generator/.github/actions/generator-generic@v2.1.0
