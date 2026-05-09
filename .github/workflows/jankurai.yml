@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
       - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
       - name: Install jankurai
-        run: cargo install jankurai --locked
+        run: cargo install --path crates/jankurai --locked
       - name: jankurai version
         run: jankurai --version
       - name: jankurai audit
