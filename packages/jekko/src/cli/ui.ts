@@ -4,14 +4,15 @@ function fg(r: number, g: number, b: number) {
   return `\x1b[38;2;${r};${g};${b}m`
 }
 
-const ORANGE = [255, 170, 24] as const
-const ORANGE_2 = [255, 140, 0] as const
-const CYAN = [0, 224, 214] as const
-const CYAN_2 = [58, 201, 255] as const
-const WHITE = [241, 244, 248] as const
-const MUTED = [151, 163, 176] as const
-const INK = [8, 11, 15] as const
-const BORDER = [28, 34, 40] as const
+const GECKO = {
+  lime: [188, 255, 72] as const,
+  cyan: [0, 235, 216] as const,
+  aqua: [62, 196, 255] as const,
+  gold: [255, 190, 48] as const,
+  orange: [255, 102, 36] as const,
+  white: [246, 250, 252] as const,
+  muted: [128, 146, 156] as const,
+}
 
 const RESET = "\x1b[0m"
 const BOLD = "\x1b[1m"
@@ -53,36 +54,113 @@ function paint(text: string, rgb: readonly [number, number, number], opts: { bol
   return res
 }
 
-function gradientText(
+function clamp01(n: number): number {
+  return Math.max(0, Math.min(1, n))
+}
+
+function mixColor(
+  left: readonly [number, number, number],
+  right: readonly [number, number, number],
+  t: number,
+): [number, number, number] {
+  const k = clamp01(t)
+  return [
+    Math.round(left[0] + (right[0] - left[0]) * k),
+    Math.round(left[1] + (right[1] - left[1]) * k),
+    Math.round(left[2] + (right[2] - left[2]) * k),
+  ]
+}
+
+type Palette = {
+  topLeft: readonly [number, number, number]
+  topRight: readonly [number, number, number]
+  bottomLeft: readonly [number, number, number]
+  bottomRight: readonly [number, number, number]
+}
+
+const JEKKO_PALETTE: Palette = {
+  topLeft: GECKO.lime,
+  topRight: GECKO.cyan,
+  bottomLeft: GECKO.gold,
+  bottomRight: GECKO.orange,
+}
+
+function geckoColor(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  palette: Palette,
+): [number, number, number] {
+  const tx = width <= 1 ? 0 : x / (width - 1)
+  const ty = height <= 1 ? 0 : y / (height - 1)
+  const top = mixColor(palette.topLeft, palette.topRight, tx)
+  const bottom = mixColor(palette.bottomLeft, palette.bottomRight, tx)
+  const base = mixColor(top, bottom, ty)
+
+  // Diagonal shine
+  const shineBand = Math.abs(tx - ty)
+  const shine = clamp01(1 - shineBand / 0.085) * 0.28
+  const scaleFleck = (x * 17 + y * 31) % 71 === 0 ? 0.16 : 0
+  const blend = Math.min(0.38, shine + scaleFleck)
+
+  return mixColor(base, GECKO.white, blend)
+}
+
+function gradientLine(
   text: string,
-  leftRgb: readonly [number, number, number],
-  rightRgb: readonly [number, number, number],
-  bold = false,
-) {
-  if (!text) return ""
+  y: number,
+  totalRows: number,
+  palette: Palette,
+  opts: { bold?: boolean; dim?: boolean } = {},
+): string {
+  const chars = Array.from(text)
+  const width = chars.length
   let out = ""
-  const n = Math.max(1, text.length - 1)
-  for (let i = 0; i < text.length; i++) {
-    const r = Math.round(leftRgb[0] + ((rightRgb[0] - leftRgb[0]) * i) / n)
-    const g = Math.round(leftRgb[1] + ((rightRgb[1] - leftRgb[1]) * i) / n)
-    const b = Math.round(leftRgb[2] + ((rightRgb[2] - leftRgb[2]) * i) / n)
-    out += paint(text[i]!, [r, g, b], { bold })
+  for (let x = 0; x < chars.length; x++) {
+    const rgb = geckoColor(x, y, width, totalRows, palette)
+    out += paint(chars[x]!, rgb, opts)
   }
   return out
 }
 
-const brandWordmarkLines = [
-  " ██████  ███████  ██   ██  ██   ██   █████ ",
-  "     ██  ██       ██  ██   ██  ██   ██   ██",
-  "     ██  █████    █████    █████    ██   ██",
-  "██   ██  ██       ██  ██   ██  ██   ██   ██",
-  " █████   ███████  ██   ██  ██   ██   █████ ",
+const INNER_WIDTH = 78
+
+function fit(text: string, width: number): string {
+  const remaining = Math.max(0, width - text.length)
+  const left = Math.floor(remaining / 2)
+  const right = remaining - left
+  return " ".repeat(left) + text + " ".repeat(right)
+}
+
+function pairStr(left: string, right: string, width = INNER_WIDTH): string {
+  const gap = Math.max(1, width - left.length - right.length)
+  return left + " ".repeat(gap) + right
+}
+
+const GECKO_CREST = [
+  "           _..-''  .-...-.  ''-.._           ",
+  "      _..-'      .'  o o  '.      '-.._      ",
+  "   .-'       .--.|    Y    |.--.       '-.   ",
+  "  /     _   /  _ \\  '---'  / _  \\   _     \\  ",
+  "  \\____/ \\__\\_/ \\_\\___|___/_/ \\_/__/ \\____/  ",
+  "             /_/    / \\    \\_\\              ",
+  "                  __/   \\__                  ",
+]
+
+const JEKKO_WORDMARK = [
+  "     ██╗███████╗██╗  ██╗██╗  ██╗ ██████╗ ",
+  "     ██║██╔════╝██║ ██╔╝██║ ██╔╝██╔═══██╗",
+  "     ██║█████╗  █████╔╝ █████╔╝ ██║   ██║",
+  "██   ██║██╔══╝  ██╔═██╗ ██╔═██╗ ██║   ██║",
+  "╚█████╔╝███████╗██║  ██╗██║  ██╗╚██████╔╝",
+  " ╚════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ",
 ]
 
 export function logo(pad?: string) {
   if (!process.stdout.isTTY && !process.stderr.isTTY) {
     const result = []
-    for (const row of brandWordmarkLines) {
+    for (const row of JEKKO_WORDMARK) {
       if (pad) result.push(pad)
       result.push(row)
       result.push(EOL)
@@ -90,87 +168,53 @@ export function logo(pad?: string) {
     return result.join("").trimEnd()
   }
 
-  const w = 74
-  const top = "╭" + "─".repeat(w - 2) + "╮"
-  const bottom = "╰" + "─".repeat(w - 2) + "╯"
-  const sep = "├" + "─".repeat(w - 2) + "┤"
+  const w = INNER_WIDTH + 2
+  const top = `╭${"─".repeat(INNER_WIDTH)}╮`
+  const bottom = `╰${"─".repeat(INNER_WIDTH)}╯`
+  const sep = `├${"─".repeat(INNER_WIDTH)}┤`
 
-  const lines: string[] = []
+  type Row = { text: string; bold?: boolean; dim?: boolean }
+  const rows: Row[] = []
 
-  lines.push((pad || "") + paint(top, ORANGE))
-
-  const promptLeft = paint("›_", CYAN, { bold: true })
-  const dots = paint("●", ORANGE) + " " + paint("●", ORANGE_2) + " " + paint("●", CYAN)
-  const headerInner = promptLeft + " ".repeat(w - 8 - 6) + dots
-  lines.push((pad || "") + paint("│", ORANGE) + headerInner + paint("│", ORANGE))
-
-  lines.push((pad || "") + paint(sep, BORDER))
-
-  // Per-letter segment boundaries — each letter is 7 cols, 2-col gaps
-  const letterSegs = [
-    { start: 0, end: 9 },    // J + gap
-    { start: 9, end: 18 },   // E + gap
-    { start: 18, end: 27 },  // K1 + gap
-    { start: 27, end: 36 },  // K2 + gap
-    { start: 36, end: 43 },  // O
-  ]
-  // One color per letter: amber-gold → deep orange gradient
-  const letterRgb: readonly (readonly [number, number, number])[] = [
-    [255, 185, 40],   // J  – bright amber
-    [255, 160, 20],   // E  – warm gold
-    [255, 140, 10],   // K1 – deeper gold
-    [255, 120, 0],    // K2 – rich orange
-    [245, 100, 0],    // O  – deep orange
-  ]
-
-  const wordmarkWidth = brandWordmarkLines[0]!.length
-  const wmLeftPad = Math.floor((w - 2 - wordmarkWidth) / 2)
-  const wmRightPad = w - 2 - wordmarkWidth - wmLeftPad
-
-  brandWordmarkLines.forEach((raw) => {
-    let inner = " ".repeat(wmLeftPad)
-    for (let s = 0; s < letterSegs.length; s++) {
-      const seg = letterSegs[s]!
-      const slice = raw.substring(seg.start, Math.min(seg.end, raw.length))
-      inner += paint(slice, letterRgb[s]!, { bold: true })
-    }
-    inner += " ".repeat(wmRightPad)
-    lines.push((pad || "") + paint("│", ORANGE) + inner + paint("│", ORANGE))
+  rows.push({ text: top })
+  rows.push({
+    text: `│${pairStr(" ›_ JEKKO", "gecko mode active  ● ● ● ")}│`,
+    bold: true,
   })
+  rows.push({ text: sep })
+  rows.push({ text: `│${fit("", INNER_WIDTH)}│` })
 
-  lines.push((pad || "") + paint(sep, BORDER))
+  for (const line of GECKO_CREST) {
+    rows.push({ text: `│${fit(line, INNER_WIDTH)}│`, bold: true })
+  }
 
-  const subtitlePlain = "[ AI coding gecko • "
-  const zqmlPlain = "ZYAL"
-  const suffixPlain = " support ]"
-  const subtitle =
-    paint(subtitlePlain, WHITE, { bold: true }) +
-    paint(zqmlPlain, CYAN, { bold: true }) +
-    paint(suffixPlain, WHITE, { bold: true })
+  rows.push({
+    text: `│${fit("sticky toes • sharp eyes • quick tail", INNER_WIDTH)}│`,
+    dim: true,
+  })
+  rows.push({ text: `│${fit("", INNER_WIDTH)}│` })
 
-  const totalPlain = subtitlePlain.length + zqmlPlain.length + suffixPlain.length
-  const leftSpaces = Math.floor((w - 2 - totalPlain) / 2)
-  const rightSpaces = w - 2 - totalPlain - leftSpaces
-  lines.push(
-    (pad || "") + paint("│", ORANGE) + " ".repeat(leftSpaces) + subtitle + " ".repeat(rightSpaces) + paint("│", ORANGE),
+  for (const line of JEKKO_WORDMARK) {
+    rows.push({ text: `│${fit(line, INNER_WIDTH)}│`, bold: true })
+  }
+
+  rows.push({ text: `│${fit("", INNER_WIDTH)}│` })
+  rows.push({
+    text: `│${fit("AI coding gecko • ZYAL support • climbs hard problems", INNER_WIDTH)}│`,
+    bold: true,
+  })
+  rows.push({
+    text: `│${fit("gecko:// safe autonomous coding ready", INNER_WIDTH)}│`,
+    dim: true,
+  })
+  rows.push({ text: bottom })
+
+  const totalRows = rows.length
+  const rendered = rows.map((row, y) =>
+    (pad || "") + gradientLine(row.text, y, totalRows, JEKKO_PALETTE, { bold: row.bold, dim: row.dim }),
   )
 
-  const cmdPlain = "gecko:// safe autonomous coding ready"
-  const cmd = paint(cmdPlain, MUTED, { dim: true })
-  const leftSpacesCmd = Math.floor((w - 2 - cmdPlain.length) / 2)
-  const rightSpacesCmd = w - 2 - cmdPlain.length - leftSpacesCmd
-  lines.push(
-    (pad || "") +
-      paint("│", ORANGE) +
-      " ".repeat(leftSpacesCmd) +
-      cmd +
-      " ".repeat(rightSpacesCmd) +
-      paint("│", ORANGE),
-  )
-
-  lines.push((pad || "") + paint(bottom, ORANGE))
-
-  return lines.join(EOL)
+  return rendered.join(EOL)
 }
 
 export async function input(prompt: string): Promise<string> {

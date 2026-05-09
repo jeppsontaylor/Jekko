@@ -1,32 +1,190 @@
-import { BoxRenderable, RGBA, TextAttributes } from "@opentui/core"
-import { For, type JSX } from "solid-js"
+import { RGBA, TextAttributes } from "@opentui/core"
+import { createMemo, For } from "solid-js"
 
-const ORANGE = RGBA.fromInts(255, 170, 24)
-const ORANGE_2 = RGBA.fromInts(255, 140, 0)
-const CYAN = RGBA.fromInts(0, 224, 214)
-const CYAN_2 = RGBA.fromInts(58, 201, 255)
-const WHITE = RGBA.fromInts(241, 244, 248)
-const MUTED = RGBA.fromInts(151, 163, 176)
-const INK = RGBA.fromInts(8, 11, 15)
-const BORDER = RGBA.fromInts(28, 34, 40)
+type Align = "left" | "center" | "right"
 
-function mixRGB(left: RGBA, right: RGBA, t: number): RGBA {
-  const r = Math.round(left.r + (right.r - left.r) * t)
-  const g = Math.round(left.g + (right.g - left.g) * t)
-  const b = Math.round(left.b + (right.b - left.b) * t)
-  return RGBA.fromInts(r, g, b, 255)
+type CornerPalette = {
+  topLeft: RGBA
+  topRight: RGBA
+  bottomLeft: RGBA
+  bottomRight: RGBA
 }
 
-function GradientText(props: { text: string; left: RGBA; right: RGBA; bold?: boolean }) {
-  const chars = props.text.split("")
-  const n = Math.max(1, chars.length - 1)
-  const attrs = props.bold ? TextAttributes.BOLD : undefined
+type LogoRow = {
+  text: string
+  bold?: boolean
+  dim?: boolean
+  palette?: CornerPalette
+}
+
+const INNER_WIDTH = 78
+const OUTER_WIDTH = INNER_WIDTH + 2
+
+const GECKO = {
+  leaf: RGBA.fromInts(112, 255, 86),
+  lime: RGBA.fromInts(188, 255, 72),
+  cyan: RGBA.fromInts(0, 235, 216),
+  aqua: RGBA.fromInts(62, 196, 255),
+  gold: RGBA.fromInts(255, 190, 48),
+  orange: RGBA.fromInts(255, 102, 36),
+  ember: RGBA.fromInts(232, 70, 28),
+  white: RGBA.fromInts(246, 250, 252),
+  muted: RGBA.fromInts(128, 146, 156),
+}
+
+const JEKKO_PALETTE: CornerPalette = {
+  topLeft: GECKO.lime,
+  topRight: GECKO.cyan,
+  bottomLeft: GECKO.gold,
+  bottomRight: GECKO.orange,
+}
+
+const GO_PALETTE: CornerPalette = {
+  topLeft: GECKO.cyan,
+  topRight: GECKO.aqua,
+  bottomLeft: GECKO.lime,
+  bottomRight: GECKO.cyan,
+}
+
+const IDLE_PALETTE: CornerPalette = {
+  topLeft: RGBA.fromInts(86, 128, 96),
+  topRight: RGBA.fromInts(68, 126, 132),
+  bottomLeft: RGBA.fromInts(126, 112, 72),
+  bottomRight: RGBA.fromInts(128, 78, 62),
+}
+
+function clamp01(n: number): number {
+  return Math.max(0, Math.min(1, n))
+}
+
+function mixRGB(left: RGBA, right: RGBA, t: number): RGBA {
+  const k = clamp01(t)
+
+  return RGBA.fromInts(
+    Math.round(left.r + (right.r - left.r) * k),
+    Math.round(left.g + (right.g - left.g) * k),
+    Math.round(left.b + (right.b - left.b) * k),
+    255,
+  )
+}
+
+function gradient2D(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  palette: CornerPalette,
+): RGBA {
+  const tx = width <= 1 ? 0 : x / (width - 1)
+  const ty = height <= 1 ? 0 : y / (height - 1)
+
+  const top = mixRGB(palette.topLeft, palette.topRight, tx)
+  const bottom = mixRGB(palette.bottomLeft, palette.bottomRight, tx)
+
+  return mixRGB(top, bottom, ty)
+}
+
+function brilliantGeckoColor(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  palette: CornerPalette,
+): RGBA {
+  const base = gradient2D(x, y, width, height, palette)
+
+  const tx = width <= 1 ? 0 : x / (width - 1)
+  const ty = height <= 1 ? 0 : y / (height - 1)
+
+  // A soft diagonal shine across the whole mark.
+  const shineBand = Math.abs(tx - ty)
+  const shine = clamp01(1 - shineBand / 0.085) * 0.28
+
+  // Tiny deterministic "scale sparkle" flecks.
+  const scaleFleck = (x * 17 + y * 31) % 71 === 0 ? 0.16 : 0
+
+  return mixRGB(base, GECKO.white, Math.min(0.38, shine + scaleFleck))
+}
+
+function glyphLength(text: string): number {
+  return Array.from(text).length
+}
+
+function clipGlyphs(text: string, width: number): string {
+  const chars = Array.from(text)
+  return chars.length <= width ? text : chars.slice(0, width).join("")
+}
+
+function fit(text: string, width: number, align: Align = "center"): string {
+  const clipped = clipGlyphs(text, width)
+  const remaining = Math.max(0, width - glyphLength(clipped))
+
+  if (align === "left") {
+    return clipped + " ".repeat(remaining)
+  }
+
+  if (align === "right") {
+    return " ".repeat(remaining) + clipped
+  }
+
+  const left = Math.floor(remaining / 2)
+  const right = remaining - left
+
+  return " ".repeat(left) + clipped + " ".repeat(right)
+}
+
+function pair(left: string, right: string, width = INNER_WIDTH): string {
+  const safeLeft = clipGlyphs(left, width)
+  const safeRight = clipGlyphs(right, width)
+  const gap = width - glyphLength(safeLeft) - glyphLength(safeRight)
+
+  if (gap < 1) {
+    return fit(`${safeLeft} ${safeRight}`, width, "left")
+  }
+
+  return safeLeft + " ".repeat(gap) + safeRight
+}
+
+function framed(content = "", align: Align = "center"): string {
+  return `│${fit(content, INNER_WIDTH, align)}│`
+}
+
+function framedPair(left: string, right: string): string {
+  return `│${pair(left, right)}│`
+}
+
+function topBorder(): string {
+  return `╭${"─".repeat(INNER_WIDTH)}╮`
+}
+
+function divider(): string {
+  return `├${"─".repeat(INNER_WIDTH)}┤`
+}
+
+function bottomBorder(): string {
+  return `╰${"─".repeat(INNER_WIDTH)}╯`
+}
+
+function GradientRow(props: { row: LogoRow; y: number; totalRows: number }) {
+  const chars = Array.from(props.row.text)
+  const width = Math.max(1, chars.length)
+  const palette = props.row.palette ?? JEKKO_PALETTE
+
+  const attrs = props.row.bold
+    ? TextAttributes.BOLD
+    : props.row.dim
+      ? TextAttributes.DIM
+      : undefined
 
   return (
     <box flexDirection="row">
       <For each={chars}>
-        {(char, i) => (
-          <text fg={mixRGB(props.left, props.right, i() / n)} attributes={attrs} selectable={false}>
+        {(char, x) => (
+          <text
+            fg={brilliantGeckoColor(x(), props.y, width, props.totalRows, palette)}
+            attributes={attrs}
+            selectable={false}
+          >
             {char}
           </text>
         )}
@@ -35,171 +193,112 @@ function GradientText(props: { text: string; left: RGBA; right: RGBA; bold?: boo
   )
 }
 
-// Each letter is exactly 7 columns wide, with 2-column gaps between them.
-// J = cols 0-6, E = cols 9-15, K1 = cols 18-24, K2 = cols 27-33, O = cols 36-42
-// Segments include trailing gap for coloring continuity.
-const letterSegments = [
-  { start: 0, end: 9 },    // J + gap
-  { start: 9, end: 18 },   // E + gap
-  { start: 18, end: 27 },  // K1 + gap
-  { start: 27, end: 36 },  // K2 + gap
-  { start: 36, end: 43 },  // O
+const GECKO_CREST = [
+  "           _..-''  .-...-.  ''-.._           ",
+  "      _..-'      .'  o o  '.      '-.._      ",
+  "   .-'       .--.|    Y    |.--.       '-.   ",
+  "  /     _   /  _ \\  '---'  / _  \\   _     \\  ",
+  "  \\____/ \\__\\_/ \\_\\___|___/_/ \\_/__/ \\____/  ",
+  "             /_/    / \\    \\_\\              ",
+  "                  __/   \\__                  ",
 ]
 
-// 5 colors: one per letter, gradient from amber-gold → deep orange
-const letterColors = [
-  RGBA.fromInts(255, 185, 40),   // J  – bright amber
-  RGBA.fromInts(255, 160, 20),   // E  – warm gold
-  RGBA.fromInts(255, 140, 10),   // K1 – deeper gold
-  RGBA.fromInts(255, 120, 0),    // K2 – rich orange
-  RGBA.fromInts(245, 100, 0),    // O  – deep orange
+const JEKKO_WORDMARK = [
+  "     ██╗███████╗██╗  ██╗██╗  ██╗ ██████╗ ",
+  "     ██║██╔════╝██║ ██╔╝██║ ██╔╝██╔═══██╗",
+  "     ██║█████╗  █████╔╝ █████╔╝ ██║   ██║",
+  "██   ██║██╔══╝  ██╔═██╗ ██╔═██╗ ██║   ██║",
+  "╚█████╔╝███████╗██║  ██╗██║  ██╗╚██████╔╝",
+  " ╚════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ",
 ]
 
-const brandWordmarkLines = [
-  " ██████  ███████  ██   ██  ██   ██   █████ ",
-  "     ██  ██       ██  ██   ██  ██   ██   ██",
-  "     ██  █████    █████    █████    ██   ██",
-  "██   ██  ██       ██  ██   ██  ██   ██   ██",
-  " █████   ███████  ██   ██  ██   ██   █████ ",
-]
+function buildLogoRows(props: {
+  shape?: unknown
+  ink?: RGBA
+  idle?: boolean
+  support?: string
+  status?: string
+}): LogoRow[] {
+  const support = props.support ?? "ZYAL"
+  const status =
+    props.status ??
+    (props.idle
+      ? "camouflage idle • watching the wall"
+      : "safe autonomous coding ready")
 
-export function Logo(props: { shape?: any; ink?: RGBA; idle?: boolean } = {}) {
-  const w = 74
-  const top = "╭" + "─".repeat(w - 2) + "╮"
-  const bottom = "╰" + "─".repeat(w - 2) + "╯"
-  const sep = "├" + "─".repeat(w - 2) + "┤"
+  const palette = props.idle ? IDLE_PALETTE : JEKKO_PALETTE
 
-  const subtitlePlain = "[ AI coding gecko • "
-  const zqmlPlain = "ZYAL"
-  const suffixPlain = " support ]"
-  const totalPlain = subtitlePlain.length + zqmlPlain.length + suffixPlain.length
-  const subLeftSpaces = Math.floor((w - 2 - totalPlain) / 2)
-  const subRightSpaces = w - 2 - totalPlain - subLeftSpaces
+  return [
+    { text: topBorder(), palette },
+    {
+      text: framedPair(
+        " ›_ JEKKO",
+        props.idle ? "gecko mode idle  ● ● ● " : "gecko mode active  ● ● ● ",
+      ),
+      bold: true,
+      palette,
+    },
+    { text: divider(), palette },
 
-  const cmdPlain = "gecko:// safe autonomous coding ready"
-  const cmdLeftSpaces = Math.floor((w - 2 - cmdPlain.length) / 2)
-  const cmdRightSpaces = w - 2 - cmdPlain.length - cmdLeftSpaces
+    { text: framed(), palette },
+    ...GECKO_CREST.map((line) => ({
+      text: framed(line),
+      bold: true,
+      palette,
+    })),
 
-  // The wordmark is 48 chars wide. Center it in the 72-char inner width.
-  const wordmarkWidth = brandWordmarkLines[0]!.length
-  const wmLeftPad = Math.floor((w - 2 - wordmarkWidth) / 2)
-  const wmRightPad = w - 2 - wordmarkWidth - wmLeftPad
+    {
+      text: framed("sticky toes • sharp eyes • quick tail"),
+      dim: true,
+      palette,
+    },
+
+    { text: framed(), palette },
+    ...JEKKO_WORDMARK.map((line) => ({
+      text: framed(line),
+      bold: true,
+      palette,
+    })),
+
+    { text: framed(), palette },
+    {
+      text: framed(`AI coding gecko • ${support} support • climbs hard problems`),
+      bold: true,
+      palette,
+    },
+    {
+      text: framed(`gecko:// ${status}`),
+      dim: true,
+      palette,
+    },
+
+    { text: bottomBorder(), palette },
+  ]
+}
+
+export function Logo(
+  props: {
+    shape?: unknown
+    ink?: RGBA
+    idle?: boolean
+    support?: string
+    status?: string
+  } = {},
+) {
+  const rows = createMemo(() => buildLogoRows(props))
 
   return (
     <box flexDirection="column">
-      {/* Top Border */}
-      <text fg={ORANGE} selectable={false}>
-        {top}
-      </text>
-
-      {/* Header */}
-      <box flexDirection="row">
-        <text fg={ORANGE} selectable={false}>
-          │
-        </text>
-        <text fg={CYAN} attributes={TextAttributes.BOLD} selectable={false}>
-          ›_
-        </text>
-        <text selectable={false}>{" ".repeat(w - 8 - 6)}</text>
-        <text fg={ORANGE} selectable={false}>
-          ●{" "}
-        </text>
-        <text fg={ORANGE_2} selectable={false}>
-          ●{" "}
-        </text>
-        <text fg={CYAN} selectable={false}>
-          ●
-        </text>
-        <text fg={ORANGE} selectable={false}>
-          │
-        </text>
-      </box>
-
-      {/* Sep */}
-      <text fg={BORDER} selectable={false}>
-        {sep}
-      </text>
-
-      {/* Wordmark — per-letter coloring, no gecko prefix */}
-      <For each={brandWordmarkLines}>
-        {(raw) => {
-          return (
-            <box flexDirection="row">
-              <text fg={ORANGE} selectable={false}>
-                │
-              </text>
-              <text selectable={false}>{" ".repeat(wmLeftPad)}</text>
-              {/* Render each letter segment with its own solid color */}
-              <For each={letterSegments}>
-                {(seg, segIdx) => {
-                  const slice = raw.substring(seg.start, Math.min(seg.end, raw.length))
-                  const color = letterColors[segIdx()]!
-                  return (
-                    <text fg={color} attributes={TextAttributes.BOLD} selectable={false}>
-                      {slice}
-                    </text>
-                  )
-                }}
-              </For>
-              <text selectable={false}>{" ".repeat(wmRightPad)}</text>
-              <text fg={ORANGE} selectable={false}>
-                │
-              </text>
-            </box>
-          )
-        }}
+      <For each={rows()}>
+        {(row, y) => (
+          <GradientRow row={row} y={y()} totalRows={rows().length} />
+        )}
       </For>
-
-      {/* Sep */}
-      <text fg={BORDER} selectable={false}>
-        {sep}
-      </text>
-
-      {/* Subtitle */}
-      <box flexDirection="row">
-        <text fg={ORANGE} selectable={false}>
-          │
-        </text>
-        <text selectable={false}>{" ".repeat(subLeftSpaces)}</text>
-        <text fg={WHITE} attributes={TextAttributes.BOLD} selectable={false}>
-          {subtitlePlain}
-        </text>
-        <text fg={CYAN} attributes={TextAttributes.BOLD} selectable={false}>
-          {zqmlPlain}
-        </text>
-        <text fg={WHITE} attributes={TextAttributes.BOLD} selectable={false}>
-          {suffixPlain}
-        </text>
-        <text selectable={false}>{" ".repeat(subRightSpaces)}</text>
-        <text fg={ORANGE} selectable={false}>
-          │
-        </text>
-      </box>
-
-      {/* Command Ready */}
-      <box flexDirection="row">
-        <text fg={ORANGE} selectable={false}>
-          │
-        </text>
-        <text selectable={false}>{" ".repeat(cmdLeftSpaces)}</text>
-        <text fg={MUTED} attributes={TextAttributes.DIM} selectable={false}>
-          {cmdPlain}
-        </text>
-        <text selectable={false}>{" ".repeat(cmdRightSpaces)}</text>
-        <text fg={ORANGE} selectable={false}>
-          │
-        </text>
-      </box>
-
-      {/* Bottom Border */}
-      <text fg={ORANGE} selectable={false}>
-        {bottom}
-      </text>
     </box>
   )
 }
 
-const goWordmarkLines = [
+const GO_WORDMARK = [
   " ██████   ██████ ",
   "██       ██    ██",
   "██  ████ ██    ██",
@@ -207,14 +306,24 @@ const goWordmarkLines = [
   " ██████   ██████ ",
 ]
 
-export function GoLogo(props: { idle?: boolean }) {
+export function GoLogo(props: { idle?: boolean } = {}) {
+  const rows = createMemo<LogoRow[]>(() => {
+    const width = Math.max(...GO_WORDMARK.map(glyphLength))
+    const palette = props.idle ? IDLE_PALETTE : GO_PALETTE
+
+    return GO_WORDMARK.map((line) => ({
+      text: fit(line, width),
+      bold: !props.idle,
+      dim: props.idle,
+      palette,
+    }))
+  })
+
   return (
     <box flexDirection="column">
-      <For each={goWordmarkLines}>
-        {(raw) => (
-          <box flexDirection="row">
-            <GradientText text={raw} left={CYAN} right={CYAN_2} bold />
-          </box>
+      <For each={rows()}>
+        {(row, y) => (
+          <GradientRow row={row} y={y()} totalRows={rows().length} />
         )}
       </For>
     </box>
