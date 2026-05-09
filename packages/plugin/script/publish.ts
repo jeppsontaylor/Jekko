@@ -23,10 +23,10 @@ if (
   throw new Error("invalid package.json shape")
 }
 const typedPkg = pkg as { name: string; version: string; exports: Record<string, unknown> }
-if (await published(pkg.name, pkg.version)) {
-  console.log(`already published ${pkg.name}@${pkg.version}`)
+if (await published(typedPkg.name, typedPkg.version)) {
+  console.log(`already published ${typedPkg.name}@${typedPkg.version}`)
 } else {
-  for (const [key, value] of Object.entries(pkg.exports)) {
+  for (const [key, value] of Object.entries(typedPkg.exports)) {
     if (typeof value !== "string") continue
     const file = value.replace("./src/", "./dist/").replace(".ts", "")
     pkg.exports[key] = {

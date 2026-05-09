@@ -109,7 +109,7 @@ import {
 import { context, isRecord } from "./context"
 import { AssistantMessage as AssistantMessageView, UserMessage as UserMessageView } from "./session-renderers"
 
-addDefaultParsers(parsers.parsers)
+addDefaultParsers([...parsers.parsers] as unknown as Parameters<typeof addDefaultParsers>[0])
 
 const GO_UPSELL_LAST_SEEN_AT = "go_upsell_last_seen_at"
 const GO_UPSELL_DONT_SHOW = "go_upsell_dont_show"

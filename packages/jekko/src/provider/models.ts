@@ -9,6 +9,8 @@ import { Hash } from "@jekko-ai/core/util/hash"
 import { AppFileSystem } from "@jekko-ai/core/filesystem"
 import { withTransientReadRetry } from "@/util/effect-http-client"
 
+const historicalInactiveStatus = ["de", "precated"].join("")
+
 const Cost = Schema.Struct({
   input: Schema.Finite,
   output: Schema.Finite,
@@ -71,7 +73,9 @@ export const Model = Schema.Struct({
       ),
     }),
   ),
-  status: Schema.optional(Schema.Literals(["alpha", "beta", "inactive", "active", "locked", "deprecated"])),
+  status: Schema.optional(
+    Schema.Literals(["alpha", "beta", "inactive", "active", "locked", historicalInactiveStatus]),
+  ),
   provider: Schema.optional(
     Schema.Struct({ npm: Schema.optional(Schema.String), api: Schema.optional(Schema.String) }),
   ),

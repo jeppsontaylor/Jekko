@@ -4,6 +4,7 @@ import z from "zod"
 import { Effect } from "effect"
 import { listAdapters } from "@/control-plane/adapters"
 import { Workspace } from "@/control-plane/workspace"
+import { WorkspaceID } from "@/control-plane/schema"
 import { AppRuntime } from "@/effect/app-runtime"
 import { WorkspaceAdapterEntry } from "@/control-plane/types"
 import { zodObject } from "@/util/effect-zod"
@@ -59,12 +60,22 @@ export const WorkspaceRoutes = lazy(() =>
         }),
       ),
       async (c) => {
-        const body = c.req.valid("json") as Omit<Workspace.CreateInput, "projectID">
+        const body = Workspace.CreateInput.zodObject.omit({
+          projectID: true,
+        }).parse(c.req.valid("json")) as {
+          id?: WorkspaceID
+          type: string
+          branch: string
+          extra?: Workspace.CreateInput["extra"]
+        }
+        const { type, branch, extra } = body
         const workspace = await AppRuntime.runPromise(
           Workspace.Service.use((svc) =>
             svc.create({
               projectID: Instance.project.id,
-              ...body,
+              type,
+              branch,
+              extra,
             }),
           ),
         )

@@ -18,6 +18,24 @@ import {
   submitTuiResponse,
 } from "@/server/shared/tui-control"
 
+type TuiPublishEvent =
+  | {
+      type: typeof TuiEvent.PromptAppend.type
+      properties: Schema.Schema.Type<typeof TuiEvent.PromptAppend.properties>
+    }
+  | {
+      type: typeof TuiEvent.CommandExecute.type
+      properties: Schema.Schema.Type<typeof TuiEvent.CommandExecute.properties>
+    }
+  | {
+      type: typeof TuiEvent.ToastShow.type
+      properties: Schema.Schema.Type<typeof TuiEvent.ToastShow.properties>
+    }
+  | {
+      type: typeof TuiEvent.SessionSelect.type
+      properties: Schema.Schema.Type<typeof TuiEvent.SessionSelect.properties>
+    }
+
 export async function callTui(ctx: Context) {
   const body = await ctx.req.json()
   submitTuiRequest({
@@ -347,9 +365,21 @@ export const TuiRoutes = lazy(() =>
         ),
       ),
       async (c) => {
-        const evt = c.req.valid("json") as { type: string; properties: Record<string, unknown> }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await Bus.publish(Object.values(TuiEvent).find((def) => def.type === evt.type)! as any, evt.properties as any)
+        const evt = c.req.valid("json") as TuiPublishEvent
+        switch (evt.type) {
+          case TuiEvent.PromptAppend.type:
+            await Bus.publish(TuiEvent.PromptAppend, evt.properties)
+            break
+          case TuiEvent.CommandExecute.type:
+            await Bus.publish(TuiEvent.CommandExecute, evt.properties)
+            break
+          case TuiEvent.ToastShow.type:
+            await Bus.publish(TuiEvent.ToastShow, evt.properties)
+            break
+          case TuiEvent.SessionSelect.type:
+            await Bus.publish(TuiEvent.SessionSelect, evt.properties)
+            break
+        }
         return c.json(true)
       },
     )

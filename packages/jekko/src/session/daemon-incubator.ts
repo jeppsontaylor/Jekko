@@ -23,6 +23,34 @@ export type TickResult =
   | { action: "exhausted"; taskID: string; reason: string }
   | { action: "blocked"; reason: string }
 
+function tickDisabled(): TickResult {
+  return { action: "disabled" }
+}
+
+function tickIdle(): TickResult {
+  return { action: "idle" }
+}
+
+function tickRouted(taskID: string, lane: string, reasons: string[]): TickResult {
+  return { action: "routed", taskID, lane, reasons }
+}
+
+function tickPass(taskID: string, passID: string, passType: string): TickResult {
+  return { action: "pass", taskID, passID, passType }
+}
+
+function tickPromoted(taskID: string, score: number): TickResult {
+  return { action: "promoted", taskID, score }
+}
+
+function tickExhausted(taskID: string, reason: string): TickResult {
+  return { action: "exhausted", taskID, reason }
+}
+
+function tickBlocked(reason: string): TickResult {
+  return { action: "blocked", reason }
+}
+
 export function tick(input: {
   run: DaemonStore.RunInfo
   parsed: ZyalParsed
@@ -34,14 +62,14 @@ export function tick(input: {
 }): Effect.Effect<TickResult, any, any> {
   return Effect.gen(function* () {
     const incubator = input.parsed.spec.incubator
-    if (!incubator?.enabled) return { action: "disabled" } as const
+    if (!incubator?.enabled) return tickDisabled()
 
     const tasks = yield* input.store.listTasks(input.run.id)
     const active = tasks.find((task) => task.lane === "incubator" && ["incubating", "queued"].includes(task.status))
     if (active) return yield* runTaskPass({ ...input, task: active })
 
     const candidate = tasks.find((task) => ["queued", "leased"].includes(task.status))
-    if (!candidate) return { action: "idle" } as const
+    if (!candidate) return tickIdle()
 
     const body = candidate.body_json as Record<string, unknown>
     const touchedPaths = Array.isArray(body.touched_paths)
@@ -61,7 +89,7 @@ export function tick(input: {
       riskScore: route.riskScore,
       assessment: { route, touchedPaths },
     })
-    if (route.lane !== "incubator") return { action: "routed", taskID: candidate.id, lane: "normal", reasons: [] } as const
+    if (route.lane !== "incubator") return tickRouted(candidate.id, "normal", [])
     yield* input.store.routeTask({
       taskID: candidate.id,
       lane: "incubator",
@@ -78,7 +106,7 @@ export function tick(input: {
       importance: 0.8,
       confidence: 0.7,
     })
-    return { action: "routed", taskID: candidate.id, lane: "incubator", reasons: route.reasons } as const
+    return tickRouted(candidate.id, "incubator", route.reasons)
   })
 }
 
@@ -106,7 +134,7 @@ function runTaskPass(input: {
     })
     if (promotion.promote) {
       yield* input.store.promoteTask({ taskID: input.task.id, result: promotion })
-      return { action: "promoted", taskID: input.task.id, score: promotion.score } as const
+      return tickPromoted(input.task.id, promotion.score)
     }
     if (promotion.exhausted) {
       yield* input.store.exhaustTask({
@@ -114,13 +142,13 @@ function runTaskPass(input: {
         reason: promotion.blockers.join(", ") || "incubator budget exhausted",
         result: promotion,
       })
-      return { action: "exhausted", taskID: input.task.id, reason: "incubator budget exhausted" } as const
+      return tickExhausted(input.task.id, "incubator budget exhausted")
     }
 
     const pass = nextPass(incubator.passes, passes.length)
     if (!pass) {
       yield* input.store.exhaustTask({ taskID: input.task.id, reason: "no incubator passes configured", result: promotion })
-      return { action: "exhausted", taskID: input.task.id, reason: "no incubator passes configured" } as const
+      return tickExhausted(input.task.id, "no incubator passes configured")
     }
     if (pass.mcp_profile) {
       const status = yield* input.mcp.status()
@@ -142,7 +170,7 @@ function runTaskPass(input: {
           phase: "paused",
           last_error: reason,
         })
-        return { action: "blocked", reason } as const
+        return tickBlocked(reason)
       }
     }
     const prototype =
@@ -175,7 +203,7 @@ function runTaskPass(input: {
         }),
       ),
     )
-    if (!receipt) return { action: "pass", taskID: input.task.id, passID: started.id, passType: pass.type } as const
+    if (!receipt) return tickPass(input.task.id, started.id, pass.type)
     const kind = DaemonPass.memoryKindForPass(pass.type, receipt)
     yield* input.store.appendTaskMemory({
       runID: input.run.id,
@@ -203,7 +231,7 @@ function runTaskPass(input: {
       score: { readiness },
       cleanupStatus: prototype ? "removed" : "none",
     })
-    return { action: "pass", taskID: input.task.id, passID: started.id, passType: pass.type } as const
+    return tickPass(input.task.id, started.id, pass.type)
   })
 }
 

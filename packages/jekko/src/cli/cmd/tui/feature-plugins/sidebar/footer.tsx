@@ -40,30 +40,19 @@ function JnoccioStatus(props: { api: TuiPluginApi }) {
     return "Jnoccio"
   })
 
-  const isBooting = () => {
-    const s = status()
-    return s === "checking" || s === "starting"
-  }
+   const isBooting = () => {
+     const s = status()
+     return s === "checking" || s === "starting"
+   }
 
-  return (
-    <Show when={visible()}>
-      <box flexDirection="row" gap={1} flexShrink={0}>
-        <Show
-          when={!isBooting()}
-          fallback={
-            <spinner
-              frames={["◐", "◓", "◑", "◒"]}
-              interval={200}
-              color={HOT_PINK}
-            />
-          }
-        >
-          <spinner
-            frames={["●", "○"]}
-            interval={800}
-            color={dotColor()}
-          />
-        </Show>
+   return (
+      <Show when={visible()}>
+        <box flexDirection="row" gap={1} flexShrink={0}>
+          {isBooting() ? (
+            <spinner frames={["◐", "◓", "◑", "◒"]} interval={200} color={HOT_PINK} />
+          ) : (
+            <spinner frames={["●", "○"]} interval={800} color={dotColor()} />
+          )}
         <text fg={isBooting() ? HOT_PINK : theme().text}>{label()}</text>
       </box>
     </Show>

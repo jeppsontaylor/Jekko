@@ -1,6 +1,11 @@
 import type { ProjectID } from "@/project/schema"
 import type { WorkspaceAdapter, WorkspaceAdapterEntry } from "../types"
+import type { WorkspaceAdapter as PluginWorkspaceAdapter } from "@jekko-ai/plugin"
+import { Schema } from "effect"
 import { WorktreeAdapter } from "./worktree"
+import { WorkspaceInfo } from "../types"
+
+const decodeWorkspaceInfo = Schema.decodeUnknownSync(WorkspaceInfo)
 
 const BUILTIN: Record<string, WorkspaceAdapter> = {
   worktree: WorktreeAdapter,
@@ -38,8 +43,24 @@ export async function listAdapters(projectID: ProjectID): Promise<WorkspaceAdapt
 
 // Plugins can be loaded per-project so we need to scope them. If you
 // want to install a global one pass `ProjectID.global`
-export function registerAdapter(projectID: ProjectID, type: string, adapter: WorkspaceAdapter) {
+export function registerAdapter(projectID: ProjectID, type: string, adapter: PluginWorkspaceAdapter) {
+  const wrapped: WorkspaceAdapter = {
+    name: adapter.name,
+    description: adapter.description,
+    async configure(info) {
+      return decodeWorkspaceInfo(await adapter.configure(decodeWorkspaceInfo(info)))
+    },
+    create(info, env, from) {
+      return adapter.create(decodeWorkspaceInfo(info), env, from ? decodeWorkspaceInfo(from) : undefined)
+    },
+    remove(info) {
+      return adapter.remove(decodeWorkspaceInfo(info))
+    },
+    target(info) {
+      return adapter.target(decodeWorkspaceInfo(info))
+    },
+  }
   const adapters = state.get(projectID) ?? new Map<string, WorkspaceAdapter>()
-  adapters.set(type, adapter)
+  adapters.set(type, wrapped)
   state.set(projectID, adapters)
 }

@@ -487,9 +487,9 @@ export function Prompt(props: PromptProps) {
     const composing = isZyalInput()
     const text = store.prompt.input
 
-    const ctl = input.extmarks as unknown as { updateHighlights: () => void }
-    const realUpdate = ctl.updateHighlights.bind(ctl)
-    ctl.updateHighlights = () => {}
+    const realUpdate = Reflect.get(input.extmarks, "updateHighlights")
+    const canBatch = typeof realUpdate === "function"
+    if (canBatch) Reflect.set(input.extmarks, "updateHighlights", () => {})
     try {
       const existing = input.extmarks.getAllForTypeId(yamlTokenTypeId)
       for (const mark of existing) input.extmarks.delete(mark.id)
@@ -507,8 +507,10 @@ export function Prompt(props: PromptProps) {
         })
       }
     } finally {
-      ctl.updateHighlights = realUpdate
-      realUpdate()
+      if (canBatch) {
+        Reflect.set(input.extmarks, "updateHighlights", realUpdate)
+        realUpdate.call(input.extmarks)
+      }
     }
   })
 

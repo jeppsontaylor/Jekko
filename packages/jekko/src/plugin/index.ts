@@ -5,6 +5,7 @@ import type {
   PluginModule,
   WorkspaceAdapter as PluginWorkspaceAdapter,
 } from "@jekko-ai/plugin"
+import type { Event } from "@jekko-ai/sdk"
 import { Config } from "@/config/config"
 import { Bus } from "../bus"
 import * as Log from "@jekko-ai/core/util/log"
@@ -26,7 +27,6 @@ import { errorMessage } from "@/util/error"
 import { PluginLoader } from "./loader"
 import { parsePluginSpecifier, readPluginId, readV1Plugin, resolvePluginId } from "./shared"
 import { registerAdapter } from "@/control-plane/adapters"
-import type { WorkspaceAdapter } from "@/control-plane/types"
 
 const log = Log.create({ service: "plugin" })
 
@@ -58,7 +58,12 @@ export class Service extends Context.Service<Service, Interface>()("@jekko/Plugi
 // These bundled auth plugins are still published against the pre-Jekko plugin
 // package name. Their runtime shape matches `PluginInstance`; only the branded
 // TypeScript import path differs during the namespace migration.
-const compatiblePlugin = (plugin: unknown): PluginInstance => plugin as PluginInstance
+const compatiblePlugin = (plugin: unknown): PluginInstance => {
+  if (!isServerPlugin(plugin)) {
+    throw new TypeError("Plugin export is not a function")
+  }
+  return plugin
+}
 
 // Built-in plugins that are directly imported (not installed from npm)
 const INTERNAL_PLUGINS: PluginInstance[] = [
@@ -95,6 +100,10 @@ function getLegacyPlugins(mod: Record<string, unknown>) {
   }
 
   return result
+}
+
+function isPluginEvent(value: { type: string; properties: unknown }): value is Event {
+  return typeof value.type === "string" && typeof value.properties === "object" && value.properties !== null
 }
 
 async function applyPlugin(load: PluginLoader.Loaded, input: PluginInput, hooks: Hooks[]) {
@@ -141,7 +150,7 @@ export const layer = Layer.effect(
           directory: ctx.directory,
           experimental_workspace: {
             register(type: string, adapter: PluginWorkspaceAdapter) {
-              registerAdapter(ctx.project.id, type, adapter as WorkspaceAdapter)
+              registerAdapter(ctx.project.id, type, adapter)
             },
           },
           get serverUrl(): URL {
@@ -247,11 +256,18 @@ export const layer = Layer.effect(
         // Subscribe to bus events, fiber interrupted when scope closes
         yield* bus.subscribeAll().pipe(
           Stream.runForEach((input) =>
-          Effect.sync(() => {
-            for (const hook of hooks) {
-                void hook.event?.({ event: input } as Parameters<NonNullable<typeof hook.event>>[0])
+            Effect.sync(() => {
+              const event = {
+                type: input.type,
+                properties: input.properties,
               }
-          }),
+              if (!isPluginEvent(event)) return
+              for (const hook of hooks) {
+                const hookEvent = hook.event
+                if (typeof hookEvent !== "function") continue
+                void hookEvent({ event })
+              }
+            }),
           ),
           Effect.forkScoped,
         )
