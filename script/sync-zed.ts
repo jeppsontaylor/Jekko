@@ -12,6 +12,10 @@ async function main() {
   const version = process.argv[2]
   if (!version) throw new Error("Version argument required, ex: bun script/sync-zed.ts v1.0.52")
 
+  if (!/^v?\d+\.\d+\.\d+$/.test(version)) {
+    throw new Error("Version must be in semver format like v1.0.52 or 1.0.52")
+  }
+
   const token = process.env.ZED_EXTENSIONS_PAT
   if (!token) throw new Error("ZED_EXTENSIONS_PAT environment variable required")
 

@@ -12,17 +12,23 @@ async function published(name: string, version: string) {
 
 await $`bun tsc`
 const originalText = await Bun.file("package.json").text()
-const pkg = JSON.parse(originalText) as {
-  name: string
-  version: string
-  exports: Record<string, string>
+const pkg = JSON.parse(originalText) as unknown
+if (
+  typeof pkg !== "object" ||
+  pkg === null ||
+  !("name" in pkg) ||
+  !("version" in pkg) ||
+  !("exports" in pkg)
+) {
+  throw new Error("invalid package.json shape")
 }
+const typedPkg = pkg as { name: string; version: string; exports: Record<string, unknown> }
 if (await published(pkg.name, pkg.version)) {
   console.log(`already published ${pkg.name}@${pkg.version}`)
 } else {
   for (const [key, value] of Object.entries(pkg.exports)) {
+    if (typeof value !== "string") continue
     const file = value.replace("./src/", "./dist/").replace(".ts", "")
-    // @ts-ignore
     pkg.exports[key] = {
       import: file + ".js",
       types: file + ".d.ts",

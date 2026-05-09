@@ -17,6 +17,21 @@ Keep the proof receipt with the task entry:
 Release lanes must record both budget proof and launch-gate evidence before any paid or unbounded work starts.
 This is the canonical release gate: no paid or unbounded work starts without both receipts.
 
+## Release budget gate
+
+Before any paid or unbounded lane starts, record all of the following in the task receipt:
+
+- `budget_usd`
+- `cost_usd`
+- `quota_requests`
+- `owner`
+- `stop_condition`
+- `kill_switch`
+- `approval_ref`
+- `timestamp_utc`
+
+If any field is missing, or if the stop condition is already met, stop and mark the task blocked.
+
 If a proof lane is blocked, record the block in the task and do not mark the task complete.
 
 ## Budget / stop-condition policy

@@ -192,10 +192,10 @@ Suggested order for this cluster, starting from the leaves that `session.ts`
 and the SSE/event surface depend on:
 
 1. `src/session/schema.ts` ✅ already migrated
-2. `src/provider/schema.ts` if `message-v2.ts` still relies on zod-first IDs
+2. `src/provider/schema.ts` if `message.ts` still relies on zod-first IDs
 3. `src/lsp/*` schema leaves needed by `LSP.Range`
 4. `src/snapshot/*` leaves used by `Snapshot.FileDiff`
-5. `src/session/message-v2.ts`
+5. `src/session/message.ts`
 6. `src/session/message.ts`
 7. `src/session/prompt.ts`
 8. `src/session/revert.ts`
@@ -213,7 +213,7 @@ session.ts
 |- control-plane/schema.ts
 |- permission/schema.ts
 |- snapshot/*
-|- message-v2.ts
+|- message.ts
 |  |- provider/schema.ts
 |  |- lsp/*
 |  |- snapshot/*
@@ -232,7 +232,7 @@ Working rule for this cluster:
 - leave zod-only event/update helpers in place temporarily when converting
   them would force unrelated churn across sync/bus boundaries
 
-`message-v2.ts` first-pass outline:
+`message.ts` first-pass outline:
 
 1. Schema-backed imports already available
    - `SessionID`, `MessageID`, `PartID`
@@ -263,7 +263,7 @@ Possible later tightening after the Schema-first migration is stable:
   leaf schemas where that adds domain value without changing the wire format
 
 - [x] `src/session/compaction.ts`
-- [x] `src/session/message-v2.ts`
+- [x] `src/session/message.ts`
 - [x] `src/session/message.ts`
 - [x] `src/session/prompt.ts`
 - [x] `src/session/revert.ts`
