@@ -1679,8 +1679,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
 
       const raw = input.arguments.match(argsRegex) ?? []
       const args = raw.map((arg) => arg.replace(quoteTrimRegex, ""))
-      const commandKey = "te" + "mplate"
-      const commandPrompt = yield* Effect.promise(async () => cmd[commandKey as keyof typeof cmd] as string)
+      const commandPrompt = yield* Effect.promise(async () => cmd.template)
 
       const placeholders = commandPrompt.match(placeholderRegex) ?? []
       let last = 0
@@ -1962,12 +1961,15 @@ export function createStructuredOutputTool(input: {
   schema: Record<string, any>
   onSuccess: (output: unknown) => void
 }): AITool {
+  if (!isJsonSchema7(input.schema)) {
+    throw new TypeError("Structured output schema must be an object")
+  }
   // Remove $schema property if present (not needed for tool input)
   const { $schema: _, ...toolSchema } = input.schema
 
   return tool({
     description: STRUCTURED_OUTPUT_DESCRIPTION,
-    inputSchema: jsonSchema(toolSchema as JSONSchema7),
+    inputSchema: jsonSchema(toolSchema),
     async execute(args) {
       // AI SDK validates args against inputSchema before calling execute()
       input.onSuccess(args)
@@ -1984,6 +1986,10 @@ export function createStructuredOutputTool(input: {
       }
     },
   })
+}
+
+function isJsonSchema7(value: unknown): value is JSONSchema7 {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 const bashRegex = /!`([^`]+)`/g
 // Match [Image N] as single token, quoted strings, or non-space sequences

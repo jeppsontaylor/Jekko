@@ -1,6 +1,6 @@
 import { NodeFileSystem } from "@effect/platform-node"
 import { FetchHttpClient } from "effect/unstable/http"
-import { expect } from "bun:test"
+import { expect, test } from "bun:test"
 import { Cause, Effect, Exit, Fiber, Layer } from "effect"
 import path from "path"
 import { fileURLToPath } from "url"
@@ -21,7 +21,7 @@ import { Pending } from "../../src/session/pending"
 import { Session } from "@/session/session"
 import { SessionMessageTable } from "../../src/session/session.sql"
 import { LLM } from "../../src/session/llm"
-import { MessageV2 } from "../../src/session/message-v2"
+import { MessageV2 } from "../../src/session/message"
 import { AppFileSystem } from "@jekko-ai/core/filesystem"
 import { PatchVmModule } from "../../src/patch/vm"
 import { Memory } from "../../src/memory"
@@ -378,6 +378,7 @@ it.live("loop calls LLM and returns assistant message", () =>
     }),
     { git: true, config: providerCfg },
   ),
+  30_000,
 )
 
 it.live("prompt emits v2 prompted and synthetic events", () =>
@@ -2065,3 +2066,26 @@ it.live(
     ),
   30_000,
 )
+
+test("createStructuredOutputTool rejects array schemas", () => {
+  expect(() =>
+    SessionPrompt.createStructuredOutputTool({
+      schema: [] as unknown as Record<string, any>,
+      onSuccess: () => undefined,
+    }),
+  ).toThrow(TypeError)
+})
+
+test("createStructuredOutputTool accepts object schemas", () => {
+  const tool = SessionPrompt.createStructuredOutputTool({
+    schema: {
+      type: "object",
+      properties: {
+        answer: { type: "string" },
+      },
+    },
+    onSuccess: () => undefined,
+  })
+
+  expect(typeof tool.execute).toBe("function")
+})

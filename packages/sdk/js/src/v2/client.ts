@@ -45,11 +45,12 @@ function rewrite(request: Request, values: { directory?: string; workspace?: str
 
 export function createOpencodeClient(config?: Config & { directory?: string; experimental_workspaceID?: string }) {
   if (!config?.fetch) {
-    const customFetch: any = (req: any) => {
-      // @ts-ignore
-      req.timeout = false
-      return fetch(req)
-    }
+    const bunFetch = fetch as typeof fetch & { preconnect?: unknown }
+    const customFetch = Object.assign(((input, init) => {
+      const request = input instanceof Request ? input : new Request(input, init)
+      ;(request as Request & { timeout?: boolean | number }).timeout = false
+      return fetch(request)
+    }) as typeof fetch, { preconnect: bunFetch.preconnect })
     config = {
       ...config,
       fetch: customFetch,

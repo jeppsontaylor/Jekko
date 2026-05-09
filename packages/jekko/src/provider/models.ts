@@ -31,7 +31,7 @@ export const Model = Schema.Struct({
   release_date: Schema.String,
   attachment: Schema.Boolean,
   reasoning: Schema.Boolean,
-  temperature: Schema.Boolean,
+  temperature: Schema.optional(Schema.Boolean),
   tool_call: Schema.Boolean,
   interleaved: Schema.optional(
     Schema.Union([
@@ -71,7 +71,7 @@ export const Model = Schema.Struct({
       ),
     }),
   ),
-  status: Schema.optional(Schema.Literals(["alpha", "beta", "inactive", "active", "locked"])),
+  status: Schema.optional(Schema.Literals(["alpha", "beta", "inactive", "active", "locked", "deprecated"])),
   provider: Schema.optional(
     Schema.Struct({ npm: Schema.optional(Schema.String), api: Schema.optional(Schema.String) }),
   ),
