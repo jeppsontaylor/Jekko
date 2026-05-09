@@ -124,10 +124,11 @@ function convertMcpTool(mcpTool: MCPToolDef, client: MCPClient, timeout?: number
   const inputSchema = mcpTool.inputSchema
 
   // Spread first, then override type to ensure it's always "object"
+  const properties = isJsonSchema7(inputSchema) ? jsonSchemaProperties(inputSchema.properties) : undefined
   const schema: JSONSchema7 = {
-    ...(inputSchema as JSONSchema7),
+    ...(isJsonSchema7(inputSchema) ? inputSchema : {}),
     type: "object",
-    properties: (inputSchema.properties ?? {}) as JSONSchema7["properties"],
+    properties: properties ?? {},
     additionalProperties: false,
   }
 
@@ -148,6 +149,19 @@ function convertMcpTool(mcpTool: MCPToolDef, client: MCPClient, timeout?: number
       )
     },
   })
+}
+
+function isJsonSchema7(value: unknown): value is JSONSchema7 {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function jsonSchemaProperties(value: unknown): JSONSchema7["properties"] | undefined {
+  if (!isJsonSchema7(value)) return undefined
+  const properties: Record<string, JSONSchema7> = {}
+  for (const [key, candidate] of Object.entries(value)) {
+    if (isJsonSchema7(candidate)) properties[key] = candidate
+  }
+  return properties
 }
 
 function defs(key: string, client: MCPClient, timeout?: number) {

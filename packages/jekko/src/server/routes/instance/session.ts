@@ -13,7 +13,7 @@ import { SessionShare } from "@/share/session"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
 import { Pending } from "@/session/pending"
-import { Effect } from "effect"
+import { Effect, Schema } from "effect"
 import { Agent } from "@/agent/agent"
 import { Snapshot } from "@/snapshot"
 import { Command } from "@/command"
@@ -36,6 +36,12 @@ const QueryBoolean = z.union([
 ])
 
 const taskSegment = ["ta", "sk"].join("")
+const decodeForkInput = Schema.decodeUnknownSync(Session.ForkInput)
+const decodeDiffInput = Schema.decodeUnknownSync(SessionSummary.DiffInput)
+const decodePromptInput = Schema.decodeUnknownSync(SessionPrompt.PromptInput)
+const decodeCommandInput = Schema.decodeUnknownSync(SessionPrompt.CommandInput)
+const decodeShellInput = Schema.decodeUnknownSync(SessionPrompt.ShellInput)
+const decodeRevertInput = Schema.decodeUnknownSync(SessionRevert.RevertInput)
 
 function queryBoolean(value: z.infer<typeof QueryBoolean> | undefined) {
   if (value === undefined) return
@@ -442,9 +448,9 @@ export const SessionRoutes = lazy(() =>
       async (c) =>
         jsonRequest("SessionRoutes.fork", c, function* () {
           const sessionID = c.req.valid("param").sessionID
-          const body = c.req.valid("json") as { messageID?: MessageID }
+          const body = decodeForkInput({ sessionID, ...c.req.valid("json") })
           const svc = yield* Session.Service
-          return yield* svc.fork({ ...body, sessionID })
+          return yield* svc.fork(body)
         }),
     )
     .post(
@@ -537,13 +543,14 @@ export const SessionRoutes = lazy(() =>
       validator("query", zodObject(SessionSummary.DiffInput).omit({ sessionID: true })),
       async (c) =>
         jsonRequest("SessionRoutes.diff", c, function* () {
-          const query = c.req.valid("query") as Omit<SessionSummary.DiffInput, "sessionID">
           const params = c.req.valid("param")
           const summary = yield* SessionSummary.Service
-          return yield* summary.diff({
-            sessionID: params.sessionID,
-            messageID: query.messageID,
-          })
+          return yield* summary.diff(
+            decodeDiffInput({
+              sessionID: params.sessionID,
+              ...c.req.valid("query"),
+            }),
+          )
         }),
     )
     .delete(
@@ -919,19 +926,17 @@ export const SessionRoutes = lazy(() =>
         }),
       ),
       validator("json", zodObject(SessionPrompt.PromptInput).omit({ sessionID: true })),
-      async (c) => {
-        c.status(200)
-        c.header("Content-Type", "application/json")
-        return stream(c, async (stream) => {
-          const sessionID = c.req.valid("param").sessionID
-          const body = c.req.valid("json")
-          const msg = await runRequest(
-            "SessionRoutes.prompt",
-            c,
-            SessionPrompt.Service.use((svc) =>
-              svc.prompt({ ...body, sessionID } as unknown as SessionPrompt.PromptInput),
-            ),
-          )
+        async (c) => {
+          c.status(200)
+          c.header("Content-Type", "application/json")
+          return stream(c, async (stream) => {
+            const sessionID = c.req.valid("param").sessionID
+            const body = decodePromptInput({ sessionID, ...c.req.valid("json") })
+            const msg = await runRequest(
+              "SessionRoutes.prompt",
+              c,
+              SessionPrompt.Service.use((svc) => svc.prompt(body)),
+            )
           void stream.write(JSON.stringify(msg))
         })
       },
@@ -959,17 +964,15 @@ export const SessionRoutes = lazy(() =>
       validator("json", zodObject(SessionPrompt.PromptInput).omit({ sessionID: true })),
       async (c) => {
         const sessionID = c.req.valid("param").sessionID
-        const body = c.req.valid("json")
-        void runRequest(
-          "SessionRoutes.prompt_async",
-          c,
-          SessionPrompt.Service.use((svc) =>
-            svc.prompt({ ...body, sessionID } as unknown as SessionPrompt.PromptInput),
-          ),
-        ).catch((err) => {
-          log.error("prompt_async failed", { sessionID, error: err })
-          void Bus.publish(Session.Event.Error, {
-            sessionID,
+          const body = decodePromptInput({ sessionID, ...c.req.valid("json") })
+          void runRequest(
+            "SessionRoutes.prompt_async",
+            c,
+            SessionPrompt.Service.use((svc) => svc.prompt(body)),
+          ).catch((err) => {
+            log.error("prompt_async failed", { sessionID, error: err })
+            void Bus.publish(Session.Event.Error, {
+              sessionID,
             error: new NamedError.Unknown({ message: err instanceof Error ? err.message : String(err) }).toObject(),
           })
         })
@@ -1007,12 +1010,12 @@ export const SessionRoutes = lazy(() =>
         }),
       ),
       validator("json", zodObject(SessionPrompt.CommandInput).omit({ sessionID: true })),
-      async (c) =>
+        async (c) =>
         jsonRequest("SessionRoutes.command", c, function* () {
           const sessionID = c.req.valid("param").sessionID
-          const body = c.req.valid("json") as Omit<SessionPrompt.CommandInput, "sessionID">
+          const body = decodeCommandInput({ sessionID, ...c.req.valid("json") })
           const svc = yield* SessionPrompt.Service
-          return yield* svc.command({ ...body, sessionID })
+          return yield* svc.command(body)
         }),
     )
     .post(
@@ -1043,9 +1046,9 @@ export const SessionRoutes = lazy(() =>
       async (c) =>
         jsonRequest("SessionRoutes.shell", c, function* () {
           const sessionID = c.req.valid("param").sessionID
-          const body = c.req.valid("json") as Omit<SessionPrompt.ShellInput, "sessionID">
+          const body = decodeShellInput({ sessionID, ...c.req.valid("json") })
           const svc = yield* SessionPrompt.Service
-          return yield* svc.shell({ ...body, sessionID })
+          return yield* svc.shell(body)
         }),
     )
     .post(
@@ -1075,11 +1078,11 @@ export const SessionRoutes = lazy(() =>
       validator("json", zodObject(SessionRevert.RevertInput).omit({ sessionID: true })),
       async (c) => {
         const sessionID = c.req.valid("param").sessionID
-        const body = c.req.valid("json") as Omit<SessionRevert.RevertInput, "sessionID">
+        const body = decodeRevertInput({ sessionID, ...c.req.valid("json") })
         log.info("revert", body)
         return jsonRequest("SessionRoutes.revert", c, function* () {
           const svc = yield* SessionRevert.Service
-          return yield* svc.revert({ sessionID, ...body })
+          return yield* svc.revert(body)
         })
       },
     )

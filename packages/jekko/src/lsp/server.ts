@@ -14,6 +14,7 @@ import { which } from "../util/which"
 import { Module } from "@jekko-ai/core/util/module"
 import { spawn } from "./launch"
 import { Npm } from "@jekko-ai/core/npm"
+import z from "zod"
 
 const log = Log.create({ service: "lsp.server" })
 const pathExists = async (p: string) =>
@@ -23,6 +24,42 @@ const pathExists = async (p: string) =>
     .catch(() => false)
 const run = (cmd: string[], opts: Process.RunOptions = {}) => Process.run(cmd, { ...opts, nothrow: true })
 const output = (cmd: string[], opts: Process.RunOptions = {}) => Process.text(cmd, { ...opts, nothrow: true })
+
+const ZlsReleaseSchema = z.object({
+  assets: z
+    .array(
+      z.object({
+        name: z.string().optional(),
+        browser_download_url: z.string().optional(),
+      }),
+    )
+    .optional(),
+})
+
+const TerraformReleaseSchema = z.object({
+  version: z.string().optional(),
+  builds: z
+    .array(
+      z.object({
+        arch: z.string().optional(),
+        os: z.string().optional(),
+        url: z.string().optional(),
+      }),
+    )
+    .optional(),
+})
+
+const ReleaseSchema = z.object({
+  tag_name: z.string().optional(),
+  assets: z
+    .array(
+      z.object({
+        name: z.string().optional(),
+        browser_download_url: z.string().optional(),
+      }),
+    )
+    .optional(),
+})
 
 export interface Handle {
   process: ChildProcessWithoutNullStreams
@@ -611,9 +648,12 @@ export const Zls: Info = {
         return
       }
 
-      const release = (await releaseResponse.json()) as {
-        assets?: { name?: string; browser_download_url?: string }[]
+      const releaseResult = ZlsReleaseSchema.safeParse(await releaseResponse.json())
+      if (!releaseResult.success) {
+        log.error("Failed to parse zls release info")
+        return
       }
+      const release = releaseResult.data
 
       const platform = process.platform
       const arch = process.arch
@@ -1687,10 +1727,12 @@ export const TerraformLS: Info = {
         return
       }
 
-      const release = (await releaseResponse.json()) as {
-        version?: string
-        builds?: { arch?: string; os?: string; url?: string }[]
+      const releaseResult = TerraformReleaseSchema.safeParse(await releaseResponse.json())
+      if (!releaseResult.success) {
+        log.error("Failed to parse terraform-ls release info")
+        return
       }
+      const release = releaseResult.data
 
       const platform = process.platform
       const arch = process.arch
@@ -1768,10 +1810,12 @@ export const TexLab: Info = {
         return
       }
 
-      const release = (await response.json()) as {
-        tag_name?: string
-        assets?: { name?: string; browser_download_url?: string }[]
+      const releaseResult = ReleaseSchema.safeParse(await response.json())
+      if (!releaseResult.success) {
+        log.error("Failed to parse texlab release info")
+        return
       }
+      const release = releaseResult.data
       const version = release.tag_name?.replace("v", "")
       if (!version) {
         log.error("texlab release did not include a version tag")
@@ -1952,10 +1996,12 @@ export const Tinymist: Info = {
         return
       }
 
-      const release = (await response.json()) as {
-        tag_name?: string
-        assets?: { name?: string; browser_download_url?: string }[]
+      const releaseResult = ReleaseSchema.safeParse(await response.json())
+      if (!releaseResult.success) {
+        log.error("Failed to parse tinymist release info")
+        return
       }
+      const release = releaseResult.data
 
       const platform = process.platform
       const arch = process.arch

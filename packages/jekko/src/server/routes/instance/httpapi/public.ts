@@ -51,6 +51,14 @@ type OpenApiResponse = {
   content?: Record<string, { schema?: OpenApiSchema }>
 }
 
+function isOpenApiSpec(value: unknown): value is OpenApiSpec {
+  return !!value && typeof value === "object" && !Array.isArray(value)
+}
+
+function isOpenApiSchema(value: unknown): value is OpenApiSchema {
+  return !!value && typeof value === "object" && !Array.isArray(value)
+}
+
 // Instance routes use middleware for directory/workspace resolution, but HttpApi
 // doesn't surface middleware query params in the spec. Inject them explicitly.
 const InstanceQueryParameters = [
@@ -94,7 +102,8 @@ const LegacyComponentDescriptions = {
 } satisfies Record<string, string>
 
 function matchLegacyOpenApi(input: Record<string, unknown>) {
-  const spec = input as OpenApiSpec
+  if (!isOpenApiSpec(input)) throw new TypeError("OpenAPI spec is invalid")
+  const spec = input
 
   // Effect's multi-document JSON Schema deduplicator can produce self-referencing
   // component schemas (e.g. `{"$ref":"#/components/schemas/X"}` as the definition
@@ -326,8 +335,8 @@ function stableSchema(input: unknown, schemas: Record<string, OpenApiSchema>): s
 
 function canonicalizeSchema(input: unknown, schemas: Record<string, OpenApiSchema>): unknown {
   if (Array.isArray(input)) return input.map((item) => canonicalizeSchema(item, schemas))
-  if (!input || typeof input !== "object") return input
-  const schema = input as OpenApiSchema
+  if (!isOpenApiSchema(input)) return input
+  const schema = input
   if (schema.$ref) return { $ref: canonicalRef(schema.$ref, schemas) }
   return Object.fromEntries(
     Object.entries(input)
@@ -349,8 +358,8 @@ function rewriteRefs(input: unknown, from: string, to: string): void {
     for (const item of input) rewriteRefs(item, from, to)
     return
   }
-  if (!input || typeof input !== "object") return
-  const schema = input as OpenApiSchema
+  if (!isOpenApiSchema(input)) return
+  const schema = input
   if (schema.$ref === `#/components/schemas/${from}`) schema.$ref = `#/components/schemas/${to}`
   for (const value of Object.values(input)) rewriteRefs(value, from, to)
 }

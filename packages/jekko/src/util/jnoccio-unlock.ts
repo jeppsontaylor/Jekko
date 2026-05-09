@@ -114,10 +114,16 @@ type GlobalJnoccioConfig = {
   registered_at?: string
 }
 
+const GlobalJnoccioConfigSchema = Schema.Struct({
+  repo_root: optionalOmitUndefined(Schema.String),
+  registered_at: optionalOmitUndefined(Schema.String),
+})
+const decodeGlobalJnoccioConfig = Schema.decodeUnknownSync(GlobalJnoccioConfigSchema)
+
 export function readGlobalJnoccioRepoRoot(): string | undefined {
   try {
     const raw = fs.readFileSync(jnoccioGlobalConfigPath(), "utf8")
-    const parsed = JSON.parse(raw) as GlobalJnoccioConfig
+    const parsed: GlobalJnoccioConfig = decodeGlobalJnoccioConfig(JSON.parse(raw))
     if (!parsed.repo_root) return undefined
     // Validate the cached path still has the repo layout we expect.
     if (!fs.existsSync(path.join(parsed.repo_root, "jnoccio-fusion"))) return undefined
@@ -226,7 +232,7 @@ export function encryptJnoccioGitCryptKey(
     iv: iv.toString("base64url"),
     tag: tag.toString("base64url"),
     ciphertext: ciphertext.toString("base64url"),
-    params: params as JnoccioEncryptedGitCryptKeyEnvelope["params"],
+    params,
     aad: aad as JnoccioEncryptedGitCryptKeyEnvelope["aad"],
   }
 }

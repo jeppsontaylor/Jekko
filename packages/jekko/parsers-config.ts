@@ -1,4 +1,22 @@
-export default {
+type ParserEntry = {
+  filetype: string
+  wasm: string
+  queries: {
+    highlights: readonly string[]
+    locals?: readonly string[]
+    injections?: readonly string[]
+  }
+  injectionMapping?: {
+    nodeTypes?: Record<string, string>
+    infoStringMap?: Record<string, string>
+  }
+}
+
+type ParserConfig = {
+  parsers: readonly ParserEntry[]
+}
+
+const parserConfig = {
   // NOTE: FOR markdown, javascript and typescript, we use the opentui built-in parsers
   // Warn: when taking queries from the nvim-treesitter repo, make sure to include the query dependencies as well
   //       marked with for example `; inherits: ecma` at the top of the file. Just put the dependencies before the actual query.
@@ -287,4 +305,6 @@ export default {
       },
     },
   ],
-}
+} satisfies ParserConfig
+
+export default parserConfig

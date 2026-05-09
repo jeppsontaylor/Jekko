@@ -137,6 +137,27 @@ type IssueQueryResponse = {
   }
 }
 
+type GitHubContextLike = {
+  eventName: string
+  repo: { owner: string; repo: string }
+  payload: Record<string, unknown>
+  actor?: string
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value)
+}
+
+function isGitHubContextLike(value: unknown): value is GitHubContextLike {
+  if (!isRecord(value)) return false
+  if (typeof value.eventName !== "string") return false
+  if (typeof value.actor !== "string" && value.actor !== undefined) return false
+  if (!isRecord(value.repo)) return false
+  if (typeof value.repo.owner !== "string" || typeof value.repo.repo !== "string") return false
+  if (!isRecord(value.payload)) return false
+  return true
+}
+
 const AGENT_USERNAME = "jekko-agent[bot]"
 const AGENT_REACTION = "eyes"
 const WORKFLOW_FILE = ".github/workflows/jekko.yml"
@@ -448,7 +469,15 @@ export const GithubRunCommand = effectCmd({
     yield* Effect.promise(async () => {
       const isMock = args.token || args.event
 
-      const context = isMock ? (JSON.parse(args.event!) as Context) : github.context
+      const context = isMock
+        ? (() => {
+            const parsed = JSON.parse(args.event!)
+            if (!isGitHubContextLike(parsed)) {
+              throw new Error("Mock GitHub event must include eventName, repo, payload, and actor fields")
+            }
+            return parsed
+          })()
+        : (github.context as GitHubContextLike)
       if (!SUPPORTED_EVENTS.includes(context.eventName as (typeof SUPPORTED_EVENTS)[number])) {
         core.setFailed(`Unsupported event type: ${context.eventName}`)
         process.exit(1)
@@ -1060,13 +1089,17 @@ export const GithubRunCommand = effectCmd({
             })
 
         if (!response.ok) {
-          const responseJson = (await response.json()) as { error?: string }
+          const responseJson = await response.json()
+          const error = isRecord(responseJson) && typeof responseJson.error === "string" ? responseJson.error : undefined
           throw new Error(
-            `App token exchange failed: ${response.status} ${response.statusText} - ${responseJson.error}`,
+            `App token exchange failed: ${response.status} ${response.statusText} - ${error}`,
           )
         }
 
-        const responseJson = (await response.json()) as { token: string }
+        const responseJson = await response.json()
+        if (!isRecord(responseJson) || typeof responseJson.token !== "string") {
+          throw new Error("App token exchange response did not contain a token")
+        }
         return responseJson.token
       }
 

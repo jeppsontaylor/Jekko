@@ -32,8 +32,7 @@ function rewrite(request: Request, directory?: string) {
 export function createOpencodeClient(config?: Config & { directory?: string }) {
   if (!config?.fetch) {
     const customFetch: any = (req: any) => {
-      // @ts-ignore
-      req.timeout = false
+      (req as { timeout: boolean }).timeout = false
       return fetch(req)
     }
     config = {

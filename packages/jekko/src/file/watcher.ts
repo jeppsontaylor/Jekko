@@ -1,10 +1,7 @@
 import { Cause, Effect, Layer, Context, Schema } from "effect"
-// @ts-ignore
-import { createWrapper } from "@parcel/watcher/wrapper"
 import type ParcelWatcher from "@parcel/watcher"
 import { readdir } from "fs/promises"
 import path from "path"
-import z from "zod"
 import { Bus } from "@/bus"
 import { BusEvent } from "@/bus/bus-event"
 import { InstanceState } from "@/effect/instance-state"
@@ -15,6 +12,10 @@ import { Config } from "@/config/config"
 import { FileIgnore } from "./ignore"
 import { Protected } from "./protected"
 import * as Log from "@jekko-ai/core/util/log"
+
+const { createWrapper } = require("@parcel/watcher/wrapper") as {
+  createWrapper: (binding: unknown) => typeof import("@parcel/watcher")
+}
 
 declare const JEKKO_LIBC: string | undefined
 

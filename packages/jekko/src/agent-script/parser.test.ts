@@ -184,9 +184,9 @@ ZYAL_ARM RUN_FOREVER id=test`
     expect(result._tag).toBe("Failure")
   })
 
-  test("rejects old legacy sentinels and arm markers", async () => {
-    const legacy = ["O", "CAL"].join("")
-    const text = `<<<${legacy} v1:daemon id=test>>>
+  test("rejects archived sentinels and arm markers", async () => {
+    const sentinel = ["O", "CAL"].join("")
+    const text = `<<<${sentinel} v1:daemon id=test>>>
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
@@ -196,8 +196,8 @@ job:
 stop:
   all:
     - git_clean: {}
-<<<END_${legacy} id=test>>>
-${legacy}_ARM RUN_FOREVER id=test`
+<<<END_${sentinel} id=test>>>
+${sentinel}_ARM RUN_FOREVER id=test`
     expect(extractZyalBlock(text)).toBeNull()
     const result = await Effect.runPromiseExit(parseZyal(text))
     expect(result._tag).toBe("Failure")

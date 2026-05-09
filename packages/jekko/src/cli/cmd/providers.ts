@@ -265,7 +265,7 @@ export const ProvidersUnlockCommand = effectCmd({
       })
       .option("key-file", {
         type: "string",
-        describe: "legacy git-crypt key file path",
+        describe: "git-crypt key file path",
       })
       .option("secret-file", {
         type: "string",

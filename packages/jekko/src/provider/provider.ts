@@ -1663,7 +1663,7 @@ const layer: Layer.Layer<
             opts.body &&
             opts.method === "POST"
           ) {
-            const body = JSON.parse(opts.body as string)
+            const body = JSON.parse(typeof opts.body === "string" ? opts.body : "")
             const keepIds = body.store === true
             if (!keepIds && Array.isArray(body.input)) {
               for (const item of body.input) {
@@ -1677,7 +1677,6 @@ const layer: Layer.Layer<
 
           const res = await fetchFn(input, {
             ...opts,
-            // @ts-ignore see here: https://github.com/oven-sh/bun/issues/16682
             timeout: false,
           })
 

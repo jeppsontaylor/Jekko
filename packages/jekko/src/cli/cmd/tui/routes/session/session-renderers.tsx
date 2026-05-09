@@ -830,13 +830,13 @@ function BlockTool(props: {
         props.onClick?.()
       }}
     >
-      <Show
-        when={props.spinner}
-        fallback={
-          <text paddingLeft={3} fg={theme.textMuted}>
-            {props.title}
-          </text>
-        }
+<Show
+          when={props.spinner}
+          fallback={
+            <text paddingLeft={3} fg={theme.textMuted}>
+              {props.title}
+            </text>
+          }
       >
         <Spinner color={theme.textMuted}>{props.title.replace(/^# /, "")}</Spinner>
       </Show>

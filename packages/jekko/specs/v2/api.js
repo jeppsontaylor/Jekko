@@ -19,7 +19,7 @@ jekko.tool.add({
     },
     required: ["command"],
   },
-  execute(input, ctx) {},
+  execute(_input, _ctx) {},
 })
 
 jekko.auth.add({

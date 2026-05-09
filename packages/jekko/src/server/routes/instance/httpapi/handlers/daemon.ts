@@ -6,7 +6,7 @@ import { Daemon } from "@/session/daemon"
 import { SessionID } from "@/session/schema"
 
 function jsonSafe<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T
+  return JSON.parse(JSON.stringify(value))
 }
 
 export const daemonHandlers = HttpApiBuilder.group(InstanceHttpApi, "daemon", (handlers) =>

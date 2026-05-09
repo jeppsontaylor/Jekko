@@ -229,28 +229,42 @@ export function versionedType(type: string, version?: number) {
   return version ? `${type}.${version}` : type
 }
 
+export function define<Type extends string, Agg extends string, Schema extends EffectSchema.Top>(input: {
+  type: Type
+  version: number
+  aggregate: Agg
+  schema: Schema
+}): Definition<Type, Schema, Schema>
 export function define<
   Type extends string,
   Agg extends string,
   Schema extends EffectSchema.Top,
-  BusSchema extends EffectSchema.Top = Schema,
+  BusSchema extends EffectSchema.Top,
 >(input: {
   type: Type
   version: number
   aggregate: Agg
   schema: Schema
-  busSchema?: BusSchema
-}): Definition<Type, Schema, BusSchema> {
+  busSchema: BusSchema
+}): Definition<Type, Schema, BusSchema>
+export function define(input: {
+  type: string
+  version: number
+  aggregate: string
+  schema: EffectSchema.Top
+  busSchema?: EffectSchema.Top
+}): Definition<string, EffectSchema.Top, EffectSchema.Top> {
   if (frozen) {
     throw new Error("Error defining sync event: sync system has been frozen")
   }
 
+  const properties = input.busSchema ?? input.schema
   const def = {
     type: input.type,
     version: input.version,
     aggregate: input.aggregate,
     schema: input.schema,
-    properties: (input.busSchema ?? input.schema) as BusSchema,
+    properties,
   }
 
   versions.set(def.type, Math.max(def.version, versions.get(def.type) || 0))

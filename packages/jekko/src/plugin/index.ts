@@ -99,9 +99,9 @@ function getLegacyPlugins(mod: Record<string, unknown>) {
 
 async function applyPlugin(load: PluginLoader.Loaded, input: PluginInput, hooks: Hooks[]) {
   const plugin = readV1Plugin(load.mod, load.spec, "server", "detect")
-  if (plugin) {
+  if (plugin && typeof plugin === "object" && "server" in plugin && typeof plugin.server === "function") {
     await resolvePluginId(load.source, load.spec, load.target, readPluginId(plugin.id, load.spec), load.pkg)
-    hooks.push(await (plugin as PluginModule).server(input, load.options))
+    hooks.push(await plugin.server(input, load.options))
     return
   }
 
@@ -247,11 +247,11 @@ export const layer = Layer.effect(
         // Subscribe to bus events, fiber interrupted when scope closes
         yield* bus.subscribeAll().pipe(
           Stream.runForEach((input) =>
-            Effect.sync(() => {
-              for (const hook of hooks) {
-                void hook["event"]?.({ event: input as any })
+          Effect.sync(() => {
+            for (const hook of hooks) {
+                void hook.event?.({ event: input } as Parameters<NonNullable<typeof hook.event>>[0])
               }
-            }),
+          }),
           ),
           Effect.forkScoped,
         )

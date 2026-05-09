@@ -80,7 +80,7 @@ export interface Interface {
     implementationConfidence?: number
     verificationConfidence?: number
     assessment?: AnyJson
-  }) => Effect.Effect<TaskInfo | undefined, any, any>
+  }) => Effect.Effect<TaskInfo | undefined, never, never>
   readonly routeTask: (input: {
     taskID: string
     lane: string
@@ -119,9 +119,9 @@ export interface Interface {
     sourcePassID?: string
     importance?: number
     confidence?: number
-  }) => Effect.Effect<TaskMemoryInfo, any, any>
-  readonly listTaskMemory: (input: { runID: string; taskID: string }) => Effect.Effect<TaskMemoryInfo[], any, any>
-  readonly listTaskPasses: (input: { runID: string; taskID: string }) => Effect.Effect<TaskPassInfo[], any, any>
+  }) => Effect.Effect<TaskMemoryInfo, never, never>
+  readonly listTaskMemory: (input: { runID: string; taskID: string }) => Effect.Effect<TaskMemoryInfo[], never, never>
+  readonly listTaskPasses: (input: { runID: string; taskID: string }) => Effect.Effect<TaskPassInfo[], never, never>
   readonly promoteTask: (input: { taskID: string; acceptedArtifactID?: string; result?: AnyJson }) => Effect.Effect<TaskInfo | undefined, any, any>
   readonly exhaustTask: (input: { taskID: string; reason: string; result?: AnyJson }) => Effect.Effect<TaskInfo | undefined, any, any>
   readonly archiveTask: (input: { taskID: string; reason?: string }) => Effect.Effect<TaskInfo | undefined, any, any>
@@ -132,8 +132,8 @@ export interface Interface {
         pass?: TaskPassInfo
       }
     | undefined,
-    any,
-    any
+    never,
+    never
   >
   readonly upsertWorker: (input: Omit<WorkerRow, "time_created" | "time_updated">) => Effect.Effect<WorkerInfo, any, any>
   readonly heartbeatWorker: (input: { workerID: string; heartbeatAt?: number }) => Effect.Effect<void, any, any>

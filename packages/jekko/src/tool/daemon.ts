@@ -252,13 +252,13 @@ export const DaemonTools = [
 
 function daemonDef<P extends Schema.Decoder<unknown>>(
   parameters: P,
-  execute: (params: Schema.Schema.Type<P>, ctx: Tool.Context) => Effect.Effect<Tool.ExecuteResult, any, any>,
+  execute: Tool.DefWithoutID<P>["execute"],
 ): Tool.DefWithoutID<P> {
   return {
     description: DESCRIPTION,
     enabledByDefault: false,
     parameters,
-    execute: execute as (params: Schema.Schema.Type<P>, ctx: Tool.Context) => Effect.Effect<Tool.ExecuteResult>,
+    execute,
   }
 }
 

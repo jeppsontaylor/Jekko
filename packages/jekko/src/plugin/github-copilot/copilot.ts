@@ -28,6 +28,10 @@ function base(enterpriseUrl?: string) {
   return enterpriseUrl ? `https://copilot-api.${normalizeDomain(enterpriseUrl)}` : "https://api.githubcopilot.com"
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value)
+}
+
 // Check if a message is a synthetic user msg used to attach an image from a tool call
 function imgMsg(msg: any): boolean {
   if (msg?.role !== "user") return false
@@ -238,16 +242,12 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
               throw new Error("Failed to initiate device authorization")
             }
 
-            const deviceData = (await deviceResponse.json()) as {
-              verification_uri: string
-              user_code: string
-              device_code: string
-              interval: number
-            }
+            const deviceData = await deviceResponse.json()
+            if (!isRecord(deviceData)) throw new Error("Failed to parse device authorization response")
 
             return {
-              url: deviceData.verification_uri,
-              instructions: `Enter code: ${deviceData.user_code}`,
+              url: String(deviceData.verification_uri ?? ""),
+              instructions: `Enter code: ${String(deviceData.user_code ?? "")}`,
               method: "auto" as const,
               async callback() {
                 while (true) {
@@ -267,13 +267,10 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
 
                   if (!response.ok) return { type: "failed" as const }
 
-                  const data = (await response.json()) as {
-                    access_token?: string
-                    error?: string
-                    interval?: number
-                  }
+                  const data = await response.json()
+                  if (!isRecord(data)) throw new Error("Failed to parse access token response")
 
-                  if (data.access_token) {
+                  if (typeof data.access_token === "string" && data.access_token) {
                     const result: {
                       type: "success"
                       refresh: string
@@ -296,14 +293,15 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
                   }
 
                   if (data.error === "authorization_pending") {
-                    await sleep(deviceData.interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
+                    const interval = typeof data.interval === "number" && data.interval > 0 ? data.interval : 5
+                    await sleep(interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
                     continue
                   }
 
                   if (data.error === "slow_down") {
                     // Based on the RFC spec, we must add 5 seconds to our current polling interval.
                     // (See https://www.rfc-editor.org/rfc/rfc8628#section-3.5)
-                    let newInterval = (deviceData.interval + 5) * 1000
+                    let newInterval = 10 * 1000
 
                     // GitHub OAuth API may return the new interval in seconds in the response.
                     // We should try to use that if provided with safety margin.
@@ -318,7 +316,8 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
 
                   if (data.error) return { type: "failed" as const }
 
-                  await sleep(deviceData.interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
+                  const interval = typeof data.interval === "number" && data.interval > 0 ? data.interval : 5
+                  await sleep(interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
                   continue
                 }
               },

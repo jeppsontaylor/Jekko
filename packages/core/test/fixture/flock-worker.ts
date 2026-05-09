@@ -26,7 +26,27 @@ function input() {
     throw new Error("Missing flock worker input")
   }
 
-  return JSON.parse(raw) as Msg
+  const parsed = JSON.parse(raw)
+  if (!isMsg(parsed)) {
+    throw new Error("Invalid flock worker input")
+  }
+  return parsed
+}
+
+function isMsg(value: unknown): value is Msg {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false
+  const record = value as Record<string, unknown>
+  if (typeof record.key !== "string" || typeof record.dir !== "string") return false
+  return (
+    (record.maxAgeMs === undefined || typeof record.maxAgeMs === "number") &&
+    (record.timeoutMs === undefined || typeof record.timeoutMs === "number") &&
+    (record.baseDelayMs === undefined || typeof record.baseDelayMs === "number") &&
+    (record.maxDelayMs === undefined || typeof record.maxDelayMs === "number") &&
+    (record.holdMs === undefined || typeof record.holdMs === "number") &&
+    (record.ready === undefined || typeof record.ready === "string") &&
+    (record.active === undefined || typeof record.active === "string") &&
+    (record.done === undefined || typeof record.done === "string")
+  )
 }
 
 async function job(input: Msg) {
@@ -54,8 +74,7 @@ async function job(input: Msg) {
 }
 
 async function main() {
-  const msg = input()
-
+  const msg: Msg = input()
   await Flock.withLock(msg.key, () => job(msg), {
     dir: msg.dir,
     maxAgeMs: msg.maxAgeMs,

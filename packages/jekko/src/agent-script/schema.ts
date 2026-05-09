@@ -1001,7 +1001,7 @@ export const ZyalExperiments = Schema.Struct({
 })
 export type ZyalExperiments = Schema.Schema.Type<typeof ZyalExperiments>
 
-// ─── v2.1: Models (routing + fallback + critic discipline) ────────────────
+// ─── v2.1: Models (routing + redundancy + critic discipline) ────────────────
 
 export const ZyalModelProfile = Schema.Struct({
   provider: Schema.optional(Schema.String),
@@ -1019,7 +1019,7 @@ export const ZyalModels = Schema.Struct({
     must_differ_from_builder: Schema.optional(Schema.Boolean),
     must_use_different_provider: Schema.optional(Schema.Boolean),
   })),
-  fallback: Schema.optional(Schema.Struct({
+  redundancy: Schema.optional(Schema.Struct({
     on_rate_limit: Schema.optional(Schema.String),
     on_context_overflow: Schema.optional(Schema.String),
     chain: Schema.optional(Schema.Array(Schema.String)),

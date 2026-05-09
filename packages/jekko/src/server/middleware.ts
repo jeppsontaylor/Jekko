@@ -11,11 +11,20 @@ import { basicAuth } from "hono/basic-auth"
 import { cors } from "hono/cors"
 import { compress } from "hono/compress"
 import * as ServerBackend from "./backend"
+import { ServerAuth } from "./auth"
 import { isAllowedCorsOrigin, type CorsOptions } from "./cors"
 import { isPtyConnectPath, PTY_CONNECT_TICKET_QUERY } from "./shared/pty-ticket"
 import { isPublicUIPath } from "./shared/public-ui"
 
 const log = Log.create({ service: "server" })
+
+function authTokenAuthorization(token: string) {
+  const decoded = Buffer.from(token, "base64").toString("utf8")
+  const [username, ...passwordParts] = decoded.split(":")
+  if (!username || passwordParts.length === 0) return undefined
+  const password = passwordParts.join(":")
+  return ServerAuth.header({ username, password })
+}
 
 export const ErrorMiddleware: ErrorHandler = (err, c) => {
   log.error("failed", {
@@ -50,7 +59,11 @@ export const AuthMiddleware: MiddlewareHandler = (c, next) => {
   if (isPtyConnectPath(c.req.path) && c.req.query(PTY_CONNECT_TICKET_QUERY)) return next()
   const username = Flag.JEKKO_SERVER_USERNAME ?? "jekko"
 
-  if (c.req.query("auth_token")) c.req.raw.headers.set("authorization", `Basic ${c.req.query("auth_token")}`)
+  const authToken = c.req.query("auth_token")
+  if (authToken) {
+    const authorization = authTokenAuthorization(authToken)
+    if (authorization) c.req.raw.headers.set("authorization", authorization)
+  }
 
   return basicAuth({ username, password })(c, next)
 }

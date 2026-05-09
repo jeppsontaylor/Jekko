@@ -63,8 +63,7 @@ import { eq } from "@/storage/db"
 import * as Database from "@/storage/db"
 import { SessionTable } from "./session.sql"
 
-// @ts-ignore This global silences ai-sdk warning spam during prompt loading.
-globalThis.AI_SDK_LOG_WARNINGS = false
+Reflect.set(globalThis, "AI_SDK_LOG_WARNINGS", false)
 
 const STRUCTURED_OUTPUT_DESCRIPTION = `Use this tool to return your final response in the requested structured format.
 

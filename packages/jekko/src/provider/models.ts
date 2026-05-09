@@ -89,6 +89,8 @@ export const Provider = Schema.Struct({
 
 export type Provider = Schema.Schema.Type<typeof Provider>
 
+const decodeProviderMap = Schema.decodeUnknownSync(Schema.Record(Schema.String, Provider))
+
 export interface Interface {
   readonly get: () => Effect.Effect<Record<string, Provider>>
   readonly refresh: (force?: boolean) => Effect.Effect<void>
@@ -128,13 +130,22 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | HttpClie
 
     const loadFromDisk = fs.readJson(Flag.JEKKO_MODELS_PATH ?? filepath).pipe(
       Effect.catch(() => Effect.succeed(undefined)),
-      Effect.map((v) => v as Record<string, Provider> | undefined),
+      Effect.map((v) => {
+        if (v === undefined) return undefined
+        return decodeProviderMap(v)
+      }),
     )
 
     // Bundled at build time; absent in dev — `tryPromise` covers both.
     const loadSnapshot = Effect.tryPromise({
-      // @ts-ignore — generated at build time, may not exist in dev
-      try: () => import("./models-snapshot.js").then((m) => m.snapshot as Record<string, Provider> | undefined),
+      try: async () => {
+        try {
+          const mod = await import("./models-snapshot.js")
+          return decodeProviderMap(mod.snapshot)
+        } catch {
+          return undefined
+        }
+      },
       catch: () => undefined,
     }).pipe(Effect.catch(() => Effect.succeed(undefined)))
 
@@ -157,7 +168,7 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | HttpClie
           return yield* fetchAndWrite()
         }),
       )
-      return JSON.parse(text) as Record<string, Provider>
+      return decodeProviderMap(JSON.parse(text))
     }).pipe(Effect.withSpan("ModelsDev.populate"), Effect.orDie)
 
     const [cachedGet, invalidate] = yield* Effect.cachedInvalidateWithTTL(populate, Duration.infinity)

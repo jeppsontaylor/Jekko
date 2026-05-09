@@ -16,24 +16,41 @@ type Msg = {
   holdMs?: number
 }
 
+function isMsg(parsed: unknown): parsed is Msg {
+  if (typeof parsed !== "object" || parsed === null) return false
+  const msg = parsed as Record<string, unknown>
+
+  if (typeof msg.dir !== "string" || typeof msg.target !== "string" || typeof msg.mod !== "string") {
+    return false
+  }
+  if (msg.global !== undefined && typeof msg.global !== "boolean") return false
+  if (msg.force !== undefined && typeof msg.force !== "boolean") return false
+  if (msg.globalDir !== undefined && typeof msg.globalDir !== "string") return false
+  if (msg.vcs !== undefined && typeof msg.vcs !== "string") return false
+  if (msg.worktree !== undefined && typeof msg.worktree !== "string") return false
+  if (msg.directory !== undefined && typeof msg.directory !== "string") return false
+  if (msg.holdMs !== undefined && (typeof msg.holdMs !== "number" || msg.holdMs < 0)) return false
+  return true
+}
+
 function sleep(ms: number) {
   return new Promise<void>((resolve) => {
     setTimeout(resolve, ms)
   })
 }
 
-function input() {
+function input(): Msg {
   const raw = process.argv[2]
   if (!raw) {
     throw new Error("Missing plug worker input")
   }
 
-  const msg = JSON.parse(raw) as Partial<Msg>
-  if (!msg.dir || !msg.target || !msg.mod) {
-    throw new Error("Invalid plug worker input")
+  const parsed = JSON.parse(raw)
+  if (!isMsg(parsed)) {
+    throw new Error("Input must be a JSON object")
   }
 
-  return msg as Msg
+  return parsed
 }
 
 function deps(msg: Msg): PlugDeps {

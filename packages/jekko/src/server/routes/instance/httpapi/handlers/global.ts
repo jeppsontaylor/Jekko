@@ -27,7 +27,7 @@ function eventData(data: unknown): Sse.Event {
 
 function parseBody(body: string) {
   try {
-    return JSON.parse(body || "{}") as unknown
+    return JSON.parse(body || "{}")
   } catch {
     return undefined
   }

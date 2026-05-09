@@ -23,6 +23,10 @@ const ALLOWED_MODELS = new Set([
   "gpt-5.4-mini",
 ])
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value)
+}
+
 interface PkceCodes {
   verifier: string
   challenge: string
@@ -533,16 +537,13 @@ export async function CodexAuthPlugin(input: PluginInput): Promise<Hooks> {
 
             if (!deviceResponse.ok) throw new Error("Failed to initiate device authorization")
 
-            const deviceData = (await deviceResponse.json()) as {
-              device_auth_id: string
-              user_code: string
-              interval: string
-            }
-            const interval = Math.max(parseInt(deviceData.interval) || 5, 1) * 1000
+            const deviceData = await deviceResponse.json()
+            if (!isRecord(deviceData)) throw new Error("Device authorization response was invalid")
+            const interval = Math.max(parseInt(String(deviceData.interval ?? "5")) || 5, 1) * 1000
 
             return {
               url: `${ISSUER}/codex/device`,
-              instructions: `Enter code: ${deviceData.user_code}`,
+              instructions: `Enter code: ${String(deviceData.user_code ?? "")}`,
               method: "auto" as const,
               async callback() {
                 while (true) {
@@ -559,9 +560,12 @@ export async function CodexAuthPlugin(input: PluginInput): Promise<Hooks> {
                   })
 
                   if (response.ok) {
-                    const data = (await response.json()) as {
-                      authorization_code: string
-                      code_verifier: string
+                    const data = await response.json()
+                    if (!isRecord(data)) throw new Error("Device authorization token response was invalid")
+                    const authorizationCode = String(data.authorization_code ?? "")
+                    const codeVerifier = String(data.code_verifier ?? "")
+                    if (!authorizationCode || !codeVerifier) {
+                      throw new Error("Device authorization token response was missing credentials")
                     }
 
                     const tokenResponse = await fetch(`${ISSUER}/oauth/token`, {
@@ -569,10 +573,10 @@ export async function CodexAuthPlugin(input: PluginInput): Promise<Hooks> {
                       headers: { "Content-Type": "application/x-www-form-urlencoded" },
                       body: new URLSearchParams({
                         grant_type: "authorization_code",
-                        code: data.authorization_code,
+                        code: authorizationCode,
                         redirect_uri: `${ISSUER}/deviceauth/callback`,
                         client_id: CLIENT_ID,
-                        code_verifier: data.code_verifier,
+                        code_verifier: codeVerifier,
                       }).toString(),
                     })
 

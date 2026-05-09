@@ -43,7 +43,13 @@ async function requestJson(input: RequestTarget, path: string, init: RequestInit
   })
   const text = await response.text()
   if (!response.ok) throw new Error(text || `${response.status} ${response.statusText}`)
-  return text ? (JSON.parse(text) as unknown) : undefined
+  return text ? JSON.parse(text) : undefined
+}
+
+async function requestJsonArray(input: RequestTarget, path: string, init: RequestInit = {}) {
+  const value = await requestJson(input, path, init)
+  if (Array.isArray(value)) return value
+  throw new Error(`Expected array response from ${path}`)
 }
 
 async function loadFile(file: string) {
@@ -228,7 +234,7 @@ export const DaemonStatusCommand = effectCmd({
   handler: Effect.fn("Cli.daemon.status")(function* (args) {
     const input = target(args)
     if (!args.runID) {
-      const runs = (yield* Effect.promise(() => requestJson(input, "/daemon"))) as readonly any[]
+      const runs = yield* Effect.promise(() => requestJsonArray(input, "/daemon"))
       UI.println(formatDaemonRunList(runs))
       return
     }
@@ -236,7 +242,7 @@ export const DaemonStatusCommand = effectCmd({
       ? yield* Effect.promise(() => requestJson(input, `/daemon/${args.runID}`))
       : undefined
     if (!run) return
-    const tasks = (yield* Effect.promise(() => requestJson(input, `/daemon/${args.runID}/tasks`))) as readonly any[]
+    const tasks = yield* Effect.promise(() => requestJsonArray(input, `/daemon/${args.runID}/tasks`))
     UI.println(formatDaemonRunSummary(run as any, tasks.length))
     if (tasks.length) UI.println(formatDaemonTaskList(tasks))
   }),
@@ -309,14 +315,14 @@ export const DaemonTasksCommand = effectCmd({
   builder: (yargs) => yargs.positional("runID", { type: "string", demandOption: true }),
   handler: Effect.fn("Cli.daemon.tasks")(function* (args) {
     const input = target(args)
-    const tasks = (yield* Effect.promise(() => requestJson(input, `/daemon/${args.runID}/tasks`))) as readonly any[]
+    const tasks = yield* Effect.promise(() => requestJsonArray(input, `/daemon/${args.runID}/tasks`))
     const passCounts = new Map<string, number>()
     yield* Effect.forEach(
       tasks,
       Effect.fnUntraced(function* (task: any) {
-        const passes = (yield* Effect.promise(() =>
-          requestJson(input, `/daemon/${args.runID}/tasks/${task.id}/passes`),
-        )) as readonly any[]
+        const passes = yield* Effect.promise(() =>
+          requestJsonArray(input, `/daemon/${args.runID}/tasks/${task.id}/passes`),
+        )
         passCounts.set(task.id, passes.length)
       }),
       { concurrency: 1 },

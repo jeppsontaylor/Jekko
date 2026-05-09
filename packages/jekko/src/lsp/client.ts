@@ -76,6 +76,40 @@ type CapabilityRegistration = {
   }
 }
 
+const configurationParamsSchema = z.object({
+  items: z.array(
+    z.object({
+      section: z.string().optional(),
+    }),
+  ).optional(),
+})
+
+const registerCapabilityParamsSchema = z.object({
+  registrations: z.array(
+    z.object({
+      id: z.string(),
+      method: z.string(),
+      registerOptions: z
+        .object({
+          identifier: z.string().optional(),
+          workspaceDiagnostics: z.boolean().optional(),
+        })
+        .optional(),
+    }),
+  ).optional(),
+})
+
+const unregisterCapabilityParamsSchema = z.object({
+  unregisterations: z
+    .array(
+      z.object({
+        id: z.string(),
+        method: z.string(),
+      }),
+    )
+    .optional(),
+})
+
 type ServerCapabilities = {
   textDocumentSync?:
     | number
@@ -143,8 +177,8 @@ export async function create(input: { serverID: string; server: LSPServer.Handle
   logger.info("starting client")
 
   const connection = createMessageConnection(
-    new StreamMessageReader(input.server.process.stdout as any),
-    new StreamMessageWriter(input.server.process.stdin as any),
+    new StreamMessageReader(input.server.process.stdout),
+    new StreamMessageWriter(input.server.process.stdin),
   )
   // Server stderr can contain both real errors and routine informational logs,
   // which is normal stderr practice for some tools. Keep the raw stream at
@@ -200,11 +234,11 @@ export async function create(input: { serverID: string; server: LSPServer.Handle
     return null
   })
   connection.onRequest("workspace/configuration", async (params) => {
-    const items = (params as { items?: { section?: string }[] }).items ?? []
+    const items = configurationParamsSchema.parse(params).items ?? []
     return items.map((item) => configurationValue(input.server.initialization, item.section))
   })
   connection.onRequest("client/registerCapability", async (params) => {
-    const registrations = (params as { registrations?: CapabilityRegistration[] }).registrations ?? []
+    const registrations = registerCapabilityParamsSchema.parse(params).registrations ?? []
     let changed = false
     for (const registration of registrations) {
       if (registration.method !== "textDocument/diagnostic") continue
@@ -214,7 +248,7 @@ export async function create(input: { serverID: string; server: LSPServer.Handle
     if (changed) emitRegistrationChange()
   })
   connection.onRequest("client/unregisterCapability", async (params) => {
-    const registrations = (params as { unregisterations?: { id: string; method: string }[] }).unregisterations ?? []
+    const registrations = unregisterCapabilityParamsSchema.parse(params).unregisterations ?? []
     let changed = false
     for (const registration of registrations) {
       if (registration.method !== "textDocument/diagnostic") continue

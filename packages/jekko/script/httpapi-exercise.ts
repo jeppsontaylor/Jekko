@@ -1726,7 +1726,7 @@ function fakeLlmConfig(url: string): Partial<Config.Info> {
           },
         },
         options: {
-          apiKey: "test-key",
+          apiKey: "",
           baseURL: url,
         },
       },
@@ -1756,7 +1756,7 @@ function app(modules: Runtime, backend: Backend) {
   Flag.JEKKO_SERVER_USERNAME = undefined
   if (appCache[backend]) return appCache[backend]
   if (backend === "historical") {
-    const historical = modules.Server.Legacy().app
+    const historical = modules.Server.Historical().app
     return (appCache.historical = {
       request: (input, init) => historical.request(input, init),
     })
@@ -1948,7 +1948,7 @@ function printResults(results: Result[], missing: string[], extra: Scenario[]) {
 function parse(text: string): unknown {
   if (!text) return undefined
   try {
-    return JSON.parse(text) as unknown
+    return JSON.parse(text)
   } catch {
     return text
   }

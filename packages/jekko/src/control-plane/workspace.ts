@@ -1,4 +1,4 @@
-import { Context, Effect, FiberMap, Iterable, Layer, Schema, Stream } from "effect"
+import { Context, Effect, FiberMap, Iterable, Layer, Option, Schema, Stream } from "effect"
 import { FetchHttpClient, HttpBody, HttpClient, HttpClientError, HttpClientRequest } from "effect/unstable/http"
 import { Database } from "@/storage/db"
 import { asc } from "drizzle-orm"
@@ -73,6 +73,7 @@ const db = <T>(fn: (d: Parameters<typeof Database.use>[0] extends (trx: infer D)
   Effect.sync(() => Database.use(fn))
 
 const log = Log.create({ service: "workspace-sync" })
+const decodeSSEData = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.Unknown))
 
 export const CreateInput = Schema.Struct({
   id: Schema.optional(WorkspaceID),
@@ -238,17 +239,15 @@ export const layer = Layer.effect(
           },
         ),
         Stream.map((event) => {
-          try {
-            return JSON.parse(event.data) as unknown
-          } catch {
-            return {
-              type: "sse.message",
-              properties: {
-                data: event.data,
-                id: event.id || undefined,
-                retry: event.retry,
-              },
-            }
+          const parsed = decodeSSEData(event.data)
+          if (Option.isSome(parsed)) return parsed.value
+          return {
+            type: "sse.message",
+            properties: {
+              data: event.data,
+              id: event.id || undefined,
+              retry: event.retry,
+            },
           }
         }),
         Stream.runForEach(onEvent),

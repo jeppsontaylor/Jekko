@@ -100,7 +100,11 @@ export function PtyRoutes(upgradeWebSocket: UpgradeWebSocket, opts?: CorsOptions
       async (c) =>
         jsonRequest("PtyRoutes.create", c, function* () {
           const pty = yield* Pty.Service
-          return yield* pty.create(c.req.valid("json") as Pty.CreateInput)
+          const input = c.req.valid("json")
+          return yield* pty.create({
+            ...input,
+            args: input.args ? [...input.args] : undefined,
+          })
         }),
     )
     .get(
@@ -160,7 +164,7 @@ export function PtyRoutes(upgradeWebSocket: UpgradeWebSocket, opts?: CorsOptions
       async (c) =>
         jsonRequest("PtyRoutes.update", c, function* () {
           const pty = yield* Pty.Service
-          return yield* pty.update(c.req.valid("param").ptyID, c.req.valid("json") as Pty.UpdateInput)
+          return yield* pty.update(c.req.valid("param").ptyID, c.req.valid("json"))
         }),
     )
     .delete(

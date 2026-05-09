@@ -8,7 +8,6 @@ import type { MessageV2 } from "../../../session/message"
 import { MessageID, PartID } from "../../../session/schema"
 import { ToolRegistry } from "@/tool/registry"
 import { Permission } from "../../../permission"
-import { iife } from "../../../util/iife"
 import { effectCmd, fail } from "../../effect-cmd"
 import { InstanceRef } from "@/effect/instance-ref"
 import type { InstanceContext } from "@/project/instance"
@@ -29,7 +28,7 @@ export const AgentCommand = effectCmd({
       })
       .option("params", {
         type: "string",
-        description: "Tool params as JSON or a JS object literal",
+        description: "Tool params as JSON",
       }),
   handler: Effect.fn("Cli.debug.agent")(function* (args) {
     const ctx = yield* InstanceRef
@@ -101,20 +100,12 @@ function parseToolParams(input?: string) {
   const trimmed = input.trim()
   if (trimmed.length === 0) return {}
 
-  const parsed = iife(() => {
-    try {
-      return JSON.parse(trimmed)
-    } catch (jsonError) {
-      try {
-        return new Function(`return (${trimmed})`)()
-      } catch (evalError) {
-        throw new Error(
-          `Failed to parse --params. Use JSON or a JS object literal. JSON error: ${jsonError}. Eval error: ${evalError}.`,
-          { cause: evalError },
-        )
-      }
-    }
-  })
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(trimmed)
+  } catch (error) {
+    throw new Error(`Failed to parse --params. Use JSON. JSON error: ${error}.`, { cause: error })
+  }
 
   if (!isRecord(parsed)) {
     throw new Error("Tool params must be an object.")
