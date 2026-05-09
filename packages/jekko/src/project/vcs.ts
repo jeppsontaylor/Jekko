@@ -60,6 +60,12 @@ const fileFromDiffPath = (value: string | undefined) => {
   return file
 }
 
+const firstLineWithPrefix = (chunk: string, prefix: string) => {
+  for (const line of chunk.split("\n")) {
+    if (line.startsWith(prefix)) return line.slice(prefix.length)
+  }
+}
+
 const fileFromGitHeader = (header: string) => {
   if (header.startsWith('"')) {
     const first = parseQuotedPath(header)
@@ -75,12 +81,12 @@ const fileFromGitHeader = (header: string) => {
 }
 
 const fileFromPatchChunk = (chunk: string) => {
-  const next = /^\+\+\+ (.+)$/m.exec(chunk)?.[1]
-  const before = /^--- (.+)$/m.exec(chunk)?.[1]
+  const next = firstLineWithPrefix(chunk, "+++ ")
+  const before = firstLineWithPrefix(chunk, "--- ")
   const file = fileFromDiffPath(next) ?? fileFromDiffPath(before)
   if (file) return file
 
-  const header = /^diff --git (.+)$/m.exec(chunk)?.[1]
+  const header = firstLineWithPrefix(chunk, "diff --git ")
   return fileFromGitHeader(header ?? "")
 }
 

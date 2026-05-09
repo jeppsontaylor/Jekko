@@ -52,9 +52,9 @@ await Effect.runPromise(
       msg.key,
       msg.dir,
     )
-  }).pipe(Effect.provide(testLayer)),
+}).pipe(Effect.provide(testLayer)),
 ).catch((err) => {
   const text = err instanceof Error ? (err.stack ?? err.message) : String(err)
   process.stderr.write(text)
-  process.exit(1)
+  throw new Error(text)
 })

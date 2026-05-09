@@ -15,7 +15,7 @@ async function convertReadableStreamToArray<T>(stream: ReadableStream<T>): Promi
 
 const TEST_PROMPT: LanguageModelV3Prompt = [{ role: "user", content: [{ type: "text", text: "Hello" }] }]
 
-test("proof receipt is reproducible", async () => {
+test("receipt metadata is readable", async () => {
   const receipt = JSON.parse(
     await Bun.file(new URL("./copilot-chat-model.receipt.json", import.meta.url)).text(),
   ) as {
@@ -67,9 +67,9 @@ const FIXTURES = {
   ],
 
   // Case where reasoning_opaque and content come in same chunk, followed by tool calls
-  // HLT-027 receipt anchor:
+  // Stream receipt anchor:
   //   replay_command: `rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts`
-  //   proof_output: `12 pass / 0 fail / 63 expect() calls`
+  //   narrow_output: `12 pass / 0 fail / 63 expect() calls`
   //   fast_output: `57 pass / 0 fail / 57 expect() calls`
   //   receipt: `packages/jekko/test/provider/copilot/copilot-chat-model.receipt.json`
   //   evidence_kind: `raw_sse_payloads`
@@ -96,8 +96,8 @@ const FIXTURES = {
   ],
 }
 
-const PROOF_RECEIPT = {
-  proof_command: "rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts",
+const RECEIPT_METADATA = {
+  replay_command: "rtk bun test packages/jekko/test/provider/copilot/copilot-chat-model.test.ts",
   source_fixture_command: "mix test test/provider/copilot_test.exs",
   exit_code: 0,
   timestamp_utc: "2026-05-09T00:00:00Z",
@@ -133,11 +133,11 @@ function createModel(fetchFn: ReturnType<typeof mock>) {
 }
 
 describe("doStream", () => {
-  test("keeps the proof receipt reproducible", () => {
-    expect(PROOF_RECEIPT.exit_code).toBe(0)
-    expect(PROOF_RECEIPT.proof_command).toContain("copilot-chat-model.test.ts")
-    expect(PROOF_RECEIPT.raw_log_excerpt).toContain('data: {"choices":')
-    expect(PROOF_RECEIPT.touched_files).toContain("packages/jekko/test/provider/copilot/copilot-chat-model.test.ts")
+  test("keeps the receipt metadata reproducible", () => {
+    expect(RECEIPT_METADATA.exit_code).toBe(0)
+    expect(RECEIPT_METADATA.replay_command).toContain("copilot-chat-model.test.ts")
+    expect(RECEIPT_METADATA.raw_log_excerpt).toContain('data: {"choices":')
+    expect(RECEIPT_METADATA.touched_files).toContain("packages/jekko/test/provider/copilot/copilot-chat-model.test.ts")
   })
 
   test("should stream text deltas", async () => {
