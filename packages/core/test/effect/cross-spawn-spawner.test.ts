@@ -246,11 +246,12 @@ describe("cross-spawn spawner", () => {
       "kills a running process",
       Effect.gen(function* () {
         const handle = yield* js("setTimeout(() => {}, 10_000)")
+        const pid = Number(handle.pid)
         const running = yield* handle.isRunning
         expect(running).toBe(true)
         yield* handle.kill()
-        const exit = yield* Effect.exit(handle.exitCode)
-        expect(Exit.isFailure(exit)).toBe(true)
+        expect(yield* handle.isRunning).toBe(false)
+        expect(yield* Effect.promise(() => gone(pid))).toBe(true)
       }),
     )
 
