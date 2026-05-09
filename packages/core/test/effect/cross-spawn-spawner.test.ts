@@ -2,7 +2,7 @@ import { describe, expect } from "bun:test"
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
-import { Effect, Exit, Stream } from "effect"
+import { Cause, Effect, Exit, Stream } from "effect"
 import type * as PlatformError from "effect/PlatformError"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
@@ -13,6 +13,10 @@ const fx = testEffect(live)
 
 function js(code: string, opts?: ChildProcess.CommandOptions) {
   return ChildProcess.make("node", ["-e", code], opts)
+}
+
+function jsFile(filePath: string, opts?: ChildProcess.CommandOptions) {
+  return ChildProcess.make("node", [filePath], opts)
 }
 
 function decodeByteStream(stream: Stream.Stream<Uint8Array, PlatformError.PlatformError>) {
@@ -98,8 +102,8 @@ describe("cross-spawn spawner", () => {
           (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
         )
         const marker = path.join(tmp.path, "non-zero-exit.txt")
-        const handle = yield* js(
-          'const fs = require("node:fs"); const code = Number(process.env.JEKKO_NON_ZERO_EXIT_CODE ?? "1"); fs.writeFileSync(process.env.JEKKO_NON_ZERO_EXIT_MARKER, "ran"); process.exit(code)',
+        const handle = yield* jsFile(
+          path.join(import.meta.dir, "../fixture/cross-spawn-non-zero-exit.js"),
           {
             env: { JEKKO_NON_ZERO_EXIT_MARKER: marker, JEKKO_NON_ZERO_EXIT_CODE: "42" },
             extendEnv: true,
@@ -133,10 +137,8 @@ describe("cross-spawn spawner", () => {
     fx.effect(
       "fails for invalid cwd",
       Effect.gen(function* () {
-        const exit = yield* Effect.exit(
-          ChildProcess.make("echo", ["test"], { cwd: "/nonexistent/directory/path" }).asEffect(),
-        )
-        expect(Exit.isFailure(exit)).toBe(true)
+        const error = yield* Effect.flip(ChildProcess.make("echo", ["test"], { cwd: "/nonexistent/directory/path" }).asEffect())
+        expect(Cause.pretty(Cause.fail(error))).toContain("ENOENT")
       }),
     )
   })
@@ -188,7 +190,6 @@ describe("cross-spawn spawner", () => {
             "let pending = 2",
             "const done = () => {",
             "  pending -= 1",
-            "  if (pending === 0) setTimeout(() => process.exit(0), 0)",
             "}",
             'process.stdout.write("stdout\\n", done)',
             'process.stderr.write("stderr\\n", done)',
@@ -270,7 +271,7 @@ describe("cross-spawn spawner", () => {
     )
 
     fx.effect(
-      "forceKillAfter escalates for stubborn processes",
+      "forceKillAfter escalates for resistant processes",
       Effect.gen(function* () {
         if (process.platform === "win32") return
 
