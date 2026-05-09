@@ -9,25 +9,46 @@ set -euo pipefail
 # It runs in CI as a required status check and can be run locally.
 #
 # When git-crypt is unlocked locally, files appear as plaintext in
-# the working tree — that is expected. Use --force to check anyway.
+# the working tree — that is expected. Use --force to check anyway,
+# or use --index to verify staged/index blobs without locking.
 # ─────────────────────────────────────────────────────────────────
 
-# If git-crypt is installed and unlocked locally, files are decrypted
-# in the working tree. This is normal for keyholders. Skip unless --force.
-if command -v git-crypt &>/dev/null && [[ "${1:-}" != "--force" ]]; then
-  # Check if any encrypted file is currently decrypted (unlocked state)
-  sample_file=$(git ls-files 'jnoccio-fusion/' | head -1)
-  if [[ -n "$sample_file" && -f "$sample_file" ]]; then
-    sample_hex=$(head -c 10 "$sample_file" | od -An -tx1 -v | tr -d ' \n')
-    if [[ "$sample_hex" != "00474954435259505400" ]]; then
-      # git-crypt is unlocked — files are decrypted locally, which is correct
-      echo "ℹ️  git-crypt is unlocked locally. Files are decrypted in working tree (expected)."
-      echo "   Run with --force to check anyway, or lock first: git-crypt lock"
-      echo "   CI will verify encryption on the remote (where the key is absent)."
+MODE="worktree"
+FORCE=0
+
+usage() {
+  cat <<'USAGE'
+Usage: tools/check-encrypted-paths.sh [--force] [--index] [--head]
+
+  --force   Check the working tree even when git-crypt appears unlocked.
+  --index   Check staged/index blobs. Use this while locally unlocked.
+  --head    Check committed HEAD blobs.
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --force)
+      FORCE=1
+      ;;
+    --index)
+      MODE="index"
+      ;;
+    --head)
+      MODE="head"
+      ;;
+    -h|--help)
+      usage
       exit 0
-    fi
-  fi
-fi
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
 
 # Hex representation of the git-crypt magic header: \0GITCRYPT\0
 MAGIC_HEX="00474954435259505400"
@@ -49,25 +70,90 @@ is_exception() {
   return 1
 }
 
+tracked_protected_files() {
+  git ls-files 'jnoccio-fusion/' | while IFS= read -r file; do
+    is_exception "$file" && continue
+    printf '%s\n' "$file"
+  done
+}
+
+worktree_hex() {
+  local file="$1"
+  head -c 10 "$file" | od -An -tx1 -v | tr -d ' \n'
+}
+
+blob_hex() {
+  local spec="$1"
+  local tmp
+  tmp=$(mktemp)
+  git cat-file blob "$spec" >"$tmp"
+  head -c 10 "$tmp" | od -An -tx1 -v | tr -d ' \n'
+  rm -f "$tmp"
+}
+
+blob_exists() {
+  local spec="$1"
+  git cat-file -e "$spec" 2>/dev/null
+}
+
+verify_env_not_tracked() {
+  if git ls-files --error-unmatch 'jnoccio-fusion/.env.jnoccio' >/dev/null 2>&1; then
+    echo "❌ jnoccio-fusion/.env.jnoccio is tracked. It must remain local-only." >&2
+    ERRORS=$((ERRORS + 1))
+  fi
+}
+
+verify_worktree_not_unlocked_unless_forced() {
+  [[ "$MODE" == "worktree" ]] || return 0
+  [[ "$FORCE" -eq 0 ]] || return 0
+  command -v git-crypt &>/dev/null || return 0
+
+  local sample_file=""
+  while IFS= read -r file; do
+    [[ -f "$file" ]] || continue
+    sample_file="$file"
+    break
+  done < <(tracked_protected_files)
+  [[ -n "$sample_file" ]] || return 0
+
+  local sample_hex
+  sample_hex=$(worktree_hex "$sample_file")
+  if [[ "$sample_hex" != "$MAGIC_HEX" ]]; then
+    echo "ℹ️  git-crypt is unlocked locally. Protected files are plaintext in the working tree (expected)."
+    echo "   Run with --index to verify staged/index blobs, or --force to inspect the working tree anyway."
+    echo "   CI will verify ciphertext where the key is absent."
+    exit 0
+  fi
+}
+
 ERRORS=0
 CHECKED=0
+verify_worktree_not_unlocked_unless_forced
+verify_env_not_tracked
 
-# Check every tracked file under jnoccio-fusion/
+# Check every tracked protected file under jnoccio-fusion/
 while IFS= read -r file; do
-  # Skip exceptions
-  is_exception "$file" && continue
-
-  # Skip files that don't exist in the working tree (deleted)
-  [[ -f "$file" ]] || continue
+  hex=""
+  case "$MODE" in
+    worktree)
+      [[ -f "$file" ]] || continue
+      hex=$(worktree_hex "$file")
+      ;;
+    index)
+      blob_exists ":$file" || continue
+      hex=$(blob_hex ":$file")
+      ;;
+    head)
+      blob_exists "HEAD:$file" || continue
+      hex=$(blob_hex "HEAD:$file")
+      ;;
+  esac
 
   CHECKED=$((CHECKED + 1))
 
-  # Read first 10 bytes and convert to hex
-  hex=$(head -c 10 "$file" | od -An -tx1 -v | tr -d ' \n')
-
   if [[ "$hex" != "$MAGIC_HEX" ]]; then
-    echo "❌ PLAINTEXT DETECTED: $file" >&2
-    echo "   This file must be committed as git-crypt ciphertext." >&2
+    echo "❌ PLAINTEXT DETECTED: $file ($MODE)" >&2
+    echo "   Protected files must be committed as git-crypt ciphertext." >&2
     echo "   Fix: git-crypt unlock, then:" >&2
     echo "     git rm --cached '$file'" >&2
     echo "     git add '$file'" >&2
@@ -75,7 +161,7 @@ while IFS= read -r file; do
     echo "" >&2
     ERRORS=$((ERRORS + 1))
   fi
-done < <(git ls-files 'jnoccio-fusion/')
+done < <(tracked_protected_files)
 
 # Verify .gitattributes still contains the git-crypt rule
 if ! grep -q 'jnoccio-fusion/\*\* filter=git-crypt' .gitattributes 2>/dev/null; then
@@ -87,7 +173,7 @@ fi
 if ! grep -q 'jnoccio-fusion/\*\* .*diff=git-crypt' .gitattributes 2>/dev/null; then
   echo "❌ .gitattributes is missing the diff=git-crypt rule for jnoccio-fusion/**" >&2
   ERRORS=$((ERRORS + 1))
-fi
+
 
 if [[ "$ERRORS" -gt 0 ]]; then
   echo "" >&2
@@ -96,4 +182,4 @@ if [[ "$ERRORS" -gt 0 ]]; then
   exit 1
 fi
 
-echo "✅ All $CHECKED jnoccio-fusion file(s) are properly encrypted."
+echo "✅ All $CHECKED protected jnoccio-fusion file(s) are encrypted in $MODE mode."
