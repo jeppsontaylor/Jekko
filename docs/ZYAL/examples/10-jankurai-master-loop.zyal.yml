@@ -10,6 +10,41 @@
 # the v2.3 `taint` block: every inbound source labelled, hostile content
 # blocked from arming/approving/granting/exec_shell/memory writes without
 # human review or a signed sanitiser.
+#
+# # Setup
+#
+# Before arming, ensure these prerequisites are satisfied:
+#   1. `jankurai` CLI is on $PATH (`which jankurai`).
+#   2. A `JANKURAI_TASKLIST.md` exists at the repo root (the on_start hook
+#      will `touch` it if missing).
+#   3. Node-side test/typecheck commands resolve from `packages/jekko/`:
+#      `bun test --timeout 60000` and `bun run typecheck`. If the jekko
+#      package's test suite has known failures, run from inside it:
+#      `cd packages/jekko && bun run typecheck` first to confirm 0 errors,
+#      then iterate the failing tests under hardlane-incubated tasks.
+#   4. **Provider setup**: this runbook routes `provider: jnoccio` through
+#      jnoccio-fusion at `http://127.0.0.1:4317`. Until a native jnoccio
+#      provider is registered in `packages/jekko/src/provider/provider.ts`,
+#      register the gateway via `@ai-sdk/openai-compatible` in
+#      `~/.jekko/config.json`:
+#
+#        "provider": {
+#          "jnoccio": {
+#            "name": "Jnoccio",
+#            "npm": "@ai-sdk/openai-compatible",
+#            "options": {
+#              "baseURL": "http://127.0.0.1:4317/v1",
+#              "apiKey": "jnoccio-local",
+#              "includeUsage": true
+#            },
+#            "models": {
+#              "jnoccio-fusion": { "context": 128000, "output": 32000 }
+#            }
+#          }
+#        }
+#
+#      Then start the fusion server: `cargo run --release` from
+#      `jnoccio-fusion/`. Verify health: `curl http://127.0.0.1:4317/health`.
 
 <<<ZYAL v1:daemon id=jankurai-master-loop>>>
 version: v1
@@ -119,7 +154,7 @@ context:
 stop:
   all:
     - shell:
-        command: "jankurai audit --json 2>/dev/null | jq -e '.findings | length == 0'"
+        command: "jankurai audit --json /tmp/jankurai-stop.json >/dev/null 2>&1 && jq -e '.findings | length == 0' /tmp/jankurai-stop.json"
         timeout: 120s
         assert: { exit_code: 0 }
     - git_clean: { allow_untracked: false }
@@ -142,7 +177,7 @@ hooks:
     - run: "git rebase origin/main --autostash"
       on_fail: warn
     - run: |
-        jankurai audit --json > .jekko/daemon/jankurai-latest.json 2>/dev/null || echo '{"findings":[]}' > .jekko/daemon/jankurai-latest.json
+        jankurai audit --json .jekko/daemon/jankurai-latest.json >/dev/null 2>&1 || echo '{"findings":[]}' > .jekko/daemon/jankurai-latest.json
         jq -r '.findings[] | "- [ ] " + .id + " — " + .title + " (" + (.severity // "med") + ", " + (.file // "?") + ")"' .jekko/daemon/jankurai-latest.json > .jekko/daemon/jankurai-new.txt || true
         if [ -s .jekko/daemon/jankurai-new.txt ]; then
           grep -F -v -f <(grep -oE '\b[A-Z]+-[0-9]+' JANKURAI_TASKLIST.md 2>/dev/null | sort -u || true) .jekko/daemon/jankurai-new.txt >> JANKURAI_TASKLIST.md || true
@@ -155,7 +190,10 @@ hooks:
         fi
       on_fail: warn
   before_checkpoint:
-    - run: "bun run lint --fix 2>/dev/null || true"
+    # `bun run lint` does not exist in packages/jekko yet — typecheck is the
+    # canonical pre-checkpoint signal. If lint becomes available later,
+    # promote it to a verify step.
+    - run: "(cd packages/jekko && bun run typecheck) 2>/dev/null || true"
   after_checkpoint:
     - run: "git push origin HEAD"
       on_fail: pause
@@ -303,7 +341,7 @@ capabilities:
     - { id: edit-migrations, tool: edit, paths: ["**/migrations/**"], decision: ask, require_gate: dba_review }
     - id: shell-tests
       tool: shell
-      command_regex: "^(bun (test|run lint|run build|run typecheck)|tsgo --noEmit|jankurai (audit|score)|jq |grep |sed |git (status|diff|log|fetch|rebase|push origin HEAD))( |$)"
+      command_regex: "^((bun|pnpm|npm) (run )?(test|run typecheck|run build|typecheck|build)|jankurai (audit|score)|jq |grep |sed |git (status|diff|log|fetch|rebase|push origin HEAD))( |$)"
       decision: allow
       expires: 4h
     - { id: git-commit, tool: git_commit, decision: allow }
@@ -397,10 +435,10 @@ checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - command: "bun test --timeout 60000"
+    - command: "cd packages/jekko && bun test --timeout 60000"
       timeout: 120s
       assert: { exit_code: 0 }
-    - command: "bun run lint 2>&1 | tail -1"
+    - command: "cd packages/jekko && bun run typecheck 2>&1 | tail -1"
       timeout: 60s
       assert: { exit_code: 0 }
   git:
@@ -411,14 +449,14 @@ checkpoint:
 constraints:
   - name: jankurai-no-regression
     check:
-      shell: "jankurai audit --json 2>/dev/null | jq '.findings | length' || echo 9999"
+      shell: "jankurai audit --json /tmp/jankurai-constraint.json >/dev/null 2>&1 && jq '.findings | length' /tmp/jankurai-constraint.json || echo 9999"
       timeout: 60s
     baseline: capture_on_start
     invariant: lte_baseline
     on_violation: pause
   - name: test-count-stable
     check:
-      shell: "bun test --dry-run 2>&1 | grep -c test"
+      shell: "cd packages/jekko && bun test --dry-run 2>&1 | grep -c test"
     baseline: capture_on_start
     invariant: gte_baseline
     on_violation: pause
