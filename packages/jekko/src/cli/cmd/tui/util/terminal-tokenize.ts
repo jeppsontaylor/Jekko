@@ -43,11 +43,16 @@ const REGEX_RULES: { scope: TerminalScope; re: RegExp }[] = [
   { scope: "punctuation", re: /[\[\]{}()]/g },
 ]
 
+const MAX_TOKENIZE_LENGTH = 10_000
+
 export function tokenizeTerminal(text: string): TerminalToken[] {
+  // This is a presentation-only tokenizer. Bounding the scan keeps terminal
+  // rendering from doing unbounded regex work on arbitrary log output.
+  const source = text.slice(0, MAX_TOKENIZE_LENGTH)
   const tokens: TerminalToken[] = []
 
   for (const rule of REGEX_RULES) {
-    for (const match of text.matchAll(rule.re)) {
+    for (const match of source.matchAll(rule.re)) {
       tokens.push({
         start: match.index,
         end: match.index + match[0].length,
