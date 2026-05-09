@@ -2,27 +2,40 @@ import fs from "fs"
 import fsp from "fs/promises"
 import os from "os"
 import path from "path"
+import { randomBytes, scryptSync, createCipheriv, createDecipheriv } from "crypto"
 import { Schema } from "effect"
 import { optionalOmitUndefined, withStatics } from "@/util/schema"
 import { zod } from "@/util/effect-zod"
+import { JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY, type JnoccioEncryptedGitCryptKeyEnvelope } from "./jnoccio-encrypted-key"
 
 export const JNOCCIO_PROVIDER_ID = "jnoccio"
 export const JNOCCIO_MODEL_ID = "jnoccio-fusion"
 export const JNOCCIO_DEFAULT_BASE_URL = "http://127.0.0.1:4317/v1"
 export const JNOCCIO_DEFAULT_API_KEY = "jnoccio-local"
+export const JNOCCIO_UNLOCK_SECRET_PATTERN = /^[A-Za-z0-9_-]{128}$/
+export const JNOCCIO_DEFAULT_UNLOCK_SECRET_PATH = "~/jnoccio-fusion.unlock"
+export const JNOCCIO_ENCRYPTION_AAD = "jnoccio-fusion-git-crypt-key-v1" as const
+export const JNOCCIO_ENCRYPTION_PARAMS = {
+  N: 262144,
+  r: 8,
+  p: 1,
+  maxmem: 536870912,
+} as const
 
 export const JnoccioUnlockInput = Schema.Struct({
-  keyPath: Schema.String,
+  unlockSecret: optionalOmitUndefined(Schema.String),
+  keyPath: optionalOmitUndefined(Schema.String),
 })
   .annotate({ identifier: "JnoccioUnlockInput" })
   .pipe(withStatics((s) => ({ zod: zod(s) })))
 export type JnoccioUnlockInput = Schema.Schema.Type<typeof JnoccioUnlockInput>
 
 export const JnoccioUnlockResult = Schema.Struct({
-  status: Schema.Literals(["unlocked", "error"]),
+  status: Schema.Literals(["unlocked", "needs_secret", "error"]),
   message: Schema.String,
   envPath: optionalOmitUndefined(Schema.String),
   envCreated: Schema.Boolean,
+  secretSaved: optionalOmitUndefined(Schema.Boolean),
 })
   .annotate({ identifier: "JnoccioUnlockResult" })
   .pipe(withStatics((s) => ({ zod: zod(s) })))
@@ -39,10 +52,50 @@ export type CommandRunner = (command: string, args: string[], options: { cwd: st
 export type UnlockOptions = {
   repoRoot?: string
   runner?: CommandRunner
+  secretPath?: string
+  envelope?: JnoccioEncryptedGitCryptKeyEnvelope
+}
+
+type EnvelopeParams = {
+  N: number
+  r: number
+  p: number
+  maxmem: number
+}
+
+function normalizeSecret(input: string) {
+  return input.trim()
+}
+
+export function isValidUnlockSecret(input: string) {
+  return JNOCCIO_UNLOCK_SECRET_PATTERN.test(normalizeSecret(input))
+}
+
+function findRepoRootFrom(start: string | undefined) {
+  if (!start) return
+  let current = path.resolve(expandHome(start))
+  try {
+    const stat = fs.statSync(current)
+    if (stat.isFile()) current = path.dirname(current)
+  } catch {}
+
+  while (true) {
+    if (fs.existsSync(path.join(current, "jnoccio-fusion")) && fs.existsSync(path.join(current, ".git"))) {
+      return current
+    }
+    const parent = path.dirname(current)
+    if (parent === current) return
+    current = parent
+  }
 }
 
 export function repoRootFromSource() {
-  return path.resolve(import.meta.dir, "../../../..")
+  return (
+    findRepoRootFrom(process.env.JNOCCIO_REPO_ROOT) ??
+    findRepoRootFrom(process.cwd()) ??
+    findRepoRootFrom(import.meta.dir) ??
+    path.resolve(import.meta.dir, "../../../..")
+  )
 }
 
 export function expandHome(input: string) {
@@ -64,6 +117,10 @@ export function jnoccioEnvExamplePath(repoRoot = repoRootFromSource()) {
   return path.join(jnoccioFusionRoot(repoRoot), ".env.jnoccio.example")
 }
 
+export function jnoccioUnlockSecretPath() {
+  return expandHome(process.env.JNOCCIO_UNLOCK_SECRET_PATH ?? JNOCCIO_DEFAULT_UNLOCK_SECRET_PATH)
+}
+
 function hasPlaintextSignals(repoRoot: string) {
   try {
     const cargo = fs.readFileSync(path.join(jnoccioFusionRoot(repoRoot), "Cargo.toml"), "utf8")
@@ -82,6 +139,58 @@ export function isJnoccioFusionUnlocked(repoRoot = repoRootFromSource()) {
 
 export function isJnoccioFusionConfigured(repoRoot = repoRootFromSource()) {
   return isJnoccioFusionUnlocked(repoRoot) && fs.existsSync(jnoccioEnvPath(repoRoot))
+}
+
+function deriveKey(secret: string, salt: Buffer, params: EnvelopeParams) {
+  return scryptSync(Buffer.from(normalizeSecret(secret), "utf8"), salt, 32, params)
+}
+
+export function encryptJnoccioGitCryptKey(
+  rawKey: Buffer,
+  secret: string,
+  options?: {
+    salt?: Buffer
+    iv?: Buffer
+    params?: EnvelopeParams
+    aad?: string
+  },
+): JnoccioEncryptedGitCryptKeyEnvelope {
+  const salt = options?.salt ?? randomBytes(16)
+  const iv = options?.iv ?? randomBytes(12)
+  const params = options?.params ?? JNOCCIO_ENCRYPTION_PARAMS
+  const aad = options?.aad ?? JNOCCIO_ENCRYPTION_AAD
+  const key = deriveKey(secret, salt, params)
+  const cipher = createCipheriv("aes-256-gcm", key, iv)
+  cipher.setAAD(Buffer.from(aad, "utf8"))
+  const ciphertext = Buffer.concat([cipher.update(rawKey), cipher.final()])
+  const tag = cipher.getAuthTag()
+
+  return {
+    version: 1,
+    kdf: "scrypt",
+    cipher: "aes-256-gcm",
+    salt: salt.toString("base64url"),
+    iv: iv.toString("base64url"),
+    tag: tag.toString("base64url"),
+    ciphertext: ciphertext.toString("base64url"),
+    params: params as JnoccioEncryptedGitCryptKeyEnvelope["params"],
+    aad: aad as JnoccioEncryptedGitCryptKeyEnvelope["aad"],
+  }
+}
+
+export function decryptJnoccioGitCryptKey(
+  envelope: JnoccioEncryptedGitCryptKeyEnvelope,
+  secret: string,
+): Buffer {
+  const salt = Buffer.from(envelope.salt, "base64url")
+  const iv = Buffer.from(envelope.iv, "base64url")
+  const tag = Buffer.from(envelope.tag, "base64url")
+  const ciphertext = Buffer.from(envelope.ciphertext, "base64url")
+  const key = deriveKey(secret, salt, envelope.params)
+  const decipher = createDecipheriv(envelope.cipher, key, iv)
+  decipher.setAAD(Buffer.from(envelope.aad, "utf8"))
+  decipher.setAuthTag(tag)
+  return Buffer.concat([decipher.update(ciphertext), decipher.final()])
 }
 
 async function defaultRunner(command: string, args: string[], options: { cwd: string }): Promise<CommandResult> {
@@ -113,10 +222,11 @@ async function ensureEnvFile(repoRoot: string) {
   } catch {}
 
   await fsp.copyFile(jnoccioEnvExamplePath(repoRoot), envPath, fs.constants.COPYFILE_EXCL)
+  await fsp.chmod(envPath, 0o600)
   return { envPath, envCreated: true }
 }
 
-async function unlockedResult(repoRoot: string): Promise<JnoccioUnlockResult> {
+async function unlockedResult(repoRoot: string, secretSaved?: boolean): Promise<JnoccioUnlockResult> {
   try {
     const env = await ensureEnvFile(repoRoot)
     return {
@@ -126,89 +236,231 @@ async function unlockedResult(repoRoot: string): Promise<JnoccioUnlockResult> {
         : "Jnoccio Fusion is unlocked. Existing .env.jnoccio was left unchanged.",
       envPath: env.envPath,
       envCreated: env.envCreated,
+      secretSaved,
     }
   } catch {
     return {
       status: "error",
       message: "Jnoccio Fusion unlocked, but .env.jnoccio could not be created from the example file.",
       envCreated: false,
+      secretSaved,
     }
   }
 }
 
-export async function unlockJnoccioFusion(
-  input: JnoccioUnlockInput,
-  options: UnlockOptions = {},
-): Promise<JnoccioUnlockResult> {
-  const repoRoot = options.repoRoot ?? repoRootFromSource()
-  const keyPath = expandHome(input.keyPath)
+async function needsSecretResult(_repoRoot: string, message?: string): Promise<JnoccioUnlockResult> {
+  return {
+    status: "needs_secret",
+    message: message ?? "Enter your 128-character Jnoccio unlock secret to unlock Jnoccio Fusion.",
+    envCreated: false,
+  }
+}
 
-  if (!keyPath) {
+async function writeSecretFile(secretPath: string, secret: string) {
+  await fsp.mkdir(path.dirname(secretPath), { recursive: true })
+  await fsp.writeFile(secretPath, secret, { mode: 0o600 })
+  await fsp.chmod(secretPath, 0o600)
+}
+
+async function readSecretFile(secretPath: string) {
+  try {
+    const content = await fsp.readFile(secretPath, "utf8")
+    const secret = normalizeSecret(content)
+    return isValidUnlockSecret(secret) ? secret : undefined
+  } catch {
+    return undefined
+  }
+}
+
+async function unlockWithSecret(
+  secret: string,
+  options: Required<Pick<UnlockOptions, "repoRoot">> & UnlockOptions,
+  inputSource: "cache" | "typed" | "legacy",
+): Promise<JnoccioUnlockResult> {
+  const repoRoot = options.repoRoot
+  const runner = options.runner ?? defaultRunner
+  const envelope = options.envelope ?? JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY
+  const secretPath = options.secretPath ?? jnoccioUnlockSecretPath()
+  const normalized = normalizeSecret(secret)
+
+  if (!isValidUnlockSecret(normalized)) {
     return {
       status: "error",
-      message: "Choose a local git-crypt key file to unlock Jnoccio Fusion.",
+      message: "Unlock secret must be exactly 128 ASCII characters from [A-Za-z0-9_-].",
       envCreated: false,
     }
   }
 
+  let rawKey: Buffer
   try {
-    const stat = await fsp.stat(keyPath)
-    if (!stat.isFile()) {
+    rawKey = decryptJnoccioGitCryptKey(envelope, normalized)
+  } catch {
+    return {
+      status: inputSource === "cache" ? "needs_secret" : "error",
+      message:
+        inputSource === "cache"
+          ? "Stored unlock secret could not be used. Enter it again to refresh the cache."
+          : "Unlock key was not valid.",
+      envCreated: false,
+    }
+  }
+  const tempDir = await fsp.mkdtemp(path.join(os.tmpdir(), "jnoccio-unlock-"))
+  const tempKeyPath = path.join(tempDir, "jnoccio-fusion.key")
+
+  try {
+    await fsp.writeFile(tempKeyPath, rawKey, { mode: 0o600 })
+    await fsp.chmod(tempKeyPath, 0o600)
+
+    let result: CommandResult
+    try {
+      result = await runner("git-crypt", ["unlock", tempKeyPath], { cwd: repoRoot })
+    } catch {
+      if (isJnoccioFusionUnlocked(repoRoot)) return unlockedResult(repoRoot, inputSource === "typed")
       return {
         status: "error",
-        message: "That path is not a readable key file.",
+        message: "git-crypt is not installed or could not be started.",
         envCreated: false,
       }
     }
-    await fsp.access(keyPath, fs.constants.R_OK)
-  } catch {
-    return {
-      status: "error",
-      message: "That key file could not be read. Check the path and permissions.",
-      envCreated: false,
-    }
-  }
 
-  const runner = options.runner ?? defaultRunner
-  let result: CommandResult
-  try {
-    result = await runner("git-crypt", ["unlock", keyPath], { cwd: repoRoot })
-  } catch {
-    if (isJnoccioFusionUnlocked(repoRoot)) return unlockedResult(repoRoot)
-    return {
-      status: "error",
-      message: "git-crypt is not installed or could not be started.",
-      envCreated: false,
+    if (result.exitCode !== 0 && isJnoccioFusionUnlocked(repoRoot)) {
+      return unlockedResult(repoRoot, inputSource === "typed")
     }
-  }
 
-  if (result.exitCode !== 0 && isJnoccioFusionUnlocked(repoRoot)) {
+    if (result.exitCode === 127) {
+      return {
+        status: "error",
+        message: "git-crypt is not installed. Install git-crypt, then try again.",
+        envCreated: false,
+      }
+    }
+
+    if (result.exitCode !== 0) {
+      return {
+        status: "error",
+        message: inputSource === "legacy"
+          ? "The key file did not unlock Jnoccio Fusion. Confirm you selected the project git-crypt key."
+          : "Unlock key was not valid.",
+        envCreated: false,
+      }
+    }
+
+    if (!isJnoccioFusionUnlocked(repoRoot)) {
+      return {
+        status: "error",
+        message: "git-crypt reported success, but Jnoccio Fusion files are still locked.",
+        envCreated: false,
+      }
+    }
+
+    let secretSaved = inputSource === "typed"
+    if (inputSource === "typed") {
+      try {
+        await writeSecretFile(secretPath, normalized)
+      } catch {
+        secretSaved = false
+      }
+    }
+
+    return unlockedResult(repoRoot, secretSaved)
+  } finally {
+    await fsp.rm(tempDir, { recursive: true, force: true })
+  }
+}
+
+export async function unlockJnoccioFusion(
+  input: JnoccioUnlockInput = {},
+  options: UnlockOptions = {},
+): Promise<JnoccioUnlockResult> {
+  const repoRoot = options.repoRoot ?? repoRootFromSource()
+  const secretPath = options.secretPath ?? jnoccioUnlockSecretPath()
+
+  if (input.keyPath) {
+    const keyPath = expandHome(input.keyPath)
+    if (!keyPath) {
+      return {
+        status: "error",
+        message: "Choose a local git-crypt key file to unlock Jnoccio Fusion.",
+        envCreated: false,
+      }
+    }
+
+    try {
+      const stat = await fsp.stat(keyPath)
+      if (!stat.isFile()) {
+        return {
+          status: "error",
+          message: "That path is not a readable key file.",
+          envCreated: false,
+        }
+      }
+      await fsp.access(keyPath, fs.constants.R_OK)
+    } catch {
+      return {
+        status: "error",
+        message: "That key file could not be read. Check the path and permissions.",
+        envCreated: false,
+      }
+    }
+
+    const runner = options.runner ?? defaultRunner
+    let result: CommandResult
+    try {
+      result = await runner("git-crypt", ["unlock", keyPath], { cwd: repoRoot })
+    } catch {
+      if (isJnoccioFusionUnlocked(repoRoot)) return unlockedResult(repoRoot)
+      return {
+        status: "error",
+        message: "git-crypt is not installed or could not be started.",
+        envCreated: false,
+      }
+    }
+
+    if (result.exitCode !== 0 && isJnoccioFusionUnlocked(repoRoot)) {
+      return unlockedResult(repoRoot)
+    }
+
+    if (result.exitCode === 127) {
+      return {
+        status: "error",
+        message: "git-crypt is not installed. Install git-crypt, then try the key file again.",
+        envCreated: false,
+      }
+    }
+
+    if (result.exitCode !== 0) {
+      return {
+        status: "error",
+        message: "The key file did not unlock Jnoccio Fusion. Confirm you selected the project git-crypt key.",
+        envCreated: false,
+      }
+    }
+
+    if (!isJnoccioFusionUnlocked(repoRoot)) {
+      return {
+        status: "error",
+        message: "git-crypt reported success, but Jnoccio Fusion files are still locked.",
+        envCreated: false,
+      }
+    }
+
     return unlockedResult(repoRoot)
   }
 
-  if (result.exitCode === 127) {
-    return {
-      status: "error",
-      message: "git-crypt is not installed. Install git-crypt, then try the key file again.",
-      envCreated: false,
+  if (input.unlockSecret) {
+    try {
+      return await unlockWithSecret(input.unlockSecret, { ...options, repoRoot, secretPath }, "typed")
+    } catch {
+      return {
+        status: "error",
+        message: "Unlock key was not valid.",
+        envCreated: false,
+      }
     }
   }
 
-  if (result.exitCode !== 0) {
-    return {
-      status: "error",
-      message: "The key file did not unlock Jnoccio Fusion. Confirm you selected the project git-crypt key.",
-      envCreated: false,
-    }
-  }
+  const cachedSecret = await readSecretFile(secretPath)
+  if (!cachedSecret) return needsSecretResult(repoRoot)
 
-  if (!isJnoccioFusionUnlocked(repoRoot)) {
-    return {
-      status: "error",
-      message: "git-crypt reported success, but Jnoccio Fusion files are still locked.",
-      envCreated: false,
-    }
-  }
-
-  return unlockedResult(repoRoot)
+  return unlockWithSecret(cachedSecret, { ...options, repoRoot, secretPath }, "cache")
 }

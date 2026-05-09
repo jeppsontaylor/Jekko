@@ -84,7 +84,7 @@ export function DialogModel(props: { providerID?: string }) {
             title: info.name ?? model,
             description:
               info.status === "locked"
-                ? "Unlock with your Jnoccio key file."
+                ? "Unlock with your Jnoccio secret."
                 : favorites.some((item) => item.providerID === provider.id && item.modelID === model)
                   ? "(Favorite)"
                   : undefined,

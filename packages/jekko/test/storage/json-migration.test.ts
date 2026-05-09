@@ -1,12 +1,13 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test"
 import { Database } from "bun:sqlite"
 import { drizzle, SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
-import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import path from "path"
 import fs from "fs/promises"
 import { readFileSync, readdirSync } from "fs"
 import { JsonMigration } from "@/storage/json-migration"
 import { Global } from "@jekko-ai/core/global"
+import { applyMigrationJournal } from "@/storage/db"
+import { migrationHash } from "@/storage/migration-repair"
 import { ProjectTable } from "../../src/project/project.sql"
 import { ProjectID } from "../../src/project/schema"
 import { SessionTable, MessageTable, PartTable, TodoTable, PermissionTable } from "../../src/session/session.sql"
@@ -87,11 +88,12 @@ function createTestDb() {
       sql: readFileSync(path.join(dir, entry.name, "migration.sql"), "utf-8"),
       timestamp: Number(entry.name.split("_")[0]),
       name: entry.name,
+      hash: migrationHash({ sql: readFileSync(path.join(dir, entry.name, "migration.sql"), "utf-8") }),
     }))
     .sort((a, b) => a.timestamp - b.timestamp)
 
   const db = drizzle({ client: sqlite })
-  migrate(db, migrations)
+  applyMigrationJournal(db, migrations)
 
   return [sqlite, db] as const
 }

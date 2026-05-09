@@ -2795,13 +2795,14 @@ export class Provider extends HeyApiClient {
   /**
    * Unlock Jnoccio Fusion
    *
-   * Unlock local Jnoccio Fusion source with a git-crypt key file path.
+   * Unlock local Jnoccio Fusion source with an encrypted unlock secret or a legacy git-crypt key file path.
    */
   public unlock<ThrowOnError extends boolean = false>(
     parameters: {
       directory?: string
       workspace?: string
-      keyPath: string
+      unlockSecret?: string
+      keyPath?: string
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -2812,6 +2813,7 @@ export class Provider extends HeyApiClient {
           args: [
             { in: "query", key: "directory" },
             { in: "query", key: "workspace" },
+            { in: "body", key: "unlockSecret" },
             { in: "body", key: "keyPath" },
           ],
         },

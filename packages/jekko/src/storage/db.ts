@@ -1,5 +1,5 @@
+import { sql } from "drizzle-orm"
 import { type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
-import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import { type SQLiteTransaction } from "drizzle-orm/sqlite-core"
 export * from "drizzle-orm"
 import { LocalContext } from "@/util/local-context"
@@ -15,8 +15,9 @@ import { InstallationChannel } from "@jekko-ai/core/installation/version"
 import { InstanceState } from "@/effect/instance-state"
 import { iife } from "@/util/iife"
 import { init } from "#db"
+import { migrationHash, repairSqliteMigrations, splitMigrationStatements, type MigrationEntry } from "./migration-repair"
 
-declare const JEKKO_MIGRATIONS: { sql: string; timestamp: number; name: string }[] | undefined
+declare const JEKKO_MIGRATIONS: { sql: string; timestamp: number; name: string; hash?: string }[] | undefined
 
 export const NotFoundError = NamedError.create(
   "NotFoundError",
@@ -46,13 +47,52 @@ export type Transaction = SQLiteTransaction<"sync", void>
 
 type Client = SQLiteBunDatabase
 
-type Journal = { sql: string; timestamp: number; name: string }[]
+type Journal = MigrationEntry[]
 
-// Drizzle's migrate overloads trigger expensive variance checks here; narrow to the journal overload we actually use.
-const migrateFromJournal = migrate as unknown as (db: SQLiteBunDatabase, entries: Journal) => void
+function quoteLiteral(value: string | number) {
+  return `'${String(value).replaceAll("'", "''")}'`
+}
 
-function applyMigrations(db: SQLiteBunDatabase, entries: Journal) {
-  migrateFromJournal(db, entries)
+function appliedMigrationNames(db: SQLiteBunDatabase) {
+  try {
+    const rows = db.all(
+      sql.raw(`SELECT name FROM __drizzle_migrations WHERE name IS NOT NULL ORDER BY id ASC`),
+    ) as Array<{ name: string | null }>
+    return new Set(rows.map((row) => row.name).filter((name): name is string => !!name))
+  } catch {
+    return new Set<string>()
+  }
+}
+
+function insertMigrationRow(db: SQLiteBunDatabase, entry: MigrationEntry) {
+  db.run(
+    sql.raw(
+      `INSERT INTO "__drizzle_migrations" ("hash", "created_at", "name", "applied_at")
+       VALUES (${quoteLiteral(entry.hash)}, ${entry.timestamp}, ${quoteLiteral(entry.name)}, ${quoteLiteral(new Date().toISOString())})`,
+    ),
+  )
+}
+
+export function applyMigrationJournal(db: SQLiteBunDatabase, entries: Journal) {
+  db.run(
+    sql.raw(
+      `CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
+        id INTEGER PRIMARY KEY,
+        hash text NOT NULL,
+        created_at numeric,
+        name text,
+        applied_at TEXT
+      )`,
+    ),
+  )
+  const applied = appliedMigrationNames(db)
+  for (const entry of entries) {
+    if (applied.has(entry.name)) continue
+    for (const statement of splitMigrationStatements(entry.sql)) {
+      db.run(sql.raw(statement))
+    }
+    insertMigrationRow(db, entry)
+  }
 }
 
 function time(tag: string) {
@@ -77,15 +117,26 @@ function migrations(dir: string): Journal {
     .map((name) => {
       const file = path.join(dir, name, "migration.sql")
       if (!existsSync(file)) return
+      const text = readFileSync(file, "utf-8")
       return {
-        sql: readFileSync(file, "utf-8"),
+        sql: text,
         timestamp: time(name),
         name,
+        hash: migrationHash({ sql: text }),
       }
     })
     .filter(Boolean) as Journal
 
   return sql.sort((a, b) => a.timestamp - b.timestamp)
+}
+
+function withMigrationHashes(entries: { sql: string; timestamp: number; name: string; hash?: string }[]): Journal {
+  return entries
+    .map((entry) => ({
+      ...entry,
+      hash: entry.hash ?? migrationHash({ sql: entry.sql }),
+    }))
+    .sort((a, b) => a.timestamp - b.timestamp)
 }
 
 export const Client = lazy(() => {
@@ -103,19 +154,27 @@ export const Client = lazy(() => {
   // Apply schema migrations
   const entries =
     typeof JEKKO_MIGRATIONS !== "undefined"
-      ? JEKKO_MIGRATIONS
+      ? withMigrationHashes(JEKKO_MIGRATIONS)
       : migrations(path.join(import.meta.dirname, "../../migration"))
   if (entries.length > 0) {
     log.info("applying migrations", {
       count: entries.length,
       mode: typeof JEKKO_MIGRATIONS !== "undefined" ? "bundled" : "dev",
     })
+    const repair = repairSqliteMigrations(db, { dbPath: Path, migrations: entries })
+    if (repair.backedUp.length > 0 || repair.repaired.length > 0 || repair.recreatedMigrationTable) {
+      log.info("repaired sqlite migrations", {
+        backups: repair.backedUp.length,
+        repaired: repair.repaired.length,
+        recreatedMigrationTable: repair.recreatedMigrationTable,
+      })
+    }
     if (Flag.JEKKO_SKIP_MIGRATIONS) {
       for (const item of entries) {
         item.sql = "select 1;"
       }
     }
-    applyMigrations(db, entries)
+    applyMigrationJournal(db, entries)
   }
 
   return db

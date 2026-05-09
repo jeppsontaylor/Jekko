@@ -4885,8 +4885,9 @@ export type ProviderAuthResponses = {
 export type ProviderAuthResponse = ProviderAuthResponses[keyof ProviderAuthResponses]
 
 export type ProviderJnoccioUnlockData = {
-  body: {
-    keyPath: string
+  body?: {
+    unlockSecret?: string
+    keyPath?: string
   }
   path?: never
   query?: {
@@ -4901,10 +4902,11 @@ export type ProviderJnoccioUnlockResponses = {
    * Jnoccio unlock result
    */
   200: {
-    status: "unlocked" | "error"
+    status: "unlocked" | "needs_secret" | "error"
     message: string
     envPath?: string
     envCreated: boolean
+    secretSaved?: boolean
   }
 }
 

@@ -71,13 +71,13 @@ export function createDialogProviderOptions() {
           categoryView: isJnoccio
             ? (
                 <text>
-                  <span style={{ fg: FUSION_GREEN }} attributes={TextAttributes.BOLD}>⚡ </span>
-                  <span style={{ fg: FUSION_CYAN }} attributes={TextAttributes.BOLD}>F</span>
-                  <span style={{ fg: FUSION_GREEN }} attributes={TextAttributes.BOLD}>u</span>
-                  <span style={{ fg: FUSION_GOLD }} attributes={TextAttributes.BOLD}>s</span>
-                  <span style={{ fg: FUSION_CYAN }} attributes={TextAttributes.BOLD}>i</span>
-                  <span style={{ fg: FUSION_GREEN }} attributes={TextAttributes.BOLD}>o</span>
-                  <span style={{ fg: FUSION_GOLD }} attributes={TextAttributes.BOLD}>n</span>
+                  <span style={{ fg: FUSION_GREEN }}>⚡ </span>
+                  <span style={{ fg: FUSION_CYAN }}>F</span>
+                  <span style={{ fg: FUSION_GREEN }}>u</span>
+                  <span style={{ fg: FUSION_GOLD }}>s</span>
+                  <span style={{ fg: FUSION_CYAN }}>i</span>
+                  <span style={{ fg: FUSION_GREEN }}>o</span>
+                  <span style={{ fg: FUSION_GOLD }}>n</span>
                 </text>
               )
             : undefined,

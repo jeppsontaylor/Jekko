@@ -58,13 +58,14 @@ export const ProviderApi = HttpApi.make("provider")
           }),
         ),
         HttpApiEndpoint.post("unlock", `${root}/jnoccio/unlock`, {
-          payload: JnoccioUnlockInput,
+          payload: Schema.optional(JnoccioUnlockInput),
           success: described(JnoccioUnlockResult, "Jnoccio unlock result"),
         }).annotateMerge(
           OpenApi.annotations({
             identifier: "provider.jnoccio.unlock",
             summary: "Unlock Jnoccio Fusion",
-            description: "Unlock local Jnoccio Fusion source with a git-crypt key file path.",
+            description:
+              "Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a legacy git-crypt key file path.",
           }),
         ),
       )

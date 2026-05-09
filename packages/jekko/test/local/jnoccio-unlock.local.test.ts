@@ -1,11 +1,12 @@
 import { afterEach, expect, test } from "bun:test"
+import { existsSync } from "fs"
 import fsp from "fs/promises"
 import os from "os"
 import path from "path"
-import { isJnoccioFusionUnlocked, unlockJnoccioFusion } from "../../src/util/jnoccio-unlock"
+import { isJnoccioFusionUnlocked, jnoccioUnlockSecretPath, unlockJnoccioFusion } from "../../src/util/jnoccio-unlock"
 
 const repoRoot = path.resolve(import.meta.dir, "../../..", "..")
-const keyPath = process.env.JNOCCIO_GIT_CRYPT_KEY_PATH
+const secretPath = jnoccioUnlockSecretPath()
 const tempDirs: string[] = []
 
 function hasGitCrypt() {
@@ -26,13 +27,13 @@ async function run(command: string, args: string[], cwd: string) {
   return { stdout, stderr, exitCode }
 }
 
-const localTest = !process.env.CI && keyPath && hasGitCrypt() ? test : test.skip
+const localTest = !process.env.CI && secretPath && existsSync(secretPath) && hasGitCrypt() ? test : test.skip
 
 afterEach(async () => {
   await Promise.all(tempDirs.splice(0).map((dir) => fsp.rm(dir, { recursive: true, force: true })))
 })
 
-localTest("unlocks a fresh clone with the real Jnoccio git-crypt key", async () => {
+localTest("unlocks a fresh clone with the cached Jnoccio secret", async () => {
   const cloneParent = await fsp.mkdtemp(path.join(os.tmpdir(), "jnoccio-real-unlock-"))
   tempDirs.push(cloneParent)
   const clone = path.join(cloneParent, "repo")
@@ -42,9 +43,10 @@ localTest("unlocks a fresh clone with the real Jnoccio git-crypt key", async () 
 
   expect(isJnoccioFusionUnlocked(clone)).toBe(false)
 
-  const result = await unlockJnoccioFusion({ keyPath: keyPath! }, { repoRoot: clone })
+  const result = await unlockJnoccioFusion({}, { repoRoot: clone, secretPath })
   expect(result.status).toBe("unlocked")
   expect(result.envCreated).toBe(true)
+  expect(result.secretSaved).toBe(false)
   expect(isJnoccioFusionUnlocked(clone)).toBe(true)
   await expect(fsp.readFile(path.join(clone, "jnoccio-fusion", ".env.jnoccio"), "utf8")).resolves.toContain(
     "OPENROUTER_API_KEY=",

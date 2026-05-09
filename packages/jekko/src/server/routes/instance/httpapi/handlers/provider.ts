@@ -35,8 +35,8 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       }
     })
 
-    const unlock = Effect.fn("ProviderHttpApi.unlock")(function* (ctx: { payload: JnoccioUnlockInput }) {
-      return yield* Effect.promise(() => unlockJnoccioFusion(ctx.payload))
+    const unlock = Effect.fn("ProviderHttpApi.unlock")(function* (ctx: { payload?: JnoccioUnlockInput }) {
+      return yield* Effect.promise(() => unlockJnoccioFusion(ctx.payload ?? {}))
     })
 
     const auth = Effect.fn("ProviderHttpApi.auth")(function* () {

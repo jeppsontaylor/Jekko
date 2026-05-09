@@ -62,7 +62,8 @@ export const ProviderRoutes = lazy(() =>
       "/jnoccio/unlock",
       describeRoute({
         summary: "Unlock Jnoccio Fusion",
-        description: "Unlock local Jnoccio Fusion source with a git-crypt key file path.",
+        description:
+          "Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a legacy git-crypt key file path.",
         operationId: "provider.jnoccio.unlock",
         responses: {
           200: {
@@ -75,10 +76,16 @@ export const ProviderRoutes = lazy(() =>
           },
         },
       }),
-      validator("json", JnoccioUnlockInput.zod),
       async (c) =>
         jsonRequest("ProviderRoutes.jnoccio.unlock", c, function* () {
-          return yield* Effect.promise(() => unlockJnoccioFusion(c.req.valid("json")))
+          const payload = yield* Effect.promise(async () => {
+            try {
+              return JnoccioUnlockInput.zod.parse(await c.req.json())
+            } catch {
+              return {}
+            }
+          })
+          return yield* Effect.promise(() => unlockJnoccioFusion(payload))
         }),
     )
     .get(
