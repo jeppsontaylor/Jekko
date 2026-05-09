@@ -10,16 +10,33 @@ coordination notes live above.
 
 ## Active claims / open coordination
 
-### 2026-05-09T00:36:01Z — Claim — codex — ZYAL/Jnoccio gap remediation
-
-- Jekko outbound daemon identity: ensure `provider: jnoccio` and other outbound LLM calls carry daemon identity headers; update `llm.test.ts`.
-- Jnoccio-fusion router: prefer `x-jekko-*`, fall back to legacy `x-opencode-*`; add Rust tests for both header families.
-- ZYAL TUI Run Card: expand Start daemon confirmation with arming/capabilities/budgets/fleet/taint/unsupported policy preview fields and explicit preview-only limitations.
-- Jnoccio docs/config drift: update stale paths + 10-instance wording → 20-instance cap.
-
-— codex
+No active codex claim. The 2026-05-09T00:36:01Z codex claim is closed by the 2026-05-09T00:42:17Z Done receipt below.
 
 ## Recent receipts
+
+### 2026-05-09T00:42:17Z — Done — codex — Gap A + Run Card + docs verified
+
+- Re-read workflow before append. No new edit conflict; Claude has ceded Gap A to codex and finished Gap B/C separately.
+- Completed:
+  - `jnoccio-fusion/src/router.rs` accepts both header families, preferring `x-jekko-*` and falling back to legacy `x-opencode-*`; tests cover Jekko, legacy, and mixed preference.
+  - `packages/jekko/src/session/llm.ts` and `packages/jekko/test/session/llm.test.ts` are already at intended state in HEAD: all outbound LLM calls create daemon metadata, and tests cover non-Jekko + `provider: jnoccio` identity headers.
+  - `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx` Start daemon confirmation now renders a Run Card with checkpoint, fleet/Jnoccio, arming, capabilities, budgets, taint, unsupported-feature policy, risk flags, and preview-only notes.
+  - Jnoccio docs/snippets now use `/Users/bentaylor/Code/opencode/jnoccio-fusion` and the current 20-total-instance cap.
+  - ZYAL docs now call out `taint` as parse/preview-only in this patch.
+- Verification:
+  - `rtk bun test test/session/llm.test.ts` in `packages/jekko` → 17 pass / 0 fail.
+  - `rtk bun test src/agent-script/parser.test.ts` in `packages/jekko` → 88 pass / 0 fail.
+  - `rtk bun test test/cli/tui/zyal-flash.test.ts test/cli/tui/jnoccio-ws.test.ts` in `packages/jekko` → 10 pass / 0 fail.
+  - `rtk bun run typecheck` in `packages/jekko` → pass.
+  - `rtk rustfmt --edition 2024 --check src/router.rs` in `jnoccio-fusion` → pass.
+  - `rtk cargo test` in `jnoccio-fusion` → 77 pass / 0 fail.
+  - Strict legacy token scan for `OCAL`, `Ocal`, `ZYML`, `VYAL`, `internal:sidebar-ocal`, `.ocal.yml`, `ocal-ready` → no matches.
+  - `rtk git diff --check` → pass.
+  - `rtk just fast` → exit 0 with existing advisories: missing committed lockfile, echo-only proof, missing `syft`, stale security evidence head.
+- Formatting note: full `cargo fmt --check` still reports pre-existing formatting drift outside this patch (`fusion.rs`, `mcp.rs`, `state.rs`, `tests/mcp.rs`); only touched router was formatted.
+- Remaining dirty outside codex scope: pre-existing `packages/jekko/src/cli/logo.ts`.
+
+— codex
 
 ### 2026-05-09T00:39:43Z — Progress — codex — Gap A + Run Card + docs edits staged in worktree
 
