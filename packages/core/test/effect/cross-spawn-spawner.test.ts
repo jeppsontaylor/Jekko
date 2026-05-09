@@ -10,6 +10,7 @@ import { testEffect } from "../lib/effect"
 
 const live = CrossSpawnSpawner.defaultLayer
 const fx = testEffect(live)
+const nonZeroExitFixture = path.join(import.meta.dir, "../fixture/cross-spawn-non-zero-exit.ts")
 
 function js(code: string, opts?: ChildProcess.CommandOptions) {
   return ChildProcess.make("node", ["-e", code], opts)
@@ -91,6 +92,31 @@ describe("cross-spawn spawner", () => {
         const code = yield* handle.exitCode
         expect(out).toBe("done")
         expect(code).toBe(ChildProcessSpawner.ExitCode(0))
+      }),
+    )
+
+    fx.effect(
+      "surfaces a non-zero exit from a fixture script",
+      Effect.gen(function* () {
+        const tmp = yield* Effect.acquireRelease(
+          Effect.promise(() => tmpdir()),
+          (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
+        )
+        const marker = path.join(tmp.path, "non-zero-exit-marker")
+        const handle = yield* jsFile(nonZeroExitFixture, {
+          env: {
+            JEKKO_NON_ZERO_EXIT_CODE: "7",
+            JEKKO_NON_ZERO_EXIT_MARKER: marker,
+          },
+          extendEnv: true,
+        })
+
+        const code = yield* handle.exitCode
+        const written = yield* Effect.promise(() => fs.readFile(marker, "utf8"))
+
+        expect(code).toBe(ChildProcessSpawner.ExitCode(7))
+        expect(written).toBe("ran")
+        expect(yield* handle.isRunning).toBe(false)
       }),
     )
 
@@ -271,13 +297,15 @@ describe("cross-spawn spawner", () => {
 
         const started = Date.now()
         const handle = yield* js('process.on("SIGTERM", () => {}); setInterval(() => {}, 10_000)')
+        const pid = Number(handle.pid)
         const running = yield* handle.isRunning
         expect(running).toBe(true)
         yield* handle.kill({ forceKillAfter: 100 })
-        const exit = yield* Effect.exit(handle.exitCode)
+        const error = yield* Effect.flip(handle.exitCode)
 
         expect(Date.now() - started).toBeLessThan(1_000)
-        expect(Exit.isFailure(exit)).toBe(true)
+        expect(Cause.pretty(Cause.fail(error))).toContain("SIGTERM")
+        expect(yield* Effect.promise(() => gone(pid))).toBe(true)
       }),
     )
 
@@ -299,13 +327,13 @@ describe("cross-spawn spawner", () => {
     fx.effect(
       "fails for invalid command",
       Effect.gen(function* () {
-        const exit = yield* Effect.exit(
+        const error = yield* Effect.flip(
           Effect.gen(function* () {
             const handle = yield* ChildProcess.make("nonexistent-command-12345")
             return yield* handle.exitCode
           }),
         )
-        expect(Exit.isFailure(exit)).toBe(true)
+        expect(Cause.pretty(Cause.fail(error))).toContain("nonexistent-command-12345")
       }),
     )
   })
