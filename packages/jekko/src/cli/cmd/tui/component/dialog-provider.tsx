@@ -51,7 +51,7 @@ export function createDialogProviderOptions() {
           isJnoccio && Object.values(provider.models).every((model) => model.status === "locked")
 
         return {
-          title: isJnoccio ? `🔒 ${provider.name}` : provider.name,
+          title: provider.name,
           value: provider.id,
           description:
             isJnoccio
