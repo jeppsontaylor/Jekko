@@ -4,6 +4,7 @@ import os from "os"
 import path from "path"
 import { randomBytes, scryptSync, createCipheriv, createDecipheriv } from "crypto"
 import { Schema } from "effect"
+import { Global } from "@jekko-ai/core/global"
 import { optionalOmitUndefined, withStatics } from "@/util/schema"
 import { zod } from "@/util/effect-zod"
 import { JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY, type JnoccioEncryptedGitCryptKeyEnvelope } from "./jnoccio-encrypted-key"
@@ -99,9 +100,51 @@ export function findRepoRootFrom(start: string | undefined) {
   }
 }
 
+// Global registry of the jnoccio-fusion repo root. Once a user successfully
+// unlocks (or jekko discovers) the repo from any directory, the absolute path
+// is cached here so that future jekko invocations from any directory on the
+// machine (e.g. ~/code/xdoug/) can locate jnoccio-fusion without depending on
+// the current working directory containing the repo.
+export function jnoccioGlobalConfigPath() {
+  return path.join(Global.Path.state, "jnoccio.json")
+}
+
+type GlobalJnoccioConfig = {
+  repo_root?: string
+  registered_at?: string
+}
+
+export function readGlobalJnoccioRepoRoot(): string | undefined {
+  try {
+    const raw = fs.readFileSync(jnoccioGlobalConfigPath(), "utf8")
+    const parsed = JSON.parse(raw) as GlobalJnoccioConfig
+    if (!parsed.repo_root) return undefined
+    // Validate the cached path still has the repo layout we expect.
+    if (!fs.existsSync(path.join(parsed.repo_root, "jnoccio-fusion"))) return undefined
+    if (!fs.existsSync(path.join(parsed.repo_root, ".git"))) return undefined
+    return parsed.repo_root
+  } catch {
+    return undefined
+  }
+}
+
+export function writeGlobalJnoccioRepoRoot(repoRoot: string) {
+  try {
+    const data: GlobalJnoccioConfig = {
+      repo_root: repoRoot,
+      registered_at: new Date().toISOString(),
+    }
+    fs.mkdirSync(path.dirname(jnoccioGlobalConfigPath()), { recursive: true })
+    fs.writeFileSync(jnoccioGlobalConfigPath(), JSON.stringify(data, null, 2), { mode: 0o644 })
+  } catch {
+    // Non-fatal: global registration is a convenience; unlock still works locally.
+  }
+}
+
 export function repoRootFromSource() {
   return (
     findRepoRootFrom(process.env.JNOCCIO_REPO_ROOT) ??
+    readGlobalJnoccioRepoRoot() ??
     findRepoRootFrom(process.cwd()) ??
     findRepoRootFrom(import.meta.dir) ??
     path.resolve(import.meta.dir, "../../../..")
@@ -239,6 +282,11 @@ async function ensureEnvFile(repoRoot: string) {
 async function unlockedResult(repoRoot: string, secretSaved?: boolean): Promise<JnoccioUnlockResult> {
   try {
     const env = await ensureEnvFile(repoRoot)
+
+    // Register this repo as the canonical jnoccio-fusion source globally so
+    // jekko launched from any directory on the machine can find the binary,
+    // env, and config without depending on $CWD.
+    writeGlobalJnoccioRepoRoot(repoRoot)
 
     // Auto-start the jnoccio-fusion server in the background after unlock.
     // Fire-and-forget so it doesn't block the unlock response.
@@ -386,6 +434,11 @@ export async function unlockJnoccioFusion(
   options: UnlockOptions = {},
 ): Promise<JnoccioUnlockResult> {
   const repoRoot = options.repoRoot ?? repoRootFromSource()
+
+  if (isJnoccioFusionUnlocked(repoRoot)) {
+    return unlockedResult(repoRoot, false)
+  }
+
   const secretPath = options.secretPath ?? jnoccioUnlockSecretPath()
 
   if (input.keyPath) {

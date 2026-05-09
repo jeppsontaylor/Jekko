@@ -25,7 +25,7 @@ import { TaskTool } from "../../tool/task"
 import { SkillTool } from "../../tool/skill"
 import { ShellTool } from "../../tool/shell"
 import { ShellID } from "../../tool/shell/id"
-import { TodoWriteTool } from "../../tool/todo"
+import { PendingWriteTool } from "../../tool/pending"
 import { Locale } from "@/util/locale"
 
 type ToolProps<T> = {
@@ -187,7 +187,7 @@ function shell(info: ToolProps<typeof ShellTool>) {
   )
 }
 
-function pending(info: ToolProps<typeof TodoWriteTool>) {
+function pending(info: ToolProps<typeof PendingWriteTool>) {
   block(
     {
       icon: "#",
@@ -201,6 +201,45 @@ function normalizePath(input?: string) {
   if (!input) return ""
   if (path.isAbsolute(input)) return path.relative(process.cwd(), input) || "."
   return input
+}
+
+export function createLastAssistantMessageTracker(options?: { sessionID?: string }) {
+  let assistantMessageID: string | undefined
+  let partOrder: string[] = []
+  const partText = new Map<string, string>()
+
+  function reset(messageID: string) {
+    assistantMessageID = messageID
+    partOrder = []
+    partText.clear()
+  }
+
+  return {
+    observe(event: { type: string; properties: any }) {
+      if (event.type === "message.updated") {
+        const info = event.properties.info
+        if (options?.sessionID && event.properties.sessionID !== options.sessionID) return
+        if (info?.role === "assistant" && info.id !== assistantMessageID) {
+          reset(info.id)
+        }
+      }
+
+      if (event.type !== "message.part.updated") return
+      const part = event.properties.part
+      if (!assistantMessageID || part.sessionID !== event.properties.sessionID) return
+      if (options?.sessionID && part.sessionID !== options.sessionID) return
+      if (part.messageID !== assistantMessageID) return
+      if (part.type !== "text") return
+      if (!partText.has(part.id)) partOrder.push(part.id)
+      partText.set(part.id, part.text ?? "")
+    },
+    text() {
+      return partOrder.map((id) => partText.get(id) ?? "").join("")
+    },
+    async write(filePath: string) {
+      await Filesystem.write(filePath, this.text())
+    },
+  }
 }
 
 export const RunCommand = effectCmd({
@@ -283,6 +322,10 @@ export const RunCommand = effectCmd({
         type: "string",
         describe: "title for the session (uses truncated prompt if no value provided)",
       })
+      .option("output-last-message", {
+        type: "string",
+        describe: "write the final assistant message text to a file",
+      })
       .option("attach", {
         type: "string",
         describe: "attach to a running jekko server (e.g., http://localhost:4096)",
@@ -322,6 +365,11 @@ export const RunCommand = effectCmd({
   handler: Effect.fn("Cli.run")(function* (args) {
     const agentSvc = yield* Agent.Service
     yield* Effect.promise(async () => {
+      const outputLastMessage = args["output-last-message"]
+      if (outputLastMessage) {
+        await Filesystem.write(outputLastMessage, "")
+      }
+
       let message = [...args.message, ...(args["--"] || [])]
         .map((arg) => (arg.includes(" ") ? `"${arg.replace(/"/g, '\\"')}"` : arg))
         .join(" ")
@@ -438,7 +486,7 @@ export const RunCommand = effectCmd({
             if (part.tool === "edit") return edit(props<typeof EditTool>(part))
             if (part.tool === "websearch") return websearch(props<typeof WebSearchTool>(part))
             if (part.tool === "task") return task(props<typeof TaskTool>(part))
-            if (part.tool === "todowrite") return pending(props<typeof TodoWriteTool>(part))
+            if (part.tool === "todowrite") return pending(props<typeof PendingWriteTool>(part))
             if (part.tool === "skill") return skill(props<typeof SkillTool>(part))
             return alternative_path(part)
           } catch {
@@ -461,6 +509,8 @@ export const RunCommand = effectCmd({
           const toggles = new Map<string, boolean>()
 
           for await (const event of events.stream) {
+            tracker.observe(event)
+
             if (
               event.type === "message.updated" &&
               event.properties.info.role === "assistant" &&
@@ -554,6 +604,9 @@ export const RunCommand = effectCmd({
               event.properties.sessionID === sessionID &&
               event.properties.status.type === "idle"
             ) {
+              if (outputLastMessage) {
+                await tracker.write(outputLastMessage)
+              }
               break
             }
 
@@ -649,6 +702,7 @@ export const RunCommand = effectCmd({
           UI.error("Session not found")
           process.exit(1)
         }
+        const tracker = createLastAssistantMessageTracker({ sessionID })
         await share(sdk, sessionID)
 
         if (args.daemon) {

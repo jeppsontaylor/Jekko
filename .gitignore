@@ -27,6 +27,7 @@ target
 jekko-dev
 UPCOMING_CHANGELOG.md
 logs/
+.jekko-loop-runs/
 *.bun-build
 tsconfig.tsbuildinfo
 # jankurai scaffold .gitignore

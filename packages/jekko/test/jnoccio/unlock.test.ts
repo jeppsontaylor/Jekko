@@ -7,7 +7,6 @@ import {
   encryptJnoccioGitCryptKey,
   normalizeJnoccioUnlockSecret,
   unlockJnoccioFusion,
-  type CommandRunner,
 } from "../../src/util/jnoccio-unlock"
 import { JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY } from "../../src/util/jnoccio-encrypted-key"
 
@@ -63,7 +62,7 @@ afterEach(async () => {
 
 describe("unlockJnoccioFusion", () => {
   test("rejects missing key paths before running git-crypt", async () => {
-    const repo = await tempRepo()
+    const repo = await tempRepo({ plaintext: false })
     let calls = 0
     const result = await unlockJnoccioFusion(
       { keyPath: path.join(repo.root, "missing.key") },
@@ -129,21 +128,21 @@ describe("unlockJnoccioFusion", () => {
     })
   })
 
-  test("verifies plaintext signals and creates .env.jnoccio without shell interpolation", async () => {
+  test("short-circuits an already unlocked plaintext repo and creates .env.jnoccio", async () => {
     const repo = await tempRepo()
-    const calls: Parameters<CommandRunner>[] = []
+    let calls = 0
     const result = await unlockJnoccioFusion(
       { keyPath: repo.keyPath },
       {
         repoRoot: repo.root,
-        runner: async (...args) => {
-          calls.push(args)
+        runner: async () => {
+          calls += 1
           return { exitCode: 0 }
         },
       },
     )
 
-    expect(calls).toEqual([["git-crypt", ["unlock", repo.keyPath], { cwd: repo.root }]])
+    expect(calls).toBe(0)
     expect(result).toMatchObject({
       status: "unlocked",
       envPath: repo.envPath,

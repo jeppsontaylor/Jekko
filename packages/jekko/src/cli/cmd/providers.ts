@@ -15,7 +15,9 @@ import type { Hooks } from "@jekko-ai/plugin"
 import { Process } from "@/util/process"
 import { errorMessage } from "@/util/error"
 import { text } from "node:stream/consumers"
+import { EOL } from "os"
 import { Effect, Option } from "effect"
+import { findRepoRootFrom, repoRootFromSource, unlockJnoccioFusion } from "@/util/jnoccio-unlock"
 
 type PluginAuth = NonNullable<Hooks["auth"]>
 
@@ -237,8 +239,74 @@ export const ProvidersCommand = cmd({
   aliases: ["auth"],
   describe: "manage AI providers and credentials",
   builder: (yargs) =>
-    yargs.command(ProvidersListCommand).command(ProvidersLoginCommand).command(ProvidersLogoutCommand).demandCommand(),
+    yargs
+      .command(ProvidersListCommand)
+      .command(ProvidersLoginCommand)
+      .command(ProvidersLogoutCommand)
+      .command(ProvidersUnlockCommand)
+      .demandCommand(),
   async handler() {},
+})
+
+export const ProvidersUnlockCommand = effectCmd({
+  command: "unlock <provider>",
+  describe: "unlock a provider",
+  instance: false,
+  builder: (yargs) =>
+    yargs
+      .positional("provider", {
+        describe: "provider to unlock",
+        type: "string",
+        demandOption: true,
+      })
+      .option("repo", {
+        type: "string",
+        describe: "repository path to inspect",
+      })
+      .option("key-file", {
+        type: "string",
+        describe: "legacy git-crypt key file path",
+      })
+      .option("secret-file", {
+        type: "string",
+        describe: "unlock secret cache file path",
+      })
+      .option("json", {
+        type: "boolean",
+        describe: "print JSON only",
+        default: false,
+      }),
+  handler: Effect.fn("Cli.providers.unlock")(function* (args) {
+    const provider = args.provider.trim().toLowerCase()
+    if (provider !== "jnoccio") {
+      return yield* fail(`Unsupported provider "${args.provider}". Only jnoccio is supported.`)
+    }
+
+    const repoRoot = findRepoRootFrom(args.repo) ?? repoRootFromSource()
+    const result = yield* Effect.promise(() =>
+      unlockJnoccioFusion(
+        {
+          keyPath: args.keyFile,
+        },
+        {
+          repoRoot,
+          secretPath: args.secretFile,
+        },
+      ),
+    )
+
+    if (args.json) {
+      process.stdout.write(JSON.stringify(result) + EOL)
+    } else {
+      UI.println(result.message)
+    }
+
+    if (result.status === "unlocked") {
+      return
+    }
+
+    process.exitCode = result.status === "needs_secret" ? 2 : 1
+  }),
 })
 
 export const ProvidersListCommand = effectCmd({
