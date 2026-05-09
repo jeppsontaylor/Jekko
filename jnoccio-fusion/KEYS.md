@@ -23,7 +23,7 @@ Use this file as the checklist for setting up upstream access.
 
 ## Env File
 
-Put the values in `/Users/bentaylor/Code/jekko/jnoccio-fusion/.env.jnoccio`.
+Put the values in `/Users/bentaylor/Code/opencode/jnoccio-fusion/.env.jnoccio`.
 
 That file should contain the following keys:
 

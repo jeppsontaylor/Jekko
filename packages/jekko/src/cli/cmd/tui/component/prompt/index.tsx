@@ -50,6 +50,7 @@ import { DialogWorkspaceUnavailable } from "../dialog-workspace-unavailable"
 import { useArgs } from "@tui/context/args"
 import { Flag } from "@jekko-ai/core/flag/flag"
 import { WorkspaceLabel, type WorkspaceStatus } from "../workspace-label"
+import type { ZyalPreview } from "@/agent-script/schema"
 
 export type PromptProps = {
   sessionID?: string
@@ -102,6 +103,48 @@ function getEditorRangeLabel(selection: EditorSelection["ranges"][number]) {
   if (!hasEditorRangeSelection(selection)) return
   if (selection.selection.start.line === selection.selection.end.line) return `#${selection.selection.start.line}`
   return `#${selection.selection.start.line}-${selection.selection.end.line}`
+}
+
+function zyalPreviewValue(value: string | number | undefined | null) {
+  if (value === undefined || value === null || value === "") return "(none)"
+  return String(value)
+}
+
+function zyalRunCard(preview: ZyalPreview) {
+  const incubatorLines = preview.incubator_enabled
+    ? [
+        `Incubator passes: ${preview.incubator_passes.length}`,
+        `Incubator max passes: ${zyalPreviewValue(preview.incubator_budget?.max_passes_per_task)}`,
+        `Promotion: ${zyalPreviewValue(preview.promotion_threshold)}`,
+        `Exclude: ${zyalPreviewValue(preview.exclusion_summary)}`,
+        `Cleanup: ${zyalPreviewValue(preview.cleanup_summary)}`,
+        `Readiness: ${zyalPreviewValue(preview.readiness_summary)}`,
+        `Incubator write risks: ${preview.incubator_risks.join(", ") || "(none)"}`,
+      ]
+    : []
+
+  return [
+    "Run Card",
+    `Objective: ${preview.objective}`,
+    `Status: ${preview.armed ? "armed sentinel present" : "preview draft"}`,
+    `Loop: ${preview.loop_policy ?? "forever"}`,
+    `Stop: ${preview.stop_checks.join(", ") || "(none)"}`,
+    `Checkpoint: ${preview.checkpoint_checks.join(", ") || "(none)"}`,
+    `Workers: ${preview.worker_count}`,
+    `Fleet/Jnoccio: ${zyalPreviewValue(preview.fleet_summary)}`,
+    `Incubator: ${preview.incubator_enabled ? "enabled" : "disabled"}`,
+    ...incubatorLines,
+    `Arming: ${preview.arming_enabled ? zyalPreviewValue(preview.arming_summary) : "(none)"}`,
+    `Capabilities: ${preview.capabilities_rule_count > 0 ? zyalPreviewValue(preview.capabilities_summary) : "(none)"}`,
+    `Budgets: ${preview.budgets_enabled ? zyalPreviewValue(preview.budgets_summary) : "(none)"}`,
+    `Taint: ${preview.taint_enabled ? zyalPreviewValue(preview.taint_summary) : "(none)"}`,
+    `Unsupported feature policy: ${
+      preview.unsupported_feature_policy_enabled ? zyalPreviewValue(preview.unsupported_feature_policy_summary) : "(none)"
+    }`,
+    `Risks: ${preview.risks.join(", ") || "(none)"}`,
+    "Preview-only: arming hash, nonce, and accepted-origin policies are not enforced by the start API yet.",
+    "Preview-only: taint is parsed and summarized here, but daemon execution does not enforce taint flow yet.",
+  ].join("\n")
 }
 
 function formatEditorContext(selection: EditorSelection) {
@@ -854,25 +897,7 @@ export function Prompt(props: PromptProps) {
       if (!sendAsPlainText) return false
       daemonMode = { kind: "none" }
     } else if (daemonMode.kind === "preview") {
-      const summary = [
-        `Objective: ${daemonMode.preview.objective}`,
-        `Loop: ${daemonMode.preview.loop_policy ?? "forever"}`,
-        `Stop: ${daemonMode.preview.stop_checks.join(", ") || "(none)"}`,
-        `Workers: ${daemonMode.preview.worker_count}`,
-        `Incubator: ${daemonMode.preview.incubator_enabled ? "enabled" : "disabled"}`,
-        ...(daemonMode.preview.incubator_enabled
-          ? [
-              `Passes: ${daemonMode.preview.incubator_passes.length}`,
-              `Max passes: ${daemonMode.preview.incubator_budget?.max_passes_per_task ?? "(none)"}`,
-              `Promotion: ${daemonMode.preview.promotion_threshold ?? "(none)"}`,
-              `Exclude: ${daemonMode.preview.exclusion_summary ?? "(none)"}`,
-              `Cleanup: ${daemonMode.preview.cleanup_summary ?? "(none)"}`,
-              `Readiness: ${daemonMode.preview.readiness_summary ?? "(none)"}`,
-              `Write risks: ${daemonMode.preview.incubator_risks.join(", ") || "(none)"}`,
-            ]
-          : []),
-        `Risks: ${daemonMode.preview.risks.join(", ") || "(none)"}`,
-      ].join("\n")
+      const summary = zyalRunCard(daemonMode.preview)
       const startDaemon = await DialogConfirm.show(dialog, "Start daemon", summary, "start daemon")
       if (!startDaemon) return false
     }

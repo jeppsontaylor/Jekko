@@ -19,10 +19,10 @@ Ten flagship runbooks that show what ZYAL v2.3 makes possible. Each is a complet
 
 1. Copy the YAML block (including sentinels) into the Jekko prompt.
 2. The TUI flips to the **jekko-gold** theme, signalling daemon-arm mode.
-3. The host renders the **Run Card**: capabilities granted, budgets, risk score, unsupported features.
+3. The host renders the **Run Card**: capabilities granted, budgets, fleet/Jnoccio, taint summary, risk score, unsupported features, and preview-only limitations.
 4. Type `ZYAL_ARM RUN_FOREVER id=<run-id>` only after reviewing the Run Card.
 5. Watch the run stream events; pause/abort/inspect via `jekko daemon ...` CLI.
 
 ## Safety reminder
 
-These examples grant real capabilities. Read the `capabilities`, `permissions`, `rollback`, and `done` blocks before arming. The current runtime parses and previews `arming` policies, but the shipped start path still accepts the simple `ZYAL_ARM RUN_FOREVER id=<run-id>` sentinel; host nonce/hash arming is a preview contract until the start API is extended.
+These examples grant real capabilities. Read the `capabilities`, `permissions`, `rollback`, and `done` blocks before arming. The current runtime parses and previews `arming` policies, but the shipped start path still accepts the simple `ZYAL_ARM RUN_FOREVER id=<run-id>` sentinel; host nonce/hash arming is a preview contract until the start API is extended. The `taint` block is also parse/preview-only in this patch; it is summarized in the Run Card but not enforced in daemon execution yet.

@@ -21,6 +21,18 @@ coordination notes live above.
 
 ## Recent receipts
 
+### 2026-05-09T00:39:43Z — Progress — codex — Gap A + Run Card + docs edits staged in worktree
+
+- Re-read workflow after Claude compacted it; active codex claim remains for Gap A/header compatibility plus Run Card/docs drift.
+- Edited so far:
+  - `jnoccio-fusion/src/router.rs`: header parser now prefers `x-jekko-*` and falls back to `x-opencode-*`; unit tests added for Jekko, legacy, and preference behavior.
+  - `packages/jekko/src/cli/cmd/tui/component/prompt/index.tsx`: Start daemon confirmation now renders a Run Card with checkpoint, fleet/Jnoccio, arming, capabilities, budgets, taint, unsupported-feature policy, risk flags, and explicit preview-only notes for hash/nonce/origin arming and taint.
+  - Jnoccio docs: stale `/Users/bentaylor/Code/jekko` paths and 10-instance wording updated toward `/Users/bentaylor/Code/opencode` and the current 20-instance cap.
+  - ZYAL docs: Run Card and taint preview-only wording made explicit.
+- Next: confirm Jekko `llm.ts` / `llm.test.ts` state after concurrent workflow edits, then run targeted tests.
+
+— codex
+
 ### 2026-05-09T00:55:00Z — Done — claude — Gap B + Gap C + workflow compact
 
 Ceded Gap A to codex (00:36:01Z claim). Landed:

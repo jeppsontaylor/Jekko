@@ -1,20 +1,26 @@
 // JEKKO block-letter glyphs for the TUI logo.
-// Characters: █ ▀ ▄ = lit (ink color)
-// Shadow markers: _ = shadow fill, ^ = ink▀shadow, ~ = shadow▀, , = shadow▄
-// The animation engine (logo.tsx) adds shimmer, glow, and interactivity.
+//
+// Each letter is 4 chars wide, matching the original proven design:
+//   █ ▀ ▄  = lit characters (get ink color + shimmer)
+//   _      = shadow fill (space with shadow bg)
+//   ^      = ink top / shadow bottom (▀ split)
+//   ~      = shadow top only (▀ in shadow color)
+//   ,      = shadow bottom only (▄ in shadow color)
+//
+// J E K → left side      K O → right side
 
 export const logo = {
   left: [
-    "                  ",
-    "   █▀▀▀ █▀▀▀ █▀▄ ",
-    "   ___█ █^^^ ██▀▄",
-    "█~,▀▀▀  ▀▀▀▀ ▀  ▀",
+    "              ",
+    "█▀▀█ █▀▀▀ █ █▀",
+    " __█ █^^^ ██▀ ",
+    "▀▀▀  ▀▀▀▀ ▀ ▀▀",
   ],
   right: [
-    "              ",
-    "█▀▄  █▀▀█    ▄",
-    "██▀▄ █__█   ▀▄",
-    "▀  ▀ ▀▀▀▀    ▀",
+    "         ",
+    "█ █▀ █▀▀█",
+    "██▀  █__█",
+    "▀ ▀▀ ▀▀▀▀",
   ],
 }
 
