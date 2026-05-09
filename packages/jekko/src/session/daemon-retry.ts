@@ -9,13 +9,13 @@ export type RetryCategory = "shell_checks" | "checkpoint" | "worker_spawn" | "st
 
 /**
  * Resolve the retry policy for a given category.
- * Override takes precedence, then default, then hardcoded fallback.
+ * Override takes precedence, then default, then hardcoded base policy.
  */
 export function resolveRetryPolicy(
   retry: ZyalRetry | undefined,
   category: RetryCategory,
 ): Required<ZyalRetryPolicy> {
-  const fallback: Required<ZyalRetryPolicy> = {
+  const basePolicy: Required<ZyalRetryPolicy> = {
     max_attempts: 1,
     backoff: "none",
     initial_delay: "0s",
@@ -23,17 +23,17 @@ export function resolveRetryPolicy(
     jitter: false,
   }
 
-  if (!retry) return fallback
+  if (!retry) return basePolicy
 
   const override = retry.overrides?.[category]
   const base = retry.default
 
   return {
-    max_attempts: override?.max_attempts ?? base?.max_attempts ?? fallback.max_attempts,
-    backoff: override?.backoff ?? base?.backoff ?? fallback.backoff,
-    initial_delay: override?.initial_delay ?? base?.initial_delay ?? fallback.initial_delay,
-    max_delay: override?.max_delay ?? base?.max_delay ?? fallback.max_delay,
-    jitter: override?.jitter ?? base?.jitter ?? fallback.jitter,
+    max_attempts: override?.max_attempts ?? base?.max_attempts ?? basePolicy.max_attempts,
+    backoff: override?.backoff ?? base?.backoff ?? basePolicy.backoff,
+    initial_delay: override?.initial_delay ?? base?.initial_delay ?? basePolicy.initial_delay,
+    max_delay: override?.max_delay ?? base?.max_delay ?? basePolicy.max_delay,
+    jitter: override?.jitter ?? base?.jitter ?? basePolicy.jitter,
   }
 }
 

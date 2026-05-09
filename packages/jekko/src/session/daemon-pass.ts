@@ -54,7 +54,10 @@ export function memoryKindForPass(passType: string, receipt?: PassReceipt) {
   }
 }
 
-export function normalizeReceipt(value: unknown, fallback: { passType: string; title: string }): PassReceipt {
+export function normalizeReceipt(
+  value: unknown,
+  defaultReceipt: { passType: string; title: string },
+): PassReceipt {
   if (value && typeof value === "object") {
     const record = value as Record<string, unknown>
     return {
@@ -71,8 +74,8 @@ export function normalizeReceipt(value: unknown, fallback: { passType: string; t
     }
   }
   return {
-    summary: typeof value === "string" && value.trim() ? value : `${fallback.passType} pass completed.`,
-    title: fallback.title,
+    summary: typeof value === "string" && value.trim() ? value : `${defaultReceipt.passType} pass completed.`,
+    title: defaultReceipt.title,
   }
 }
 

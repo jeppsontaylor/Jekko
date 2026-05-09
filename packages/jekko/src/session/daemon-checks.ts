@@ -5,6 +5,7 @@ import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
 import { Config } from "@/config/config"
 import { Shell } from "@/shell/shell"
 import { Git } from "@/git"
+import { parseDuration } from "./daemon-retry"
 
 export const ShellCheckResult = Schema.Struct({
   exitCode: Schema.Number,
@@ -81,7 +82,7 @@ export const layer = Layer.effect(
       const [stdout, stderr] = yield* Effect.all([collect(handle.stdout), collect(handle.stderr)], { concurrency: 2 })
       const exit = yield* Effect.raceAll([
         handle.exitCode.pipe(Effect.map((code) => ({ kind: "exit" as const, code }))),
-        Effect.sleep((input.timeout ?? "30 seconds") as Parameters<typeof Effect.sleep>[0]).pipe(
+        Effect.sleep(parseDuration(input.timeout ?? "30 seconds")).pipe(
           Effect.map(() => ({ kind: "timeout" as const, code: 124 })),
         ),
       ])
@@ -152,7 +153,7 @@ export function walkJsonPath(value: unknown, pointer: string): unknown {
 
 function checkJsonAssertions(stdout: string, expected: Record<string, unknown>) {
   try {
-    const parsed = JSON.parse(stdout) as unknown
+    const parsed: unknown = JSON.parse(stdout)
     for (const [path, value] of Object.entries(expected)) {
       const found = walkJsonPath(parsed, path)
       if (!Object.is(found, value)) return false

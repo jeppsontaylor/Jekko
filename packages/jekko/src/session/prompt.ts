@@ -63,7 +63,7 @@ import { eq } from "@/storage/db"
 import * as Database from "@/storage/db"
 import { SessionTable } from "./session.sql"
 
-// @ts-ignore
+// @ts-ignore This global silences ai-sdk warning spam during prompt loading.
 globalThis.AI_SDK_LOG_WARNINGS = false
 
 const STRUCTURED_OUTPUT_DESCRIPTION = `Use this tool to return your final response in the requested structured format.
@@ -1352,7 +1352,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           synthetic: [] as string[],
         },
       )
-      // pending(v2): Temporary dual-write while migrating session messages to v2 events.
+      // pending(v2): Dual-write bridge while migrating session messages to v2 events.
       EventV2.run(SessionEvent.Prompted.Sync, {
         sessionID: input.sessionID,
         timestamp: DateTime.makeUnsafe(info.time.created),
@@ -1363,7 +1363,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         },
       })
       for (const text of nextPrompt.synthetic) {
-        // pending(v2): Temporary dual-write while migrating session messages to v2 events.
+        // pending(v2): Dual-write bridge while migrating session messages to v2 events.
         EventV2.run(SessionEvent.Synthetic.Sync, {
           sessionID: input.sessionID,
           timestamp: DateTime.makeUnsafe(info.time.created),

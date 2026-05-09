@@ -345,7 +345,7 @@ export const layer = Layer.effect(
     })
 
     const upsertTask = Effect.fn("DaemonStore.upsertTask")(function* (input: Omit<TaskRow, "time_created" | "time_updated">) {
-      const row = input as typeof DaemonTaskTable.$inferInsert
+      const row = input
       Database.use((db) => db.insert(DaemonTaskTable).values(row).onConflictDoUpdate({ target: DaemonTaskTable.id, set: row }).run())
       const task = Database.use((db) => db.select().from(DaemonTaskTable).where(eq(DaemonTaskTable.id, input.id)).get())!
       yield* mirrorTask(task.run_id, task.id).pipe(Effect.ignore)
@@ -780,7 +780,7 @@ export const layer = Layer.effect(
     })
 
     const upsertWorker = Effect.fn("DaemonStore.upsertWorker")(function* (input: Omit<WorkerRow, "time_created" | "time_updated">) {
-      const row = input as typeof DaemonWorkerTable.$inferInsert
+      const row = input
       Database.use((db) => db.insert(DaemonWorkerTable).values(row).onConflictDoUpdate({ target: DaemonWorkerTable.id, set: row }).run())
       return Database.use((db) => db.select().from(DaemonWorkerTable).where(eq(DaemonWorkerTable.id, input.id)).get())!
     })
