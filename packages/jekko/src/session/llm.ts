@@ -30,26 +30,6 @@ const log = Log.create({ service: "llm" })
 export const OUTPUT_TOKEN_MAX = ProviderTransform.OUTPUT_TOKEN_MAX
 type Result = Awaited<ReturnType<typeof streamText>>
 
-function jnoccioRequestHeaders(
-  metadata: JnoccioProcessMetadata,
-  sessionID: string,
-  requestID: string,
-  projectID: string | undefined,
-) {
-  const headers = {
-    ...jnoccioIdentityHeaders(metadata),
-    "x-jekko-session": sessionID,
-    "x-jekko-request": requestID,
-  }
-  if (projectID) {
-    return {
-      ...headers,
-      "x-jekko-project": projectID,
-    }
-  }
-  return headers
-}
-
 /**
  * Build the universal daemon telemetry headers attached to every outbound
  * chat completion — even for non-jekko providers. Closes the prior leak where
@@ -375,13 +355,10 @@ const live: Layer.Layer<
           })
         : undefined
 
-      const jekkoProjectID = input.model.providerID.startsWith("jekko")
-        ? (yield* InstanceState.context).project.id
-        : undefined
-      const metadata = input.model.providerID.startsWith("jekko") ? ensureProcessMetadata("main") : null
-      if (metadata) {
-        startJnoccioHeartbeat(metadata)
-      }
+      const isJekkoProvider = input.model.providerID.startsWith("jekko")
+      const jekkoProjectID = isJekkoProvider ? (yield* InstanceState.context).project.id : undefined
+      const metadata = ensureProcessMetadata("main")
+      startJnoccioHeartbeat(metadata)
 
       return streamText({
         onError(error) {
@@ -425,7 +402,7 @@ const live: Layer.Layer<
           // where these only flowed on jekko providers. Adds jekko-only
           // session/request/project on top when applicable.
           ...daemonRequestHeaders(metadata, input.sessionID, input.parentSessionID),
-          ...(input.model.providerID.startsWith("jekko") && metadata
+          ...(isJekkoProvider
             ? {
                 "x-jekko-session": input.sessionID,
                 "x-jekko-request": input.user.id,

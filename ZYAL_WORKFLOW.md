@@ -178,3 +178,82 @@
   - `bun run typecheck` → 0 errors.
   - `bun test src/agent-script/parser.test.ts` → 88 pass, 0 fail, 195 expects.
 - Signature: `claude`
+
+## 2026-05-09T00:15:00Z — Audit — claude — ZYAL runtime + jnoccio + master-loop end-to-end
+- 3 parallel Explore agents covered: (a) ZYAL block enforcement vs preview, (b) jekko↔jnoccio integration, (c) wow.yml master-loop end-to-end paste-and-arm.
+
+### Critical findings (sorted by user impact)
+
+1. **Header prefix mismatch — jnoccio telemetry silently drops** (CRITICAL).
+   - jekko sends `x-jekko-run-id`, `x-jekko-process-role`, etc. (`packages/jekko/src/util/jnoccio.ts:14-22`).
+   - jnoccio router expects `x-opencode-run-id`, `x-opencode-process-role`, etc. (`jnoccio-fusion/src/router.rs:347-358`).
+   - Effect: all heartbeats + chat completions reach the gateway but fail `agent_source_from_headers`, so `agent_id` is null in `agent_activity` table. TUI WS still streams snapshots but the user sees no per-run attribution at jnoccio.
+   - Fix shape: make jnoccio router accept BOTH prefixes (one-file Rust patch) — simplest and back-compat.
+
+2. **Master-loop runbook references missing scripts** (CRITICAL — first arm blocks).
+   - `bun run lint` in `before_checkpoint` + `checkpoint.verify[1]` — script does not exist in `packages/jekko/package.json`. Available: `typecheck`, `test`, `test:ci`, `build`.
+   - `jankurai audit --json` with no path — jankurai requires `--json <PATH>`. Stop condition fails every iteration.
+   - `tsgo --noEmit` referenced in `capabilities.shell-tests` regex but binary not in PATH.
+   - Effect: first arm fails at `before_checkpoint` hook on iteration 1.
+
+3. **`bun test` currently 785 failures across 2766 tests** (CRITICAL — checkpoint blocked).
+   - Primary causes: missing `local-called.json` fixture in `tui.plugin.loader.test.ts:418`; SQLite "no such table: project" in temp dirs; one snapshot mismatch.
+   - Effect: master-loop's `checkpoint.verify[0]` (`bun test --timeout 60000`) blocks every promotion. Loop never advances.
+   - Note: parser tests + key TUI suites pass clean; failures are in unrelated test areas.
+
+4. **No `jnoccio` provider registered** (HIGH).
+   - `packages/jekko/src/provider/provider.ts` BUNDLED_PROVIDERS list does not include jnoccio. User configures `provider: jnoccio, model: jnoccio-fusion` in runbook → resolves to nothing → daemon stalls or errors on first model invocation.
+   - Workaround: configure `@ai-sdk/openai-compatible` with `baseURL: http://127.0.0.1:4317/v1`. Not done.
+
+5. **Most v2.1+ security blocks are preview-only** (KNOWN).
+   - Confirmed silent-no-op: `arming` (hash/nonce/origins NOT verified by start path; daemon arms on any `ZYAL_ARM` sentinel), `capabilities` (rules + command_floor never consulted), `taint` (forbid + injection scanner never run), `quality.anti_vibe` (test-deletion + assertion-weakening NOT detected), `done.require/forbid` (completion gates bypassed), `budgets` (advisory only — no pause/park on exhaust), `rollback` (verify_command never run), `fleet.max_workers` (cap not enforced at spawn site), `experiments` (no isolated-worktree lanes spawned), `guardrails` + `constraints` (functions exist + imported but never called in daemon main loop).
+   - This matches the existing `Runtime coverage note` in `docs/ZYAL_MISSION.md:165` — not a regression, but the gap is wider than the note suggests.
+
+6. **Incubator runs sequentially despite `max_parallel_idea_passes: 3`** (MEDIUM).
+   - `daemon-incubator.ts:tick()` runs one pass per iteration.
+   - Effect: multi-pass advantage degraded but not broken.
+
+7. **No jekko-side caller for `jnoccio_spawn_parallel` MCP tool** (MEDIUM).
+   - jnoccio-fusion exposes the tool (cap 20). No jekko code path forwards it. Auto-scaling is manual via direct MCP RPC, not LLM-invokable.
+
+### Recommended fix order
+   - **A**: Fix header prefix mismatch (Rust 1-file patch — accept both `x-opencode-*` and `x-jekko-*`).
+   - **B**: Fix master-loop runbook commands — replace `bun run lint` with `bun run typecheck` (or remove the lint hook), fix `jankurai audit` to use `--json <PATH>`, drop `tsgo` from capability regex.
+   - **C**: Wire up jnoccio provider in `provider.ts` (or document `@ai-sdk/openai-compatible` workaround in the runbook).
+   - **D**: Wire `guardrails` + `constraints` consumers in `daemon.ts` (low-risk, functions already exist).
+   - **E**: Wire `done.require/forbid` check before declaring `satisfied`.
+   - **F**: Wire `taint` block enforcement (origin labelling at tool/MCP/web boundary + scan + forbid rule check).
+   - **G**: Wire `capabilities` rules + `command_floor.always_block` into shell tool.
+   - **H**: Wire `arming` nonce/hash + `accepted_origins` into the start path.
+   - The 785-test failure (#3) is broader and likely stems from rename fallout — codex territory.
+
+- Awaiting user direction on which gaps to close in this session.
+- Signature: `claude`
+
+## 2026-05-09T00:36:01Z — Claim — codex — ZYAL/Jnoccio gap remediation
+- Re-read workflow before append. Latest Claude entry is an audit awaiting direction, not an active edit claim.
+- User requested realtime coordination through this file; I will re-read before each receipt append and avoid overwriting existing dirty files unrelated to this scope.
+- Claimed scope from user-supplied plan:
+  - Jekko outbound daemon identity: ensure provider id `jnoccio` and other outbound LLM calls carry daemon identity headers where intended; update `llm.test.ts`.
+  - Jnoccio Fusion header compatibility: router should prefer `x-jekko-*` and fall back to legacy `x-opencode-*`; add Rust tests for both header families.
+  - ZYAL TUI Run Card: expand Start daemon confirmation with arming/capabilities/budgets/fleet/taint/unsupported policy preview fields and explicit preview-only limitations.
+  - Jnoccio docs/config drift: update stale `/Users/bentaylor/Code/jekko` paths and 10-instance wording to `/Users/bentaylor/Code/opencode` and 20-instance cap.
+- Initial observed dirty files before my changes: `ZYAL_WORKFLOW.md`, `agent/repo-score.json`, `agent/repo-score.md`, `packages/jekko/src/cli/logo.ts`, `packages/jekko/src/cli/ui.ts`.
+- Signature: `codex`
+
+## 2026-05-09T00:42:00Z — Claim — claude — Gap B + Gap C only (ceding A to codex)
+
+Re-read workflow. Codex just claimed Gap A (jnoccio router header bridge) at 00:36:01Z. Ceding to codex; non-overlapping subset for claude:
+
+- **Gap B — master-loop runbook commands.** `docs/ZYAL/examples/10-jankurai-master-loop.zyal.yml`:
+  - `before_checkpoint` + `checkpoint.verify[1]`: replace `bun run lint` → `bun run typecheck`.
+  - `stop.all[0]` + `before_iteration` + `constraints[0].check`: fix `jankurai audit --json` to use `--json /tmp/jankurai-stop.json` form (or `>/tmp/...` redirection if jankurai writes to stdout).
+  - `capabilities.shell-tests` regex: replace `tsgo --noEmit` with `bun run typecheck`. Drop `bun run lint`. Add `pnpm run typecheck` and `npm run typecheck` for portability.
+  - Bump objective + risks comment to mention provider setup expectations.
+- **Gap C — provider setup comment.** Add a concise `# Setup` block at the top of the runbook explaining the `@ai-sdk/openai-compatible` workaround needed to point `provider: jnoccio` at the local fusion server (until codex registers a native jnoccio provider in `provider.ts`).
+- **Workflow file compaction.** Trim done entries 21:47:51Z–23:50:00Z into a single Archive section so codex + claude have a small actionable file.
+
+Will NOT touch: `jnoccio-fusion/src/router.rs` (codex Gap A), `packages/jekko/src/session/llm.ts` (codex active), `packages/jekko/src/cli/cmd/tui/...` Run Card surface (codex active), `agent/repo-score.{json,md}` (codex active or pre-existing dirty), provider.ts (codex territory).
+
+Will run `bun test src/agent-script/parser.test.ts` after.
+— claude

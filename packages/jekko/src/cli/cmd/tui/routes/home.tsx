@@ -66,7 +66,7 @@ export function Home() {
         <box height={4} minHeight={0} flexShrink={1} />
         <box flexShrink={0}>
           <TuiPluginRuntime.Slot name="home_logo" mode="replace">
-            <Logo ink={RGBA.fromInts(255, 69, 0)} />
+            <Logo ink={RGBA.fromInts(212, 168, 67)} idle />{/* JEKKO amber/gold */}
           </TuiPluginRuntime.Slot>
         </box>
         <box height={1} minHeight={0} flexShrink={1} />

@@ -478,7 +478,7 @@ describe("session.llm.stream", () => {
     })
   })
 
-  test("does not add jnoccio identity headers for non-jekko providers", async () => {
+  test("adds daemon identity headers for non-jekko providers without jekko request attribution", async () => {
     const server = state.server
     if (!server) {
       throw new Error("Server not initialized")
@@ -575,13 +575,112 @@ describe("session.llm.stream", () => {
         })
 
         const capture = await request
-        expect(capture.headers.get("x-jekko-run-id")).toBeNull()
-        expect(capture.headers.get("x-jekko-client")).toBeNull()
-        expect(capture.headers.get("x-jekko-process-role")).toBeNull()
-        expect(capture.headers.get("x-jekko-pid")).toBeNull()
+        expect(capture.headers.get("x-jekko-run-id")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-client")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-process-role")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-pid")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-version")).toBeTruthy()
+        expect(capture.headers.get("x-session-affinity")).toBe(sessionID)
         expect(capture.headers.get("x-jekko-session")).toBeNull()
         expect(capture.headers.get("x-jekko-request")).toBeNull()
-        expect(capture.headers.get("x-jekko-version")).toBeNull()
+      },
+    })
+  })
+
+  test("adds daemon identity headers for jnoccio provider config", async () => {
+    const server = state.server
+    if (!server) {
+      throw new Error("Server not initialized")
+    }
+
+    const providerID = "jnoccio"
+    const modelID = "jnoccio-fusion"
+    const request = waitRequest(
+      "/chat/completions",
+      new Response(createChatStream("Hello"), {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream" },
+      }),
+    )
+
+    await using tmp = await tmpdir({
+      init: async (dir) => {
+        await Bun.write(
+          path.join(dir, "jekko.json"),
+          JSON.stringify({
+            $schema: "https://jekko.ai/config.json",
+            enabled_providers: [providerID],
+            provider: {
+              [providerID]: {
+                name: "Jnoccio",
+                npm: "@ai-sdk/openai-compatible",
+                api: `${server.url.origin}/v1`,
+                env: [],
+                options: {
+                  apiKey: "jnoccio-local",
+                  baseURL: `${server.url.origin}/v1`,
+                  includeUsage: false,
+                },
+                models: {
+                  [modelID]: {
+                    name: "Jnoccio Fusion",
+                    id: modelID,
+                    reasoning: true,
+                    tool_call: true,
+                    limit: {
+                      context: 128000,
+                      output: 32000,
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        )
+      },
+    })
+
+    await WithInstance.provide({
+      directory: tmp.path,
+      fn: async () => {
+        const resolved = await getModel(ProviderID.make(providerID), ModelID.make(modelID))
+        const sessionID = SessionID.make("session-jnoccio-headers")
+        const agent = {
+          name: "test",
+          mode: "primary",
+          options: {},
+          permission: [{ permission: "*", pattern: "*", action: "allow" }],
+        } satisfies Agent.Info
+
+        const user = {
+          id: MessageID.make("user-jnoccio-headers"),
+          sessionID,
+          role: "user",
+          time: { created: Date.now() },
+          agent: agent.name,
+          model: { providerID: ProviderID.make(providerID), modelID: resolved.id },
+        } satisfies MessageV2.User
+
+        await drain({
+          user,
+          sessionID,
+          model: resolved,
+          agent,
+          system: ["You are a helpful assistant."],
+          messages: [{ role: "user", content: "Hello" }],
+          tools: {},
+        })
+
+        const capture = await request
+        expect(capture.headers.get("Authorization")).toBe("Bearer jnoccio-local")
+        expect(capture.headers.get("x-jekko-run-id")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-client")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-process-role")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-pid")).toBeTruthy()
+        expect(capture.headers.get("x-jekko-version")).toBeTruthy()
+        expect(capture.headers.get("x-session-affinity")).toBe(sessionID)
+        expect(capture.headers.get("x-jekko-session")).toBeNull()
+        expect(capture.headers.get("x-jekko-request")).toBeNull()
       },
     })
   })
