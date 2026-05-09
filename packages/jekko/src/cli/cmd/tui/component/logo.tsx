@@ -94,19 +94,7 @@ function brilliantGeckoColor(
   height: number,
   palette: CornerPalette,
 ): RGBA {
-  const base = gradient2D(x, y, width, height, palette)
-
-  const tx = width <= 1 ? 0 : x / (width - 1)
-  const ty = height <= 1 ? 0 : y / (height - 1)
-
-  // A soft diagonal shine across the whole mark.
-  const shineBand = Math.abs(tx - ty)
-  const shine = clamp01(1 - shineBand / 0.085) * 0.28
-
-  // Tiny deterministic "scale sparkle" flecks.
-  const scaleFleck = (x * 17 + y * 31) % 71 === 0 ? 0.16 : 0
-
-  return mixRGB(base, GECKO.white, Math.min(0.38, shine + scaleFleck))
+  return gradient2D(x, y, width, height, palette)
 }
 
 function glyphLength(text: string): number {

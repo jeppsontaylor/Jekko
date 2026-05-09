@@ -98,13 +98,7 @@ function geckoColor(
   const bottom = mixColor(palette.bottomLeft, palette.bottomRight, tx)
   const base = mixColor(top, bottom, ty)
 
-  // Diagonal shine
-  const shineBand = Math.abs(tx - ty)
-  const shine = clamp01(1 - shineBand / 0.085) * 0.28
-  const scaleFleck = (x * 17 + y * 31) % 71 === 0 ? 0.16 : 0
-  const blend = Math.min(0.38, shine + scaleFleck)
-
-  return mixColor(base, GECKO.white, blend)
+  return base
 }
 
 function gradientLine(
