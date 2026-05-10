@@ -117,7 +117,9 @@ type RequestBody = {
 }
 
 function parameterKey(param: unknown): string | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-guard-returns expires=2027-01-01
   if (!param || typeof param !== "object" || !("in" in param) || !("name" in param)) return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-guard-returns expires=2027-01-01
   if (typeof param.in !== "string" || typeof param.name !== "string") return undefined
   return `${param.in}:${param.name}:${"required" in param && param.required === true}:${stableSchema(
     "schema" in param ? param.schema : undefined,
