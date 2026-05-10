@@ -405,6 +405,7 @@ async function unlockWithSecret(
     if (result.exitCode === 127) {
       return {
         status: "error",
+        // jankurai:allow HLT-001-DEAD-MARKER reason=user-facing-error-guidance-not-retry-logic expires=2027-01-01
         message: "git-crypt is not installed. Install git-crypt, then try again.",
         envCreated: false,
       }

@@ -89,6 +89,7 @@ function Install(props: { api: TuiPluginApi }) {
               if (out.missing) {
                 props.api.ui.toast({
                   variant: "info",
+                  // jankurai:allow HLT-001-DEAD-MARKER reason=user-facing-error-guidance-not-retry-logic expires=2027-01-01
                   message: "Check npm registry/auth settings and try again.",
                 })
               }

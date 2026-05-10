@@ -69,6 +69,7 @@ export const UpgradeCommand = {
       if (err instanceof Installation.UpgradeFailedError) {
         // necessary because choco only allows install/upgrade in elevated terminals
         if (method === "choco" && err.stderr.includes("not running from an elevated command shell")) {
+          // jankurai:allow HLT-001-DEAD-MARKER reason=user-facing-error-guidance-not-retry-logic expires=2027-01-01
           prompts.log.error("Please run the terminal as Administrator and try again")
         } else {
           prompts.log.error(err.stderr)
