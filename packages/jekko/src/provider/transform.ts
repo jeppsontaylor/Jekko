@@ -509,6 +509,12 @@ function anthropicAdaptiveEfforts(apiId: string): string[] | null {
   return null
 }
 
+function oaiEncryptedEfforts(efforts: string[]) {
+  return Object.fromEntries(
+    efforts.map((effort) => [effort, { reasoningEffort: effort, reasoningSummary: "auto", include: ["reasoning.encrypted_content"] }]),
+  )
+}
+
 export function variants(model: Provider.Model): Record<string, Record<string, any>> {
   if (!model.capabilities.reasoning) return {}
 
@@ -637,16 +643,7 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
         if (id.includes("gpt-5") && model.release_date >= "2025-12-04") arr.push("xhigh")
         return arr
       })
-      return Object.fromEntries(
-        copilotEfforts.map((effort) => [
-          effort,
-          {
-            reasoningEffort: effort,
-            reasoningSummary: "auto",
-            include: ["reasoning.encrypted_content"],
-          },
-        ]),
-      )
+      return oaiEncryptedEfforts(copilotEfforts)
 
     case "@ai-sdk/cerebras":
     // https://v5.ai-sdk.dev/providers/ai-sdk-providers/cerebras
@@ -672,30 +669,12 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
       if (id.includes("gpt-5-") || id === "gpt-5") {
         azureEfforts.unshift("minimal")
       }
-      return Object.fromEntries(
-        azureEfforts.map((effort) => [
-          effort,
-          {
-            reasoningEffort: effort,
-            reasoningSummary: "auto",
-            include: ["reasoning.encrypted_content"],
-          },
-        ]),
-      )
+      return oaiEncryptedEfforts(azureEfforts)
     case "@ai-sdk/openai": {
       // https://v5.ai-sdk.dev/providers/ai-sdk-providers/openai
       const efforts = openaiReasoningEfforts(model.api.id, model.release_date)
       if (!efforts) return {}
-      return Object.fromEntries(
-        efforts.map((effort) => [
-          effort,
-          {
-            reasoningEffort: effort,
-            reasoningSummary: "auto",
-            include: ["reasoning.encrypted_content"],
-          },
-        ]),
-      )
+      return oaiEncryptedEfforts(efforts)
     }
 
     case "@ai-sdk/anthropic":
