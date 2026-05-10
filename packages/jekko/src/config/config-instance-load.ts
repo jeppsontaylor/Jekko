@@ -48,7 +48,7 @@ export const loadFile = Effect.fnUntraced(function* (fs: any, filepath: string) 
   return yield* loadConfig(text, { path: filepath })
 })
 
-export function* loadGlobal(fs: any) {
+export const loadGlobal = Effect.fnUntraced(function* (fs: any) {
   let result: Info = {}
   result = mergeConfig(result, yield* loadFile(fs, path.join(Global.Path.config, "config.json")))
   result = mergeConfig(result, yield* loadFile(fs, path.join(Global.Path.config, "jekko.json")))
@@ -71,4 +71,4 @@ export function* loadGlobal(fs: any) {
   }
 
   return result
-}
+})

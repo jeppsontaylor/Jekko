@@ -1,3 +1,5 @@
+-- Rollback: DROP TABLE `control_account`;
+-- Pre-flight: SELECT (SELECT COUNT(*) FROM sqlite_schema WHERE type='table' AND name='control_account') AS pre_exists;
 CREATE TABLE `control_account` (
 	`email` text NOT NULL,
 	`url` text NOT NULL,

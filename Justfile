@@ -127,11 +127,31 @@ jekko-build-fast:
 # Narrow lane for the main Jekko package behavior checks.
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
 jekko-test-fast:
-	bun --cwd packages/jekko test test/keybind.test.ts test/ide/ide.test.ts
+	bun --cwd packages/jekko test \
+		test/keybind.test.ts \
+		test/ide/ \
+		test/util/ \
+		test/auth/ \
+		test/account/
+
+# Full Jekko test suite (slower; for pre-release gating).
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
+jekko-test-full:
+	bun --cwd packages/jekko test
 
 # Narrow lane that composes the main Jekko package's fast feedback targets.
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
 jekko-fast: jekko-typecheck-fast jekko-build-fast jekko-test-fast
+
+# Smoke test the built jekko binary on the host platform.
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
+run: jekko-build-fast
+	@host_target="jekko-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/')"; \
+	binary="packages/jekko/dist/$host_target/bin/jekko"; \
+	if [ ! -x "$binary" ]; then \
+		echo "Binary not found at $binary — run 'just build' first"; exit 1; \
+	fi; \
+	"$binary" --version
 
 # Narrow lane for the jnoccio-fusion Rust crate compile path.
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true

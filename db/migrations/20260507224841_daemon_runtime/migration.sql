@@ -1,3 +1,9 @@
+-- Rollback (drop in reverse FK order):
+--   DROP TABLE `daemon_artifact`; DROP TABLE `daemon_worker`;
+--   DROP TABLE `daemon_task_memory`; DROP TABLE `daemon_task_pass`;
+--   DROP TABLE `daemon_task`; DROP TABLE `daemon_event`;
+--   DROP TABLE `daemon_iteration`; DROP TABLE `daemon_run`;
+-- Pre-flight: SELECT (SELECT COUNT(*) FROM sqlite_schema WHERE type='table' AND name LIKE 'daemon_%') AS pre_count;
 CREATE TABLE `daemon_run` (
 	`id` text PRIMARY KEY NOT NULL,
 	`root_session_id` text NOT NULL REFERENCES `session`(`id`) ON DELETE restrict,
