@@ -1,17 +1,17 @@
 {
-  "report_fingerprint": "sha256:0162e6d2ffa1876c28895f63fb37f1ff78f025dcd07035bd4e9433d578fe1488",
-  "input_fingerprint": "sha256:b186f6c5cd6ac4e5299a2110f4735f2246ac7a2005729c77077c02dbb103db5f",
+  "report_fingerprint": "sha256:f1413642167be3e13612779bdb9d82cce93dd0a16bbaecd8ef23120af59e177f",
+  "input_fingerprint": "sha256:6b3dc466014e698971048b8c3790fac8411f137d198541aec8c25f164200cf34",
   "policy_fingerprint": "sha256:201baf37c4fbcb3e4d5c0f0d11322da3f562cc8a430d6a57d02343942191602c",
   "manifest_fingerprints": {
-    "owner_map": "sha256:8b740fe2dfc86f6eee7b105ab211cfedc7696dffcd4150697532d0f5a6115cba",
-    "test_map": "sha256:4c2ad4b36e312d3408a7229d7e9a6719c683aba766750c41ed987fffca94ae32",
+    "owner_map": "sha256:02e64a1006ca29177738121ab576f73e6bad4e428578e81b95d31724adfd7392",
+    "test_map": "sha256:f96dda2de324d759b3bc260869ac1b12e72f52f64aff6b1e86a5714356a57666",
     "generated_zones": "sha256:62e40ec26acdc2bd1f1edcca7e13c94295ee3eb36f692fd30fb9dfa1a2dd9ee3",
     "boundaries": "sha256:b07c0fb46116a7474029823ab26a2168f87c24dc13b3add52da43eba77456aee",
     "proof_lanes": "sha256:df512653e53dd755fbab2991e3fbd8d4b9fde5133886c68d755094833a816f14",
     "standard_version": "sha256:1df4cfbdab9fc309a1a17f79901ab2950806d19778d91c27a975cb7da827bb81"
   },
   "dirty_worktree": true,
-  "generated_at": "1778422668",
+  "generated_at": "1778424833",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -25,9 +25,9 @@
   "conformance_decision": "pass",
   "conformance_blockers": [],
   "repo": ".",
-  "run_id": "1778422668",
-  "started_at": "1778422668",
-  "elapsed_ms": 1971,
+  "run_id": "1778424833",
+  "started_at": "1778424833",
+  "elapsed_ms": 2041,
   "scope": {
     "mode": "full",
     "paths": []
@@ -54,7 +54,7 @@
     }
   },
   "git": {
-    "head": "a39d3049b",
+    "head": "2df28aa76",
     "base": null,
     "changed_files": 0,
     "mode": "full",
@@ -1026,8 +1026,8 @@
       "required_commands_skipped": 0,
       "required_commands_failed": 0,
       "blocking_commands": [],
-      "generated_at": "1778422554",
-      "git_head": "a39d3049b8fe704417fa9094a25d245e594bea35"
+      "generated_at": "1778424779",
+      "git_head": "2df28aa7653cc2885d7f973e7bbbdbbed5856cdf"
     }
   },
   "boundaries": {

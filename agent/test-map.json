@@ -172,6 +172,10 @@
       "command": "just fast",
       "purpose": "verify babysit work proof route stays visible"
     },
+    "CHANGELOG.md": {
+      "command": "just score",
+      "purpose": "verify root changelog remains visible to the audit"
+    },
     "CLAUDE.md": {
       "command": "just fast",
       "purpose": "verify Claude instructions proof route stays visible"
@@ -298,7 +302,7 @@
     },
     "examples/perfect-web-api-db/backend/src/background_job.rs": {
       "command": "just fast",
-      "purpose": "run proofs for background‑job cell"
+      "purpose": "run proofs for background\u2011job cell"
     },
     "flake": {
       "command": "just fast",
