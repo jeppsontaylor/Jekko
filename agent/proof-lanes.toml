@@ -158,6 +158,19 @@ requires_network = true
 destructive = false
 
 [[lane]]
+name = "ux-qa"
+command = "just ux-qa"
+purpose = "rendered TUI component proof via bun test (testRender-based component tests)"
+command_id = "lane.ux-qa"
+kind = "validation"
+cost = 15
+rules_covered = ["HLT-013-RENDERED-UX-GAP"]
+required_artifacts = []
+timeout_seconds = 900
+requires_network = false
+destructive = false
+
+[[lane]]
 name = "release"
 command = "just check"
 purpose = "full merge gate: fast + doctor + score + security"

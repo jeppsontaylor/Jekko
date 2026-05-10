@@ -14,7 +14,12 @@ mirror_max_rows = 5000
 [scan]
 excluded_paths = ["tips/", "apps/", "nix/", "packages/jekko/script/", "packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/", "jnoccio-fusion/src/", "jnoccio-fusion/tests/", "packages/jekko/src/acp/", "packages/jekko/src/agent-script/", "packages/jekko/src/cli/cmd/github.ts", "packages/jekko/src/cli/cmd/run.ts", "packages/jekko/src/cli/cmd/daemon.ts", "packages/jekko/src/cli/cmd/tui/component/logo.tsx", "packages/jekko/src/cli/cmd/tui/component/todo-item.tsx", "packages/jekko/src/cli/cmd/tui/component/task-item.tsx", "packages/jekko/src/cli/cmd/tui/context/sync-store.tsx", "packages/jekko/src/cli/cmd/tui/context/sync-legacy.tsx", "packages/jekko/src/cli/cmd/tui/context/theme.tsx"]
 
-[ux_surface]
+[[ux_surface]]
 path = "jnoccio-fusion/web"
 label = "jnoccio-fusion dashboard"
 lane = "ux-e2e"
+
+[[ux_surface]]
+path = "packages/jekko/src/cli/cmd/tui"
+label = "jekko TUI"
+lane = "ux-qa"
