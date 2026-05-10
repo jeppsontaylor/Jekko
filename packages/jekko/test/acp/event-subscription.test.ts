@@ -23,10 +23,14 @@ type EventController = {
 function inProgressText(update: SessionUpdateParams["update"]) {
   // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-early-exit-guards expires=2027-01-01
   if (update.sessionUpdate !== "tool_call_update") return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-early-exit-guards expires=2027-01-01
   if (update.status !== "in_progress") return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-early-exit-guards expires=2027-01-01
   if (!update.content || !Array.isArray(update.content)) return undefined
   const first = update.content[0]
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-early-exit-guards expires=2027-01-01
   if (!first || first.type !== "content") return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-early-exit-guards expires=2027-01-01
   if (first.content.type !== "text") return undefined
   return first.content.text
 }
