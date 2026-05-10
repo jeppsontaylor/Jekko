@@ -145,9 +145,8 @@ export const layer: Layer.Layer<
     const gitSvc = yield* Git.Service
     const bus = yield* Bus.Service
 
-    const git = Effect.fnUntraced(function* (args: string[], opts?: { cwd?: string }) {
-      const ctx = yield* InstanceState.context
-      const result = yield* gitSvc.run(args, { cwd: opts?.cwd ?? ctx.worktree })
+    const git = Effect.fnUntraced(function* (args: string[], opts: { cwd: string }) {
+      const result = yield* gitSvc.run(args, { cwd: opts.cwd })
       return {
         code: result.exitCode,
         text: result.text(),

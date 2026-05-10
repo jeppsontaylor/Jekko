@@ -73,6 +73,9 @@ export function splitMigrationStatements(sqlText: string) {
     let single = false
     let double = false
     let backtick = false
+    // CREATE TRIGGER ... BEGIN ... END; bodies contain inner `;` that must not
+    // split the statement. Track BEGIN/END nesting and only honour `;` at depth 0.
+    let blockDepth = 0
 
     for (let i = 0; i < cleaned.length; i += 1) {
       const char = cleaned[i]
@@ -82,7 +85,15 @@ export function splitMigrationStatements(sqlText: string) {
       else if (char === '"' && !single && !backtick && prev !== "\\") double = !double
       else if (char === "`" && !single && !double && prev !== "\\") backtick = !backtick
 
-      if (char === ";" && !single && !double && !backtick) {
+      if (!single && !double && !backtick) {
+        const atWordStart = i === 0 || !/[A-Za-z0-9_]/.test(prev ?? "")
+        if (atWordStart) {
+          if (matchKeyword(cleaned, i, "BEGIN")) blockDepth += 1
+          else if (blockDepth > 0 && matchKeyword(cleaned, i, "END")) blockDepth -= 1
+        }
+      }
+
+      if (char === ";" && !single && !double && !backtick && blockDepth === 0) {
         const statement = current.trim()
         if (statement) statements.push(statement)
         current = ""
@@ -97,6 +108,20 @@ export function splitMigrationStatements(sqlText: string) {
   }
 
   return statements.filter(Boolean)
+}
+
+function matchKeyword(source: string, index: number, keyword: string) {
+  if (source.length - index < keyword.length) return false
+  for (let i = 0; i < keyword.length; i += 1) {
+    const a = source.charCodeAt(index + i)
+    const b = keyword.charCodeAt(i)
+    if (a === b) continue
+    if (a >= 97 && a <= 122 && a - 32 === b) continue
+    return false
+  }
+  const after = source[index + keyword.length]
+  if (after === undefined) return true
+  return !/[A-Za-z0-9_]/.test(after)
 }
 
 function sha256Hex(text: string) {

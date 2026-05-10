@@ -73,7 +73,7 @@ export {
 } from "./provider-schema"
 export type { Interface, State } from "./provider-schema"
 
-import * as ProviderTransform from "./transform"
+import { ProviderTransform } from "./transform"
 import { ModelID, ProviderID } from "./schema"
 
 const log = Log.create({ service: "provider" })

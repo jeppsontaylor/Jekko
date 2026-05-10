@@ -28,11 +28,15 @@ export const NotFoundError = NamedError.create(
 
 const log = Log.create({ service: "db" })
 
-export function getChannelPath() {
-  if (["latest", "beta", "prod"].includes(InstallationChannel) || Flag.JEKKO_DISABLE_CHANNEL_DB)
+export function channelDbPath(channel: string, options?: { disableChannel?: boolean }) {
+  if (["latest", "beta", "prod"].includes(channel) || options?.disableChannel)
     return path.join(Global.Path.data, "jekko.db")
-  const safe = InstallationChannel.replace(/[^a-zA-Z0-9._-]/g, "-")
+  const safe = channel.replace(/[^a-zA-Z0-9._-]/g, "-")
   return path.join(Global.Path.data, `jekko-${safe}.db`)
+}
+
+export function getChannelPath() {
+  return channelDbPath(InstallationChannel, { disableChannel: Flag.JEKKO_DISABLE_CHANNEL_DB })
 }
 
 export const Path = iife(() => {

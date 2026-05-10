@@ -4,7 +4,7 @@ import { type LanguageModelV3 } from "@ai-sdk/provider"
 import type { Model, Info } from "./provider-schema"
 import { ModelID, ProviderID } from "./schema"
 import * as ModelsDev from "./models"
-import * as ProviderTransform from "./transform"
+import { ProviderTransform } from "./transform"
 
 const historicalInactiveStatus = ["de", "precated"].join("")
 
