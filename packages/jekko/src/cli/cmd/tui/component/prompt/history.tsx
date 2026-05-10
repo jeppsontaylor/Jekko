@@ -26,32 +26,141 @@ export type PromptInfo = {
 }
 
 const MAX_HISTORY_ENTRIES = 50
+const HISTORY_WRITE_ATTEMPTS = 2
+const HISTORY_REPAIR_ATTEMPTS = 3
+const HISTORY_WRITE_RETRY_DELAY_MS = 25
+
+type PromptHistoryLoadState =
+  | { kind: "missing" }
+  | { kind: "loaded"; entries: PromptInfo[]; dropped: number }
+  | { kind: "error"; error: unknown }
+
+type PromptHistoryWriteState =
+  | { kind: "written" }
+  | { kind: "failed"; operation: "append" | "repair"; error: unknown }
+
+function isMissingHistoryError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "ENOENT"
+  )
+}
+
+function parsePromptHistoryLine(line: string): PromptInfo | undefined {
+  try {
+    return JSON.parse(line) as PromptInfo
+  } catch {
+    return undefined
+  }
+}
+
+function parsePromptHistoryText(text: string) {
+  const entries: PromptInfo[] = []
+  let dropped = 0
+
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+
+    const parsed = parsePromptHistoryLine(trimmed)
+    if (parsed) {
+      entries.push(parsed)
+      continue
+    }
+
+    dropped++
+  }
+
+  return {
+    entries: entries.slice(-MAX_HISTORY_ENTRIES),
+    dropped,
+  }
+}
+
+async function loadPromptHistory(historyPath: string): Promise<PromptHistoryLoadState> {
+  try {
+    const text = await Filesystem.readText(historyPath)
+    const parsed = parsePromptHistoryText(text)
+    return { kind: "loaded", ...parsed }
+  } catch (error) {
+    if (isMissingHistoryError(error)) return { kind: "missing" }
+    return { kind: "error", error }
+  }
+}
+
+async function writePromptHistory(historyPath: string, entries: PromptInfo[], operation: "append" | "repair") {
+  const content = entries.length > 0 ? entries.map((line) => JSON.stringify(line)).join("\n") + "\n" : ""
+  const attempts = operation === "repair" ? HISTORY_REPAIR_ATTEMPTS : HISTORY_WRITE_ATTEMPTS
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      await writeFile(historyPath, content)
+      return { kind: "written" } as const
+    } catch (error) {
+      lastError = error
+      if (attempt < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, HISTORY_WRITE_RETRY_DELAY_MS * attempt))
+      }
+    }
+  }
+
+  return { kind: "failed", operation, error: lastError } as const
+}
+
+async function appendPromptHistory(historyPath: string, entry: PromptInfo): Promise<PromptHistoryWriteState> {
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= HISTORY_WRITE_ATTEMPTS; attempt++) {
+    try {
+      await appendFile(historyPath, JSON.stringify(entry) + "\n")
+      return { kind: "written" }
+    } catch (error) {
+      lastError = error
+      if (attempt < HISTORY_WRITE_ATTEMPTS) {
+        await new Promise((resolve) => setTimeout(resolve, HISTORY_WRITE_RETRY_DELAY_MS * attempt))
+      }
+    }
+  }
+
+  return { kind: "failed", operation: "append", error: lastError }
+}
 
 export const { use: usePromptHistory, provider: PromptHistoryProvider } = createSimpleContext({
   name: "PromptHistory",
   init: () => {
     const historyPath = path.join(Global.Path.state, "prompt-history.jsonl")
     onMount(async () => {
-      const text = await Filesystem.readText(historyPath).catch(() => "")
-      const lines = text
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => {
-          try {
-            return JSON.parse(line)
-          } catch {
-            return null
-          }
+      const loaded = await loadPromptHistory(historyPath)
+
+      if (loaded.kind === "missing") return
+
+      if (loaded.kind === "error") {
+        console.error("[prompt-history] failed to load history", {
+          historyPath,
+          error: loaded.error,
         })
-        .filter((line): line is PromptInfo => line !== null)
-        .slice(-MAX_HISTORY_ENTRIES)
+        return
+      }
 
-      setStore("history", lines)
+      setStore("history", loaded.entries)
 
-      // Rewrite file with only valid entries to self-heal corruption
-      if (lines.length > 0) {
-        const content = lines.map((line) => JSON.stringify(line)).join("\n") + "\n"
-        writeFile(historyPath, content).catch(() => {})
+      if (loaded.dropped > 0) {
+        console.warn("[prompt-history] repaired invalid history entries", {
+          historyPath,
+          dropped: loaded.dropped,
+          kept: loaded.entries.length,
+          maxEntries: MAX_HISTORY_ENTRIES,
+        })
+        const repair = await writePromptHistory(historyPath, loaded.entries, "repair")
+        if (repair.kind === "failed") {
+          console.error("[prompt-history] failed to rewrite repaired history", {
+            historyPath,
+            error: repair.error,
+          })
+        }
       }
     })
 
@@ -96,12 +205,25 @@ export const { use: usePromptHistory, provider: PromptHistoryProvider } = create
         )
 
         if (trimmed) {
-          const content = store.history.map((line) => JSON.stringify(line)).join("\n") + "\n"
-          writeFile(historyPath, content).catch(() => {})
+          void writePromptHistory(historyPath, store.history, "repair").then((result) => {
+            if (result.kind === "failed") {
+              console.error("[prompt-history] failed to rewrite trimmed history", {
+                historyPath,
+                error: result.error,
+              })
+            }
+          })
           return
         }
 
-        appendFile(historyPath, JSON.stringify(entry) + "\n").catch(() => {})
+        void appendPromptHistory(historyPath, entry).then((result) => {
+          if (result.kind === "failed") {
+            console.error("[prompt-history] failed to append history entry", {
+              historyPath,
+              error: result.error,
+            })
+          }
+        })
       },
     }
   },
