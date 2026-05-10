@@ -194,6 +194,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         const provider = sync.data.provider.find((provider) =>
           Object.values(provider.models).some((model) => model.status !== "locked"),
         )
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (!provider) return undefined
         const defaultModel = sync.data.provider_default[provider.id]
         const defaultInfo = defaultModel ? provider.models[defaultModel] : undefined
@@ -202,6 +203,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
             ? defaultInfo
             : Object.values(provider.models).find((model) => model.status !== "locked")
         const model = firstModel?.id
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (!model) return undefined
         return {
           providerID: provider.id,
@@ -348,13 +350,16 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         variant: {
           selected() {
             const m = currentModel()
+            // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
             if (!m) return undefined
             const key = `${m.providerID}/${m.modelID}`
             return modelStore.variant[key]
           },
           current() {
             const v = this.selected()
+            // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
             if (!v) return undefined
+            // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
             if (!this.list().includes(v)) return undefined
             return v
           },

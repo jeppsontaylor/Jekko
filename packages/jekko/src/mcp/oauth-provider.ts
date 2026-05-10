@@ -69,6 +69,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
       // Check if client secret has expired
       if (entry.clientInfo.clientSecretExpiresAt && entry.clientInfo.clientSecretExpiresAt < Date.now() / 1000) {
         log.info("client secret expired, need to re-register", { mcpName: this.mcpName })
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       }
       return {
@@ -78,6 +79,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
     }
 
     // No client info or URL changed - will trigger dynamic registration
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return undefined
   }
 
@@ -103,6 +105,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
   async tokens(): Promise<OAuthTokens | undefined> {
     // Use getForUrl to validate tokens are for the current server URL
     const entry = await Effect.runPromise(this.auth.getForUrl(this.mcpName, this.serverUrl))
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!entry?.tokens) return undefined
 
     return {

@@ -164,6 +164,7 @@ function applyChecks(out: z.ZodTypeAny, checks: SchemaAST.Checks, ast: SchemaAST
 // caller can fall back to the generic .superRefine path.
 function translateFilter(out: z.ZodTypeAny, filter: SchemaAST.Filter<unknown>): z.ZodTypeAny | undefined {
   const meta = (filter.annotations as { meta?: Record<string, unknown> } | undefined)?.meta
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!meta || typeof meta._tag !== "string") return undefined
   switch (meta._tag) {
     case "isInt":
@@ -180,6 +181,7 @@ function translateFilter(out: z.ZodTypeAny, filter: SchemaAST.Filter<unknown>): 
       return call(out, "lte", meta.maximum)
     case "isBetween": {
       const lo = meta.exclusiveMinimum ? call(out, "gt", meta.minimum) : call(out, "gte", meta.minimum)
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!lo) return undefined
       return meta.exclusiveMaximum ? call(lo, "lt", meta.maximum) : call(lo, "lte", meta.maximum)
     }
@@ -191,6 +193,7 @@ function translateFilter(out: z.ZodTypeAny, filter: SchemaAST.Filter<unknown>): 
       return call(out, "max", meta.maxLength)
     case "isLengthBetween": {
       const lo = call(out, "min", meta.minimum)
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!lo) return undefined
       return call(lo, "max", meta.maximum)
     }
@@ -211,6 +214,7 @@ function translateFilter(out: z.ZodTypeAny, filter: SchemaAST.Filter<unknown>): 
     case "isBase64Url":
       return call(out, "base64url")
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -225,6 +229,7 @@ function call(target: z.ZodTypeAny, method: string, ...args: unknown[]): z.ZodTy
 function issueMessage(issue: any): string | undefined {
   if (typeof issue?.annotations?.message === "string") return issue.annotations.message
   if (typeof issue?.message === "string") return issue.message
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -292,6 +297,7 @@ type DecodeLink = {
 
 function extractDefault(ast: SchemaAST.AST): { value: unknown } | undefined {
   const encoding = (ast as { encoding?: ReadonlyArray<DecodeLink> }).encoding
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!encoding?.length) return undefined
   // Walk the chain of encoding Links in order; the first Getter that produces
   // a value from Option.none wins.  withDecodingDefault always puts its
@@ -301,6 +307,7 @@ function extractDefault(ast: SchemaAST.AST): { value: unknown } | undefined {
     if (probe._tag !== "Success") continue
     if (Option.isSome(probe.value)) return { value: probe.value.value }
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 

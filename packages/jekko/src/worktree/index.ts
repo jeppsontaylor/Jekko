@@ -339,6 +339,7 @@ export const layer: Layer.Layer<
         const key = yield* canonical(item.path)
         if (key === directory) return item
       }
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     })
 

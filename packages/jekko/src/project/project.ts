@@ -528,6 +528,7 @@ export function list() {
 
 export function get(id: ProjectID): Info | undefined {
   const row = Database.use((db) => db.select().from(ProjectTable).where(eq(ProjectTable.id, id)).get())
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!row) return undefined
   return fromRow(row)
 }

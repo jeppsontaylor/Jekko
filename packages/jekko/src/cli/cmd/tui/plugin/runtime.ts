@@ -706,6 +706,7 @@ async function addExternalPluginEntries(state: RuntimeState, ready: PluginLoad[]
     })),
   ).catch((error) => {
     log.warn("failed to track tui plugins", { error })
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return undefined
   })
 

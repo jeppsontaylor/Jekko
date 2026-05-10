@@ -153,6 +153,7 @@ function checkRequirement(req: ZyalEvidenceRequirement, artifact: EvidenceArtifa
       return { type: req.type, requirement: `max_increase:${req.max_increase}`, actual: artifact.value }
     }
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return null
 }
 

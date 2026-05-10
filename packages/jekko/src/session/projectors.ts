@@ -35,6 +35,7 @@ function grab<T extends object, K1 extends keyof T, X>(
   field1: K1,
   cb?: (val: NonNullable<T[K1]>) => X,
 ): X | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (obj == undefined || !(field1 in obj)) return undefined
 
   const val = obj[field1]

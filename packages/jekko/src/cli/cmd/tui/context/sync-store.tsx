@@ -501,6 +501,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
         get(sessionID: string) {
           const match = Binary.search(store.session, sessionID, (s) => s.id)
           if (match.found) return store.session[match.index]
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           return undefined
         },
         query() {

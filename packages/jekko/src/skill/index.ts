@@ -87,6 +87,7 @@ const add = Effect.fnUntraced(function* (state: State, match: string, bus: Bus.I
         const { Session } = yield* Effect.promise(() => import("@/session/session"))
         yield* bus.publish(Session.Event.Error, { error: new NamedError.Unknown({ message }).toObject() })
         log.error("failed to load skill", { skill: match, err })
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       }),
     ),

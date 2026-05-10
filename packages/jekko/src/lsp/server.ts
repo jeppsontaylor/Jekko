@@ -81,6 +81,7 @@ const NearestRoot = (includePatterns: string[], excludePatterns?: string[]): Roo
       })
       const excluded = await excludedFiles.next()
       await excludedFiles.return()
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (excluded.value) return undefined
     }
     const files = Filesystem.up({
@@ -113,6 +114,7 @@ export const Deno: Info = {
     })
     const first = await files.next()
     await files.return()
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!first.value) return undefined
     return path.dirname(first.value)
   },
@@ -278,6 +280,7 @@ export const Oxlint: Info = {
       await candidates.return()
       if (first.value) return first.value
 
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     }
 
@@ -473,6 +476,7 @@ export const Ty: Info = {
   ]),
   async spawn(root) {
     if (!Flag.JEKKO_EXPERIMENTAL_LSP_TY) {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     }
 
@@ -964,6 +968,7 @@ export const RustAnalyzer: Info = {
   root: async (file, ctx) => {
     const crateRoot = await NearestRoot(["Cargo.toml", "Cargo.lock"])(file, ctx)
     if (crateRoot === undefined) {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     }
     let currentDir = crateRoot

@@ -54,11 +54,13 @@ export function delay(attempt: number, error?: MessageV2.APIError) {
 
 export function retryable(error: Err) {
   // context overflow errors should not be retried
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (MessageV2.ContextOverflowError.isInstance(error)) return undefined
   if (MessageV2.APIError.isInstance(error)) {
     const status = error.data.statusCode
     // 5xx errors are transient server failures and should always be retried,
     // even when the provider SDK doesn't explicitly mark them as retryable.
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!error.data.isRetryable && !(status !== undefined && status >= 500)) return undefined
     if (error.data.responseBody?.includes("FreeUsageLimitError")) return GO_UPSELL_MESSAGE
     return error.data.message.includes("Overloaded") ? "Provider is overloaded" : error.data.message
@@ -86,9 +88,11 @@ export function retryable(error: Err) {
 
       return JSON.parse(error.data.message)
     } catch {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     }
   })
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!json || typeof json !== "object") return undefined
   const code = typeof json.code === "string" ? json.code : ""
 
@@ -101,6 +105,7 @@ export function retryable(error: Err) {
   if (json.type === "error" && typeof json.error?.code === "string" && json.error.code.includes("rate_limit")) {
     return "Rate Limited"
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 

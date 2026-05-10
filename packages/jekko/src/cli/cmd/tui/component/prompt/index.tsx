@@ -20,6 +20,7 @@ import { MessageID, PartID } from "@/session/schema"
 import { createStore, produce, unwrap } from "solid-js/store"
 import { useKeybind } from "@tui/context/keybind"
 import { usePromptHistory, type PromptInfo } from "./history"
+import { computePromptUsage } from "./usage"
 import { computePromptTraits } from "./traits"
 import { assign } from "./part"
 import { usePromptStash } from "./stash"
@@ -30,7 +31,7 @@ import { useRenderer, useTerminalDimensions, type JSX } from "@opentui/solid"
 import * as Editor from "@tui/util/editor"
 import { useExit } from "../../context/exit"
 import * as Clipboard from "../../util/clipboard"
-import type { AssistantMessage, FilePart, UserMessage } from "@jekko-ai/sdk/v2"
+import type { FilePart, UserMessage } from "@jekko-ai/sdk/v2"
 import { TuiEvent } from "../../event"
 import { detectZyal, scanZyalEnvelope, type ZyalDetection } from "@/agent-script/activation"
 import { isZyalFlashSourceActive, setZyalFlashSource, textHasZyalSentinel, useZyalFlash } from "@tui/context/zyal-flash"
@@ -373,36 +374,16 @@ export function Prompt(props: PromptProps) {
     if (!props.disabled) input.cursorColor = theme.text
   })
 
-  const lastUserMessage = createMemo<UserMessage | null>(() => {
-    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
-    if (!props.sessionID) return null
+  type LastUserMessageState = { kind: "missing" } | { kind: "present"; message: UserMessage }
+
+  const lastUserMessage = createMemo<LastUserMessageState>(() => {
+    if (!props.sessionID) return { kind: "missing" }
     const messages = sync.data.message[props.sessionID]
-    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
-    if (!messages) return null
-    return messages.findLast((m): m is UserMessage => m.role === "user") ?? null
+    const message = messages?.findLast((m): m is UserMessage => m.role === "user")
+    return message ? { kind: "present", message } : { kind: "missing" }
   })
 
-  const usage = createMemo(() => {
-    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
-    if (!props.sessionID) return null
-    const msg = sync.data.message[props.sessionID] ?? []
-    const last = msg.findLast((item): item is AssistantMessage => item.role === "assistant" && item.tokens.output > 0)
-    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
-    if (!last) return null
-
-    const tokens =
-      last.tokens.input + last.tokens.output + last.tokens.reasoning + last.tokens.cache.read + last.tokens.cache.write
-    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
-    if (tokens <= 0) return null
-
-    const model = sync.data.provider.find((item) => item.id === last.providerID)?.models[last.modelID]
-    const pct = model?.limit.context ? `${Math.round((tokens / model.limit.context) * 100)}%` : undefined
-    const cost = msg.reduce((sum, item) => sum + (item.role === "assistant" ? item.cost : 0), 0)
-    return {
-      context: pct ? `${Locale.number(tokens)} (${pct})` : Locale.number(tokens),
-      cost: cost > 0 ? money.format(cost) : undefined,
-    }
-  })
+  const usage = createMemo(() => computePromptUsage(props.sessionID, sync.data.message[props.sessionID] ?? [], sync.data.provider))
 
   const [store, setStore] = createStore<{
     prompt: PromptInfo
@@ -535,12 +516,13 @@ export function Prompt(props: PromptProps) {
   let syncedSessionID: string | undefined
   createEffect(() => {
     const sessionID = props.sessionID
-    const msg = lastUserMessage()
+    const msgState = lastUserMessage()
 
     if (sessionID !== syncedSessionID) {
-      if (!sessionID || !msg) return
+      if (!sessionID || msgState.kind === "missing") return
 
       syncedSessionID = sessionID
+      const msg = msgState.message
 
       // Only set agent if it's a primary agent (not a subagent)
       const isPrimaryAgent = local.agent.list().some((x) => x.name === msg.agent)
@@ -1879,17 +1861,40 @@ export function Prompt(props: PromptProps) {
               <Switch>
                 <Match when={store.mode === "normal"}>
                   <Switch>
-                    <Match when={usage()}>
+                    <Match when={usage().kind === "ready"}>
+                      {(item) => {
+                        const state = item()
+                        const context = state.contextLimit
+                          ? `${Locale.number(state.tokens)} (${Math.round((state.tokens / state.contextLimit) * 100)}%)`
+                          : Locale.number(state.tokens)
+                        const cost = state.cost > 0 ? money.format(state.cost) : undefined
+                        return (
+                          <text fg={theme.textMuted} wrapMode="none">
+                            {[context, cost].filter(Boolean).join(" · ")}
+                          </text>
+                        )
+                      }}
+                    </Match>
+                    <Match when={usage().kind === "missing-session"}>
                       {(item) => (
-                        <text fg={theme.textMuted} wrapMode="none">
-                          {[item().context, item().cost].filter(Boolean).join(" · ")}
+                        <text fg={theme.text}>
+                          {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>{item().reason}</span>
                         </text>
                       )}
                     </Match>
-                    <Match when={true}>
-                      <text fg={theme.text}>
-                        {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>agents</span>
-                      </text>
+                    <Match when={usage().kind === "missing-assistant"}>
+                      {(item) => (
+                        <text fg={theme.text}>
+                          {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>{item().reason}</span>
+                        </text>
+                      )}
+                    </Match>
+                    <Match when={usage().kind === "zero-tokens"}>
+                      {(item) => (
+                        <text fg={theme.text}>
+                          {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>{item().reason}</span>
+                        </text>
+                      )}
                     </Match>
                   </Switch>
                   <text fg={theme.text}>

@@ -22,6 +22,7 @@ export const serviceUse = <Identifier, Shape>(tag: Context.Service<Identifier, S
     {},
     {
       get: (_, key) => {
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (typeof key !== "string") return undefined
         return (...args: unknown[]) =>
           tag.use((service) => {

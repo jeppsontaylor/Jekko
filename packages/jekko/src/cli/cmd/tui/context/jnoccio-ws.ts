@@ -49,6 +49,7 @@ let active: ActiveConnection | null = null
 export function buildJnoccioWsUrl(baseUrl: string, path: string): string | null {
   try {
     const trimmed = baseUrl.trim().replace(/\/+$/, "")
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!trimmed) return null
     const u = new URL(trimmed)
     u.pathname = `${u.pathname.replace(/\/+$/, "")}${path.startsWith("/") ? path : `/${path}`}`
@@ -56,6 +57,7 @@ export function buildJnoccioWsUrl(baseUrl: string, path: string): string | null 
     else if (u.protocol === "https:") u.protocol = "wss:"
     return u.toString()
   } catch {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return null
   }
 }

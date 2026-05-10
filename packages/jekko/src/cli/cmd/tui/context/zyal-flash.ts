@@ -291,6 +291,7 @@ function numberFrom(...values: unknown[]): number | undefined {
     const next = Number(value)
     if (Number.isFinite(next)) return next
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -308,6 +309,7 @@ function daemonTokens(run: Record<string, any>) {
 }
 
 export function zyalDaemonFleet(run: Record<string, any> | undefined | null): Record<string, any> | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!run) return undefined
   return run.spec_json?.fleet ?? run.spec?.fleet ?? run.fleet
 }
@@ -343,6 +345,7 @@ export function daemonRunJnoccioConfig(run: Record<string, any> | undefined | nu
   const fleet = zyalDaemonFleet(run)
   const jnoccio = fleet?.jnoccio
   const baseUrl = typeof jnoccio?.base_url === "string" ? jnoccio.base_url.trim() : ""
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!run || !baseUrl || jnoccio?.enabled === false) return undefined
   return {
     baseUrl,
@@ -357,6 +360,7 @@ export function daemonRunJnoccioConfig(run: Record<string, any> | undefined | nu
  */
 export function formatZyalRuntime(now: number = Date.now()): string | null {
   const m = metrics()
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!m.startedAt) return null
   const elapsedMs = Math.max(0, now - m.startedAt)
   const totalSec = Math.floor(elapsedMs / 1000)

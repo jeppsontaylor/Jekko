@@ -723,6 +723,7 @@ function hydrate(rows: (typeof MessageTable.$inferSelect)[]) {
 }
 
 function providerMeta(metadata: Record<string, any> | undefined) {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!metadata) return undefined
   const { providerExecuted: _, ...rest } = metadata
   return Object.keys(rest).length > 0 ? rest : undefined

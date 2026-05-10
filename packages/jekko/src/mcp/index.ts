@@ -158,6 +158,7 @@ function isJsonSchema7(value: unknown): value is JSONSchema7 {
 }
 
 function jsonSchemaProperties(value: unknown): JSONSchema7["properties"] | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!isJsonSchema7(value)) return undefined
   const properties: Record<string, JSONSchema7> = {}
   for (const [key, candidate] of Object.entries(value)) {
@@ -711,6 +712,7 @@ export const layer = Layer.effect(
       const client = s.clients[clientName]
       if (!client) {
         log.warn(`client not found for ${label}`, { clientName })
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       }
       return yield* Effect.tryPromise({
@@ -741,6 +743,7 @@ export const layer = Layer.effect(
     const getMcpConfig = Effect.fnUntraced(function* (mcpName: string) {
       const cfg = yield* cfgSvc.get()
       const mcpConfig = cfg.mcp?.[mcpName]
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!mcpConfig || !isMcpConfigured(mcpConfig)) return undefined
       return mcpConfig
     })

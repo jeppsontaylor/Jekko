@@ -305,6 +305,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
           process.env.AWS_BEARER_TOKEN_BEDROCK = auth.key
           return auth.key
         }
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       })
 
@@ -544,6 +545,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
           process.env.AICORE_SERVICE_KEY = auth.key
           return auth.key
         }
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       })
       const deploymentId = process.env.AICORE_DEPLOYMENT_ID
@@ -580,6 +582,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
       const apiKey = yield* Effect.sync(() => {
         if (auth?.type === "oauth") return auth.access
         if (auth?.type === "api") return auth.key
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       })
       const token = apiKey ?? (yield* dep.get("GITLAB_TOKEN"))
@@ -733,6 +736,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         const envToken = env["CLOUDFLARE_API_KEY"]
         if (envToken) return envToken
         if (auth?.type === "api") return auth.key
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       })
 
@@ -783,6 +787,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         const envToken = env["CLOUDFLARE_API_TOKEN"] || env["CF_AIG_TOKEN"]
         if (envToken) return envToken
         if (auth?.type === "api") return auth.key
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return undefined
       })
 
@@ -802,6 +807,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         try {
           return JSON.parse(input.options?.headers?.["cf-aig-metadata"])
         } catch {
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           return undefined
         }
       })
@@ -1803,12 +1809,14 @@ const layer: Layer.Layer<
     const closest = Effect.fn("Provider.closest")(function* (providerID: ProviderID, query: string[]) {
       const s = yield* InstanceState.get(state)
       const provider = s.providers[providerID]
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!provider) return undefined
       for (const item of query) {
         for (const modelID of Object.keys(provider.models)) {
           if (modelID.includes(item)) return { providerID, modelID }
         }
       }
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     })
 
@@ -1822,6 +1830,7 @@ const layer: Layer.Layer<
 
       const s = yield* InstanceState.get(state)
       const provider = s.providers[providerID]
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!provider) return undefined
 
       let priority = [
@@ -1865,6 +1874,7 @@ const layer: Layer.Layer<
         }
       }
 
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     })
 

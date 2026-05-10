@@ -12,6 +12,7 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } {
 }
 
 export function hexToAnsiBold(hex?: string): string | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!isValidHex(hex)) return undefined
   const { r, g, b } = hexToRgb(hex)
   return `\x1b[38;2;${r};${g};${b}m\x1b[1m`

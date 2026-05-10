@@ -25,6 +25,7 @@ const parseSse = Effect.fn("McpExa.parseSse")(function* (body: string) {
     const data = yield* decode(line.substring(6))
     if (data.result.content[0]?.text) return data.result.content[0].text
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 })
 

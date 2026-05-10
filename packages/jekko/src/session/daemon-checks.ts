@@ -135,8 +135,10 @@ export function walkJsonPath(value: unknown, pointer: string): unknown {
     while (index < segment.length) {
       if (segment[index] === "[") {
         const end = segment.indexOf("]", index + 1)
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (end === -1) return undefined
         const rawIndex = segment.slice(index + 1, end)
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (!rawIndex || !isDigits(rawIndex)) return undefined
         tokens.push(Number(rawIndex))
         index = end + 1
@@ -150,11 +152,14 @@ export function walkJsonPath(value: unknown, pointer: string): unknown {
   }
   let current: unknown = value
   for (const token of tokens) {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (current == null) return undefined
     if (typeof token === "number") {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!Array.isArray(current)) return undefined
       current = current[token]
     } else {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (typeof current !== "object" || Array.isArray(current)) return undefined
       current = (current as Record<string, unknown>)[token]
     }

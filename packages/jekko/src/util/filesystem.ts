@@ -26,6 +26,7 @@ export function stat(p: string): ReturnType<typeof statSync> | undefined {
 
 export async function statAsync(p: string): Promise<ReturnType<typeof statSync> | undefined> {
   return statFile(p).catch((e) => {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (isEnoent(e)) return undefined
     throw e
   })

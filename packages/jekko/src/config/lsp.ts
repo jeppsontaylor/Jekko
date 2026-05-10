@@ -29,6 +29,7 @@ export const Entry = Schema.Union([
 export const requiresExtensionsForCustomServers = Schema.makeFilter<
   boolean | Record<string, Schema.Schema.Type<typeof Entry>>
 >((data) => {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (typeof data === "boolean") return undefined
   const serverIds = new Set(Object.values(LSPServer).map((server) => server.id))
   const ok = Object.entries(data).every(([id, config]) => {

@@ -200,6 +200,7 @@ function runTaskPass(input: {
             error: { message: error instanceof Error ? error.message : String(error) },
             cleanupStatus: prototype ? "failed" : "none",
           })
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           return undefined
         }),
       ),
@@ -375,6 +376,7 @@ function createPrototype(input: {
 }
 
 function nextPass(passes: readonly ZyalIncubatorPass[], completedCount: number) {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (passes.length === 0) return undefined
   return passes[completedCount % passes.length]
 }
@@ -404,6 +406,7 @@ function incubatorToolMap(pass: ZyalIncubatorPass, mcp?: ZyalParsed["spec"]["mcp
 
 function readEvidence(body: Record<string, unknown>) {
   const evidence = body.evidence
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return undefined
   return evidence as Record<string, number>
 }

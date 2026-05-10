@@ -66,6 +66,7 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | Path.Pat
           Effect.catch((err) =>
             Effect.sync(() => {
               log.error("failed to fetch index", { url: index, err })
+              // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
               return null
             }),
           ),

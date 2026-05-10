@@ -136,6 +136,7 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | HttpClie
     const loadFromDisk = fs.readJson(Flag.JEKKO_MODELS_PATH ?? filepath).pipe(
       Effect.catch(() => Effect.succeed(undefined)),
       Effect.map((v) => {
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (v === undefined) return undefined
         return decodeProviderMap(v)
       }),
@@ -148,6 +149,7 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | HttpClie
           const mod = await import("./models-snapshot.js")
           return decodeProviderMap(mod.snapshot)
         } catch {
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           return undefined
         }
       },

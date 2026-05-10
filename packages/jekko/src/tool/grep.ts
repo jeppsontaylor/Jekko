@@ -87,6 +87,7 @@ export const GrepTool = Tool.define(
               [...new Set(rows.map((row) => row.path))],
               Effect.fnUntraced(function* (file) {
                 const info = yield* fs.stat(file).pipe(Effect.catch(() => Effect.succeed(undefined)))
+                // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
                 if (!info || info.type === "Directory") return undefined
                 return [
                   file,

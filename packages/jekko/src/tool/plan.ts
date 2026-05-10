@@ -14,6 +14,7 @@ function getLastModel(sessionID: SessionID) {
   for (const item of MessageV2.stream(sessionID)) {
     if (item.info.role === "user" && item.info.model) return item.info.model
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 

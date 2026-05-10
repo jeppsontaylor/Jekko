@@ -21,6 +21,7 @@ export const WorkspaceContext = {
     try {
       return context.use().workspaceID
     } catch {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     }
   },

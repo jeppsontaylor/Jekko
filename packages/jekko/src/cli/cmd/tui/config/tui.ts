@@ -113,6 +113,7 @@ const loadState = Effect.fn("TuiConfig.loadState")(function* (ctx: { directory: 
         Effect.catchCause((cause) =>
           Effect.sync(() => {
             log.warn("failed to read tui config", { path: filepath, cause })
+            // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
             return undefined
           }),
         ),

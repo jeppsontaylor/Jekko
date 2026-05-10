@@ -374,6 +374,7 @@ export const layer = Layer.effect(
           )
           .orderBy(desc(DaemonTaskTable.priority), asc(DaemonTaskTable.time_created))
           .get()
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (!next) return undefined
         db.update(DaemonTaskTable)
           .set({
@@ -776,6 +777,7 @@ export const layer = Layer.effect(
           .orderBy(desc(DaemonRunTable.time_created))
           .get(),
       )
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!run || ["satisfied", "aborted", "failed"].includes(run.status)) return undefined
       return { run }
     })

@@ -161,6 +161,7 @@ function dedupeDiagnostics(items: Diagnostic[]) {
 function configurationValue(settings: unknown, section?: string) {
   if (!section) return settings ?? null
   const result = section.split(".").reduce<unknown>((acc, key) => {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!acc || typeof acc !== "object" || !(key in acc)) return undefined
     return (acc as Record<string, unknown>)[key]
   }, settings)
@@ -233,6 +234,7 @@ export async function create(input: { serverID: string; server: LSPServer.Handle
   })
   connection.onRequest("window/workDoneProgress/create", (params) => {
     logger.info("window/workDoneProgress/create", params)
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return null
   })
   connection.onRequest("workspace/configuration", async (params) => {

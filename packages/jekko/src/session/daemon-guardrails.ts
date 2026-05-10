@@ -86,6 +86,7 @@ function matchPatterns(patterns: readonly string[], text: string): string | null
       if (text.toLowerCase().includes(pattern.toLowerCase())) return pattern
     }
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return null
 }
 

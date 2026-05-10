@@ -303,6 +303,7 @@ export function UserMessage(props: {
         if (x.type === "text" && !x.synthetic) {
           return x.text
         }
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         return null
       })
       .filter(Boolean)
@@ -863,12 +864,15 @@ function Shell(props: ToolProps<typeof ShellTool>) {
 
   const workdirDisplay = createMemo(() => {
     const workdir = props.input.workdir
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!workdir || workdir === ".") return undefined
 
     const base = sync.path.directory
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!base) return undefined
 
     const absolute = path.resolve(base, workdir)
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (absolute === base) return undefined
 
     const home = Global.Path.home

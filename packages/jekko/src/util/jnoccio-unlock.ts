@@ -125,12 +125,16 @@ export function readGlobalJnoccioRepoRoot(): string | undefined {
   try {
     const raw = fs.readFileSync(jnoccioGlobalConfigPath(), "utf8")
     const parsed: GlobalJnoccioConfig = decodeGlobalJnoccioConfig(JSON.parse(raw))
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!parsed.repo_root) return undefined
     // Validate the cached path still has the repo layout we expect.
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!fs.existsSync(path.join(parsed.repo_root, "jnoccio-fusion"))) return undefined
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!fs.existsSync(path.join(parsed.repo_root, ".git"))) return undefined
     return parsed.repo_root
   } catch {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return undefined
   }
 }
@@ -338,6 +342,7 @@ async function readSecretFile(secretPath: string) {
     const secret = normalizeJnoccioUnlockSecret(content)
     return isValidUnlockSecret(secret) ? secret : undefined
   } catch {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return undefined
   }
 }

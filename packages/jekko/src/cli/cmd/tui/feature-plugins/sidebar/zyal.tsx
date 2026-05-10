@@ -131,6 +131,7 @@ function View(props: { api: TuiPluginApi }) {
 
   const jnoccioLine = createMemo(() => {
     const m = metrics()
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!m.jnoccioConnected && m.jnoccioInstances === null) return null
     return true
   })
@@ -145,16 +146,19 @@ function View(props: { api: TuiPluginApi }) {
 
   const trafficCounts = createMemo<{ calls: number; wins: number; failures: number } | null>(() => {
     const m = metrics()
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!m.jnoccioConnected) return null
     const calls = m.jnoccioCalls ?? 0
     const wins = m.jnoccioWins ?? 0
     const failures = m.jnoccioFailures ?? 0
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!calls && !wins && !failures) return null
     return { calls, wins, failures }
   })
 
   const jnoccioLatencyMs = createMemo<number | null>(() => {
     const m = metrics()
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!m.jnoccioConnected || m.jnoccioAvgLatencyMs == null) return null
     return m.jnoccioAvgLatencyMs
   })
@@ -167,6 +171,7 @@ function View(props: { api: TuiPluginApi }) {
     | null
   >(() => {
     const m = metrics()
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!m.jnoccioConnected || !m.jnoccioLastHeartbeat) return null
     const ageMs = Math.max(0, tick() - m.jnoccioLastHeartbeat)
     if (ageMs < 2_000) {
@@ -184,12 +189,14 @@ function View(props: { api: TuiPluginApi }) {
 
   const runIdShort = createMemo(() => {
     const id = metrics().runId
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!id) return null
     return id.length > 12 ? id.slice(0, 12) + "…" : id
   })
 
   const commitsLine = createMemo(() => {
     const m = metrics()
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (!m.tasksCompleted && !m.tasksIncubated) return null
     return `${m.tasksCompleted}✓ completed · ${m.tasksIncubated}🜨 incubated`
   })

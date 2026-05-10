@@ -19,9 +19,11 @@ export function isLocalWorkspaceRoute(method: string, path: string) {
 }
 
 export function getWorkspaceRouteSessionID(url: URL) {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (url.pathname === "/session/status") return null
 
   const id = url.pathname.match(/^\/session\/([^/]+)(?:\/|$)/)?.[1]
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!id) return null
 
   return SessionID.make(id)

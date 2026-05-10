@@ -17,6 +17,7 @@ export type HostSlots = {
 }
 
 function empty<Name extends string>(_props: TuiSlotProps<Name>) {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return null
 }
 

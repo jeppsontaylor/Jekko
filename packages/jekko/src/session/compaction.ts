@@ -168,7 +168,9 @@ function splitTurn(input: {
   estimate: (input: { messages: MessageV2.WithParts[]; model: Provider.Model }) => Effect.Effect<number>
 }) {
   return Effect.gen(function* () {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (input.budget <= 0) return undefined
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (input.turn.end - input.turn.start <= 1) return undefined
     for (let start = input.turn.start + 1; start < input.turn.end; start++) {
       const size = yield* input.estimate({
@@ -181,6 +183,7 @@ function splitTurn(input: {
         id: input.messages[start]!.info.id,
       } satisfies Tail
     }
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return undefined
   })
 }

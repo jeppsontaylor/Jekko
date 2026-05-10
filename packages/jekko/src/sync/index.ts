@@ -112,6 +112,7 @@ export const layer = Layer.effect(Service)(
 
     const replayAll: Interface["replayAll"] = Effect.fn("SyncEvent.replayAll")(function* (events, options) {
       const source = events[0]?.aggregateID
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!source) return undefined
       if (events.some((item) => item.aggregateID !== source)) {
         throw new Error("Replay events must belong to the same session")

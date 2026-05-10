@@ -547,6 +547,7 @@ function pathParameterSchema(route: string, name: string) {
   if (name === "id" && route.startsWith("POST /experimental/workspace/")) return { type: "string", pattern: "^wrk.*" }
   if (name === "requestID" && route.startsWith("POST /permission/")) return { type: "string", pattern: "^per.*" }
   if (name === "requestID" && route.startsWith("POST /question/")) return { type: "string", pattern: "^que.*" }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 

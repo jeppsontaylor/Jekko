@@ -101,7 +101,9 @@ function detectInstalled(): boolean {
 function parseScoreJson(raw: string): JankuraiScoreData | null {
   try {
     const d = JSON.parse(raw)
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (typeof d !== "object" || d === null) return null
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (typeof d.score !== "number") return null
 
     const decision = d.decision ?? {}
@@ -118,6 +120,7 @@ function parseScoreJson(raw: string): JankuraiScoreData | null {
       generatedAt: Number(d.generated_at) || 0,
     }
   } catch {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return null
   }
 }

@@ -40,6 +40,7 @@ export async function migrateTuiConfig(input: MigrateInput) {
   for (const file of jekko) {
     const source = await Filesystem.readText(file).catch((error) => {
       log.warn("failed to read config for tui migration", { path: file, error })
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     })
     if (!source) continue

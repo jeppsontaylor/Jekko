@@ -61,10 +61,13 @@ type StallInfo = {
 }
 
 function detectStall(recent: IterationInfo[] | undefined): StallInfo | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!recent || recent.length < STALL_THRESHOLD) return undefined
   const tail = recent.slice(-STALL_THRESHOLD)
   const reason = tail[0]?.terminal_reason
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!reason) return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!tail.every((it) => it.terminal_reason === reason)) return undefined
   return { reason, count: tail.length }
 }

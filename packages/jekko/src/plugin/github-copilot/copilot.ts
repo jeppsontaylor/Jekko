@@ -207,6 +207,7 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
                 try {
                   const url = value.includes("://") ? new URL(value) : new URL(`https://${value}`)
                   if (!url.hostname) return "Please enter a valid URL or domain"
+                  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
                   return undefined
                 } catch {
                   return "Please enter a valid URL (e.g., company.ghe.com or https://company.ghe.com)"

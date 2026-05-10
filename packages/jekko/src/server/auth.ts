@@ -36,6 +36,7 @@ export function authorized(credentials: DecodedCredentials, config: Info) {
 
 export function header(credentials?: Credentials) {
   const password = credentials?.password ?? Flag.JEKKO_SERVER_PASSWORD
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!password) return undefined
 
   const username = credentials?.username ?? Flag.JEKKO_SERVER_USERNAME ?? "jekko"
@@ -44,6 +45,7 @@ export function header(credentials?: Credentials) {
 
 export function headers(credentials?: Credentials) {
   const authorization = header(credentials)
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!authorization) return undefined
   return { Authorization: authorization }
 }

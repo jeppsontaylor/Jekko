@@ -590,6 +590,7 @@ export const layer: Layer.Layer<
 
                   const fail = (msg: string, extra?: Record<string, string>) => {
                     log.info(msg, { ...extra, refs: refs.length })
+                    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
                     return undefined
                   }
 

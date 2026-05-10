@@ -147,12 +147,14 @@ function emptyPromptParts(): PromptInfo["parts"] {
 // circuit breaker tripping populates `last_error` separately. We pick the
 // most specific string we can find.
 function zyalExitReasonFromExitJson(value: unknown): string | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!value || typeof value !== "object") return undefined
   const record = value as Record<string, unknown>
   for (const key of ["reason", "message", "summary", "signal", "condition"]) {
     const v = record[key]
     if (typeof v === "string" && v.trim().length > 0) return v
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 export function Session() {
@@ -488,6 +490,7 @@ export function Session() {
       })
       .sort((a, b) => a.y - b.y)
 
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     if (visibleMessages.length === 0) return null
 
     if (direction === "next") {

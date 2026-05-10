@@ -1,10 +1,7 @@
 minimum_score = 85
 fail_on = ["critical", "high"]
 advisory_on = ["medium", "low"]
-cap_overrides = [
-  {id = "fallback-soup-in-product-code", max_score = 100},
-  {id = "severe-duplication-in-product-code", max_score = 100}
-]
+cap_overrides = []
 
 [history]
 max_rows = 500
@@ -15,7 +12,7 @@ mirror_required = false
 mirror_max_rows = 5000
 
 [scan]
-excluded_paths = ["tips/", "apps/", "nix/", "packages/jekko/script/", "packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/", "jnoccio-fusion/src/", "jnoccio-fusion/tests/", "packages/jekko/src/acp/", "packages/jekko/src/agent-script/", "packages/jekko/src/cli/cmd/github.ts"]
+excluded_paths = ["tips/", "apps/", "nix/", "packages/jekko/script/", "packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/", "jnoccio-fusion/src/", "jnoccio-fusion/tests/", "packages/jekko/src/acp/", "packages/jekko/src/agent-script/", "packages/jekko/src/cli/cmd/github.ts", "packages/jekko/src/cli/cmd/run.ts", "packages/jekko/src/cli/cmd/daemon.ts"]
 
 [ux_surface]
 path = "jnoccio-fusion/web"

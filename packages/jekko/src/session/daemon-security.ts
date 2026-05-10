@@ -193,6 +193,7 @@ function pathInZone(filePath: string, zone: ZyalSecurityTrustZone): boolean {
 }
 
 function patternToRegex(pattern: string): RegExp | null {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!pattern.trim()) return null
   const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\*/g, ".*")
   return new RegExp(escaped, "gi")

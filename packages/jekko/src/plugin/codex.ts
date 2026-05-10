@@ -71,10 +71,12 @@ export interface IdTokenClaims {
 
 export function parseJwtClaims(token: string): IdTokenClaims | undefined {
   const parts = token.split(".")
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts.length !== 3) return undefined
   try {
     return JSON.parse(Buffer.from(parts[1], "base64url").toString())
   } catch {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
     return undefined
   }
 }
@@ -97,6 +99,7 @@ export function extractAccountId(tokens: TokenResponse): string | undefined {
     const claims = parseJwtClaims(tokens.access_token)
     return claims ? extractAccountIdFromClaims(claims) : undefined
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 

@@ -92,14 +92,17 @@ function json(input: unknown) {
     try {
       const result = JSON.parse(input)
       if (result && typeof result === "object") return result
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     } catch {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     }
   }
   if (typeof input === "object" && input !== null) {
     return input
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 

@@ -123,6 +123,7 @@ export async function load(dir: string) {
       const { Session } = await import("@/session/session")
       void Bus.publish(Session.Event.Error, { error: new NamedError.Unknown({ message }).toObject() })
       log.error("failed to load agent", { agent: item, err })
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     })
     if (!md) continue
@@ -155,6 +156,7 @@ export async function loadMode(dir: string) {
       const { Session } = await import("@/session/session")
       void Bus.publish(Session.Event.Error, { error: new NamedError.Unknown({ message }).toObject() })
       log.error("failed to load mode", { mode: item, err })
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     })
     if (!md) continue

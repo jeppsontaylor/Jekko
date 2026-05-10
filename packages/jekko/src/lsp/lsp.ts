@@ -238,9 +238,11 @@ export const layer = Layer.effect(
             .catch((err) => {
               s.broken.add(key)
               log.error(`Failed to spawn LSP server ${server.id}`, { error: err })
+              // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
               return undefined
             })
 
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           if (!handle) return undefined
           log.info("spawned lsp server", { serverID: server.id, root })
 
@@ -253,9 +255,11 @@ export const layer = Layer.effect(
             s.broken.add(key)
             await Process.stop(handle.process)
             log.error(`Failed to initialize LSP client ${server.id}`, { error: err })
+            // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
             return undefined
           })
 
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           if (!client) return undefined
 
           const existing = s.clients.find((x) => x.root === root && x.serverID === server.id)

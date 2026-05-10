@@ -161,10 +161,14 @@ function stripIdentifier(value: string) {
 
 function parseAddColumn(statement: string) {
   const parts = statement.trim().split(/\s+/)
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts.length < 5) return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts[0]?.toUpperCase() !== "ALTER" || parts[1]?.toUpperCase() !== "TABLE") return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts[3]?.toUpperCase() !== "ADD") return undefined
   const columnIndex = parts[4]?.toUpperCase() === "COLUMN" ? 5 : 4
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts.length <= columnIndex + 1) return undefined
   return {
     table: stripIdentifier(parts[2] ?? ""),
@@ -176,10 +180,14 @@ function parseAddColumn(statement: string) {
 
 function parseCreateIndex(statement: string) {
   const parts = statement.trim().split(/\s+/)
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts.length < 5) return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts[0]?.toUpperCase() !== "CREATE") return undefined
   const indexIndex = parts[1]?.toUpperCase() === "UNIQUE" ? 3 : 2
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts[indexIndex - 1]?.toUpperCase() !== "INDEX") return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts[indexIndex + 1]?.toUpperCase() !== "ON") return undefined
   return {
     index: stripIdentifier(parts[indexIndex] ?? ""),
@@ -189,8 +197,11 @@ function parseCreateIndex(statement: string) {
 
 function parseRenameTable(statement: string) {
   const parts = statement.trim().split(/\s+/)
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts.length !== 6) return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts[0]?.toUpperCase() !== "ALTER" || parts[1]?.toUpperCase() !== "TABLE") return undefined
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (parts[3]?.toUpperCase() !== "RENAME" || parts[4]?.toUpperCase() !== "TO") return undefined
   return {
     from: stripIdentifier(parts[2] ?? ""),

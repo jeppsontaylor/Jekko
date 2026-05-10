@@ -189,6 +189,7 @@ export function getLatestMetric(state: ObservabilityState, name: string): Metric
   for (let i = state.metrics.length - 1; i >= 0; i--) {
     if (state.metrics[i].name === name) return state.metrics[i]
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 

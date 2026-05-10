@@ -22,6 +22,7 @@ const log = Log.create({ service: "server" })
 function authTokenAuthorization(token: string) {
   const decoded = Buffer.from(token, "base64").toString("utf8")
   const [username, ...passwordParts] = decoded.split(":")
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!username || passwordParts.length === 0) return undefined
   const password = passwordParts.join(":")
   return ServerAuth.header({ username, password })

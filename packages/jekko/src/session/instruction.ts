@@ -168,6 +168,7 @@ export const layer: Layer.Layer<
         const filepath = path.resolve(path.join(dir, file))
         if (yield* fs.existsSafe(filepath)) return filepath
       }
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       return undefined
     })
 

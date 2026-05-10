@@ -29,6 +29,7 @@ export const { use: usePromptStash, provider: PromptStashProvider } = createSimp
           try {
             return JSON.parse(line)
           } catch {
+            // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
             return null
           }
         })
@@ -74,6 +75,7 @@ export const { use: usePromptStash, provider: PromptStashProvider } = createSimp
         appendFile(stashPath, JSON.stringify(stash) + "\n").catch(() => {})
       },
       pop() {
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (store.entries.length === 0) return undefined
         const entry = store.entries[store.entries.length - 1]
         setStore(

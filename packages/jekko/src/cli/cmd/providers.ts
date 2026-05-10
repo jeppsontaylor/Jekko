@@ -22,6 +22,9 @@ import { Effect, Option } from "effect"
 import { findRepoRootFrom, repoRootFromSource, unlockJnoccioFusion } from "@/util/jnoccio-unlock"
 
 type PluginAuth = NonNullable<Hooks["auth"]>
+type ProviderAuthSuccess =
+  | { provider?: string; refresh: string; access: string; expires: number; accountId?: string; enterpriseUrl?: string }
+  | { provider?: string; key: string }
 
 const promptValue = <Value>(value: Option.Option<Value>) => {
   if (Option.isNone(value)) return Effect.die(new UI.CancelledError())
@@ -31,6 +34,31 @@ const promptValue = <Value>(value: Option.Option<Value>) => {
 const put = Effect.fn("Cli.providers.put")(function* (key: string, info: Auth.Info) {
   const auth = yield* Auth.Service
   yield* Effect.orDie(auth.set(key, info))
+})
+
+const persistProviderAuthSuccess = Effect.fn("Cli.providers.persistProviderAuthSuccess")(function* (
+  result: ProviderAuthSuccess,
+  fallbackProvider: string,
+) {
+  const saveProvider = result.provider ?? fallbackProvider
+
+  if ("refresh" in result) {
+    yield* put(saveProvider, {
+      type: "oauth",
+      refresh: result.refresh,
+      access: result.access,
+      expires: result.expires,
+      accountId: result.accountId,
+      enterpriseUrl: result.enterpriseUrl,
+    })
+  }
+
+  if ("key" in result) {
+    yield* put(saveProvider, {
+      type: "api",
+      key: result.key,
+    })
+  }
 })
 
 const cliTry = <Value>(message: string, fn: () => PromiseLike<Value>) =>
@@ -113,23 +141,7 @@ const handlePluginAuth = Effect.fn("Cli.providers.pluginAuth")(function* (
         yield* spinner.stop("Failed to authorize", 1)
       }
       if (result.type === "success") {
-        const saveProvider = result.provider ?? provider
-        if ("refresh" in result) {
-          const { type: _, provider: __, refresh, access, expires, ...extraFields } = result
-          yield* put(saveProvider, {
-            type: "oauth",
-            refresh,
-            access,
-            expires,
-            ...extraFields,
-          })
-        }
-        if ("key" in result) {
-          yield* put(saveProvider, {
-            type: "api",
-            key: result.key,
-          })
-        }
+        yield* persistProviderAuthSuccess(result as ProviderAuthSuccess, provider)
         yield* spinner.stop("Login successful")
       }
     }
@@ -145,23 +157,7 @@ const handlePluginAuth = Effect.fn("Cli.providers.pluginAuth")(function* (
         yield* Prompt.log.error("Failed to authorize")
       }
       if (result.type === "success") {
-        const saveProvider = result.provider ?? provider
-        if ("refresh" in result) {
-          const { type: _, provider: __, refresh, access, expires, ...extraFields } = result
-          yield* put(saveProvider, {
-            type: "oauth",
-            refresh,
-            access,
-            expires,
-            ...extraFields,
-          })
-        }
-        if ("key" in result) {
-          yield* put(saveProvider, {
-            type: "api",
-            key: result.key,
-          })
-        }
+        yield* persistProviderAuthSuccess(result as ProviderAuthSuccess, provider)
         yield* Prompt.log.success("Login successful")
       }
     }

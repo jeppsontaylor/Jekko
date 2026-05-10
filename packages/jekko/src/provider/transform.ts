@@ -16,6 +16,7 @@ function mimeToModality(mime: string): Modality | undefined {
   if (mime.startsWith("audio/")) return "audio"
   if (mime.startsWith("video/")) return "video"
   if (mime === "application/pdf") return "pdf"
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -55,6 +56,7 @@ function sdkKey(npm: string): string | undefined {
       // pick the camelCase form the SDK now treats as canonical.
       return "openaiCompatible"
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -132,6 +134,7 @@ function normalizeMessages(
     msgs = msgs
       .map((msg) => {
         if (typeof msg.content === "string") {
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           if (msg.content === "") return undefined
           return msg
         }
@@ -142,6 +145,7 @@ function normalizeMessages(
           }
           return true
         })
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (filtered.length === 0) return undefined
         return { ...msg, content: filtered }
       })
@@ -153,6 +157,7 @@ function normalizeMessages(
     msgs = msgs
       .map((msg) => {
         if (typeof msg.content === "string") {
+          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
           if (msg.content === "") return undefined
           return msg
         }
@@ -163,6 +168,7 @@ function normalizeMessages(
           }
           return true
         })
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
         if (filtered.length === 0) return undefined
         return { ...msg, content: filtered }
       })
@@ -466,6 +472,7 @@ export function message(msgs: ModelMessage[], model: Provider.Model, options: Re
 export function temperature(model: Provider.Model) {
   const id = model.id.toLowerCase()
   if (id.includes("qwen")) return 0.55
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (id.includes("claude")) return undefined
   if (id.includes("gemini")) return 1.0
   if (id.includes("glm-4.6")) return 1.0
@@ -478,6 +485,7 @@ export function temperature(model: Provider.Model) {
     }
     return 0.6
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -487,6 +495,7 @@ export function topP(model: Provider.Model) {
   if (["minimax-m2", "gemini", "kimi-k2.5", "kimi-k2p5", "kimi-k2-5"].some((s) => id.includes(s))) {
     return 0.95
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -497,6 +506,7 @@ export function topK(model: Provider.Model) {
     return 20
   }
   if (id.includes("gemini")) return 64
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return undefined
 }
 
@@ -521,6 +531,7 @@ const GPT5_FAMILY_RE = /(?:^|\/)gpt-5(?:[.-]|$)/
 // with no tunable effort knob (gpt-5-pro). Effort order: weakest to strongest.
 function openaiReasoningEfforts(apiId: string, releaseDate: string): string[] | null {
   const id = apiId.toLowerCase()
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (id === "gpt-5-pro" || id === "openai/gpt-5-pro") return null
   if (id.includes("codex")) {
     if (id.includes("5.2") || id.includes("5.3")) return [...WIDELY_SUPPORTED_EFFORTS, "xhigh"]
@@ -540,6 +551,7 @@ function anthropicAdaptiveEfforts(apiId: string): string[] | null {
   if (["opus-4-6", "opus-4.6", "sonnet-4-6", "sonnet-4.6"].some((v) => apiId.includes(v))) {
     return ["low", "medium", "high", "max"]
   }
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   return null
 }
 

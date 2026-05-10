@@ -69,8 +69,11 @@ export const layer = Layer.effect(
 
     const getForUrl = Effect.fn("McpAuth.getForUrl")(function* (mcpName: string, serverUrl: string) {
       const entry = yield* get(mcpName)
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!entry) return undefined
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!entry.serverUrl) return undefined
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (entry.serverUrl !== serverUrl) return undefined
       return entry
     })
@@ -117,6 +120,7 @@ export const layer = Layer.effect(
 
     const isTokenExpired = Effect.fn("McpAuth.isTokenExpired")(function* (mcpName: string) {
       const entry = yield* get(mcpName)
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
       if (!entry?.tokens) return null
       if (!entry.tokens.expiresAt) return false
       return entry.tokens.expiresAt < Date.now() / 1000

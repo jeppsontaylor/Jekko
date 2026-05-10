@@ -16,6 +16,7 @@ import { getWorkspaceRouteSessionID, isLocalWorkspaceRoute, workspaceProxyURL } 
 
 async function getSessionWorkspace(url: URL) {
   const id = getWorkspaceRouteSessionID(url)
+  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
   if (!id) return null
 
   const session = await AppRuntime.runPromise(
