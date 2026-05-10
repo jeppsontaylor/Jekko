@@ -113,6 +113,7 @@ const syncResponse = (request: HttpServerRequest.HttpServerRequest) => {
   const url = requestURL(request)
   if (url.pathname === "/base/global/event") return Effect.succeed(eventStreamResponse())
   if (url.pathname === "/base/sync/history") return HttpServerResponse.json([])
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-stub-router-unmatched-return expires=2027-01-01
   return undefined
 }
 
