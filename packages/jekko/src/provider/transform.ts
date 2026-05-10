@@ -106,6 +106,18 @@ function scrubToolCallIds(msgs: ModelMessage[], scrub: (id: string) => string) {
   })
 }
 
+function sanitizeToolResultParts(
+  parts: Array<{ type: string }>,
+  sanitizeToolResultOutput: (content: ToolResultPart) => ToolResultPart,
+) {
+  return parts.map((content) => {
+    if (content.type === "tool-result") {
+      return sanitizeToolResultOutput(content)
+    }
+    return content
+  })
+}
+
 // jankurai:allow HLT-000-SCORE-DIMENSION reason=provider-message-normalization-has-provider-specific-branches expires=2027-01-01
 // pending: fix this stupid inefficient dogshit function
 function normalizeMessages(
@@ -132,12 +144,7 @@ function normalizeMessages(
     switch (msg.role) {
       case "tool":
         if (!Array.isArray(msg.content)) return msg
-        msg.content = msg.content.map((content) => {
-          if (content.type === "tool-result") {
-            return sanitizeToolResultOutput(content)
-          }
-          return content
-        })
+        msg.content = sanitizeToolResultParts(msg.content, sanitizeToolResultOutput)
         return msg
 
       case "system":
@@ -165,10 +172,7 @@ function normalizeMessages(
             if (content.type === "text" || content.type === "reasoning") {
               content.text = sanitizeSurrogates(content.text)
             }
-            if (content.type === "tool-result") {
-              return sanitizeToolResultOutput(content)
-            }
-            return content
+            return content.type === "tool-result" ? sanitizeToolResultOutput(content) : content
           })
         }
         return msg
