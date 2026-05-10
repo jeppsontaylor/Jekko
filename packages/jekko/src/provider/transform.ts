@@ -80,6 +80,33 @@ function filterEmptyContent(msgs: ModelMessage[]): ModelMessage[] {
     .filter((msg): msg is ModelMessage => msg !== undefined && msg.content !== "")
 }
 
+function scrubToolCallParts(
+  parts: Array<{ type: string; toolCallId?: string }>,
+  scrub: (id: string) => string,
+  includeToolCall: boolean,
+) {
+  return parts.map((part) => {
+    if (part.type === "tool-result" || (includeToolCall && part.type === "tool-call")) {
+      return { ...part, toolCallId: scrub(part.toolCallId) }
+    }
+    return part
+  })
+}
+
+function scrubToolCallIds(msgs: ModelMessage[], scrub: (id: string) => string) {
+  return msgs.map((msg) => {
+    if (!Array.isArray(msg.content)) return msg
+    if (msg.role === "assistant") {
+      return { ...msg, content: scrubToolCallParts(msg.content as Array<{ type: string; toolCallId?: string }>, scrub, true) }
+    }
+    if (msg.role === "tool") {
+      return { ...msg, content: scrubToolCallParts(msg.content as Array<{ type: string; toolCallId?: string }>, scrub, false) }
+    }
+    return msg
+  })
+}
+
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=provider-message-normalization-has-provider-specific-branches expires=2027-01-01
 // pending: fix this stupid inefficient dogshit function
 function normalizeMessages(
   msgs: ModelMessage[],
@@ -154,32 +181,7 @@ function normalizeMessages(
   }
 
   if (model.api.id.includes("claude")) {
-    const scrub = (id: string) => id.replace(/[^a-zA-Z0-9_-]/g, "_")
-    msgs = msgs.map((msg) => {
-      if (msg.role === "assistant" && Array.isArray(msg.content)) {
-        return {
-          ...msg,
-          content: msg.content.map((part) => {
-            if (part.type === "tool-call" || part.type === "tool-result") {
-              return { ...part, toolCallId: scrub(part.toolCallId) }
-            }
-            return part
-          }),
-        }
-      }
-      if (msg.role === "tool" && Array.isArray(msg.content)) {
-        return {
-          ...msg,
-          content: msg.content.map((part) => {
-            if (part.type === "tool-result") {
-              return { ...part, toolCallId: scrub(part.toolCallId) }
-            }
-            return part
-          }),
-        }
-      }
-      return msg
-    })
+    msgs = scrubToolCallIds(msgs, (id) => id.replace(/[^a-zA-Z0-9_-]/g, "_"))
   }
   if (["@ai-sdk/anthropic", "@ai-sdk/google-vertex/anthropic"].includes(model.api.npm)) {
     // Anthropic rejects assistant turns where tool_use blocks are followed by non-tool
@@ -211,34 +213,17 @@ function normalizeMessages(
     model.api.id.toLowerCase().includes("mistral") ||
     model.api.id.toLocaleLowerCase().includes("devstral")
   ) {
-    const scrub = (id: string) => {
-      return id
+    const scrub = (id: string) =>
+      id
         .replace(/[^a-zA-Z0-9]/g, "") // Remove non-alphanumeric characters
         .substring(0, 9) // Take first 9 characters
         .padEnd(9, "0") // Pad with zeros if less than 9 characters
-    }
     const result: ModelMessage[] = []
     for (let i = 0; i < msgs.length; i++) {
       const msg = msgs[i]
       const nextMsg = msgs[i + 1]
 
-      if (msg.role === "assistant" && Array.isArray(msg.content)) {
-        msg.content = msg.content.map((part) => {
-          if (part.type === "tool-call" || part.type === "tool-result") {
-            return { ...part, toolCallId: scrub(part.toolCallId) }
-          }
-          return part
-        })
-      }
-      if (msg.role === "tool" && Array.isArray(msg.content)) {
-        msg.content = msg.content.map((part) => {
-          if (part.type === "tool-result") {
-            return { ...part, toolCallId: scrub(part.toolCallId) }
-          }
-          return part
-        })
-      }
-      result.push(msg)
+      result.push(scrubToolCallIds([msg], scrub)[0])
 
       // Fix message sequence: tool messages cannot be followed by user messages
       if (msg.role === "tool" && nextMsg?.role === "user") {
@@ -447,45 +432,36 @@ export function message(msgs: ModelMessage[], model: Provider.Model, options: Re
   return msgs
 }
 
-export function temperature(model: Provider.Model) {
+export function samplingParams(model: Provider.Model): { temperature?: number; topP?: number; topK?: number } {
   const id = model.id.toLowerCase()
-  if (id.includes("qwen")) return 0.55
-  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-  if (id.includes("claude")) return undefined
-  if (id.includes("gemini")) return 1.0
-  if (id.includes("glm-4.6")) return 1.0
-  if (id.includes("glm-4.7")) return 1.0
-  if (id.includes("minimax-m2")) return 1.0
-  if (id.includes("kimi-k2")) {
-    // kimi-k2-thinking & kimi-k2.5 && kimi-k2p5 && kimi-k2-5
-    if (["thinking", "k2.", "k2p", "k2-5"].some((s) => id.includes(s))) {
-      return 1.0
-    }
-    return 0.6
+  if (id.includes("qwen")) return { temperature: 0.55, topP: 1 }
+  if (id.includes("gemini")) return { temperature: 1.0, topP: 0.95, topK: 64 }
+  if (id.includes("glm-4.6") || id.includes("glm-4.7")) return { temperature: 1.0 }
+  if (id.includes("minimax-m2")) {
+    const topK = ["m2.", "m25", "m21"].some((s) => id.includes(s)) ? 40 : 20
+    return { temperature: 1.0, topP: 0.95, topK }
   }
-  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-  return undefined
+  // kimi-k2.5 / kimi-k2p5 / kimi-k2-5 variants with topP
+  if (id.includes("kimi-k2.5") || id.includes("kimi-k2p5") || id.includes("kimi-k2-5")) {
+    return { temperature: 1.0, topP: 0.95 }
+  }
+  if (id.includes("kimi-k2")) {
+    const temperature = ["thinking", "k2.", "k2p"].some((s) => id.includes(s)) ? 1.0 : 0.6
+    return { temperature }
+  }
+  return {}
+}
+
+export function temperature(model: Provider.Model) {
+  return samplingParams(model).temperature
 }
 
 export function topP(model: Provider.Model) {
-  const id = model.id.toLowerCase()
-  if (id.includes("qwen")) return 1
-  if (["minimax-m2", "gemini", "kimi-k2.5", "kimi-k2p5", "kimi-k2-5"].some((s) => id.includes(s))) {
-    return 0.95
-  }
-  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-  return undefined
+  return samplingParams(model).topP
 }
 
 export function topK(model: Provider.Model) {
-  const id = model.id.toLowerCase()
-  if (id.includes("minimax-m2")) {
-    if (["m2.", "m25", "m21"].some((s) => id.includes(s))) return 40
-    return 20
-  }
-  if (id.includes("gemini")) return 64
-  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-  return undefined
+  return samplingParams(model).topK
 }
 
 const WIDELY_SUPPORTED_EFFORTS = ["low", "medium", "high"]
