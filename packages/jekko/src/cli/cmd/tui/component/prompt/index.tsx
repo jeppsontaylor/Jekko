@@ -383,7 +383,39 @@ export function Prompt(props: PromptProps) {
     return message ? { kind: "present", message } : { kind: "missing" }
   })
 
-  const usage = createMemo(() => computePromptUsage(props.sessionID, sync.data.message[props.sessionID] ?? [], sync.data.provider))
+  const usage = createMemo(() => {
+    const sessionID = props.sessionID
+    const messages = sessionID ? sync.data.message[sessionID] ?? [] : []
+    return computePromptUsage(sessionID, messages, sync.data.provider)
+  })
+  const usageLine = createMemo<JSX.Element>(() => {
+    const state = usage()
+    switch (state.kind) {
+      case "ready": {
+        const context = state.contextLimit
+          ? `${Locale.number(state.tokens)} (${Math.round((state.tokens / state.contextLimit) * 100)}%)`
+          : Locale.number(state.tokens)
+        const cost = state.cost > 0 ? money.format(state.cost) : undefined
+        return (
+          <text fg={theme.textMuted} wrapMode="none">
+            {[context, cost].filter(Boolean).join(" · ")}
+          </text>
+        )
+      }
+      case "missing-session":
+      case "missing-assistant":
+      case "zero-tokens":
+        return (
+          <text fg={theme.text}>
+            {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>{state.reason}</span>
+          </text>
+        )
+      default: {
+        const exhaustive: never = state
+        return exhaustive
+      }
+    }
+  })
 
   const [store, setStore] = createStore<{
     prompt: PromptInfo
@@ -1860,43 +1892,7 @@ export function Prompt(props: PromptProps) {
               </Show>
               <Switch>
                 <Match when={store.mode === "normal"}>
-                  <Switch>
-                    <Match when={usage().kind === "ready"}>
-                      {(item) => {
-                        const state = item()
-                        const context = state.contextLimit
-                          ? `${Locale.number(state.tokens)} (${Math.round((state.tokens / state.contextLimit) * 100)}%)`
-                          : Locale.number(state.tokens)
-                        const cost = state.cost > 0 ? money.format(state.cost) : undefined
-                        return (
-                          <text fg={theme.textMuted} wrapMode="none">
-                            {[context, cost].filter(Boolean).join(" · ")}
-                          </text>
-                        )
-                      }}
-                    </Match>
-                    <Match when={usage().kind === "missing-session"}>
-                      {(item) => (
-                        <text fg={theme.text}>
-                          {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>{item().reason}</span>
-                        </text>
-                      )}
-                    </Match>
-                    <Match when={usage().kind === "missing-assistant"}>
-                      {(item) => (
-                        <text fg={theme.text}>
-                          {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>{item().reason}</span>
-                        </text>
-                      )}
-                    </Match>
-                    <Match when={usage().kind === "zero-tokens"}>
-                      {(item) => (
-                        <text fg={theme.text}>
-                          {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>{item().reason}</span>
-                        </text>
-                      )}
-                    </Match>
-                  </Switch>
+                  {usageLine()}
                   <text fg={theme.text}>
                     {keybind.print("command_list")} <span style={{ fg: theme.textMuted }}>commands</span>
                   </text>

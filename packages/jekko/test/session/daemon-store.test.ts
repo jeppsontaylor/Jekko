@@ -113,6 +113,26 @@ describe("session.daemon-store", () => {
         expect(tasks).toHaveLength(1)
         expect(tasks[0].status).toBe("leased")
 
+        yield* store.routeTask({
+          taskID: "task_daemon_store",
+          lane: "incubator",
+          phase: "triage",
+          incubatorStatus: "queued",
+        })
+
+        const routed = yield* store.listTasks(run.id)
+        expect(routed[0].lane).toBe("incubator")
+        expect(routed[0].status).toBe("incubating")
+        expect((yield* store.listEvents(run.id)).map((event) => event.event_type)).toContain("task.routed")
+
+        yield* store.completeTask({
+          taskID: "task_daemon_store",
+          evidence: { verdict: "done" },
+        })
+
+        const completed = yield* store.listTasks(run.id)
+        expect(completed[0].status).toBe("done")
+
         const pass = yield* store.beginTaskPass({
           runID: run.id,
           taskID: "task_daemon_store",

@@ -1,113 +1,25 @@
-import { readdirSync, readFileSync, statSync } from "node:fs"
-import os from "node:os"
-import path from "node:path"
 import { onCleanup, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
-import z from "zod"
 import { createSimpleContext } from "./helper"
+import {
+  MCP_PROTOCOL_VERSION,
+  type EditorLabelState,
+  type EditorMention,
+  EditorMentionSchema,
+  type EditorSelection,
+  EditorSelectionSchema,
+  type EditorServerInfo,
+  EditorServerInfoSchema,
+  type JsonRpcMessage,
+  editorSelectionKey,
+  openEditorSocket,
+  parseMessage,
+  resolveEditorConnection,
+} from "./editor-shared"
 import { resolveZedDbPath, resolveZedSelection } from "./editor-zed"
 
-const MCP_PROTOCOL_VERSION = "2025-11-25"
-
-const JsonRpcMessageSchema = z.object({
-  id: z.union([z.number(), z.string(), z.null()]).optional(),
-  method: z.string().optional(),
-  params: z.unknown().optional(),
-  result: z.unknown().optional(),
-  error: z
-    .object({
-      code: z.number().optional(),
-      message: z.string().optional(),
-    })
-    .optional(),
-})
-
-const PositionSchema = z.object({
-  line: z.number(),
-  character: z.number(),
-})
-
-const EditorSelectionRangeSchema = z.object({
-  text: z.string(),
-  selection: z.object({
-    start: PositionSchema,
-    end: PositionSchema,
-  }),
-})
-
-const EditorSelectionSchema = z
-  .union([
-    z.object({
-      filePath: z.string(),
-      source: z.enum(["websocket", "zed"]).optional(),
-      ranges: z.array(EditorSelectionRangeSchema).min(1),
-    }),
-    z.object({
-      text: z.string(),
-      filePath: z.string(),
-      source: z.enum(["websocket", "zed"]).optional(),
-      selection: z.object({
-        start: PositionSchema,
-        end: PositionSchema,
-      }),
-    }),
-  ])
-  .transform((value) =>
-    "ranges" in value
-      ? value
-      : {
-          filePath: value.filePath,
-          source: value.source,
-          ranges: [
-            {
-              text: value.text,
-              selection: value.selection,
-            },
-          ],
-        },
-  )
-
-const EditorMentionSchema = z.object({
-  filePath: z.string(),
-  lineStart: z.number(),
-  lineEnd: z.number(),
-})
-
-const EditorServerInfoSchema = z.object({
-  protocolVersion: z.string().optional(),
-  serverInfo: z
-    .object({
-      name: z.string().optional(),
-      version: z.string().optional(),
-    })
-    .optional(),
-})
-
-const EditorLockFileSchema = z.object({
-  authToken: z.string().optional(),
-  transport: z.literal("ws").optional(),
-  workspaceFolders: z.array(z.string()).optional(),
-})
-
-type JsonRpcMessage = z.infer<typeof JsonRpcMessageSchema>
-export type EditorSelection = z.infer<typeof EditorSelectionSchema>
-export type EditorMention = z.infer<typeof EditorMentionSchema>
-export type EditorLabelState = "pending" | "sent" | "none"
-type EditorServerInfo = z.infer<typeof EditorServerInfoSchema>
-
-type EditorConnection = {
-  url: string
-  authToken?: string
-  source: string
-}
-
-type EditorLockFile = {
-  port: number
-  authToken?: string
-  transport?: string
-  workspaceFolders: string[]
-  mtimeMs: number
-}
+export { editorSelectionKey } from "./editor-shared"
+export type { EditorSelection, EditorLabelState, EditorMention } from "./editor-shared"
 
 export const { use: useEditorContext, provider: EditorContextProvider } = createSimpleContext({
   name: "EditorContext",
@@ -344,113 +256,3 @@ export const { use: useEditorContext, provider: EditorContextProvider } = create
     }
   },
 })
-
-function parsePort(value: string | undefined) {
-  if (!value) return
-
-  const parsed = Number.parseInt(value, 10)
-  if (!Number.isInteger(parsed) || parsed <= 0 || parsed > 65535) return
-  return parsed
-}
-
-function resolveEditorConnection(directory: string): EditorConnection | undefined {
-  const port = parsePort(process.env.CLAUDE_CODE_SSE_PORT || process.env.JEKKO_EDITOR_SSE_PORT)
-  if (port) {
-    return {
-      url: `ws://127.0.0.1:${port}`,
-      source: `env:${port}`,
-    }
-  }
-
-  const lock = resolveEditorLockFile(directory)
-  if (lock) {
-    return {
-      url: `ws://127.0.0.1:${lock.port}`,
-      authToken: lock.authToken,
-      source: `lock:${lock.port}`,
-    }
-  }
-}
-
-function resolveEditorLockFile(activeDirectory: string) {
-  const directory = path.join(os.homedir(), ".claude", "ide")
-  let entries: string[]
-
-  try {
-    entries = readdirSync(directory)
-  } catch {
-    return
-  }
-
-  // longest workspace folder that contains the active session directory; 0 if none match
-  const bestMatchLength = (lock: EditorLockFile) =>
-    Math.max(0, ...lock.workspaceFolders.map((folder) => pathContainsLength(folder, activeDirectory)))
-  const locks = entries
-    .filter((entry) => entry.endsWith(".lock"))
-    .map((entry) => readEditorLockFile(path.join(directory, entry)))
-    .filter((entry): entry is EditorLockFile => Boolean(entry))
-    .filter((entry) => bestMatchLength(entry) > 0)
-    // prefer locks with longer matching workspace folders, then more recent ones
-    .sort((left, right) => bestMatchLength(right) - bestMatchLength(left) || right.mtimeMs - left.mtimeMs)
-  return locks[0]
-}
-
-function readEditorLockFile(filePath: string): EditorLockFile | undefined {
-  const port = parsePort(path.basename(filePath, ".lock"))
-  if (!port) return
-
-  try {
-    const parsed = EditorLockFileSchema.safeParse(JSON.parse(readFileSync(filePath, "utf-8")))
-    if (!parsed.success) return
-
-    return {
-      port,
-      authToken: parsed.data.authToken,
-      transport: parsed.data.transport,
-      workspaceFolders: parsed.data.workspaceFolders ?? [],
-      mtimeMs: statSync(filePath).mtimeMs,
-    }
-  } catch {
-    return
-  }
-}
-
-export function editorSelectionKey(selection: EditorSelection | undefined) {
-  if (!selection) return ""
-  return [
-    selection.filePath,
-    ...selection.ranges.flatMap((range) => [
-      range.selection.start.line,
-      range.selection.start.character,
-      range.selection.end.line,
-      range.selection.end.character,
-      range.text,
-    ]),
-  ].join("\0")
-}
-
-function pathContainsLength(parent: string, child: string) {
-  const resolved = path.resolve(parent)
-  const relative = path.relative(resolved, path.resolve(child))
-  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative)) ? resolved.length : 0
-}
-
-function openEditorSocket(connection: EditorConnection, WebSocketImpl: typeof WebSocket) {
-  if (!connection.authToken) return new WebSocketImpl(connection.url)
-
-  return new WebSocketImpl(connection.url, {
-    headers: {
-      "x-claude-code-ide-authorization": connection.authToken,
-    },
-  } as any)
-}
-
-function parseMessage(value: unknown) {
-  if (typeof value !== "string") return
-
-  try {
-    return JsonRpcMessageSchema.parse(JSON.parse(value))
-  } catch {
-    return
-  }
-}

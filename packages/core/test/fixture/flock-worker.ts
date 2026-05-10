@@ -1,24 +1,7 @@
 import fs from "fs/promises"
 import { Flock } from "@jekko-ai/core/util/flock"
-
-type Msg = {
-  key: string
-  dir: string
-  maxAgeMs?: number
-  timeoutMs?: number
-  baseDelayMs?: number
-  maxDelayMs?: number
-  holdMs?: number
-  ready?: string
-  active?: string
-  done?: string
-}
-
-function sleep(ms: number) {
-  return new Promise<void>((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
+import { sleep } from "./flock-shared"
+import type { Msg } from "./flock-shared"
 
 function input() {
   const raw = process.argv[2]
@@ -87,5 +70,5 @@ async function main() {
 await main().catch((err) => {
   const text = err instanceof Error ? (err.stack ?? err.message) : String(err)
   process.stderr.write(text)
-  process.exit(1)
+  process.exitCode = 1
 })

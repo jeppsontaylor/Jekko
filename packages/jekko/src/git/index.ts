@@ -1,6 +1,7 @@
 import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
-import { Effect, Layer, Context, Stream } from "effect"
+import { Effect, Layer, Context } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
+import { collectStreamOutput } from "@/util/process-output"
 
 const cfg = [
   "--no-optional-locks",
@@ -18,6 +19,7 @@ const cfg = [
 
 const out = (result: { text(): string }) => result.text().trim()
 const nuls = (text: string) => text.split("\0").filter(Boolean)
+const makeItem = (file: string, code: string) => ({ file, code, status: kind(code) } satisfies Item)
 const fail = (err: unknown) =>
   ({
     exitCode: 1,
@@ -113,25 +115,10 @@ export const layer = Layer.effect(
           stderr: "pipe",
         })
         const handle = yield* spawner.spawn(proc)
-        const collect = (stream: typeof handle.stdout) =>
-          Stream.runFold(
-            stream,
-            () => ({ chunks: [] as Uint8Array[], bytes: 0, truncated: false }),
-            (acc, chunk) => {
-              if (opts.maxOutputBytes === undefined) {
-                acc.chunks.push(chunk)
-                acc.bytes += chunk.length
-                return acc
-              }
-
-              const remaining = opts.maxOutputBytes - acc.bytes
-              if (remaining > 0) acc.chunks.push(remaining >= chunk.length ? chunk : chunk.slice(0, remaining))
-              acc.bytes += chunk.length
-              acc.truncated = acc.truncated || acc.bytes > opts.maxOutputBytes
-              return acc
-            },
-          ).pipe(Effect.map((x) => ({ buffer: Buffer.concat(x.chunks), truncated: x.truncated })))
-        const [stdout, stderr] = yield* Effect.all([collect(handle.stdout), collect(handle.stderr)], { concurrency: 2 })
+        const [stdout, stderr] = yield* Effect.all(
+          [collectStreamOutput(handle.stdout, opts.maxOutputBytes), collectStreamOutput(handle.stderr, opts.maxOutputBytes)],
+          { concurrency: 2 },
+        )
         return {
           exitCode: yield* handle.exitCode,
           text: () => stdout.buffer.toString("utf8"),
@@ -230,11 +217,11 @@ export const layer = Layer.effect(
         yield* text(["status", "--porcelain=v1", "--untracked-files=all", "--no-renames", "-z", "--", "."], {
           cwd,
         }),
-      ).flatMap((item) => {
-        const file = item.slice(3)
+      ).flatMap((entry) => {
+        const file = entry.slice(3)
         if (!file) return []
-        const code = item.slice(0, 2)
-        return [{ file, code, status: kind(code) } satisfies Item]
+        const code = entry.slice(0, 2)
+        return [makeItem(file, code)]
       })
     })
 
@@ -246,7 +233,7 @@ export const layer = Layer.effect(
         if (idx % 2 !== 0) return []
         const file = list[idx + 1]
         if (!code || !file) return []
-        return [{ file, code, status: kind(code) } satisfies Item]
+        return [makeItem(file, code)]
       })
     })
 

@@ -4,7 +4,7 @@ import { SessionID } from "../../src/session/schema"
 import { EventV2 } from "../../src/v2/event"
 import { Modelv2 } from "../../src/v2/model"
 import { SessionEvent } from "../../src/v2/session-event"
-import { SessionMessageUpdater } from "../../src/v2/session-message-updater"
+import * as SessionMessageUpdater from "../../src/v2/session-message-updater"
 
 test("step snapshots carry over to assistant messages", () => {
   const state: SessionMessageUpdater.MemoryState = { messages: [] }

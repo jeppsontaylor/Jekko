@@ -8,7 +8,11 @@
   "scripts": {
     "test": "bun test",
     "test:ci": "mkdir -p .artifacts/unit && bun test --timeout 30000 --reporter=junit --reporter-outfile=.artifacts/unit/junit.xml",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsgo --noEmit",
+    "build": "tsgo --noEmit",
+    "fast:build": "tsgo --noEmit",
+    "fast:test": "bun test",
+    "fast:typecheck": "tsgo --noEmit"
   },
   "bin": {
     "jekko": "./bin/jekko"

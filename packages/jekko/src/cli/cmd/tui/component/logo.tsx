@@ -6,6 +6,14 @@ export type Align = "left" | "center" | "right"
 export type RGB = { r: number; g: number; b: number }
 type HSV = { h: number; s: number; v: number }
 type VisibleIndexResult = { kind: "found"; index: number } | { kind: "missing" }
+type WordmarkLayer = "wordmark" | "wordmarkShadowNear" | "wordmarkShadowMid" | "wordmarkShadowFar"
+type WordmarkSource = {
+  layer: WordmarkLayer
+  sourceX: number
+  sourceY: number
+  sourceWidth: number
+  sourceHeight: number
+}
 
 export type CellLayer =
   | "global"
@@ -333,6 +341,31 @@ function wordmarkShadowColor(
   if (layer === "far") return deepenNeon(base, 0.34)
   if (layer === "mid") return deepenNeon(base, 0.5)
   return deepenNeon(base, 0.68)
+}
+
+function resolveWordmarkSource(
+  cell: LogoCell,
+  x: number,
+  y: number,
+  totalWidth: number,
+  totalRows: number,
+): WordmarkSource | undefined {
+  if (
+    cell.layer !== "wordmark" &&
+    cell.layer !== "wordmarkShadowNear" &&
+    cell.layer !== "wordmarkShadowMid" &&
+    cell.layer !== "wordmarkShadowFar"
+  ) {
+    return
+  }
+
+  return {
+    layer: cell.layer,
+    sourceX: cell.sourceX ?? x,
+    sourceY: cell.sourceY ?? y,
+    sourceWidth: cell.sourceWidth ?? totalWidth,
+    sourceHeight: cell.sourceHeight ?? totalRows,
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -734,29 +767,25 @@ export function cellColor(
 ): RGB {
   const dim = Boolean(cell.dim ?? row.dim)
 
-  if (
-    cell.layer === "wordmark" ||
-    cell.layer === "wordmarkShadowNear" ||
-    cell.layer === "wordmarkShadowMid" ||
-    cell.layer === "wordmarkShadowFar"
-  ) {
-    const sourceX = cell.sourceX ?? x
-    const sourceY = cell.sourceY ?? y
-    const sourceWidth = cell.sourceWidth ?? totalWidth
-    const sourceHeight = cell.sourceHeight ?? totalRows
-
-    if (cell.layer === "wordmark") {
-      return wordmarkColor(sourceX, sourceY, sourceWidth, sourceHeight)
+  const wordmarkSource = resolveWordmarkSource(cell, x, y, totalWidth, totalRows)
+  if (wordmarkSource) {
+    if (wordmarkSource.layer === "wordmark") {
+      return wordmarkColor(
+        wordmarkSource.sourceX,
+        wordmarkSource.sourceY,
+        wordmarkSource.sourceWidth,
+        wordmarkSource.sourceHeight,
+      )
     }
 
     return wordmarkShadowColor(
-      sourceX,
-      sourceY,
-      sourceWidth,
-      sourceHeight,
-      cell.layer === "wordmarkShadowFar"
+      wordmarkSource.sourceX,
+      wordmarkSource.sourceY,
+      wordmarkSource.sourceWidth,
+      wordmarkSource.sourceHeight,
+      wordmarkSource.layer === "wordmarkShadowFar"
         ? "far"
-        : cell.layer === "wordmarkShadowMid"
+        : wordmarkSource.layer === "wordmarkShadowMid"
           ? "mid"
           : "near",
     )
@@ -782,21 +811,18 @@ function inkMonochrome(
 ): RGB {
   // Base position in [0,1] — same diagonal as the regular gradient
   let t: number
-  if (
-    cell.layer === "wordmark" ||
-    cell.layer === "wordmarkShadowNear" ||
-    cell.layer === "wordmarkShadowMid" ||
-    cell.layer === "wordmarkShadowFar"
-  ) {
-    const sx = cell.sourceX ?? x
-    const sy = cell.sourceY ?? y
-    const sw = cell.sourceWidth ?? totalWidth
-    const sh = cell.sourceHeight ?? totalRows
-    t = wordmarkT(sx, sy, sw, sh)
+  const wordmarkSource = resolveWordmarkSource(cell, x, y, totalWidth, totalRows)
+  if (wordmarkSource) {
+    t = wordmarkT(
+      wordmarkSource.sourceX,
+      wordmarkSource.sourceY,
+      wordmarkSource.sourceWidth,
+      wordmarkSource.sourceHeight,
+    )
     // Shadow layers get progressively darker
-    if (cell.layer === "wordmarkShadowFar") t = clamp01(t * 0.45)
-    else if (cell.layer === "wordmarkShadowMid") t = clamp01(t * 0.6)
-    else if (cell.layer === "wordmarkShadowNear") t = clamp01(t * 0.75)
+    if (wordmarkSource.layer === "wordmarkShadowFar") t = clamp01(t * 0.45)
+    else if (wordmarkSource.layer === "wordmarkShadowMid") t = clamp01(t * 0.6)
+    else if (wordmarkSource.layer === "wordmarkShadowNear") t = clamp01(t * 0.75)
   } else {
     t = globalDiagonalT(x, y, totalWidth, totalRows)
   }

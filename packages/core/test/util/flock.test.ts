@@ -1,113 +1,11 @@
 import { describe, expect, test } from "bun:test"
 import fs from "fs/promises"
-import { spawn } from "child_process"
 import path from "path"
-import os from "os"
 import { Flock } from "@jekko-ai/core/util/flock"
-import { Hash } from "@jekko-ai/core/util/hash"
-
-type Msg = {
-  key: string
-  dir: string
-  maxAgeMs?: number
-  timeoutMs?: number
-  baseDelayMs?: number
-  maxDelayMs?: number
-  holdMs?: number
-  ready?: string
-  active?: string
-  done?: string
-}
+import { exists, lock, readJson, runWorker, spawnWorker, stopWorker, tmpdir, waitForFile } from "../fixture/worker-process"
 
 const root = path.join(import.meta.dir, "../..")
 const worker = path.join(import.meta.dir, "../fixture/flock-worker.ts")
-
-async function tmpdir() {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "flock-test-"))
-  return {
-    path: dir,
-    async [Symbol.asyncDispose]() {
-      await fs.rm(dir, { recursive: true, force: true })
-    },
-  }
-}
-
-function lock(dir: string, key: string) {
-  return path.join(dir, Hash.fast(key) + ".lock")
-}
-
-function sleep(ms: number) {
-  return new Promise<void>((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
-
-async function exists(file: string) {
-  return fs
-    .stat(file)
-    .then(() => true)
-    .catch(() => false)
-}
-
-async function wait(file: string, timeout = 3_000) {
-  const stop = Date.now() + timeout
-  while (Date.now() < stop) {
-    if (await exists(file)) return
-    await sleep(20)
-  }
-
-  throw new Error(`Timed out waiting for file: ${file}`)
-}
-
-function run(msg: Msg) {
-  return new Promise<{ code: number; stdout: Buffer; stderr: Buffer }>((resolve) => {
-    const proc = spawn(process.execPath, [worker, JSON.stringify(msg)], {
-      cwd: root,
-    })
-
-    const stdout: Buffer[] = []
-    const stderr: Buffer[] = []
-
-    proc.stdout?.on("data", (data) => stdout.push(Buffer.from(data)))
-    proc.stderr?.on("data", (data) => stderr.push(Buffer.from(data)))
-
-    proc.on("close", (code) => {
-      resolve({
-        code: code ?? 1,
-        stdout: Buffer.concat(stdout),
-        stderr: Buffer.concat(stderr),
-      })
-    })
-  })
-}
-
-function spawnWorker(msg: Msg) {
-  return spawn(process.execPath, [worker, JSON.stringify(msg)], {
-    cwd: root,
-    stdio: ["ignore", "pipe", "pipe"],
-  })
-}
-
-function stopWorker(proc: ReturnType<typeof spawnWorker>) {
-  if (proc.exitCode !== null || proc.signalCode !== null) return Promise.resolve()
-
-  if (process.platform !== "win32" || !proc.pid) {
-    proc.kill()
-    return Promise.resolve()
-  }
-
-  return new Promise<void>((resolve) => {
-    const killProc = spawn("taskkill", ["/pid", String(proc.pid), "/T", "/F"])
-    killProc.on("close", () => {
-      proc.kill()
-      resolve()
-    })
-  })
-}
-
-async function readJson<T>(p: string): Promise<T> {
-  return JSON.parse(await fs.readFile(p, "utf8"))
-}
 
 describe("util.flock", () => {
   test("enforces mutual exclusion under process contention", async () => {
@@ -120,7 +18,7 @@ describe("util.flock", () => {
 
     const out = await Promise.all(
       Array.from({ length: n }, () =>
-        run({
+        runWorker(worker, root, {
           key,
           dir,
           done,
@@ -147,7 +45,7 @@ describe("util.flock", () => {
     const dir = path.join(tmp.path, "locks")
     const key = "flock:timeout"
     const ready = path.join(tmp.path, "ready")
-    const proc = spawnWorker({
+    const proc = spawnWorker(worker, root, {
       key,
       dir,
       ready,
@@ -157,7 +55,7 @@ describe("util.flock", () => {
     })
 
     try {
-      await wait(ready, 5_000)
+      await waitForFile(ready, 5_000)
       const seen: string[] = []
       const err = await Flock.withLock(key, async () => {}, {
         dir,
@@ -184,7 +82,7 @@ describe("util.flock", () => {
     const dir = path.join(tmp.path, "locks")
     const key = "flock:crash"
     const ready = path.join(tmp.path, "ready")
-    const proc = spawnWorker({
+    const proc = spawnWorker(worker, root, {
       key,
       dir,
       ready,
@@ -193,7 +91,7 @@ describe("util.flock", () => {
       timeoutMs: 30_000,
     })
 
-    await wait(ready, 5_000)
+      await waitForFile(ready, 5_000)
     await stopWorker(proc)
     await new Promise((resolve) => proc.on("close", resolve))
 

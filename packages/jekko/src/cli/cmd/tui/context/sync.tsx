@@ -1,51 +1,9 @@
 import { useEvent } from "@tui/context/event"
-import type {
-  SessionMessage,
-  SessionMessageAssistant,
-  SessionMessageAssistantReasoning,
-  SessionMessageAssistantText,
-  SessionMessageAssistantTool,
-} from "@jekko-ai/sdk/v2"
+import type { SessionMessage } from "@jekko-ai/sdk/v2"
 import { createStore, produce, reconcile } from "solid-js/store"
 import { createSimpleContext } from "./helper"
 import { useSDK } from "./sdk"
-
-function activeAssistant(messages: SessionMessage[]) {
-  const index = messages.findIndex((message) => message.type === "assistant" && !message.time.completed)
-  if (index < 0) return
-  const assistant = messages[index]
-  return assistant?.type === "assistant" ? assistant : undefined
-}
-
-function activeCompaction(messages: SessionMessage[]) {
-  const index = messages.findIndex((message) => message.type === "compaction")
-  if (index < 0) return
-  const compaction = messages[index]
-  return compaction?.type === "compaction" ? compaction : undefined
-}
-
-function activeShell(messages: SessionMessage[], callID: string) {
-  const index = messages.findIndex((message) => message.type === "shell" && message.callID === callID)
-  if (index < 0) return
-  const shell = messages[index]
-  return shell?.type === "shell" ? shell : undefined
-}
-
-function latestTool(assistant: SessionMessageAssistant | undefined, callID?: string) {
-  return assistant?.content.findLast(
-    (item): item is SessionMessageAssistantTool => item.type === "tool" && (callID === undefined || item.id === callID),
-  )
-}
-
-function latestText(assistant: SessionMessageAssistant | undefined) {
-  return assistant?.content.findLast((item): item is SessionMessageAssistantText => item.type === "text")
-}
-
-function latestReasoning(assistant: SessionMessageAssistant | undefined, reasoningID: string) {
-  return assistant?.content.findLast(
-    (item): item is SessionMessageAssistantReasoning => item.type === "reasoning" && item.id === reasoningID,
-  )
-}
+import { activeAssistant, activeCompaction, activeShell, latestReasoning, latestText, latestTool } from "@/v2/session-message-state"
 
 export const { use: useSyncV2, provider: SyncProviderV2 } = createSimpleContext({
   name: "SyncV2",

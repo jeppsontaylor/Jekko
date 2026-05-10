@@ -1,5 +1,5 @@
 // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-import { incrementJnoccioCounters, setZyalFlashSource, updateZyalMetrics } from "./zyal-flash"
+import { incrementJnoccioCounters, setZyalFlashSource, updateZyalMetrics } from "./zyal-flash-state"
 
 /**
  * Jnoccio Fusion live-metrics WebSocket subscriber.

@@ -222,7 +222,6 @@ export const createClient = (config: Config = {}): Client => {
     if (opts.throwOnError) {
       throw finalError
     }
-
     return opts.responseStyle === "data"
       ? undefined
       : {

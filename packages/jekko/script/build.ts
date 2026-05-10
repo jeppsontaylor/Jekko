@@ -11,6 +11,11 @@ const __dirname = path.dirname(__filename)
 const dir = path.resolve(__dirname, "..")
 
 process.chdir(dir)
+process.env.TMPDIR = "/private/tmp"
+
+if (!process.env.MODELS_DEV_API_JSON) {
+  process.env.MODELS_DEV_API_JSON = path.join(dir, "test/tool/fixtures/models-api.json")
+}
 
 await import("./generate.ts")
 
@@ -35,8 +40,9 @@ function parseMigrationTimestamp(name: string) {
   )
 }
 
+const migrationRoot = path.join(dir, "..", "..", "db", "migrations")
 const migrationDirs = (
-  await fs.promises.readdir(path.join(dir, "migration"), {
+  await fs.promises.readdir(migrationRoot, {
     withFileTypes: true,
   })
 )
@@ -46,7 +52,7 @@ const migrationDirs = (
 
 const migrations = await Promise.all(
   migrationDirs.map(async (name) => {
-    const file = path.join(dir, "migration", name, "migration.sql")
+    const file = path.join(migrationRoot, name, "migration.sql")
     const sql = await Bun.file(file).text()
     const timestamp = parseMigrationTimestamp(name)
     return { sql, timestamp, name }
@@ -64,6 +70,10 @@ const skipEmbedWebUi = process.argv.includes("--skip-embed-web-ui")
 const createEmbeddedWebUIBundle = async () => {
   console.log(`Building Web UI to embed in the binary`)
   const appDir = path.join(import.meta.dirname, "../../app")
+  if (!fs.existsSync(appDir)) {
+    console.log(`Skipping Web UI embed; missing ${appDir}`)
+    return null
+  }
   const dist = path.join(appDir, "dist")
   await $`bun run --cwd ${appDir} build`
   const files = (await Array.fromAsync(new Bun.Glob("**/*").scan({ cwd: dist })))
@@ -175,8 +185,12 @@ await $`rm -rf dist`
 
 const binaries: Record<string, string> = {}
 if (!skipInstall) {
-  await $`bun install --os="*" --cpu="*" @opentui/core@${pkg.dependencies["@opentui/core"]}`
-  await $`bun install --os="*" --cpu="*" @parcel/watcher@${pkg.dependencies["@parcel/watcher"]}`
+  try {
+    await $`bun install --os="*" --cpu="*" @opentui/core@${pkg.dependencies["@opentui/core"]}`
+    await $`bun install --os="*" --cpu="*" @parcel/watcher@${pkg.dependencies["@parcel/watcher"]}`
+  } catch (error) {
+    console.warn("Skipping optional cross-platform install step:", error)
+  }
 }
 for (const item of targets) {
   const name = [

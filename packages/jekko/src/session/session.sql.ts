@@ -1,5 +1,6 @@
 import { sqliteTable, text, integer, index, primaryKey } from "drizzle-orm/sqlite-core"
 import { ProjectTable } from "../project/project.sql"
+import { WorkspaceTable } from "../control-plane/workspace.sql"
 import type { MessageV2 } from "./message"
 import type { SessionMessage } from "../v2/session-message"
 import type { Snapshot } from "../snapshot"
@@ -21,8 +22,10 @@ export const SessionTable = sqliteTable(
       .$type<ProjectID>()
       .notNull()
       .references(() => ProjectTable.id, { onDelete: "cascade" }),
-    workspace_id: text().$type<WorkspaceID>(),
-    parent_id: text().$type<SessionID>(),
+    workspace_id: text()
+      .$type<WorkspaceID>()
+      .references(() => WorkspaceTable.id, { onDelete: "cascade" }),
+    parent_id: text().$type<SessionID>().references(() => SessionTable.id, { onDelete: "cascade" }),
     slug: text().notNull(),
     directory: text().notNull(),
     path: text(),
@@ -74,7 +77,10 @@ export const PartTable = sqliteTable(
       .$type<MessageID>()
       .notNull()
       .references(() => MessageTable.id, { onDelete: "cascade" }),
-    session_id: text().$type<SessionID>().notNull(),
+    session_id: text()
+      .$type<SessionID>()
+      .notNull()
+      .references(() => SessionTable.id, { onDelete: "cascade" }),
     ...Timestamps,
     data: text({ mode: "json" }).notNull().$type<PartData>(),
   },

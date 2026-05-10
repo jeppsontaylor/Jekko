@@ -6,10 +6,8 @@ import { Worktree } from "@/worktree"
 import { NonNegativeInt } from "@/util/schema"
 import { Schema, SchemaGetter } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
-import { Authorization } from "../middleware/authorization"
-import { InstanceContextMiddleware } from "../middleware/instance-context"
-import { WorkspaceRoutingMiddleware } from "../middleware/workspace-routing"
 import { described } from "./metadata"
+import { withInstanceGroupDefaults } from "./group"
 
 const ConsoleStateResponse = Schema.Struct({
   consoleManagedProviders: Schema.mutable(Schema.Array(Schema.String)),
@@ -78,8 +76,8 @@ export const ExperimentalPaths = {
 
 export const ExperimentalApi = HttpApi.make("experimental")
   .add(
-    HttpApiGroup.make("experimental")
-      .add(
+    withInstanceGroupDefaults(
+      HttpApiGroup.make("experimental").add(
         HttpApiEndpoint.get("console", ExperimentalPaths.console, {
           success: described(ConsoleStateResponse, "Active Console provider metadata"),
         }).annotateMerge(
@@ -194,16 +192,10 @@ export const ExperimentalApi = HttpApi.make("experimental")
             description: "Get all available MCP resources from connected servers. Optionally filter by name.",
           }),
         ),
-      )
-      .annotateMerge(
-        OpenApi.annotations({
-          title: "experimental",
-          description: "Experimental HttpApi read-only routes.",
-        }),
-      )
-      .middleware(InstanceContextMiddleware)
-      .middleware(WorkspaceRoutingMiddleware)
-      .middleware(Authorization),
+      ),
+      "experimental",
+      "Experimental HttpApi read-only routes.",
+    ),
   )
   .annotateMerge(
     OpenApi.annotations({

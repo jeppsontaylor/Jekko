@@ -1,5 +1,5 @@
-// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design-in-daemon expires=2027-01-01
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=daemon-supervisor-shares-evaluation-paths-by-design expires=2027-01-01
 import { Effect, Layer, Context, Scope, Cause, Fiber, Option } from "effect"
 import { parseZyal } from "@/agent-script/parser"
 import { buildZyalPreview, type ZyalParsed, type ZyalPreview, type ZyalScript, type ZyalSignal } from "@/agent-script/schema"
@@ -310,45 +310,47 @@ export const layer = Layer.effect(
       return tasks.find((item) => item.id === input.taskID)
     })
 
-    const taskPasses = Effect.fn("Daemon.taskPasses")(function* (input: { runID: string; taskID: string }) {
+    const withTask = Effect.fn("Daemon.withTask")(function* <A>(
+      input: { runID: string; taskID: string },
+      onMissing: A,
+      apply: (current: DaemonStore.TaskInfo) => Effect.Effect<A, any, any>,
+    ) {
       const current = yield* task(input)
-      if (!current) return []
-      return yield* store.listTaskPasses(input)
+      if (!current) return onMissing
+      return yield* apply(current)
+    })
+
+    const taskPasses = Effect.fn("Daemon.taskPasses")(function* (input: { runID: string; taskID: string }) {
+      return yield* withTask(input, [], () => store.listTaskPasses(input))
     })
 
     const taskMemory = Effect.fn("Daemon.taskMemory")(function* (input: { runID: string; taskID: string }) {
-      const current = yield* task(input)
-      if (!current) return []
-      return yield* store.listTaskMemory(input)
+      return yield* withTask(input, [], () => store.listTaskMemory(input))
     })
 
     const incubateTask = Effect.fn("Daemon.incubateTask")(function* (input: { runID: string; taskID: string }) {
-      const current = yield* task(input)
-      if (!current) return
-      return yield* store.routeTask({
-        taskID: current.id,
-        lane: "incubator",
-        phase: "routing_tasks",
-        incubatorStatus: "active",
-      })
+      return yield* withTask(input, undefined, (current) =>
+        store.routeTask({
+          taskID: current.id,
+          lane: "incubator",
+          phase: "routing_tasks",
+          incubatorStatus: "active",
+        }),
+      )
     })
 
     const promoteTask = Effect.fn("Daemon.promoteTask")(function* (input: { runID: string; taskID: string }) {
-      const current = yield* task(input)
-      if (!current) return
-      return yield* store.promoteTask({ taskID: current.id, result: { manual: true } })
+      return yield* withTask(input, undefined, (current) => store.promoteTask({ taskID: current.id, result: { manual: true } }))
     })
 
     const blockTask = Effect.fn("Daemon.blockTask")(function* (input: { runID: string; taskID: string; reason?: string }) {
-      const current = yield* task(input)
-      if (!current) return
-      return yield* store.exhaustTask({ taskID: current.id, reason: input.reason ?? "blocked by user" })
+      return yield* withTask(input, undefined, (current) =>
+        store.exhaustTask({ taskID: current.id, reason: input.reason ?? "blocked by user" }),
+      )
     })
 
     const archiveTask = Effect.fn("Daemon.archiveTask")(function* (input: { runID: string; taskID: string; reason?: string }) {
-      const current = yield* task(input)
-      if (!current) return
-      return yield* store.archiveTask({ taskID: current.id, reason: input.reason })
+      return yield* withTask(input, undefined, (current) => store.archiveTask({ taskID: current.id, reason: input.reason }))
     })
 
     const incubator = Effect.fn("Daemon.incubator")(function* (runID: string) {
@@ -380,8 +382,8 @@ export const layer = Layer.effect(
     })
 
     const resume = Effect.fn("Daemon.resume")(function* (runID: string) {
-      const run = yield* transitionRun(runID, { status: "armed", phase: "evaluating_stop", stopped_at: null })
-      if (run && !fibers.has(runID)) {
+      const resumedRun = yield* transitionRun(runID, { status: "armed", phase: "evaluating_stop", stopped_at: null })
+      if (resumedRun && !fibers.has(runID)) {
         const sessions = yield* Session.Service
         const prompt = yield* SessionPrompt.Service
         const checks = yield* DaemonChecks.Service
@@ -390,7 +392,7 @@ export const layer = Layer.effect(
         const worktree = yield* Worktree.Service
         yield* launchDaemonFiber({
           runID,
-          parsed: parsedFromRun(run),
+          parsed: parsedFromRun(resumedRun),
           sessions,
           prompt,
           checkpoint,
@@ -399,7 +401,7 @@ export const layer = Layer.effect(
           worktree,
         })
       }
-      return run
+      return resumedRun
     })
 
     const abort = Effect.fn("Daemon.abort")(function* (runID: string) {
@@ -493,6 +495,64 @@ type RunDaemonInput = {
 
 function superviseDaemonRun(input: RunDaemonInput) {
   return Effect.fn("Daemon.supervise")(function* () {
+    const appendHandlerEvent = Effect.fn("Daemon.appendHandlerEvent")(function* (
+      eventType: string,
+      payload: Record<string, unknown>,
+      iteration: number,
+    ) {
+      yield* input.store.appendEvent({
+        runID: input.runID,
+        iteration,
+        eventType,
+        payload,
+      })
+    })
+
+    const handleOnHandlerActions = Effect.fn("Daemon.handleOnHandlerActions")(function* (params: {
+      actions: Array<{ type: string }>
+      iteration: number
+      terminalActions: boolean
+    }) {
+      for (const action of params.actions) {
+        yield* appendHandlerEvent("on_handler.fired", action, params.iteration)
+        if (!params.terminalActions) continue
+        if (action.type === "pause") {
+          if (yield* continueIfSuppressed({ action: "pause", payload: action, iteration: params.iteration })) continue
+          return yield* transitionDaemonAction({ action: "pause", lastError: undefined })
+        }
+        if (action.type === "abort") {
+          if (yield* continueIfSuppressed({ action: "abort", payload: action, iteration: params.iteration })) continue
+          return yield* transitionDaemonAction({ action: "abort", lastError: undefined })
+        }
+      }
+      return "continue" as const
+    })
+
+    const continueIfSuppressed = Effect.fn("Daemon.continueIfSuppressed")(function* (input: {
+      action: "pause" | "abort"
+      payload: Record<string, unknown>
+      iteration: number
+    }) {
+      const resolved = resolveDaemonAutomaticAction({ spec, action: input.action })
+      if (!resolved.suppressedByForever) return false
+      yield* appendHandlerEvent("on_handler.terminal_suppressed_forever", input.payload, input.iteration)
+      return true
+    })
+
+    const transitionDaemonAction = Effect.fn("Daemon.transitionDaemonAction")(function* (params: {
+      action: "pause" | "abort"
+      lastError: string | undefined
+    }) {
+      const status = params.action === "abort" ? "aborted" : "paused"
+      yield* input.transitionRun(input.runID, {
+        status,
+        phase: status === "aborted" ? "terminal" : "paused",
+        ...(params.lastError ? { last_error: params.lastError } : {}),
+        ...(params.action === "abort" ? { stopped_at: Date.now() } : {}),
+      })
+      return "exit" as const
+    })
+
     while (true) {
       const exit = yield* Effect.exit(runDaemon(input)())
       const run = yield* input.store.getRun(input.runID)
@@ -655,46 +715,12 @@ function runDaemon(input: RunDaemonInput) {
               signal: terminalSignal,
               counters: signalCounters,
             })
-            for (const action of actions) {
-              yield* input.store.appendEvent({
-                runID: input.runID,
-                iteration,
-                eventType: "on_handler.fired",
-                payload: action,
-              })
-              if (action.type === "pause") {
-                const resolved = resolveDaemonAutomaticAction({ spec, action: "pause" })
-                if (resolved.suppressedByForever) {
-                  yield* input.store.appendEvent({
-                    runID: input.runID,
-                    iteration,
-                    eventType: "on_handler.terminal_suppressed_forever",
-                    payload: action,
-                  })
-                  continue
-                }
-                yield* input.transitionRun(input.runID, { status: "paused", phase: "paused" })
-                return "exit" as const
-              }
-              if (action.type === "abort") {
-                const resolved = resolveDaemonAutomaticAction({ spec, action: "abort" })
-                if (resolved.suppressedByForever) {
-                  yield* input.store.appendEvent({
-                    runID: input.runID,
-                    iteration,
-                    eventType: "on_handler.terminal_suppressed_forever",
-                    payload: action,
-                  })
-                  continue
-                }
-                yield* input.transitionRun(input.runID, {
-                  status: "aborted",
-                  phase: "terminal",
-                  stopped_at: Date.now(),
-                })
-                return "exit" as const
-              }
-            }
+            const terminalResult = yield* handleOnHandlerActions({
+              actions,
+              iteration,
+              terminalActions: true,
+            })
+            if (terminalResult === "exit") return "exit" as const
           }
         }
 
@@ -718,14 +744,10 @@ function runDaemon(input: RunDaemonInput) {
               payload: { consecutive_errors: breaker.max_consecutive_errors, on_trip: breaker.on_trip ?? "pause" },
             })
           } else {
-            const status = resolved.action === "abort" ? "aborted" : "paused"
-            yield* input.transitionRun(input.runID, {
-              status,
-              phase: status === "aborted" ? "terminal" : "paused",
-              last_error: "circuit breaker tripped",
-              stopped_at: Date.now(),
+            return yield* transitionDaemonAction({
+              action: resolved.action,
+              lastError: "circuit breaker tripped",
             })
-            return "exit" as const
           }
         }
 
@@ -767,14 +789,11 @@ function runDaemon(input: RunDaemonInput) {
               signal: "checkpoint_failed",
               counters: signalCounters,
             })
-            for (const action of actions) {
-              yield* input.store.appendEvent({
-                runID: input.runID,
-                iteration,
-                eventType: "on_handler.fired",
-                payload: action,
-              })
-            }
+            yield* handleOnHandlerActions({
+              actions,
+              iteration,
+              terminalActions: false,
+            })
           }
           const continueOn = spec.loop?.continue_on ?? []
           if (continueOn.includes("checkpoint_failed") || resolveDaemonPolicy(spec) === "forever") {
@@ -966,14 +985,10 @@ function runDaemon(input: RunDaemonInput) {
         if (breaker?.max_consecutive_errors !== undefined && consecutiveErrors >= breaker.max_consecutive_errors) {
           const resolved = resolveDaemonAutomaticAction({ spec, action: breaker.on_trip })
           if (resolved.action !== "continue") {
-            const status = resolved.action === "abort" ? "aborted" : "paused"
-            yield* input.transitionRun(input.runID, {
-              status,
-              phase: status === "aborted" ? "terminal" : "paused",
-              last_error: "circuit breaker tripped after unhandled error",
-              stopped_at: Date.now(),
+            return yield* transitionDaemonAction({
+              action: resolved.action,
+              lastError: "circuit breaker tripped after unhandled error",
             })
-            return
           }
           consecutiveErrors = 0
           yield* input.store.appendEvent({
@@ -999,74 +1014,19 @@ function evaluateStop(input: {
   checks: DaemonChecks.Interface
 }) {
   return Effect.gen(function* () {
-    const all = yield* Effect.forEach(
-      input.spec.stop.all,
-      (condition) =>
-        Effect.gen(function* () {
-          if ("git_clean" in condition) {
-            const result = yield* input.checks.gitClean({
-              cwd: input.cwd,
-              allowUntracked: condition.git_clean.allow_untracked,
-            })
-            return { satisfied: result.clean, reason: result.clean ? "git_clean" : "dirty", condition: "git_clean" }
-          }
-
-          const result = yield* input.checks.runShellCheck({
-            cwd: input.cwd,
-            command: condition.shell.command,
-            timeout: condition.shell.timeout,
-            assert: condition.shell.assert
-              ? {
-                  exit_code: condition.shell.assert.exit_code,
-                  stdout_contains: condition.shell.assert.stdout_contains ? [...condition.shell.assert.stdout_contains] : undefined,
-                  stdout_regex: condition.shell.assert.stdout_regex ? [...condition.shell.assert.stdout_regex] : undefined,
-                  json: condition.shell.assert.json ? { ...condition.shell.assert.json } : undefined,
-                }
-              : undefined,
-          })
-          return {
-            satisfied: result.matched,
-            reason: result.matched ? "shell" : result.error ?? "shell",
-            condition: "shell",
-          }
-        }),
-      { concurrency: 1 },
-    )
+    const all = yield* evaluateStopConditions({
+      cwd: input.cwd,
+      checks: input.checks,
+      conditions: input.spec.stop.all,
+    })
 
     const any =
       input.spec.stop.any && input.spec.stop.any.length > 0
-        ? yield* Effect.forEach(
-            input.spec.stop.any,
-            (condition) =>
-              Effect.gen(function* () {
-                if ("git_clean" in condition) {
-                  const result = yield* input.checks.gitClean({
-                    cwd: input.cwd,
-                    allowUntracked: condition.git_clean.allow_untracked,
-                  })
-                  return { satisfied: result.clean, reason: result.clean ? "git_clean" : "dirty", condition: "git_clean" }
-                }
-                const result = yield* input.checks.runShellCheck({
-                  cwd: input.cwd,
-                  command: condition.shell.command,
-                  timeout: condition.shell.timeout,
-                  assert: condition.shell.assert
-                    ? {
-                        exit_code: condition.shell.assert.exit_code,
-                        stdout_contains: condition.shell.assert.stdout_contains ? [...condition.shell.assert.stdout_contains] : undefined,
-                        stdout_regex: condition.shell.assert.stdout_regex ? [...condition.shell.assert.stdout_regex] : undefined,
-                        json: condition.shell.assert.json ? { ...condition.shell.assert.json } : undefined,
-                      }
-                    : undefined,
-                })
-                return {
-                  satisfied: result.matched,
-                  reason: result.matched ? "shell" : result.error ?? "shell",
-                  condition: "shell",
-                }
-              }),
-            { concurrency: 1 },
-          )
+        ? yield* evaluateStopConditions({
+            cwd: input.cwd,
+            checks: input.checks,
+            conditions: input.spec.stop.any,
+          })
         : undefined
 
     return {
@@ -1075,6 +1035,46 @@ function evaluateStop(input: {
       any,
     }
   })
+}
+
+function evaluateStopConditions(input: {
+  cwd: string
+  checks: DaemonChecks.Interface
+  conditions: ZyalScript["stop"]["all"]
+}) {
+  return Effect.forEach(
+    input.conditions,
+    (condition) =>
+      Effect.gen(function* () {
+        if ("git_clean" in condition) {
+          const result = yield* input.checks.gitClean({
+            cwd: input.cwd,
+            allowUntracked: condition.git_clean.allow_untracked,
+          })
+          return { satisfied: result.clean, reason: result.clean ? "git_clean" : "dirty", condition: "git_clean" }
+        }
+
+        const result = yield* input.checks.runShellCheck({
+          cwd: input.cwd,
+          command: condition.shell.command,
+          timeout: condition.shell.timeout,
+          assert: condition.shell.assert
+            ? {
+                exit_code: condition.shell.assert.exit_code,
+                stdout_contains: condition.shell.assert.stdout_contains ? [...condition.shell.assert.stdout_contains] : undefined,
+                stdout_regex: condition.shell.assert.stdout_regex ? [...condition.shell.assert.stdout_regex] : undefined,
+                json: condition.shell.assert.json ? { ...condition.shell.assert.json } : undefined,
+              }
+            : undefined,
+        })
+        return {
+          satisfied: result.matched,
+          reason: result.matched ? "shell" : result.error ?? "shell",
+          condition: "shell",
+        }
+      }),
+    { concurrency: 1 },
+  )
 }
 
 export * as Daemon from "./daemon"

@@ -57,23 +57,23 @@ function generateSoftwareUnlockSecret() {
 async function readOrCreateSecret(secretFile: string, rotateSecret: boolean) {
   if (!rotateSecret) {
     try {
-      const existing = (await fs.readFile(secretFile, "utf8")).trim()
-      if (!isValidUnlockSecret(existing)) throw new Error(`Invalid unlock secret in ${secretFile}`)
-      return { secret: existing, created: false, rotated: false }
+      const existingUnlockSecret = (await fs.readFile(secretFile, "utf8")).trim()
+      if (!isValidUnlockSecret(existingUnlockSecret)) throw new Error(`Invalid unlock secret in ${secretFile}`)
+      return { unlockSecret: existingUnlockSecret, created: false, rotated: false }
     } catch (error) {
       if (error instanceof Error && error.message.startsWith("Invalid unlock secret")) throw error
     }
   }
 
-  const secret = generateSoftwareUnlockSecret()
-  if (!isValidUnlockSecret(secret)) {
+  const unlockSecret = generateSoftwareUnlockSecret()
+  if (!isValidUnlockSecret(unlockSecret)) {
     throw new Error("Generated unlock secret was not 128 ASCII characters")
   }
   try {
     await fs.mkdir(path.dirname(secretFile), { recursive: true })
-    await fs.writeFile(secretFile, secret, { mode: 0o600 })
+    await fs.writeFile(secretFile, unlockSecret, { mode: 0o600 })
     await fs.chmod(secretFile, 0o600)
-    return { secret, created: !rotateSecret, rotated: rotateSecret }
+    return { unlockSecret, created: !rotateSecret, rotated: rotateSecret }
   } catch (error) {
     throw new Error(`Could not write unlock secret file ${secretFile}: ${error instanceof Error ? error.message : String(error)}`)
   }
@@ -104,8 +104,8 @@ export const JNOCCIO_ENCRYPTED_GIT_CRYPT_KEY = ${JSON.stringify(envelope, null, 
 async function main() {
   const args = parseArgs(process.argv.slice(2))
   const rawKey = await fs.readFile(args.keyFile)
-  const { secret, created, rotated } = await readOrCreateSecret(args.secretFile, args.rotateSecret)
-  const envelope = encryptJnoccioGitCryptKey(rawKey, secret, {
+  const { unlockSecret, created, rotated } = await readOrCreateSecret(args.secretFile, args.rotateSecret)
+  const envelope = encryptJnoccioGitCryptKey(rawKey, unlockSecret, {
     aad: JNOCCIO_ENCRYPTION_AAD,
     params: JNOCCIO_ENCRYPTION_PARAMS,
   })
@@ -116,7 +116,7 @@ async function main() {
   process.stdout.write(
     [
       `encrypted module written: ${args.output}`,
-      `unlock secret file: ${args.secretFile} (${secret.length} chars${created ? ", created" : ""}${rotated ? ", rotated" : ""})`,
+      `unlock secret file: ${args.secretFile} (${unlockSecret.length} chars${created ? ", created" : ""}${rotated ? ", rotated" : ""})`,
       `unlock secret alphabet: A-Z0-9`,
       `git-crypt key source: ${args.keyFile}`,
     ].join("\n") + "\n",

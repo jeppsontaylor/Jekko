@@ -6,8 +6,47 @@ import { TuiConfig } from "../src/cli/cmd/tui/config/tui"
 
 const JsonSchemaObject = z.object({}).passthrough()
 
-function isObjectSchema(schema: z.ZodType<unknown>): schema is z.ZodObject<any> {
+function isObjectSchema(schema: z.ZodType<unknown>): schema is z.ZodObject<z.ZodRawShape> {
   return schema.type === "object"
+}
+
+function postProcessJsonSchema(value: unknown): void {
+  if (!value || typeof value !== "object") return
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      postProcessJsonSchema(item)
+    }
+    return
+  }
+
+  const schema = value as {
+    type?: unknown
+    additionalProperties?: unknown
+    examples?: unknown
+    description?: unknown
+    default?: unknown
+    [key: string]: unknown
+  }
+
+  if (schema.type === "object" && schema.additionalProperties === undefined) {
+    schema.additionalProperties = false
+  }
+
+  if (schema.type === "string" && schema.default) {
+    if (!Array.isArray(schema.examples)) {
+      schema.examples = [schema.default]
+    }
+
+    schema.description = [typeof schema.description === "string" ? schema.description : "", `default: \`${String(schema.default)}\``]
+      .filter(Boolean)
+      .join("\n\n")
+      .trim()
+  }
+
+  for (const child of Object.values(schema)) {
+    postProcessJsonSchema(child)
+  }
 }
 
 function generate(schema: z.ZodType<unknown>) {
@@ -15,45 +54,8 @@ function generate(schema: z.ZodType<unknown>) {
     throw new Error("generate expects an object schema")
   }
 
-  const generated: unknown = z.toJSONSchema(schema, {
-    io: "input", // Generate input shape (treats optional().default() as not required)
-    /**
-     * We'll use the `default` values of the field as the only value in `examples`.
-     * This will ensure no docs are needed to be read, as the configuration is
-     * self-documenting.
-     *
-     * See https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.9.5
-     */
-    override(ctx) {
-      const schema = JsonSchemaObject.parse(ctx.jsonSchema)
-
-      // Preserve strictness: set additionalProperties: false for objects
-      if (
-        schema &&
-        typeof schema === "object" &&
-        schema.type === "object" &&
-        schema.additionalProperties === undefined
-      ) {
-        schema.additionalProperties = false
-      }
-
-      // Add examples and default descriptions for string fields with defaults
-      if (schema && typeof schema === "object" && "type" in schema && schema.type === "string" && schema?.default) {
-        if (!schema.examples) {
-          schema.examples = [schema.default]
-        }
-
-        schema.description = [schema.description || "", `default: \`${String(schema.default)}\``]
-          .filter(Boolean)
-          .join("\n\n")
-          .trim()
-      }
-
-      Object.assign(ctx.jsonSchema, schema)
-    },
-  })
-
-  const result = JsonSchemaObject.parse(generated)
+  const result = JsonSchemaObject.parse(z.toJSONSchema(schema, { io: "input" }))
+  postProcessJsonSchema(result)
 
   // used for json lsps since config supports jsonc
   result.allowComments = true

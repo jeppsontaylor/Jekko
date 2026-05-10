@@ -1,13 +1,32 @@
 // Simple JSON-RPC 2.0 LSP-like fake server over stdio
 
+type PullRegistration = {
+  id?: string
+  method?: string
+  registerOptions?: any
+  [key: string]: any
+}
+
+type PullConfig = {
+  delayMs: number
+  registerOn?: string
+  registrations: PullRegistration[]
+  documentDiagnostics: any[]
+  documentDiagnosticsByIdentifier: Record<string, any[]>
+  documentDelayMsByIdentifier: Record<string, number>
+  workspaceDiagnostics: any[]
+  workspaceDiagnosticsByIdentifier: Record<string, any[]>
+  workspaceDelayMsByIdentifier: Record<string, number>
+}
+
 let nextId = 1
-let readBuffer = Buffer.alloc(0)
-let lastChange = null
-let initializeParams = null
+let readBuffer: any = Buffer.alloc(0)
+let lastChange: any = null
+let initializeParams: any = null
 let diagnosticRequestCount = 0
 let registeredCapability = false
 const pendingClientRequests = new Map()
-let pullConfig = {
+let pullConfig: PullConfig = {
   delayMs: 0,
   registerOn: undefined,
   registrations: [],
@@ -19,19 +38,23 @@ let pullConfig = {
   workspaceDelayMsByIdentifier: {},
 }
 
-function encode(message) {
+function encode(message: any) {
   const json = JSON.stringify(message)
   const header = `Content-Length: ${Buffer.byteLength(json, "utf8")}\r\n\r\n`
   return Buffer.concat([Buffer.from(header, "utf8"), Buffer.from(json, "utf8")])
 }
 
-function decodeFrames(buffer) {
-  const results = []
-  let idx
+function decodeFrames(buffer: any): { messages: string[]; rest: any } {
+  const results: string[] = []
+  let idx: number
   while ((idx = buffer.indexOf("\r\n\r\n")) !== -1) {
-    const header = buffer.slice(0, idx).toString("utf8")
-    const match = /Content-Length:\s*(\d+)/i.exec(header)
-    const length = match ? parseInt(match[1], 10) : 0
+    const header: string = buffer.slice(0, idx).toString("utf8")
+    const contentLengthLine = header
+      .split("\r\n")
+      .find((line: string) => line.toLowerCase().startsWith("content-length:"))
+    const length = contentLengthLine
+      ? Number.parseInt(contentLengthLine.slice(contentLengthLine.indexOf(":") + 1).trim(), 10)
+      : 0
     const bodyStart = idx + 4
     const bodyEnd = bodyStart + length
     if (buffer.length < bodyEnd) break
@@ -41,25 +64,25 @@ function decodeFrames(buffer) {
   return { messages: results, rest: buffer }
 }
 
-function send(message) {
+function send(message: any) {
   process.stdout.write(encode(message))
 }
 
-function sendRequest(method, params) {
+function sendRequest(method: string, params: any) {
   const id = nextId++
   send({ jsonrpc: "2.0", id, method, params })
   return id
 }
 
-function sendResponse(id, result) {
+function sendResponse(id: number, result: any) {
   send({ jsonrpc: "2.0", id, result })
 }
 
-function sendNotification(method, params) {
+function sendNotification(method: string, params: any) {
   send({ jsonrpc: "2.0", method, params })
 }
 
-function maybeRegister(method) {
+function maybeRegister(method?: string) {
   if (pullConfig.registerOn !== method || registeredCapability) return
   registeredCapability = true
   sendRequest("client/registerCapability", {
@@ -71,7 +94,7 @@ function maybeRegister(method) {
   })
 }
 
-function delayed(id, result, delayMs = pullConfig.delayMs) {
+function delayed(id: number, result: any, delayMs = pullConfig.delayMs) {
   if (!delayMs) {
     sendResponse(id, result)
     return
@@ -79,24 +102,24 @@ function delayed(id, result, delayMs = pullConfig.delayMs) {
   setTimeout(() => sendResponse(id, result), delayMs)
 }
 
-function diagnosticsForIdentifier(identifier) {
+function diagnosticsForIdentifier(identifier: string) {
   return pullConfig.documentDiagnosticsByIdentifier[identifier] ?? pullConfig.documentDiagnostics
 }
 
-function workspaceDiagnosticsForIdentifier(identifier) {
+function workspaceDiagnosticsForIdentifier(identifier: string) {
   return pullConfig.workspaceDiagnosticsByIdentifier[identifier] ?? pullConfig.workspaceDiagnostics
 }
 
-function documentDelayForIdentifier(identifier) {
+function documentDelayForIdentifier(identifier: string) {
   return pullConfig.documentDelayMsByIdentifier[identifier] ?? pullConfig.delayMs
 }
 
-function workspaceDelayForIdentifier(identifier) {
+function workspaceDelayForIdentifier(identifier: string) {
   return pullConfig.workspaceDelayMsByIdentifier[identifier] ?? pullConfig.delayMs
 }
 
-function handle(raw) {
-  let data
+function handle(raw: string) {
+  let data: any
   try {
     data = JSON.parse(raw)
   } catch {

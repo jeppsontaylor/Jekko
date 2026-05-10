@@ -1,13 +1,9 @@
 import z from "zod"
 import { Hono } from "hono"
 import { describeRoute, resolver } from "hono-openapi"
-import { streamSSE } from "hono/streaming"
-import * as Log from "@jekko-ai/core/util/log"
 import { BusEvent } from "@/bus/bus-event"
 import { Bus } from "@/bus"
-import { AsyncQueue } from "@/util/queue"
-
-const log = Log.create({ service: "server" })
+import { streamQueuedSSE } from "../sse-stream"
 
 export const EventRoutes = () =>
   new Hono().get(
@@ -32,59 +28,32 @@ export const EventRoutes = () =>
       },
     }),
     async (c) => {
-      log.info("event connected")
       c.header("Cache-Control", "no-cache, no-transform")
       c.header("X-Accel-Buffering", "no")
       c.header("X-Content-Type-Options", "nosniff")
-      return streamSSE(c, async (stream) => {
-        const q = new AsyncQueue<string | null>()
-        let done = false
-
-        q.push(
+      return streamQueuedSSE(c, {
+        connectedMessage: "event connected",
+        disconnectedMessage: "event disconnected",
+        initialEvent: () =>
           JSON.stringify({
             id: Bus.createID(),
             type: "server.connected",
             properties: {},
           }),
-        )
-
-        // Send heartbeat every 10s to prevent stalled proxy streams.
-        const heartbeat = setInterval(() => {
-          q.push(
-            JSON.stringify({
-              id: Bus.createID(),
-              type: "server.heartbeat",
-              properties: {},
-            }),
-          )
-        }, 10_000)
-
-        const stop = () => {
-          if (done) return
-          done = true
-          clearInterval(heartbeat)
-          unsub()
-          q.push(null)
-          log.info("event disconnected")
-        }
-
-        const unsub = Bus.subscribeAll((event) => {
-          q.push(JSON.stringify(event))
-          if (event.type === Bus.InstanceDisposed.type) {
-            stop()
-          }
-        })
-
-        stream.onAbort(stop)
-
-        try {
-          for await (const data of q) {
-            if (data === null) return
-            await stream.writeSSE({ data })
-          }
-        } finally {
-          stop()
-        }
+        heartbeatEvent: () =>
+          JSON.stringify({
+            id: Bus.createID(),
+            type: "server.heartbeat",
+            properties: {},
+          }),
+        subscribe(q, stop) {
+          return Bus.subscribeAll((event) => {
+            q.push(JSON.stringify(event))
+            if (event.type === Bus.InstanceDisposed.type) {
+              stop()
+            }
+          })
+        },
       })
     },
   )

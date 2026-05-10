@@ -1870,20 +1870,35 @@ function coverageResult(scenario: Scenario): Result {
 }
 
 function parseOptions(args: string[]): Options {
-  const mode = option(args, "--mode") ?? "effect"
+  const modeOption = option(args, "--mode")
+  const mode = modeOption._tag === "some" ? modeOption.value : "effect"
   if (mode !== "effect" && mode !== "parity" && mode !== "coverage") throw new Error(`invalid --mode ${mode}`)
+  const includeOption = option(args, "--include")
+  let include: string | undefined
+  switch (includeOption._tag) {
+    case "some":
+      include = includeOption.value
+      break
+    case "none":
+      include = undefined
+      break
+  }
   return {
     mode,
-    include: option(args, "--include"),
+    include,
     failOnMissing: args.includes("--fail-on-missing"),
     failOnSkip: args.includes("--fail-on-skip"),
   }
 }
 
-function option(args: string[], name: string) {
+type OptionResult = { readonly _tag: "some"; readonly value: string } | { readonly _tag: "none" }
+
+function option(args: string[], name: string): OptionResult {
   const index = args.indexOf(name)
-  if (index === -1) return undefined
-  return args[index + 1]
+  if (index === -1) return { _tag: "none" }
+  const value = args[index + 1]
+  if (value === undefined) return { _tag: "none" }
+  return { _tag: "some", value }
 }
 
 function matches(options: Options, scenario: Scenario) {

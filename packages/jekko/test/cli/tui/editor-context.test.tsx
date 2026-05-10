@@ -28,7 +28,7 @@ function mountEditorContext(WebSocketImpl?: typeof WebSocket) {
 
     const Consumer = () => {
       editor = useEditorContext()
-      return null
+      return <></>
     }
 
     return (

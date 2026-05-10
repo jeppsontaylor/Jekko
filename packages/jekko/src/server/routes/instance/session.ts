@@ -49,6 +49,45 @@ function queryBoolean(value: z.infer<typeof QueryBoolean> | undefined) {
   return value === true || value === "true"
 }
 
+function pendingResponse(routeName: string) {
+  return (c: Parameters<typeof jsonRequest>[1]) => {
+    const sessionID = c.req.valid("param").sessionID
+    return jsonRequest(routeName, c, function* () {
+      const pending = yield* Pending.Service
+      return yield* pending.get(sessionID)
+    })
+  }
+}
+
+function pendingRoute(path: string, operationId: string, routeName: string) {
+  return [
+    path,
+    describeRoute({
+      summary: "Get session pending items",
+      description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
+      operationId,
+      responses: {
+        200: {
+          description: "Pending list",
+          content: {
+            "application/json": {
+              schema: resolver(Pending.Info.zod.array()),
+            },
+          },
+        },
+        ...errors(400, 404),
+      },
+    }),
+    validator(
+      "param",
+      z.object({
+        sessionID: SessionID.zod,
+      }),
+    ),
+    pendingResponse(routeName),
+  ] as const
+}
+
 export const SessionRoutes = lazy(() =>
   new Hono()
     .get(
@@ -194,68 +233,10 @@ export const SessionRoutes = lazy(() =>
       },
     )
     .get(
-      "/:sessionID/pending",
-      describeRoute({
-        summary: "Get session pending items",
-        description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
-        operationId: "session.pending",
-        responses: {
-          200: {
-            description: "Pending list",
-            content: {
-              "application/json": {
-                schema: resolver(Pending.Info.zod.array()),
-              },
-            },
-          },
-          ...errors(400, 404),
-        },
-      }),
-      validator(
-        "param",
-        z.object({
-          sessionID: SessionID.zod,
-        }),
-      ),
-      async (c) => {
-        const sessionID = c.req.valid("param").sessionID
-        return jsonRequest("SessionRoutes.pending", c, function* () {
-          const pending = yield* Pending.Service
-          return yield* pending.get(sessionID)
-        })
-      },
+      ...pendingRoute("/:sessionID/pending", "session.pending", "SessionRoutes.pending"),
     )
     .get(
-      `/:sessionID/${taskSegment}`,
-      describeRoute({
-        summary: "Get session pending items",
-        description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
-        operationId: `session.${taskSegment}`,
-        responses: {
-          200: {
-            description: "Pending list",
-            content: {
-              "application/json": {
-                schema: resolver(Pending.Info.zod.array()),
-              },
-            },
-          },
-          ...errors(400, 404),
-        },
-      }),
-      validator(
-        "param",
-        z.object({
-          sessionID: SessionID.zod,
-        }),
-      ),
-      async (c) => {
-        const sessionID = c.req.valid("param").sessionID
-        return jsonRequest(`SessionRoutes.${taskSegment}`, c, function* () {
-          const pending = yield* Pending.Service
-          return yield* pending.get(sessionID)
-        })
-      },
+      ...pendingRoute(`/:sessionID/${taskSegment}`, `session.${taskSegment}`, `SessionRoutes.${taskSegment}`),
     )
     .post(
       "/",

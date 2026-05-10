@@ -75,6 +75,8 @@ export type Event =
   | EventSessionNextCompactionStarted
   | EventSessionNextCompactionDelta
   | EventSessionNextCompactionEnded
+  | EventDaemonStatus
+  | EventDaemonCreated
   | EventServerConnected
   | EventGlobalDisposed
 
@@ -243,7 +245,7 @@ export type QuestionRejected = {
   requestID: string
 }
 
-export type Todo = {
+export type Pending = {
   /**
    * Brief description of the task
    */
@@ -840,6 +842,8 @@ export type GlobalEvent = {
     | EventSessionNextCompactionStarted
     | EventSessionNextCompactionDelta
     | EventSessionNextCompactionEnded
+    | EventDaemonStatus
+    | EventDaemonCreated
     | EventServerConnected
     | EventGlobalDisposed
     | SyncEventMessageUpdated
@@ -1028,12 +1032,12 @@ export type ProviderConfig = {
         input: Array<"text" | "audio" | "image" | "video" | "pdf">
         output: Array<"text" | "audio" | "image" | "video" | "pdf">
       }
-      experimental?: boolean
-      status?: "alpha" | "beta" | "deprecated" | "active" | "locked"
       provider?: {
         npm?: string
         api?: string
       }
+      experimental?: boolean
+      status?: "alpha" | "beta" | "inactive" | "active" | "locked"
       options?: {
         [key: string]: unknown
       }
@@ -1293,7 +1297,7 @@ export type Model = {
     input?: number
     output: number
   }
-  status: "alpha" | "beta" | "deprecated" | "active" | "locked"
+  status: "alpha" | "beta" | "inactive" | "active" | "locked"
   options: {
     [key: string]: unknown
   }
@@ -1320,6 +1324,54 @@ export type Provider = {
   models: {
     [key: string]: Model
   }
+}
+
+export type TextPartInput = {
+  id?: string
+  type: "text"
+  text: string
+  synthetic?: boolean
+  ignored?: boolean
+  time?: {
+    start: number
+    end?: number
+  }
+  metadata?: {
+    [key: string]: unknown
+  }
+}
+
+export type FilePartInput = {
+  id?: string
+  type: "file"
+  mime: string
+  filename?: string
+  url: string
+  source?: FilePartSource
+}
+
+export type AgentPartInput = {
+  id?: string
+  type: "agent"
+  name: string
+  source?: {
+    value: string
+    start: number
+    end: number
+  }
+}
+
+export type SubtaskPartInput = {
+  id?: string
+  type: "subtask"
+  prompt: string
+  description: string
+  agent: string
+  model?: {
+    providerID: string
+    modelID: string
+  }
+  command?: string
 }
 
 export type ConsoleState = {
@@ -1611,52 +1663,17 @@ export type ProviderAuthAuthorization = {
   instructions: string
 }
 
-export type TextPartInput = {
-  id?: string
-  type: "text"
-  text: string
-  synthetic?: boolean
-  ignored?: boolean
-  time?: {
-    start: number
-    end?: number
-  }
-  metadata?: {
-    [key: string]: unknown
-  }
+export type JnoccioUnlockInput = {
+  unlockSecret?: string
+  keyPath?: string
 }
 
-export type FilePartInput = {
-  id?: string
-  type: "file"
-  mime: string
-  filename?: string
-  url: string
-  source?: FilePartSource
-}
-
-export type AgentPartInput = {
-  id?: string
-  type: "agent"
-  name: string
-  source?: {
-    value: string
-    start: number
-    end: number
-  }
-}
-
-export type SubtaskPartInput = {
-  id?: string
-  type: "subtask"
-  prompt: string
-  description: string
-  agent: string
-  model?: {
-    providerID: string
-    modelID: string
-  }
-  command?: string
+export type JnoccioUnlockResult = {
+  status: "unlocked" | "needs_secret" | "error"
+  message: string
+  envPath?: string
+  envCreated: boolean
+  secretSaved?: boolean
 }
 
 export type V2SessionsResponse = {
@@ -2392,7 +2409,7 @@ export type EventPendingUpdated = {
   type: "pending.updated"
   properties: {
     sessionID: string
-    todos: Array<Todo>
+    todos: Array<Pending>
   }
 }
 
@@ -2972,6 +2989,39 @@ export type EventSessionNextCompactionEnded = {
   }
 }
 
+export type EventDaemonStatus = {
+  id: string
+  type: "daemon.status"
+  properties: {
+    runID: string
+    status: "created" | "armed" | "running" | "paused" | "blocked" | "satisfied" | "aborted" | "failed"
+    phase:
+      | "created"
+      | "evaluating_stop"
+      | "running_iteration"
+      | "routing_tasks"
+      | "incubating"
+      | "incubator_pass"
+      | "promotion_gate"
+      | "checkpointing"
+      | "compacting"
+      | "sleeping"
+      | "rotating_session"
+      | "paused"
+      | "blocked"
+      | "terminal"
+  }
+}
+
+export type EventDaemonCreated = {
+  id: string
+  type: "daemon.created"
+  properties: {
+    runID: string
+    spec: unknown
+  }
+}
+
 export type EventServerConnected = {
   id: string
   type: "server.connected"
@@ -3545,6 +3595,633 @@ export type ConfigProvidersResponses = {
 }
 
 export type ConfigProvidersResponse = ConfigProvidersResponses[keyof ConfigProvidersResponses]
+
+export type DaemonPreviewData = {
+  body?: {
+    text: string
+  }
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/preview"
+}
+
+export type DaemonPreviewErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type DaemonPreviewError = DaemonPreviewErrors[keyof DaemonPreviewErrors]
+
+export type DaemonPreviewResponses = {
+  /**
+   * Parsed ZYAL preview
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonPreviewResponse = DaemonPreviewResponses[keyof DaemonPreviewResponses]
+
+export type DaemonListData = {
+  body?: never
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon"
+}
+
+export type DaemonListResponses = {
+  /**
+   * List daemon runs
+   */
+  200: Array<{
+    [key: string]: unknown
+  }>
+}
+
+export type DaemonListResponse = DaemonListResponses[keyof DaemonListResponses]
+
+export type DaemonGetData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}"
+}
+
+export type DaemonGetErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonGetError = DaemonGetErrors[keyof DaemonGetErrors]
+
+export type DaemonGetResponses = {
+  /**
+   * Daemon run
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonGetResponse = DaemonGetResponses[keyof DaemonGetResponses]
+
+export type DaemonEventsData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/events"
+}
+
+export type DaemonEventsErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonEventsError = DaemonEventsErrors[keyof DaemonEventsErrors]
+
+export type DaemonEventsResponses = {
+  /**
+   * Daemon run events
+   */
+  200: Array<{
+    [key: string]: unknown
+  }>
+}
+
+export type DaemonEventsResponse = DaemonEventsResponses[keyof DaemonEventsResponses]
+
+export type DaemonPauseData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/pause"
+}
+
+export type DaemonPauseErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonPauseError = DaemonPauseErrors[keyof DaemonPauseErrors]
+
+export type DaemonPauseResponses = {
+  /**
+   * Paused daemon run
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonPauseResponse = DaemonPauseResponses[keyof DaemonPauseResponses]
+
+export type DaemonResumeData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/resume"
+}
+
+export type DaemonResumeErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonResumeError = DaemonResumeErrors[keyof DaemonResumeErrors]
+
+export type DaemonResumeResponses = {
+  /**
+   * Resumed daemon run
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonResumeResponse = DaemonResumeResponses[keyof DaemonResumeResponses]
+
+export type DaemonAbortData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/abort"
+}
+
+export type DaemonAbortErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonAbortError = DaemonAbortErrors[keyof DaemonAbortErrors]
+
+export type DaemonAbortResponses = {
+  /**
+   * Aborted daemon run
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonAbortResponse = DaemonAbortResponses[keyof DaemonAbortResponses]
+
+export type DaemonCompactData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/compact"
+}
+
+export type DaemonCompactErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonCompactError = DaemonCompactErrors[keyof DaemonCompactErrors]
+
+export type DaemonCompactResponses = {
+  /**
+   * Compacted daemon run
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonCompactResponse = DaemonCompactResponses[keyof DaemonCompactResponses]
+
+export type DaemonRotateSessionData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/rotate-session"
+}
+
+export type DaemonRotateSessionErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonRotateSessionError = DaemonRotateSessionErrors[keyof DaemonRotateSessionErrors]
+
+export type DaemonRotateSessionResponses = {
+  /**
+   * Rotated daemon session
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonRotateSessionResponse = DaemonRotateSessionResponses[keyof DaemonRotateSessionResponses]
+
+export type DaemonStartData = {
+  body?: {
+    messageID?: string
+    model?: {
+      providerID: string
+      modelID: string
+    }
+    agent?: string
+    noReply?: boolean
+    tools?: {
+      [key: string]: boolean
+    }
+    format?: OutputFormat
+    system?: string
+    variant?: string
+    parts: Array<TextPartInput | FilePartInput | AgentPartInput | SubtaskPartInput>
+  }
+  path: {
+    sessionID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/session/{sessionID}/daemon/start"
+}
+
+export type DaemonStartErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type DaemonStartError = DaemonStartErrors[keyof DaemonStartErrors]
+
+export type DaemonStartResponses = {
+  /**
+   * Started daemon run
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonStartResponse = DaemonStartResponses[keyof DaemonStartResponses]
+
+export type DaemonTasksData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks"
+}
+
+export type DaemonTasksErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonTasksError = DaemonTasksErrors[keyof DaemonTasksErrors]
+
+export type DaemonTasksResponses = {
+  /**
+   * Daemon tasks
+   */
+  200: Array<{
+    [key: string]: unknown
+  }>
+}
+
+export type DaemonTasksResponse = DaemonTasksResponses[keyof DaemonTasksResponses]
+
+export type DaemonTaskData = {
+  body?: never
+  path: {
+    runID: string
+    taskID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks/{taskID}"
+}
+
+export type DaemonTaskErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonTaskError = DaemonTaskErrors[keyof DaemonTaskErrors]
+
+export type DaemonTaskResponses = {
+  /**
+   * Daemon task
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonTaskResponse = DaemonTaskResponses[keyof DaemonTaskResponses]
+
+export type DaemonTaskPassesData = {
+  body?: never
+  path: {
+    runID: string
+    taskID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks/{taskID}/passes"
+}
+
+export type DaemonTaskPassesErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonTaskPassesError = DaemonTaskPassesErrors[keyof DaemonTaskPassesErrors]
+
+export type DaemonTaskPassesResponses = {
+  /**
+   * Daemon task passes
+   */
+  200: Array<{
+    [key: string]: unknown
+  }>
+}
+
+export type DaemonTaskPassesResponse = DaemonTaskPassesResponses[keyof DaemonTaskPassesResponses]
+
+export type DaemonTaskMemoryData = {
+  body?: never
+  path: {
+    runID: string
+    taskID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks/{taskID}/memory"
+}
+
+export type DaemonTaskMemoryErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonTaskMemoryError = DaemonTaskMemoryErrors[keyof DaemonTaskMemoryErrors]
+
+export type DaemonTaskMemoryResponses = {
+  /**
+   * Daemon task memory
+   */
+  200: Array<{
+    [key: string]: unknown
+  }>
+}
+
+export type DaemonTaskMemoryResponse = DaemonTaskMemoryResponses[keyof DaemonTaskMemoryResponses]
+
+export type DaemonIncubateTaskData = {
+  body?: {
+    reason?: string
+  }
+  path: {
+    runID: string
+    taskID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks/{taskID}/incubate"
+}
+
+export type DaemonIncubateTaskErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonIncubateTaskError = DaemonIncubateTaskErrors[keyof DaemonIncubateTaskErrors]
+
+export type DaemonIncubateTaskResponses = {
+  /**
+   * Incubated daemon task
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonIncubateTaskResponse = DaemonIncubateTaskResponses[keyof DaemonIncubateTaskResponses]
+
+export type DaemonPromoteTaskData = {
+  body?: {
+    reason?: string
+  }
+  path: {
+    runID: string
+    taskID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks/{taskID}/promote"
+}
+
+export type DaemonPromoteTaskErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonPromoteTaskError = DaemonPromoteTaskErrors[keyof DaemonPromoteTaskErrors]
+
+export type DaemonPromoteTaskResponses = {
+  /**
+   * Promoted daemon task
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonPromoteTaskResponse = DaemonPromoteTaskResponses[keyof DaemonPromoteTaskResponses]
+
+export type DaemonBlockTaskData = {
+  body?: {
+    reason?: string
+  }
+  path: {
+    runID: string
+    taskID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks/{taskID}/block"
+}
+
+export type DaemonBlockTaskErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonBlockTaskError = DaemonBlockTaskErrors[keyof DaemonBlockTaskErrors]
+
+export type DaemonBlockTaskResponses = {
+  /**
+   * Blocked daemon task
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonBlockTaskResponse = DaemonBlockTaskResponses[keyof DaemonBlockTaskResponses]
+
+export type DaemonArchiveTaskData = {
+  body?: {
+    reason?: string
+  }
+  path: {
+    runID: string
+    taskID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/tasks/{taskID}/archive"
+}
+
+export type DaemonArchiveTaskErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonArchiveTaskError = DaemonArchiveTaskErrors[keyof DaemonArchiveTaskErrors]
+
+export type DaemonArchiveTaskResponses = {
+  /**
+   * Archived daemon task
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonArchiveTaskResponse = DaemonArchiveTaskResponses[keyof DaemonArchiveTaskResponses]
+
+export type DaemonIncubatorData = {
+  body?: never
+  path: {
+    runID: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/daemon/{runID}/incubator"
+}
+
+export type DaemonIncubatorErrors = {
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type DaemonIncubatorError = DaemonIncubatorErrors[keyof DaemonIncubatorErrors]
+
+export type DaemonIncubatorResponses = {
+  /**
+   * Daemon incubator state
+   */
+  200: {
+    [key: string]: unknown
+  }
+}
+
+export type DaemonIncubatorResponse = DaemonIncubatorResponses[keyof DaemonIncubatorResponses]
 
 export type ExperimentalConsoleGetData = {
   body?: never
@@ -4884,34 +5561,6 @@ export type ProviderAuthResponses = {
 
 export type ProviderAuthResponse = ProviderAuthResponses[keyof ProviderAuthResponses]
 
-export type ProviderJnoccioUnlockData = {
-  body?: {
-    unlockSecret?: string
-    keyPath?: string
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/provider/jnoccio/unlock"
-}
-
-export type ProviderJnoccioUnlockResponses = {
-  /**
-   * Jnoccio unlock result
-   */
-  200: {
-    status: "unlocked" | "needs_secret" | "error"
-    message: string
-    envPath?: string
-    envCreated: boolean
-    secretSaved?: boolean
-  }
-}
-
-export type ProviderJnoccioUnlockResponse = ProviderJnoccioUnlockResponses[keyof ProviderJnoccioUnlockResponses]
-
 export type ProviderOauthAuthorizeData = {
   body?: {
     /**
@@ -4986,6 +5635,25 @@ export type ProviderOauthCallbackResponses = {
 
 export type ProviderOauthCallbackResponse = ProviderOauthCallbackResponses[keyof ProviderOauthCallbackResponses]
 
+export type ProviderJnoccioUnlockData = {
+  body?: JnoccioUnlockInput
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/provider/jnoccio/unlock"
+}
+
+export type ProviderJnoccioUnlockResponses = {
+  /**
+   * Jnoccio unlock result
+   */
+  200: JnoccioUnlockResult
+}
+
+export type ProviderJnoccioUnlockResponse = ProviderJnoccioUnlockResponses[keyof ProviderJnoccioUnlockResponses]
+
 export type SessionListData = {
   body?: never
   path?: never
@@ -5023,6 +5691,8 @@ export type SessionCreateData = {
     }
     permission?: PermissionRuleset
     workspaceID?: string
+    directory?: string
+    path?: string
   }
   path?: never
   query?: {
@@ -5240,7 +5910,7 @@ export type SessionPendingErrors = {
    */
   400: BadRequestError
   /**
-   * Not found
+   * NotFoundError
    */
   404: NotFoundError
 }
@@ -5249,14 +5919,14 @@ export type SessionPendingError = SessionPendingErrors[keyof SessionPendingError
 
 export type SessionPendingResponses = {
   /**
-   * Todo list
+   * Pending list
    */
-  200: Array<Todo>
+  200: Array<Pending>
 }
 
 export type SessionPendingResponse = SessionPendingResponses[keyof SessionPendingResponses]
 
-export type SessionTodoData = {
+export type SessionPendingListData = {
   body?: never
   path: {
     sessionID: string
@@ -5265,30 +5935,30 @@ export type SessionTodoData = {
     directory?: string
     workspace?: string
   }
-  url: "/session/{sessionID}/todo"
+  url: "/session/{sessionID}/pending-list"
 }
 
-export type SessionTodoErrors = {
+export type SessionPendingListErrors = {
   /**
    * Bad request
    */
   400: BadRequestError
   /**
-   * Not found
+   * NotFoundError
    */
   404: NotFoundError
 }
 
-export type SessionTodoError = SessionTodoErrors[keyof SessionTodoErrors]
+export type SessionPendingListError = SessionPendingListErrors[keyof SessionPendingListErrors]
 
-export type SessionTodoResponses = {
+export type SessionPendingListResponses = {
   /**
-   * Todo list
+   * Pending list
    */
-  200: Array<Todo>
+  200: Array<Pending>
 }
 
-export type SessionTodoResponse = SessionTodoResponses[keyof SessionTodoResponses]
+export type SessionPendingListResponse = SessionPendingListResponses[keyof SessionPendingListResponses]
 
 export type SessionDiffData = {
   body?: never

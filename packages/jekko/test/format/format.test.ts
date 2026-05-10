@@ -9,6 +9,20 @@ import * as Formatter from "../../src/format/formatter"
 
 const it = testEffect(Layer.mergeAll(Format.defaultLayer, CrossSpawnSpawner.defaultLayer, NodeFileSystem.layer))
 
+describe("commandFormatter", () => {
+  test("returns a command when the resolver finds a binary", async () => {
+    const info = Formatter.commandFormatter("example", [".example"], () => "/bin/example", ["--write"])
+
+    await expect(info.enabled({} as any)).resolves.toEqual(["/bin/example", "--write"])
+  })
+
+  test("returns false when the resolver cannot find a binary", async () => {
+    const info = Formatter.commandFormatter("example", [".example"], () => false, ["--write"])
+
+    await expect(info.enabled({} as any)).resolves.toBe(false)
+  })
+})
+
 describe("Format", () => {
   it.live("status() returns empty list when no formatters are configured", () =>
     provideTmpdirInstance(() =>

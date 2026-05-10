@@ -1,10 +1,10 @@
 // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import { chmod, mkdir, readFile, stat as statFile, writeFile } from "fs/promises"
 import { createWriteStream, existsSync, statSync } from "fs"
-import { realpathSync } from "fs"
-import { dirname, join, relative, resolve as pathResolve, win32 } from "path"
+import { dirname, join } from "path"
 import { Readable } from "stream"
 import { pipeline } from "stream/promises"
+import { AppFileSystem as CoreFileSystem } from "@jekko-ai/core/filesystem"
 import { Glob } from "@jekko-ai/core/util/glob"
 
 // Fast sync version for metadata checks
@@ -103,8 +103,7 @@ export async function writeStream(
 }
 
 export async function mimeType(p: string): Promise<string> {
-  const { lookup } = await import("mime-types")
-  return lookup(p) || "application/octet-stream"
+  return CoreFileSystem.mimeType(p)
 }
 
 /**
@@ -113,58 +112,29 @@ export async function mimeType(p: string): Promise<string> {
  * may return paths with different casing than what we send them.
  */
 export function normalizePath(p: string): string {
-  if (process.platform !== "win32") return p
-  const resolved = win32.normalize(win32.resolve(windowsPath(p)))
-  try {
-    return realpathSync.native(resolved)
-  } catch {
-    return resolved
-  }
+  return CoreFileSystem.normalizePath(p)
 }
 
 export function normalizePathPattern(p: string): string {
-  if (process.platform !== "win32") return p
-  if (p === "*") return p
-  const match = p.match(/^(.*)[\\/]\*$/)
-  if (!match) return normalizePath(p)
-  const dir = /^[A-Za-z]:$/.test(match[1]) ? match[1] + "\\" : match[1]
-  return join(normalizePath(dir), "*")
+  return CoreFileSystem.normalizePathPattern(p)
 }
 
 // We cannot rely on path.resolve() here because git.exe may come from Git Bash, Cygwin, or MSYS2, so we need to translate these paths at the boundary.
 // Also resolves symlinks so that callers using the result as a cache key
 // always get the same canonical path for a given physical directory.
 export function resolve(p: string): string {
-  const resolved = pathResolve(windowsPath(p))
-  try {
-    return normalizePath(realpathSync(resolved))
-  } catch (e) {
-    if (isEnoent(e)) return normalizePath(resolved)
-    throw e
-  }
+  return CoreFileSystem.resolve(p)
 }
 
 export function windowsPath(p: string): string {
-  if (process.platform !== "win32") return p
-  return (
-    p
-      .replace(/^\/([a-zA-Z]):(?:[\\/]|$)/, (_, drive) => `${drive.toUpperCase()}:/`)
-      // Git Bash for Windows paths are typically /<drive>/...
-      .replace(/^\/([a-zA-Z])(?:\/|$)/, (_, drive) => `${drive.toUpperCase()}:/`)
-      // Cygwin git paths are typically /cygdrive/<drive>/...
-      .replace(/^\/cygdrive\/([a-zA-Z])(?:\/|$)/, (_, drive) => `${drive.toUpperCase()}:/`)
-      // WSL paths are typically /mnt/<drive>/...
-      .replace(/^\/mnt\/([a-zA-Z])(?:\/|$)/, (_, drive) => `${drive.toUpperCase()}:/`)
-  )
+  return CoreFileSystem.windowsPath(p)
 }
 export function overlaps(a: string, b: string) {
-  const relA = relative(a, b)
-  const relB = relative(b, a)
-  return !relA || !relA.startsWith("..") || !relB || !relB.startsWith("..")
+  return CoreFileSystem.overlaps(a, b)
 }
 
 export function contains(parent: string, child: string) {
-  return !relative(parent, child).startsWith("..")
+  return CoreFileSystem.contains(parent, child)
 }
 
 export async function findUp(

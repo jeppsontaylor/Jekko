@@ -19,6 +19,43 @@ import type {
   ConfigProvidersResponses,
   ConfigUpdateErrors,
   ConfigUpdateResponses,
+  DaemonAbortErrors,
+  DaemonAbortResponses,
+  DaemonArchiveTaskErrors,
+  DaemonArchiveTaskResponses,
+  DaemonBlockTaskErrors,
+  DaemonBlockTaskResponses,
+  DaemonCompactErrors,
+  DaemonCompactResponses,
+  DaemonEventsErrors,
+  DaemonEventsResponses,
+  DaemonGetErrors,
+  DaemonGetResponses,
+  DaemonIncubateTaskErrors,
+  DaemonIncubateTaskResponses,
+  DaemonIncubatorErrors,
+  DaemonIncubatorResponses,
+  DaemonListResponses,
+  DaemonPauseErrors,
+  DaemonPauseResponses,
+  DaemonPreviewErrors,
+  DaemonPreviewResponses,
+  DaemonPromoteTaskErrors,
+  DaemonPromoteTaskResponses,
+  DaemonResumeErrors,
+  DaemonResumeResponses,
+  DaemonRotateSessionErrors,
+  DaemonRotateSessionResponses,
+  DaemonStartErrors,
+  DaemonStartResponses,
+  DaemonTaskErrors,
+  DaemonTaskMemoryErrors,
+  DaemonTaskMemoryResponses,
+  DaemonTaskPassesErrors,
+  DaemonTaskPassesResponses,
+  DaemonTaskResponses,
+  DaemonTasksErrors,
+  DaemonTasksResponses,
   EventSubscribeResponses,
   EventTuiCommandExecute2,
   EventTuiPromptAppend2,
@@ -56,6 +93,7 @@ import type {
   GlobalUpgradeErrors,
   GlobalUpgradeResponses,
   InstanceDisposeResponses,
+  JnoccioUnlockInput,
   LspStatusResponses,
   McpAddErrors,
   McpAddResponses,
@@ -144,6 +182,8 @@ import type {
   SessionMessagesErrors,
   SessionMessagesResponses,
   SessionPendingErrors,
+  SessionPendingListErrors,
+  SessionPendingListResponses,
   SessionPendingResponses,
   SessionPromptAsyncErrors,
   SessionPromptAsyncResponses,
@@ -159,8 +199,6 @@ import type {
   SessionStatusResponses,
   SessionSummarizeErrors,
   SessionSummarizeResponses,
-  SessionTodoErrors,
-  SessionTodoResponses,
   SessionUnrevertErrors,
   SessionUnrevertResponses,
   SessionUnshareErrors,
@@ -655,6 +693,646 @@ export class Config2 extends HeyApiClient {
     )
     return (options?.client ?? this.client).get<ConfigProvidersResponses, unknown, ThrowOnError>({
       url: "/config/providers",
+      ...options,
+      ...params,
+    })
+  }
+}
+
+export class Daemon extends HeyApiClient {
+  /**
+   * Preview ZYAL
+   *
+   * Parse an ZYAL daemon draft and return a preview without starting execution.
+   */
+  public preview<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      text?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "text" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonPreviewResponses, DaemonPreviewErrors, ThrowOnError>({
+      url: "/daemon/preview",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  /**
+   * List daemon runs
+   *
+   * List daemon runs known to the local runtime.
+   */
+  public list<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonListResponses, unknown, ThrowOnError>({
+      url: "/daemon",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Get daemon run
+   *
+   * Get a single daemon run by ID.
+   */
+  public get<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonGetResponses, DaemonGetErrors, ThrowOnError>({
+      url: "/daemon/{runID}",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Get daemon events
+   *
+   * Get the event stream for a daemon run.
+   */
+  public events<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonEventsResponses, DaemonEventsErrors, ThrowOnError>({
+      url: "/daemon/{runID}/events",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Pause daemon run
+   *
+   * Pause a daemon run.
+   */
+  public pause<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonPauseResponses, DaemonPauseErrors, ThrowOnError>({
+      url: "/daemon/{runID}/pause",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Resume daemon run
+   *
+   * Resume a paused daemon run.
+   */
+  public resume<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonResumeResponses, DaemonResumeErrors, ThrowOnError>({
+      url: "/daemon/{runID}/resume",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Abort daemon run
+   *
+   * Abort a daemon run.
+   */
+  public abort<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonAbortResponses, DaemonAbortErrors, ThrowOnError>({
+      url: "/daemon/{runID}/abort",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Compact daemon run
+   *
+   * Request compaction for a daemon run.
+   */
+  public compact<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonCompactResponses, DaemonCompactErrors, ThrowOnError>({
+      url: "/daemon/{runID}/compact",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Rotate daemon session
+   *
+   * Fork the current session and continue the daemon in the child session.
+   */
+  public rotateSession<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonRotateSessionResponses, DaemonRotateSessionErrors, ThrowOnError>(
+      {
+        url: "/daemon/{runID}/rotate-session",
+        ...options,
+        ...params,
+      },
+    )
+  }
+
+  /**
+   * Start daemon run
+   *
+   * Parse and start an ZYAL daemon run for the given session.
+   */
+  public start<ThrowOnError extends boolean = false>(
+    parameters: {
+      sessionID: string
+      directory?: string
+      workspace?: string
+      messageID?: string
+      model?: {
+        providerID: string
+        modelID: string
+      }
+      agent?: string
+      noReply?: boolean
+      tools?: {
+        [key: string]: boolean
+      }
+      format?: OutputFormat
+      system?: string
+      variant?: string
+      parts?: Array<TextPartInput | FilePartInput | AgentPartInput | SubtaskPartInput>
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "sessionID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "messageID" },
+            { in: "body", key: "model" },
+            { in: "body", key: "agent" },
+            { in: "body", key: "noReply" },
+            { in: "body", key: "tools" },
+            { in: "body", key: "format" },
+            { in: "body", key: "system" },
+            { in: "body", key: "variant" },
+            { in: "body", key: "parts" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonStartResponses, DaemonStartErrors, ThrowOnError>({
+      url: "/session/{sessionID}/daemon/start",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  public tasks<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonTasksResponses, DaemonTasksErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks",
+      ...options,
+      ...params,
+    })
+  }
+
+  public task<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      taskID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "path", key: "taskID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonTaskResponses, DaemonTaskErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks/{taskID}",
+      ...options,
+      ...params,
+    })
+  }
+
+  public taskPasses<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      taskID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "path", key: "taskID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonTaskPassesResponses, DaemonTaskPassesErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks/{taskID}/passes",
+      ...options,
+      ...params,
+    })
+  }
+
+  public taskMemory<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      taskID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "path", key: "taskID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonTaskMemoryResponses, DaemonTaskMemoryErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks/{taskID}/memory",
+      ...options,
+      ...params,
+    })
+  }
+
+  public incubateTask<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      taskID: string
+      directory?: string
+      workspace?: string
+      reason?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "path", key: "taskID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "reason" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonIncubateTaskResponses, DaemonIncubateTaskErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks/{taskID}/incubate",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  public promoteTask<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      taskID: string
+      directory?: string
+      workspace?: string
+      reason?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "path", key: "taskID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "reason" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonPromoteTaskResponses, DaemonPromoteTaskErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks/{taskID}/promote",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  public blockTask<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      taskID: string
+      directory?: string
+      workspace?: string
+      reason?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "path", key: "taskID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "reason" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonBlockTaskResponses, DaemonBlockTaskErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks/{taskID}/block",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  public archiveTask<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      taskID: string
+      directory?: string
+      workspace?: string
+      reason?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "path", key: "taskID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "reason" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<DaemonArchiveTaskResponses, DaemonArchiveTaskErrors, ThrowOnError>({
+      url: "/daemon/{runID}/tasks/{taskID}/archive",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  public incubator<ThrowOnError extends boolean = false>(
+    parameters: {
+      runID: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "runID" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<DaemonIncubatorResponses, DaemonIncubatorErrors, ThrowOnError>({
+      url: "/daemon/{runID}/incubator",
       ...options,
       ...params,
     })
@@ -2597,8 +3275,6 @@ export class Permission extends HeyApiClient {
    * Respond to permission
    *
    * Approve or deny a permission request from the AI assistant.
-   *
-   * @deprecated
    */
   public respond<ThrowOnError extends boolean = false>(
     parameters: {
@@ -2731,6 +3407,45 @@ export class Oauth extends HeyApiClient {
   }
 }
 
+export class Jnoccio extends HeyApiClient {
+  /**
+   * Unlock Jnoccio Fusion
+   *
+   * Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a git-crypt key file path.
+   */
+  public unlock<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      jnoccioUnlockInput?: JnoccioUnlockInput
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { key: "jnoccioUnlockInput", map: "body" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<ProviderJnoccioUnlockResponses, unknown, ThrowOnError>({
+      url: "/provider/jnoccio/unlock",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+}
+
 export class Provider extends HeyApiClient {
   /**
    * List providers
@@ -2792,48 +3507,14 @@ export class Provider extends HeyApiClient {
     })
   }
 
-  /**
-   * Unlock Jnoccio Fusion
-   *
-   * Unlock local Jnoccio Fusion source with an encrypted unlock secret or a legacy git-crypt key file path.
-   */
-  public unlock<ThrowOnError extends boolean = false>(
-    parameters: {
-      directory?: string
-      workspace?: string
-      unlockSecret?: string
-      keyPath?: string
-    },
-    options?: Options<never, ThrowOnError>,
-  ) {
-    const params = buildClientParams(
-      [parameters],
-      [
-        {
-          args: [
-            { in: "query", key: "directory" },
-            { in: "query", key: "workspace" },
-            { in: "body", key: "unlockSecret" },
-            { in: "body", key: "keyPath" },
-          ],
-        },
-      ],
-    )
-    return (options?.client ?? this.client).post<ProviderJnoccioUnlockResponses, unknown, ThrowOnError>({
-      url: "/provider/jnoccio/unlock",
-      ...options,
-      ...params,
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-        ...params.headers,
-      },
-    })
-  }
-
   private _oauth?: Oauth
   get oauth(): Oauth {
     return (this._oauth ??= new Oauth({ client: this.client }))
+  }
+
+  private _jnoccio?: Jnoccio
+  get jnoccio(): Jnoccio {
+    return (this._jnoccio ??= new Jnoccio({ client: this.client }))
   }
 }
 
@@ -2887,7 +3568,7 @@ export class Session2 extends HeyApiClient {
    */
   public create<ThrowOnError extends boolean = false>(
     parameters?: {
-      directory?: string
+      query_directory?: string
       workspace?: string
       parentID?: string
       title?: string
@@ -2899,6 +3580,8 @@ export class Session2 extends HeyApiClient {
       }
       permission?: PermissionRuleset
       workspaceID?: string
+      body_directory?: string
+      path?: string
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -2907,7 +3590,11 @@ export class Session2 extends HeyApiClient {
       [
         {
           args: [
-            { in: "query", key: "directory" },
+            {
+              in: "query",
+              key: "query_directory",
+              map: "directory",
+            },
             { in: "query", key: "workspace" },
             { in: "body", key: "parentID" },
             { in: "body", key: "title" },
@@ -2915,6 +3602,12 @@ export class Session2 extends HeyApiClient {
             { in: "body", key: "model" },
             { in: "body", key: "permission" },
             { in: "body", key: "workspaceID" },
+            {
+              in: "body",
+              key: "body_directory",
+              map: "directory",
+            },
+            { in: "body", key: "path" },
           ],
         },
       ],
@@ -3139,7 +3832,7 @@ export class Session2 extends HeyApiClient {
    *
    * Retrieve the task list associated with a specific session, showing tasks and action items.
    */
-  public todo<ThrowOnError extends boolean = false>(
+  public pendingList<ThrowOnError extends boolean = false>(
     parameters: {
       sessionID: string
       directory?: string
@@ -3159,8 +3852,8 @@ export class Session2 extends HeyApiClient {
         },
       ],
     )
-    return (options?.client ?? this.client).get<SessionTodoResponses, SessionTodoErrors, ThrowOnError>({
-      url: "/session/{sessionID}/todo",
+    return (options?.client ?? this.client).get<SessionPendingListResponses, SessionPendingListErrors, ThrowOnError>({
+      url: "/session/{sessionID}/pending-list",
       ...options,
       ...params,
     })
@@ -4762,6 +5455,11 @@ export class OpencodeClient extends HeyApiClient {
   private _config?: Config2
   get config(): Config2 {
     return (this._config ??= new Config2({ client: this.client }))
+  }
+
+  private _daemon?: Daemon
+  get daemon(): Daemon {
+    return (this._daemon ??= new Daemon({ client: this.client }))
   }
 
   private _experimental?: Experimental

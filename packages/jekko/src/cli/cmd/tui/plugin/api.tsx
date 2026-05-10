@@ -1,5 +1,3 @@
-import type { ParsedKey } from "@opentui/core"
-import type { TuiDialogSelectOption, TuiPluginApi, TuiRouteDefinition, TuiSlotProps } from "@jekko-ai/plugin/tui"
 import type { useCommandDialog } from "@tui/component/dialog-command"
 import type { useEvent } from "@tui/context/event"
 import type { useKeybind } from "@tui/context/keybind"
@@ -7,25 +5,11 @@ import type { useRoute } from "@tui/context/route"
 import type { useSDK } from "@tui/context/sdk"
 import type { useSync } from "@tui/context/sync"
 import type { useTheme } from "@tui/context/theme"
-import { Dialog as DialogUI, type useDialog } from "@tui/ui/dialog"
+import type { useDialog } from "@tui/ui/dialog"
 import type { TuiConfig } from "@/cli/cmd/tui/config/tui"
-import { createPluginKeybind } from "../context/plugin-keybinds"
 import type { useKV } from "../context/kv"
-import { DialogAlert } from "../ui/dialog-alert"
-import { DialogConfirm } from "../ui/dialog-confirm"
-import { DialogPrompt } from "../ui/dialog-prompt"
-import { DialogSelect, type DialogSelectOption as SelectOption } from "../ui/dialog-select"
-import { Prompt } from "../component/prompt"
-import { Slot as HostSlot } from "./slots"
 import type { useToast } from "../ui/toast"
-import { InstallationVersion } from "@jekko-ai/core/installation/version"
-
-type RouteEntry = {
-  key: symbol
-  render: TuiRouteDefinition["render"]
-}
-
-export type RouteMap = Map<string, RouteEntry[]>
+import { appApi, createPluginKeybind, DialogAlert, DialogConfirm, DialogPrompt, DialogSelect, DialogUI, HostSlot, hasPromptSuggestions, mapOption, mapOptionCb, routeCurrent, routeNavigate, routeRegister, stateApi, type RouteMap } from "./api-helpers"
 
 type Input = {
   command: ReturnType<typeof useCommandDialog>
@@ -42,165 +26,6 @@ type Input = {
   theme: ReturnType<typeof useTheme>
   toast: ReturnType<typeof useToast>
   renderer: TuiPluginApi["renderer"]
-}
-
-type PromptSuggestions = {
-  normal?: string[]
-  shell?: string[]
-}
-
-function hasPromptSuggestions(props: object): props is { promptSuggestions?: PromptSuggestions } {
-  return "promptSuggestions" in props
-}
-
-function routeRegister(routes: RouteMap, list: TuiRouteDefinition[], bump: () => void) {
-  const key = Symbol()
-  for (const item of list) {
-    const prev = routes.get(item.name) ?? []
-    prev.push({ key, render: item.render })
-    routes.set(item.name, prev)
-  }
-  bump()
-
-  return () => {
-    for (const item of list) {
-      const prev = routes.get(item.name)
-      if (!prev) continue
-      const next = prev.filter((x) => x.key !== key)
-      if (!next.length) {
-        routes.delete(item.name)
-        continue
-      }
-      routes.set(item.name, next)
-    }
-    bump()
-  }
-}
-
-function routeNavigate(route: ReturnType<typeof useRoute>, name: string, params?: Record<string, unknown>) {
-  if (name === "home") {
-    route.navigate({ type: "home" })
-    return
-  }
-
-  if (name === "session") {
-    const sessionID = params?.sessionID
-    if (typeof sessionID !== "string") return
-    route.navigate({ type: "session", sessionID })
-    return
-  }
-
-  route.navigate({ type: "plugin", id: name, data: params })
-}
-
-function routeCurrent(route: ReturnType<typeof useRoute>): TuiPluginApi["route"]["current"] {
-  if (route.data.type === "home") return { name: "home" }
-  if (route.data.type === "session") {
-    return {
-      name: "session",
-      params: {
-        sessionID: route.data.sessionID,
-        prompt: route.data.prompt,
-      },
-    }
-  }
-
-  return {
-    name: route.data.id,
-    params: route.data.data,
-  }
-}
-
-function mapOption<Value>(item: TuiDialogSelectOption<Value>): SelectOption<Value> {
-  return {
-    ...item,
-    onSelect: () => item.onSelect?.(),
-  }
-}
-
-function pickOption<Value>(item: SelectOption<Value>): TuiDialogSelectOption<Value> {
-  return {
-    title: item.title,
-    value: item.value,
-    description: item.description,
-    footer: item.footer,
-    category: item.category,
-    disabled: item.disabled,
-  }
-}
-
-function mapOptionCb<Value>(cb?: (item: TuiDialogSelectOption<Value>) => void) {
-  if (!cb) return
-  return (item: SelectOption<Value>) => cb(pickOption(item))
-}
-
-function stateApi(sync: ReturnType<typeof useSync>): TuiPluginApi["state"] {
-  return {
-    get ready() {
-      return sync.ready
-    },
-    get config() {
-      return sync.data.config
-    },
-    get provider() {
-      return sync.data.provider
-    },
-    get path() {
-      return sync.path
-    },
-    get vcs() {
-      if (!sync.data.vcs) return
-      return {
-        branch: sync.data.vcs.branch,
-      }
-    },
-    session: {
-      count() {
-        return sync.data.session.length
-      },
-      diff(sessionID) {
-        return sync.data.session_diff[sessionID] ?? []
-      },
-      pending(sessionID) {
-        return sync.data.pending[sessionID] ?? []
-      },
-      messages(sessionID) {
-        return sync.data.message[sessionID] ?? []
-      },
-      status(sessionID) {
-        return sync.data.session_status[sessionID]
-      },
-      permission(sessionID) {
-        return sync.data.permission[sessionID] ?? []
-      },
-      question(sessionID) {
-        return sync.data.question[sessionID] ?? []
-      },
-    },
-    part(messageID) {
-      return sync.data.part[messageID] ?? []
-    },
-    lsp() {
-      return sync.data.lsp.map((item) => ({ id: item.id, root: item.root, status: item.status }))
-    },
-    mcp() {
-      return Object.entries(sync.data.mcp)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([name, item]) => ({
-          name,
-          status: item.status,
-          error: item.status === "failed" ? item.error : undefined,
-        }))
-    },
-  }
-}
-
-function appApi(): TuiPluginApi["app"] {
-  return {
-    get version() {
-      return InstallationVersion
-    },
-  }
 }
 
 export function createTuiApi(input: Input): TuiPluginApi {

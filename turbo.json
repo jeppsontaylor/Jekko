@@ -3,10 +3,17 @@
   "globalEnv": ["CI", "JEKKO_DISABLE_SHARE"],
   "globalPassThroughEnv": ["CI", "JEKKO_DISABLE_SHARE"],
   "tasks": {
-    "typecheck": {},
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
     "build": {
-      "dependsOn": [],
+      "dependsOn": ["^build"],
       "outputs": ["dist/**"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "jekko#test": {
       "dependsOn": ["^build"],

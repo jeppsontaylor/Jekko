@@ -13,12 +13,11 @@ import { which } from "../util/which"
 import { ProjectID } from "./schema"
 import { Bus } from "@/bus"
 import { Command } from "@/command"
+import { Git } from "@/git"
 import { InstanceState } from "@/effect/instance-state"
 import { Effect, Layer, Path, Scope, Context, Stream, Types, Schema } from "effect"
-import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { NodePath } from "@effect/platform-node"
 import { AppFileSystem } from "@jekko-ai/core/filesystem"
-import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
 import { zod } from "@/util/effect-zod"
 import { NonNegativeInt, optionalOmitUndefined, withStatics } from "@/util/schema"
 import { serviceUse } from "@/effect/service-use"
@@ -137,30 +136,24 @@ type GitResult = { code: number; text: string; stderr: string }
 export const layer: Layer.Layer<
   Service,
   never,
-  AppFileSystem.Service | Path.Path | ChildProcessSpawner.ChildProcessSpawner | Bus.Service
+  AppFileSystem.Service | Path.Path | Git.Service | Bus.Service
 > = Layer.effect(
   Service,
   Effect.gen(function* () {
     const fs = yield* AppFileSystem.Service
     const pathSvc = yield* Path.Path
-    const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
+    const gitSvc = yield* Git.Service
     const bus = yield* Bus.Service
 
-    const git = Effect.fnUntraced(
-      function* (args: string[], opts?: { cwd?: string }) {
-        const handle = yield* spawner.spawn(
-          ChildProcess.make("git", args, { cwd: opts?.cwd, extendEnv: true, stdin: "ignore" }),
-        )
-        const [text, stderr] = yield* Effect.all(
-          [Stream.mkString(Stream.decodeText(handle.stdout)), Stream.mkString(Stream.decodeText(handle.stderr))],
-          { concurrency: 2 },
-        )
-        const code = yield* handle.exitCode
-        return { code, text, stderr } satisfies GitResult
-      },
-      Effect.scoped,
-      Effect.catch(() => Effect.succeed({ code: 1, text: "", stderr: "" } satisfies GitResult)),
-    )
+    const git = Effect.fnUntraced(function* (args: string[], opts?: { cwd?: string }) {
+      const ctx = yield* InstanceState.context
+      const result = yield* gitSvc.run(args, { cwd: opts?.cwd ?? ctx.worktree })
+      return {
+        code: result.exitCode,
+        text: result.text(),
+        stderr: result.stderr.toString(),
+      } satisfies GitResult
+    })
 
     const db = <T>(fn: (d: Parameters<typeof Database.use>[0] extends (trx: infer D) => any ? D : never) => T) =>
       Effect.sync(() => Database.use(fn))
@@ -509,7 +502,7 @@ export const layer: Layer.Layer<
 
 export const defaultLayer = layer.pipe(
   Layer.provide(Bus.defaultLayer),
-  Layer.provide(CrossSpawnSpawner.defaultLayer),
+  Layer.provide(Git.defaultLayer),
   Layer.provide(AppFileSystem.defaultLayer),
   Layer.provide(NodePath.layer),
 )

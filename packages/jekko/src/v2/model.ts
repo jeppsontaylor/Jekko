@@ -1,28 +1,12 @@
-import { withStatics } from "@/util/schema"
 import { Array, Context, Effect, HashMap, Layer, Option, Order, pipe, Schema } from "effect"
 import { DateTimeUtcFromMillis } from "effect/Schema"
+import { ModelID as BaseModelID, ProviderID as BaseProviderID } from "@/provider/schema"
 
-export const ID = Schema.String.pipe(Schema.brand("Model.ID"))
-export type ID = typeof ID.Type
+export const ID = BaseModelID
+export type ID = typeof BaseModelID.Type
 
-export const ProviderID = Schema.String.pipe(
-  Schema.brand("Model.ProviderID"),
-  withStatics((schema) => ({
-    // Well-known providers
-    jekko: schema.make("jekko"),
-    anthropic: schema.make("anthropic"),
-    openai: schema.make("openai"),
-    google: schema.make("google"),
-    googleVertex: schema.make("google-vertex"),
-    githubCopilot: schema.make("github-copilot"),
-    amazonBedrock: schema.make("amazon-bedrock"),
-    azure: schema.make("azure"),
-    openrouter: schema.make("openrouter"),
-    mistral: schema.make("mistral"),
-    gitlab: schema.make("gitlab"),
-  })),
-)
-export type ProviderID = typeof ProviderID.Type
+export const ProviderID = BaseProviderID
+export type ProviderID = typeof BaseProviderID.Type
 
 export const VariantID = Schema.String.pipe(Schema.brand("VariantID"))
 export type VariantID = typeof VariantID.Type

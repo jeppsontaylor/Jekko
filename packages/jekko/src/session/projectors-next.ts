@@ -1,7 +1,7 @@
 import { and, desc, eq } from "@/storage/db"
 import type { Database } from "@/storage/db"
 import { SessionMessage } from "@/v2/session-message"
-import { SessionMessageUpdater } from "@/v2/session-message-updater"
+import * as SessionMessageUpdater from "@/v2/session-message-updater"
 import { SessionEvent } from "@/v2/session-event"
 import * as DateTime from "effect/DateTime"
 import { SyncEvent } from "@/sync"

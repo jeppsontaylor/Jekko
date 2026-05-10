@@ -1,6 +1,7 @@
 import { Schema } from "effect"
 import { zod } from "@/util/effect-zod"
 import { PositiveInt, withStatics } from "@/util/schema"
+import { modelFields, providerIdentityFields } from "@/provider/provider-model-shared"
 
 export const Model = Schema.Struct({
   id: Schema.optional(Schema.String),
@@ -19,40 +20,9 @@ export const Model = Schema.Struct({
       }),
     ]),
   ),
-  cost: Schema.optional(
-    Schema.Struct({
-      input: Schema.Finite,
-      output: Schema.Finite,
-      cache_read: Schema.optional(Schema.Finite),
-      cache_write: Schema.optional(Schema.Finite),
-      context_over_200k: Schema.optional(
-        Schema.Struct({
-          input: Schema.Finite,
-          output: Schema.Finite,
-          cache_read: Schema.optional(Schema.Finite),
-          cache_write: Schema.optional(Schema.Finite),
-        }),
-      ),
-    }),
-  ),
-  limit: Schema.optional(
-    Schema.Struct({
-      context: Schema.Finite,
-      input: Schema.optional(Schema.Finite),
-      output: Schema.Finite,
-    }),
-  ),
-  modalities: Schema.optional(
-    Schema.Struct({
-      input: Schema.mutable(Schema.Array(Schema.Literals(["text", "audio", "image", "video", "pdf"]))),
-      output: Schema.mutable(Schema.Array(Schema.Literals(["text", "audio", "image", "video", "pdf"]))),
-    }),
-  ),
+  ...modelFields({ optionalLimit: true, mutableModalities: true }),
   experimental: Schema.optional(Schema.Boolean),
   status: Schema.optional(Schema.Literals(["alpha", "beta", "inactive", "active", "locked"])),
-  provider: Schema.optional(
-    Schema.Struct({ npm: Schema.optional(Schema.String), api: Schema.optional(Schema.String) }),
-  ),
   options: Schema.optional(Schema.Record(Schema.String, Schema.Any)),
   headers: Schema.optional(Schema.Record(Schema.String, Schema.String)),
   variants: Schema.optional(
@@ -69,11 +39,7 @@ export const Model = Schema.Struct({
 }).pipe(withStatics((s) => ({ zod: zod(s) })))
 
 export const Info = Schema.Struct({
-  api: Schema.optional(Schema.String),
-  name: Schema.optional(Schema.String),
-  env: Schema.optional(Schema.mutable(Schema.Array(Schema.String))),
-  id: Schema.optional(Schema.String),
-  npm: Schema.optional(Schema.String),
+  ...providerIdentityFields({ optional: true, mutableEnv: true }),
   whitelist: Schema.optional(Schema.mutable(Schema.Array(Schema.String))),
   blacklist: Schema.optional(Schema.mutable(Schema.Array(Schema.String))),
   options: Schema.optional(

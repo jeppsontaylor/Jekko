@@ -1,36 +1,10 @@
 import fs from "fs/promises"
-import os from "os"
-import { Effect, Layer } from "effect"
-import { AppFileSystem } from "@jekko-ai/core/filesystem"
+import { Effect } from "effect"
 import { EffectFlock } from "@jekko-ai/core/util/effect-flock"
-import { Global } from "@jekko-ai/core/global"
-
-type Msg = {
-  key: string
-  dir: string
-  holdMs?: number
-  ready?: string
-  active?: string
-  done?: string
-}
-
-function sleep(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms))
-}
+import { sleep, testLayer } from "./effect-flock-shared"
+import type { Msg } from "./effect-flock-shared"
 
 const msg: Msg = JSON.parse(process.argv[2])
-
-const testGlobal = Global.layerWith({
-  home: os.homedir(),
-  data: os.tmpdir(),
-  cache: os.tmpdir(),
-  config: os.tmpdir(),
-  state: os.tmpdir(),
-  bin: os.tmpdir(),
-  log: os.tmpdir(),
-})
-
-const testLayer = EffectFlock.layer.pipe(Layer.provide(testGlobal), Layer.provide(AppFileSystem.defaultLayer))
 
 async function job() {
   if (msg.ready) await fs.writeFile(msg.ready, String(process.pid))

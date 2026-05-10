@@ -178,23 +178,15 @@ export const layer: Layer.Layer<
     const project = yield* Project.Service
     const store = yield* InstanceStore.Service
 
-    const git = Effect.fnUntraced(
-      function* (args: string[], opts?: { cwd?: string }) {
-        const handle = yield* spawner.spawn(
-          ChildProcess.make("git", args, { cwd: opts?.cwd, extendEnv: true, stdin: "ignore" }),
-        )
-        const [text, stderr] = yield* Effect.all(
-          [Stream.mkString(Stream.decodeText(handle.stdout)), Stream.mkString(Stream.decodeText(handle.stderr))],
-          { concurrency: 2 },
-        )
-        const code = yield* handle.exitCode
-        return { code, text, stderr } satisfies GitResult
-      },
-      Effect.scoped,
-      Effect.catch((e) =>
-        Effect.succeed({ code: 1, text: "", stderr: e instanceof Error ? e.message : String(e) } satisfies GitResult),
-      ),
-    )
+    const git = Effect.fnUntraced(function* (args: string[], opts?: { cwd?: string }) {
+      const ctx = yield* InstanceState.context
+      const result = yield* gitSvc.run(args, { cwd: opts?.cwd ?? ctx.worktree })
+      return {
+        code: result.exitCode,
+        text: result.text(),
+        stderr: result.stderr.toString(),
+      } satisfies GitResult
+    })
 
     const MAX_NAME_ATTEMPTS = 26
     const candidate = Effect.fn("Worktree.candidate")(function* (root: string, base?: string) {

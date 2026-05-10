@@ -11,17 +11,17 @@ import {
   shouldPreserveZyalStateOnDaemonPollError,
 } from "../../../src/cli/cmd/tui/routes/session/daemon-poll"
 
-const ZYAL_FLASH_URL = new URL("../../../src/cli/cmd/tui/context/zyal-flash.ts", import.meta.url)
+const ZYAL_FLASH_STATE_URL = new URL("../../../src/cli/cmd/tui/context/zyal-flash-state.ts", import.meta.url)
 
-async function loadZyalFlash() {
-  const url = new URL(ZYAL_FLASH_URL)
+async function loadZyalFlashState() {
+  const url = new URL(ZYAL_FLASH_STATE_URL)
   url.searchParams.set("fresh", `${Date.now()}-${Math.random()}`)
   return await import(url.href)
 }
 
 describe("zyal flash metrics", () => {
   test("normalizes daemon API stats and spec_json fleet", async () => {
-    const { daemonRunToZyalMetrics, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
+    const { resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlashState()
     resetZyalMetrics()
     const run = {
       id: "run_1",
@@ -67,7 +67,6 @@ describe("zyal flash metrics", () => {
   })
 
   test("derives jnoccio config from spec_json fleet", async () => {
-    const { daemonRunJnoccioConfig } = await loadZyalFlash()
     const config = daemonRunJnoccioConfig({
       id: "run_2",
       spec_json: {
@@ -157,7 +156,7 @@ describe("daemon poll helpers", () => {
 
 describe("incrementJnoccioCounters atomic merge", () => {
   test("monotone counters survive interleaved snapshot resets", async () => {
-    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlashState()
     resetZyalMetrics()
     // Authoritative snapshot establishes a baseline.
     updateZyalMetrics({
@@ -190,7 +189,7 @@ describe("incrementJnoccioCounters atomic merge", () => {
   })
 
   test("starts from null baseline without throwing", async () => {
-    const { incrementJnoccioCounters, resetZyalMetrics, useZyalMetrics } = await loadZyalFlash()
+    const { incrementJnoccioCounters, resetZyalMetrics, useZyalMetrics } = await loadZyalFlashState()
     resetZyalMetrics()
     incrementJnoccioCounters({
       promptTokens: 5,
@@ -207,7 +206,7 @@ describe("incrementJnoccioCounters atomic merge", () => {
   })
 
   test("ignores zero / undefined deltas without resetting counters", async () => {
-    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlashState()
     resetZyalMetrics()
     updateZyalMetrics({ jnoccioPromptTokens: 42, jnoccioConnected: true })
     incrementJnoccioCounters({ promptTokens: 0, completionTokens: undefined })
@@ -215,7 +214,7 @@ describe("incrementJnoccioCounters atomic merge", () => {
   })
 
   test("avgLatencyMs is replaced not summed", async () => {
-    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlashState()
     resetZyalMetrics()
     updateZyalMetrics({ jnoccioAvgLatencyMs: 200, jnoccioConnected: true })
     incrementJnoccioCounters({ avgLatencyMs: 50 })
@@ -223,7 +222,7 @@ describe("incrementJnoccioCounters atomic merge", () => {
   })
 
   test("avgLatencyMs null clears the field", async () => {
-    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlashState()
     resetZyalMetrics()
     updateZyalMetrics({ jnoccioAvgLatencyMs: 200, jnoccioConnected: true })
     incrementJnoccioCounters({ avgLatencyMs: null })

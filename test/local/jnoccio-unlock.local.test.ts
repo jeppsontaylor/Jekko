@@ -42,7 +42,7 @@ describe("Jnoccio Fusion Local Unlock Proof", () => {
       const keysContent = fs.readFileSync(path.join(tempDir, "jnoccio-fusion/KEYS.md"), "utf-8")
       expect(keysContent).toContain("OPENROUTER_API_KEY")
 
-      // 6. Create .env.jnoccio from placeholders
+      // 6. Write the minimal .env.jnoccio needed for the encryption check
       const envPath = path.join(tempDir, "jnoccio-fusion/.env.jnoccio")
       fs.writeFileSync(envPath, "OPENROUTER_API_KEY=test_value")
 

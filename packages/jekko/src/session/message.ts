@@ -481,8 +481,15 @@ const AssistantErrorSchema = Schema.Union([
 // carry that shape, and `SessionPrompt.PromptInput` just references the
 // derived `.zod` (no omit/partial gymnastics needed at the call site).
 
-export const TextPartInput = Schema.Struct({
-  id: Schema.optional(PartID),
+const definePartInput = (identifier: string, fields: Record<string, any>) =>
+  Schema.Struct({
+    id: Schema.optional(PartID),
+    ...fields,
+  })
+    .annotate({ identifier })
+    .pipe(withStatics((s) => ({ zod: zod(s) })))
+
+export const TextPartInput = definePartInput("TextPartInput", {
   type: Schema.Literal("text"),
   text: Schema.String,
   synthetic: Schema.optional(Schema.Boolean),
@@ -495,24 +502,18 @@ export const TextPartInput = Schema.Struct({
   ),
   metadata: Schema.optional(Schema.Record(Schema.String, Schema.Any)),
 })
-  .annotate({ identifier: "TextPartInput" })
-  .pipe(withStatics((s) => ({ zod: zod(s) })))
 export type TextPartInput = Types.DeepMutable<Schema.Schema.Type<typeof TextPartInput>>
 
-export const FilePartInput = Schema.Struct({
-  id: Schema.optional(PartID),
+export const FilePartInput = definePartInput("FilePartInput", {
   type: Schema.Literal("file"),
   mime: Schema.String,
   filename: Schema.optional(Schema.String),
   url: Schema.String,
   source: Schema.optional(_FilePartSource),
 })
-  .annotate({ identifier: "FilePartInput" })
-  .pipe(withStatics((s) => ({ zod: zod(s) })))
 export type FilePartInput = Types.DeepMutable<Schema.Schema.Type<typeof FilePartInput>>
 
-export const AgentPartInput = Schema.Struct({
-  id: Schema.optional(PartID),
+export const AgentPartInput = definePartInput("AgentPartInput", {
   type: Schema.Literal("agent"),
   name: Schema.String,
   source: Schema.optional(
@@ -523,12 +524,9 @@ export const AgentPartInput = Schema.Struct({
     }),
   ),
 })
-  .annotate({ identifier: "AgentPartInput" })
-  .pipe(withStatics((s) => ({ zod: zod(s) })))
 export type AgentPartInput = Types.DeepMutable<Schema.Schema.Type<typeof AgentPartInput>>
 
-export const SubtaskPartInput = Schema.Struct({
-  id: Schema.optional(PartID),
+export const SubtaskPartInput = definePartInput("SubtaskPartInput", {
   type: Schema.Literal("subtask"),
   prompt: Schema.String,
   description: Schema.String,
@@ -541,8 +539,6 @@ export const SubtaskPartInput = Schema.Struct({
   ),
   command: Schema.optional(Schema.String),
 })
-  .annotate({ identifier: "SubtaskPartInput" })
-  .pipe(withStatics((s) => ({ zod: zod(s) })))
 export type SubtaskPartInput = Types.DeepMutable<Schema.Schema.Type<typeof SubtaskPartInput>>
 
 export const Assistant = Schema.Struct({

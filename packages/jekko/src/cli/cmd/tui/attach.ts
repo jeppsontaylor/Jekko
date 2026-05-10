@@ -1,11 +1,8 @@
 import { cmd } from "../cmd"
-import { UI } from "@/cli/ui"
 import { tui } from "./app"
-import { win32DisableProcessedInput, win32InstallCtrlCGuard } from "./win32"
 import { TuiConfig } from "@/cli/cmd/tui/config/tui"
-import { errorMessage } from "@/util/error"
-import { validateSession } from "./validate-session"
 import { ServerAuth } from "@/server/auth"
+import { runValidatedTuiCommandWithConfig } from "./command-guards"
 
 type AttachDirectoryResolution =
   | { kind: "local"; directory: string }
@@ -58,48 +55,33 @@ export const AttachCommand = cmd({
         alias: ["u"],
         type: "string",
         describe: "basic auth username (defaults to JEKKO_SERVER_USERNAME or 'jekko')",
-      }),
+  }),
   handler: async (args) => {
-    const unguard = win32InstallCtrlCGuard()
-    try {
-      win32DisableProcessedInput()
+    const directory = resolveAttachDirectory(args).directory
+    const headers = ServerAuth.headers({ password: args.password, username: args.username })
 
-      if (args.fork && !args.continue && !args.session) {
-        UI.error("--fork requires --continue or --session")
-        process.exitCode = 1
-        return
-      }
-
-      const directory = resolveAttachDirectory(args).directory
-      const headers = ServerAuth.headers({ password: args.password, username: args.username })
-      const config = await TuiConfig.get()
-
-      try {
-        await validateSession({
+    await runValidatedTuiCommandWithConfig(
+      args,
+      {
+        url: args.url,
+        sessionID: args.session,
+        directory,
+        headers,
+      },
+      async () => TuiConfig.get(),
+      async (config) => {
+        await tui({
           url: args.url,
-          sessionID: args.session,
+          config,
+          args: {
+            continue: args.continue,
+            sessionID: args.session,
+            fork: args.fork,
+          },
           directory,
           headers,
         })
-      } catch (error) {
-        UI.error(errorMessage(error))
-        process.exitCode = 1
-        return
-      }
-
-      await tui({
-        url: args.url,
-        config,
-        args: {
-          continue: args.continue,
-          sessionID: args.session,
-          fork: args.fork,
-        },
-        directory,
-        headers,
-      })
-    } finally {
-      unguard?.()
-    }
+      },
+    )
   },
 })

@@ -8,10 +8,22 @@
   "scripts": {
     "dev": "bun run --cwd packages/jekko --conditions=browser src/index.ts",
     "lint": "oxlint",
-    "typecheck": "bun turbo typecheck",
+    "build": "just build-fast",
+    "fast": "just fast",
+    "fast:build": "just build-fast",
+    "fast:test": "just test-fast",
+    "fast:typecheck": "just typecheck-fast",
+    "workspace:fast": "just workspace-fast",
+    "workspace:build": "just workspace-build-fast",
+    "workspace:build-fast": "just workspace-build-fast",
+    "workspace:test": "just workspace-test-fast",
+    "workspace:test-fast": "just workspace-test-fast",
+    "workspace:typecheck": "just workspace-typecheck-fast",
+    "workspace:typecheck-fast": "just workspace-typecheck-fast",
+    "test": "just test-fast",
+    "typecheck": "just typecheck-fast",
     "postinstall": "bun run --cwd packages/jekko fix-node-pty",
-    "prepare": "husky",
-    "test": "echo 'do not run tests from root' && exit 1"
+    "prepare": "husky"
   },
   "workspaces": {
     "packages": [

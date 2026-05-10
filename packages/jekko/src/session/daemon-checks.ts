@@ -1,12 +1,12 @@
 // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { Effect, Layer, Context, Schema } from "effect"
-import * as Stream from "effect/Stream"
 import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
 import { Config } from "@/config/config"
 import { Shell } from "@/shell/shell"
 import { Git } from "@/git"
 import { parseDuration } from "./daemon-retry"
+import { collectStreamOutput } from "@/util/process-output"
 
 export const ShellCheckResult = Schema.Struct({
   exitCode: Schema.Number,
@@ -66,21 +66,10 @@ export const layer = Layer.effect(
         stderr: "pipe",
       })
       const handle = yield* spawner.spawn(proc)
-      const collect = (stream: typeof handle.stdout) =>
-        Stream.runFold(
-          stream,
-          () => ({ chunks: [] as Uint8Array[], bytes: 0, truncated: false }),
-          (acc, chunk) => {
-            if (acc.bytes < 64_000) {
-              const remaining = 64_000 - acc.bytes
-              acc.chunks.push(remaining >= chunk.length ? chunk : chunk.slice(0, remaining))
-            }
-            acc.bytes += chunk.length
-            acc.truncated = acc.truncated || acc.bytes > 64_000
-            return acc
-          },
-        ).pipe(Effect.map((x) => ({ text: Buffer.concat(x.chunks).toString("utf8"), truncated: x.truncated })))
-      const [stdout, stderr] = yield* Effect.all([collect(handle.stdout), collect(handle.stderr)], { concurrency: 2 })
+      const [stdout, stderr] = yield* Effect.all(
+        [collectStreamOutput(handle.stdout, 64_000), collectStreamOutput(handle.stderr, 64_000)],
+        { concurrency: 2 },
+      )
       const exit = yield* Effect.raceAll([
         handle.exitCode.pipe(Effect.map((code) => ({ kind: "exit" as const, code }))),
         Effect.sleep(parseDuration(input.timeout ?? "30 seconds")).pipe(
@@ -95,8 +84,8 @@ export const layer = Layer.effect(
         jsonPath
       return {
         exitCode: exit.code,
-        stdout: stdout.text,
-        stderr: stderr.text,
+        stdout: stdout.buffer.toString("utf8"),
+        stderr: stderr.buffer.toString("utf8"),
         truncated: stdout.truncated || stderr.truncated,
         matched,
         error: matched ? undefined : "shell assertion failed",

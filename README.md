@@ -115,6 +115,15 @@ then record the command and result in the task entry. Reuse the locked
 dependency graph and the existing CI cache hints instead of inventing new build
 paths.
 
+For narrower iteration, prefer these lane-specific targets:
+
+```bash
+just workspace-typecheck-fast
+just workspace-build-fast
+just workspace-test-fast
+just workspace-fast
+```
+
 ### Contributing
 
 If you're interested in contributing to Jekko, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.

@@ -1,6 +1,7 @@
 import { produce, type WritableDraft } from "immer"
 import { SessionEvent } from "./session-event"
 import { SessionMessage } from "./session-message"
+import { activeAssistant, activeCompaction, activeShell, latestReasoning, latestText, latestTool } from "./session-message-state"
 
 export type MemoryState = {
   messages: SessionMessage.Message[]
@@ -18,47 +19,32 @@ export interface Adapter<Result> {
 }
 
 export function memory(state: MemoryState): Adapter<MemoryState> {
-  const activeAssistantIndex = () =>
-    state.messages.findLastIndex((message) => message.type === "assistant" && !message.time.completed)
-  const activeCompactionIndex = () => state.messages.findLastIndex((message) => message.type === "compaction")
-  const activeShellIndex = (callID: string) =>
-    state.messages.findLastIndex((message) => message.type === "shell" && message.callID === callID)
-
   return {
     getCurrentAssistant() {
-      const index = activeAssistantIndex()
-      if (index < 0) return
-      const assistant = state.messages[index]
-      return assistant?.type === "assistant" ? assistant : undefined
+      return activeAssistant(state.messages)
     },
     getCurrentCompaction() {
-      const index = activeCompactionIndex()
-      if (index < 0) return
-      const compaction = state.messages[index]
-      return compaction?.type === "compaction" ? compaction : undefined
+      return activeCompaction(state.messages)
     },
     getCurrentShell(callID) {
-      const index = activeShellIndex(callID)
-      if (index < 0) return
-      const shell = state.messages[index]
-      return shell?.type === "shell" ? shell : undefined
+      return activeShell(state.messages, callID)
     },
     updateAssistant(assistant) {
-      const index = activeAssistantIndex()
+      const index = state.messages.findLastIndex((message) => message.type === "assistant" && !message.time.completed)
       if (index < 0) return
       const current = state.messages[index]
       if (current?.type !== "assistant") return
       state.messages[index] = assistant
     },
     updateCompaction(compaction) {
-      const index = activeCompactionIndex()
+      const index = state.messages.findLastIndex((message) => message.type === "compaction")
       if (index < 0) return
       const current = state.messages[index]
       if (current?.type !== "compaction") return
       state.messages[index] = compaction
     },
     updateShell(shell) {
-      const index = activeShellIndex(shell.callID)
+      const index = state.messages.findLastIndex((message) => message.type === "shell" && message.callID === shell.callID)
       if (index < 0) return
       const current = state.messages[index]
       if (current?.type !== "shell") return
@@ -76,20 +62,6 @@ export function memory(state: MemoryState): Adapter<MemoryState> {
 export function update<Result>(adapter: Adapter<Result>, event: SessionEvent.Event): Result {
   const currentAssistant = adapter.getCurrentAssistant()
   type DraftAssistant = WritableDraft<SessionMessage.Assistant>
-  type DraftTool = WritableDraft<SessionMessage.AssistantTool>
-  type DraftText = WritableDraft<SessionMessage.AssistantText>
-  type DraftReasoning = WritableDraft<SessionMessage.AssistantReasoning>
-
-  const latestTool = (assistant: DraftAssistant | undefined, callID?: string) =>
-    assistant?.content.findLast(
-      (item): item is DraftTool => item.type === "tool" && (callID === undefined || item.id === callID),
-    )
-
-  const latestText = (assistant: DraftAssistant | undefined) =>
-    assistant?.content.findLast((item): item is DraftText => item.type === "text")
-
-  const latestReasoning = (assistant: DraftAssistant | undefined, reasoningID: string) =>
-    assistant?.content.findLast((item): item is DraftReasoning => item.type === "reasoning" && item.id === reasoningID)
 
   SessionEvent.All.match(event, {
     "session.next.agent.switched": (event) => {
@@ -412,5 +384,3 @@ export function update<Result>(adapter: Adapter<Result>, event: SessionEvent.Eve
 
   return adapter.finish()
 }
-
-export * as SessionMessageUpdater from "./session-message-updater"

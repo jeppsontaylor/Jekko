@@ -1,6 +1,9 @@
-// @ts-nocheck
+// Documentation example for the v2 API surface.
+// Keep this file typecheckable without a blanket suppression.
 
+// @ts-expect-error - the spec tree intentionally references the package surface for documentation.
 import { Jekko } from "@jekko-ai/core"
+// @ts-expect-error - the spec tree intentionally references the package surface for documentation.
 import { ReadTool } from "@jekko-ai/core/tools"
 
 const jekko = Jekko.make({})
@@ -19,7 +22,7 @@ jekko.tool.add({
     },
     required: ["command"],
   },
-  execute(_input, _ctx) {},
+  execute(_input: unknown, _ctx: unknown) {},
 })
 
 jekko.auth.add({
@@ -42,7 +45,7 @@ const sessionID = await jekko.session.create({
   agent: "build",
 })
 
-jekko.subscribe((event) => {
+jekko.subscribe((event: unknown) => {
   console.log(event)
 })
 

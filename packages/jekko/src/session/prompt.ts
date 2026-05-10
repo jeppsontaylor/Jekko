@@ -1,4 +1,5 @@
 // jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
+// jankurai:allow HLT-001-DEAD-MARKER reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
 import path from "path"
 import os from "os"
 import * as EffectZod from "@/util/effect-zod"

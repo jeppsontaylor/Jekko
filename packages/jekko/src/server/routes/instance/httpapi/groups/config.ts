@@ -1,17 +1,15 @@
 import { Config } from "@/config/config"
 import { Provider } from "@/provider/provider"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
-import { Authorization } from "../middleware/authorization"
-import { InstanceContextMiddleware } from "../middleware/instance-context"
-import { WorkspaceRoutingMiddleware } from "../middleware/workspace-routing"
 import { described } from "./metadata"
+import { withInstanceGroupDefaults } from "./group"
 
 const root = "/config"
 
 export const ConfigApi = HttpApi.make("config")
   .add(
-    HttpApiGroup.make("config")
-      .add(
+    withInstanceGroupDefaults(
+      HttpApiGroup.make("config").add(
         HttpApiEndpoint.get("get", root, {
           success: described(Config.Info, "Get config info"),
         }).annotateMerge(
@@ -41,16 +39,10 @@ export const ConfigApi = HttpApi.make("config")
             description: "Get a list of all configured AI providers and their default models.",
           }),
         ),
-      )
-      .annotateMerge(
-        OpenApi.annotations({
-          title: "config",
-          description: "Experimental HttpApi config routes.",
-        }),
-      )
-      .middleware(InstanceContextMiddleware)
-      .middleware(WorkspaceRoutingMiddleware)
-      .middleware(Authorization),
+      ),
+      "config",
+      "Experimental HttpApi config routes.",
+    ),
   )
   .annotateMerge(
     OpenApi.annotations({

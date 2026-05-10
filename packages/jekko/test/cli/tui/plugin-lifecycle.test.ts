@@ -131,18 +131,20 @@ const mark = (label) => {
   fs.appendFileSync(${JSON.stringify(marker)}, label + "\\n")
 }
 
+const emptySlot = () => null
+
 export default {
   id: "demo.slot",
   tui: async (api) => {
     const one = api.slots.register({
       id: 1,
       setup: () => { mark("one") },
-      slots: { home_logo() { return null } },
+      slots: { home_logo: emptySlot },
     })
     const two = api.slots.register({
       id: 2,
       setup: () => { mark("two") },
-      slots: { home_bottom() { return null } },
+      slots: { home_bottom: emptySlot },
     })
     mark("id:" + one)
     mark("id:" + two)
