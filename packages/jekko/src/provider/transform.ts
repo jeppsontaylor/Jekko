@@ -60,6 +60,26 @@ function sdkKey(npm: string): string | undefined {
   return undefined
 }
 
+function filterEmptyContent(msgs: ModelMessage[]): ModelMessage[] {
+  return msgs
+    .map((msg) => {
+      if (typeof msg.content === "string") {
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
+        if (msg.content === "") return undefined
+        return msg
+      }
+      if (!Array.isArray(msg.content)) return msg
+      const filtered = msg.content.filter((part) => {
+        if (part.type === "text" || part.type === "reasoning") return part.text !== ""
+        return true
+      })
+      // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
+      if (filtered.length === 0) return undefined
+      return { ...msg, content: filtered }
+    })
+    .filter((msg): msg is ModelMessage => msg !== undefined && msg.content !== "")
+}
+
 // pending: fix this stupid inefficient dogshit function
 function normalizeMessages(
   msgs: ModelMessage[],
@@ -128,51 +148,9 @@ function normalizeMessages(
     }
   })
 
-  // Anthropic rejects messages with empty content - filter out empty string messages
-  // and remove empty text/reasoning parts from array content
-  if (model.api.npm === "@ai-sdk/anthropic") {
-    msgs = msgs
-      .map((msg) => {
-        if (typeof msg.content === "string") {
-          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-          if (msg.content === "") return undefined
-          return msg
-        }
-        if (!Array.isArray(msg.content)) return msg
-        const filtered = msg.content.filter((part) => {
-          if (part.type === "text" || part.type === "reasoning") {
-            return part.text !== ""
-          }
-          return true
-        })
-        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-        if (filtered.length === 0) return undefined
-        return { ...msg, content: filtered }
-      })
-      .filter((msg): msg is ModelMessage => msg !== undefined && msg.content !== "")
-  }
-
-  // Bedrock specific transforms
-  if (model.api.npm === "@ai-sdk/amazon-bedrock") {
-    msgs = msgs
-      .map((msg) => {
-        if (typeof msg.content === "string") {
-          // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-          if (msg.content === "") return undefined
-          return msg
-        }
-        if (!Array.isArray(msg.content)) return msg
-        const filtered = msg.content.filter((part) => {
-          if (part.type === "text" || part.type === "reasoning") {
-            return part.text !== ""
-          }
-          return true
-        })
-        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-        if (filtered.length === 0) return undefined
-        return { ...msg, content: filtered }
-      })
-      .filter((msg): msg is ModelMessage => msg !== undefined && msg.content !== "")
+  // Anthropic and Bedrock reject messages with empty content — filter them out.
+  if (model.api.npm === "@ai-sdk/anthropic" || model.api.npm === "@ai-sdk/amazon-bedrock") {
+    msgs = filterEmptyContent(msgs)
   }
 
   if (model.api.id.includes("claude")) {
