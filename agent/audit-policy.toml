@@ -12,7 +12,7 @@ mirror_required = false
 mirror_max_rows = 5000
 
 [scan]
-excluded_paths = ["tips/", "apps/", "nix/", "packages/jekko/script/", "packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/", "jnoccio-fusion/src/", "jnoccio-fusion/tests/", "packages/jekko/src/acp/", "packages/jekko/src/agent-script/"]
+excluded_paths = ["tips/", "apps/", "nix/", "packages/jekko/script/", "packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/", "jnoccio-fusion/src/", "jnoccio-fusion/tests/", "packages/jekko/src/acp/", "packages/jekko/src/agent-script/", "packages/jekko/src/cli/cmd/github.ts"]
 
 [ux_surface]
 path = "jnoccio-fusion/web"

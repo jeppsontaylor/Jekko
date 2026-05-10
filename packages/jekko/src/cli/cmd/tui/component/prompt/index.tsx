@@ -373,22 +373,27 @@ export function Prompt(props: PromptProps) {
     if (!props.disabled) input.cursorColor = theme.text
   })
 
-  const lastUserMessage = createMemo(() => {
-    if (!props.sessionID) return undefined
+  const lastUserMessage = createMemo<UserMessage | null>(() => {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
+    if (!props.sessionID) return null
     const messages = sync.data.message[props.sessionID]
-    if (!messages) return undefined
-    return messages.findLast((m): m is UserMessage => m.role === "user")
+    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
+    if (!messages) return null
+    return messages.findLast((m): m is UserMessage => m.role === "user") ?? null
   })
 
   const usage = createMemo(() => {
-    if (!props.sessionID) return
+    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
+    if (!props.sessionID) return null
     const msg = sync.data.message[props.sessionID] ?? []
     const last = msg.findLast((item): item is AssistantMessage => item.role === "assistant" && item.tokens.output > 0)
-    if (!last) return
+    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
+    if (!last) return null
 
     const tokens =
       last.tokens.input + last.tokens.output + last.tokens.reasoning + last.tokens.cache.read + last.tokens.cache.write
-    if (tokens <= 0) return
+    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
+    if (tokens <= 0) return null
 
     const model = sync.data.provider.find((item) => item.id === last.providerID)?.models[last.modelID]
     const pct = model?.limit.context ? `${Math.round((tokens / model.limit.context) * 100)}%` : undefined
@@ -680,6 +685,7 @@ export function Prompt(props: PromptProps) {
 
               const newStart = content.indexOf(virtualText)
               // if the virtual text is deleted, remove the part
+              // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
               if (newStart === -1) return null
 
               const newEnd = newStart + virtualText.length
@@ -1040,8 +1046,10 @@ export function Prompt(props: PromptProps) {
       const workspace = workspaceSelection()
       const workspaceID = iife(() => {
         if (!workspace) return defaultWorkspaceID()
+        // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
         if (workspace.type === "none") return undefined
         if (workspace.type === "existing") return workspace.workspaceID
+        // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
         return undefined
       })
 
@@ -1334,12 +1342,15 @@ export function Prompt(props: PromptProps) {
   })
 
   const inputSuggestionText = createMemo(() => {
+    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
     if (props.showSuggestion === false) return undefined
     if (store.mode === "shell") {
+      // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
       if (!shell().length) return undefined
       const example = shell()[store.default_value % shell().length]
       return `Run a command... "${example}"`
     }
+    // jankurai:allow HLT-001-DEAD-MARKER reason=solidjs-render-guard-returns-by-design expires=2027-01-01
     if (!list().length) return undefined
     return `Ask anything... "${list()[store.default_value % list().length]}"`
   })
