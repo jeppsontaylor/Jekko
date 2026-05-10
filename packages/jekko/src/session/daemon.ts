@@ -294,6 +294,7 @@ export const layer = Layer.effect(
 
     const get = Effect.fn("Daemon.get")(function* (runID: string) {
       const run = yield* store.getRun(runID)
+      // jankurai:allow HLT-001-DEAD-MARKER reason=effect-fn-early-exit-when-run-not-found expires=2027-01-01
       if (!run) return undefined
       return enrichRun(run)
     })
