@@ -149,6 +149,7 @@ function parameterSchema(input: {
   const param = input.spec.paths[input.path]?.[input.method]?.parameters?.find(
     (param) => !!param && typeof param === "object" && "name" in param && param.name === input.name,
   )
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-guard-returns expires=2027-01-01
   if (!param || typeof param !== "object" || !("schema" in param)) return undefined
   return param.schema
 }
