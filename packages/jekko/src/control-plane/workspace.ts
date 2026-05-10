@@ -133,6 +133,8 @@ export const Workspace = {
   SessionWarpHttpError,
   SyncTimeoutError,
   SyncAbortedError,
+  layer,
+  defaultLayer,
 } as const
 
 export * from "./workspace-shared"
