@@ -35,7 +35,7 @@ const testMemory: ZyalMemory = {
     },
   },
   redaction: {
-    patterns: ["sk-*", "AKIA*"],
+    patterns: ["example-secret-*", "example-aws-key-*"],
     action: "mask",
   },
   provenance: {
@@ -127,14 +127,17 @@ describe("daemon memory", () => {
   })
 
   test("redactValue masks matching patterns", () => {
-    const result = redactValue("my key is sk-abc123xyz and also AKIAsomething", testMemory.redaction)
+    const result = redactValue(
+      "my key is example-secret-abc123xyz and also example-aws-key-something",
+      testMemory.redaction,
+    )
     expect(result).toContain("***REDACTED***")
-    expect(result).not.toContain("sk-abc123xyz")
-    expect(result).not.toContain("AKIAsomething")
+    expect(result).not.toContain("example-secret-abc123xyz")
+    expect(result).not.toContain("example-aws-key-something")
   })
 
   test("redactValue returns original when no redaction config", () => {
-    expect(redactValue("sk-secret", undefined)).toBe("sk-secret")
+    expect(redactValue("example-secret", undefined)).toBe("example-secret")
   })
 
   test("getInjectionEntries returns inject_at_start entries", () => {

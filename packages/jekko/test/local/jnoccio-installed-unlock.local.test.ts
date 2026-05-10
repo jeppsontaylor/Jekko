@@ -5,6 +5,7 @@ import path from "path"
 import { isJnoccioFusionUnlocked } from "../../src/util/jnoccio-unlock"
 import type { Provider } from "../../src/provider/provider"
 import { cloneRepo, localUnlockPreflight, removeTempDirs, withEnv } from "./jnoccio-local-helpers"
+import { Process } from "../../src/util/process"
 
 const tempDirs: string[] = []
 const installedPath = process.env.JNOCCIO_INSTALLED_JEKKO ?? "/opt/homebrew/bin/jekko"
@@ -89,6 +90,21 @@ function installedServerEnv(input: { clone: string; root: string; secretCachePat
   return env
 }
 
+async function assertInstalledStarts() {
+  const out = await Process.run([installedPath, "--version"], { nothrow: true })
+  if (out.code === 0) return
+  throw new Error(
+    [
+      "installed jekko startup smoke failed",
+      `path=${installedPath}`,
+      `exit=${out.code}`,
+      `signal=${out.signal ?? "none"}`,
+      `stdout=${out.stdout.toString().trim()}`,
+      `stderr=${out.stderr.toString().trim()}`,
+    ].join("; "),
+  )
+}
+
 afterEach(async () => {
   await removeTempDirs(tempDirs)
 })
@@ -100,6 +116,7 @@ describe("installed Jnoccio unlock smoke", () => {
       if (!installedEnabled) throw new Error("installed unlock proof skipped: JNOCCIO_INSTALLED_UNLOCK_E2E is not 1")
       if (!preflight.ok) throw new Error(`installed unlock proof skipped: ${preflight.reason}`)
       if (!existsSync(installedPath)) throw new Error(`installed unlock proof skipped: ${installedPath} is missing`)
+      await assertInstalledStarts()
 
       const { clone, cloneParent } = await cloneRepo("jnoccio-installed-unlock-", tempDirs)
       const secretCachePath = path.join(cloneParent, "installed-jekko.unlock")

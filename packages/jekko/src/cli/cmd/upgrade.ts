@@ -19,8 +19,13 @@ export const UpgradeCommand = {
         type: "string",
         choices: ["curl", "npm", "pnpm", "bun", "brew", "choco", "scoop"],
       })
+      .option("repair", {
+        describe: "force reinstall and smoke-check the installed jekko binary",
+        type: "boolean",
+        default: false,
+      })
   },
-  handler: async (args: { target?: string; method?: string }) => {
+  handler: async (args: { target?: string; method?: string; repair?: boolean }) => {
     UI.empty()
     UI.println(UI.logo("  "))
     UI.empty()
@@ -45,16 +50,20 @@ export const UpgradeCommand = {
     prompts.log.info("Using method: " + method)
     const target = args.target ? args.target.replace(/^v/, "") : await Installation.latest()
 
-    if (InstallationVersion === target) {
+    if (InstallationVersion === target && !args.repair) {
       prompts.log.warn(`jekko upgrade skipped: ${target} is already installed`)
       prompts.outro("Done")
       return
     }
 
-    prompts.log.info(`From ${InstallationVersion} → ${target}`)
+    if (args.repair) {
+      prompts.log.info(`Repairing ${target} with ${method}`)
+    } else {
+      prompts.log.info(`From ${InstallationVersion} → ${target}`)
+    }
     const spinner = prompts.spinner()
-    spinner.start("Upgrading...")
-    const err = await Installation.upgrade(method, target).catch((err) => err)
+    spinner.start(args.repair ? "Repairing..." : "Upgrading...")
+    const err = await Installation.upgrade(method, target, { repair: args.repair }).catch((err) => err)
     if (err) {
       spinner.stop("Upgrade failed", 1)
       if (err instanceof Installation.UpgradeFailedError) {
@@ -68,7 +77,7 @@ export const UpgradeCommand = {
       prompts.outro("Done")
       return
     }
-    spinner.stop("Upgrade complete")
+    spinner.stop(args.repair ? "Repair complete" : "Upgrade complete")
     prompts.outro("Done")
   },
 }

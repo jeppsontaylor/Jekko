@@ -1,6 +1,6 @@
 import { NodeFileSystem } from "@effect/platform-node"
 import { beforeEach, describe, expect } from "bun:test"
-import { Effect, Exit, Layer, Option } from "effect"
+import { Effect, Layer, Option } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/unstable/http"
 
 import { AccessToken, AccountID, OrgID, RefreshToken } from "../../src/account/schema"
@@ -225,11 +225,11 @@ describe("ShareNext", () => {
         const session = yield* Session.Service.use((svc) => svc.create({ title: "test" }))
         const client = HttpClient.make((req) => Effect.succeed(json(req, { error: "bad" }, 500)))
 
-        const exit = yield* ShareNext.Service.use((svc) => Effect.exit(svc.create(session.id))).pipe(
-          Effect.provide(live(client)),
-        )
-
-        expect(Exit.isFailure(exit)).toBe(true)
+        yield* Effect.promise(async () => {
+          await expect(
+            Effect.runPromise(ShareNext.Service.use((svc) => svc.create(session.id)).pipe(Effect.provide(live(client)))),
+          ).rejects.toThrow()
+        })
         expect(share(session.id)).toBeUndefined()
       }),
     ),

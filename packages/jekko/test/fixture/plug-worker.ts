@@ -103,8 +103,4 @@ async function main() {
   }
 }
 
-await main().catch((err) => {
-  const text = err instanceof Error ? (err.stack ?? err.message) : String(err)
-  process.stderr.write(text)
-  process.exit(1)
-})
+await main()

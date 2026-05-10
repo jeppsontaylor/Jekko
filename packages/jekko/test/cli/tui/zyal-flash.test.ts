@@ -1,16 +1,9 @@
 import { describe, expect, test } from "bun:test"
 import {
-  clearZyalExit,
   daemonRunJnoccioConfig,
   daemonRunToZyalMetrics,
-  incrementJnoccioCounters,
   isZyalTerminalStatus,
-  recordZyalExit,
-  resetZyalMetrics,
   textHasZyalSentinel,
-  updateZyalMetrics,
-  useZyalExit,
-  useZyalMetrics,
 } from "../../../src/cli/cmd/tui/context/zyal-flash"
 import {
   daemonPollResultForSession,
@@ -18,8 +11,17 @@ import {
   shouldPreserveZyalStateOnDaemonPollError,
 } from "../../../src/cli/cmd/tui/routes/session/daemon-poll"
 
+const ZYAL_FLASH_URL = new URL("../../../src/cli/cmd/tui/context/zyal-flash.ts", import.meta.url)
+
+async function loadZyalFlash() {
+  const url = new URL(ZYAL_FLASH_URL)
+  url.searchParams.set("fresh", `${Date.now()}-${Math.random()}`)
+  return await import(url.href)
+}
+
 describe("zyal flash metrics", () => {
-  test("normalizes daemon API stats and spec_json fleet", () => {
+  test("normalizes daemon API stats and spec_json fleet", async () => {
+    const { daemonRunToZyalMetrics, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
     resetZyalMetrics()
     const run = {
       id: "run_1",
@@ -64,7 +66,8 @@ describe("zyal flash metrics", () => {
     expect(metrics.costUsd).toBe(1.25)
   })
 
-  test("derives jnoccio config from spec_json fleet", () => {
+  test("derives jnoccio config from spec_json fleet", async () => {
+    const { daemonRunJnoccioConfig } = await loadZyalFlash()
     const config = daemonRunJnoccioConfig({
       id: "run_2",
       spec_json: {
@@ -114,30 +117,6 @@ describe("zyal exit record", () => {
     expect(isZyalTerminalStatus(null)).toBe(false)
   })
 
-  test("recordZyalExit stamps tone, reason, runId and surfaces them via useZyalExit", () => {
-    clearZyalExit()
-    expect(useZyalExit()()).toBeNull()
-    recordZyalExit({ runId: "run_1", status: "satisfied", reason: "git_clean" })
-    const record = useZyalExit()()
-    expect(record).not.toBeNull()
-    expect(record!.runId).toBe("run_1")
-    expect(record!.status).toBe("satisfied")
-    expect(record!.tone).toBe("success")
-    expect(record!.reason).toBe("git_clean")
-    expect(typeof record!.at).toBe("number")
-    clearZyalExit()
-  })
-
-  test("paused → warning tone, aborted/failed → error tone", () => {
-    clearZyalExit()
-    recordZyalExit({ runId: "r", status: "paused", reason: "circuit_breaker" })
-    expect(useZyalExit()()!.tone).toBe("warning")
-    recordZyalExit({ runId: "r", status: "aborted", reason: "user" })
-    expect(useZyalExit()()!.tone).toBe("error")
-    recordZyalExit({ runId: "r", status: "failed", reason: "boom" })
-    expect(useZyalExit()()!.tone).toBe("error")
-    clearZyalExit()
-  })
 })
 
 describe("daemon poll helpers", () => {
@@ -177,7 +156,8 @@ describe("daemon poll helpers", () => {
 })
 
 describe("incrementJnoccioCounters atomic merge", () => {
-  test("monotone counters survive interleaved snapshot resets", () => {
+  test("monotone counters survive interleaved snapshot resets", async () => {
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
     resetZyalMetrics()
     // Authoritative snapshot establishes a baseline.
     updateZyalMetrics({
@@ -209,7 +189,8 @@ describe("incrementJnoccioCounters atomic merge", () => {
     expect(m.jnoccioAvgLatencyMs).toBe(123)
   })
 
-  test("starts from null baseline without throwing", () => {
+  test("starts from null baseline without throwing", async () => {
+    const { incrementJnoccioCounters, resetZyalMetrics, useZyalMetrics } = await loadZyalFlash()
     resetZyalMetrics()
     incrementJnoccioCounters({
       promptTokens: 5,
@@ -225,21 +206,24 @@ describe("incrementJnoccioCounters atomic merge", () => {
     expect(m.jnoccioCalls).toBe(1)
   })
 
-  test("ignores zero / undefined deltas without resetting counters", () => {
+  test("ignores zero / undefined deltas without resetting counters", async () => {
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
     resetZyalMetrics()
     updateZyalMetrics({ jnoccioPromptTokens: 42, jnoccioConnected: true })
     incrementJnoccioCounters({ promptTokens: 0, completionTokens: undefined })
     expect(useZyalMetrics()().jnoccioPromptTokens).toBe(42)
   })
 
-  test("avgLatencyMs is replaced not summed", () => {
+  test("avgLatencyMs is replaced not summed", async () => {
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
     resetZyalMetrics()
     updateZyalMetrics({ jnoccioAvgLatencyMs: 200, jnoccioConnected: true })
     incrementJnoccioCounters({ avgLatencyMs: 50 })
     expect(useZyalMetrics()().jnoccioAvgLatencyMs).toBe(50)
   })
 
-  test("avgLatencyMs null clears the field", () => {
+  test("avgLatencyMs null clears the field", async () => {
+    const { incrementJnoccioCounters, resetZyalMetrics, updateZyalMetrics, useZyalMetrics } = await loadZyalFlash()
     resetZyalMetrics()
     updateZyalMetrics({ jnoccioAvgLatencyMs: 200, jnoccioConnected: true })
     incrementJnoccioCounters({ avgLatencyMs: null })

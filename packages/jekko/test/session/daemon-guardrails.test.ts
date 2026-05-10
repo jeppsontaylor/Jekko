@@ -24,7 +24,7 @@ describe("daemon guardrails", () => {
     output: [
       {
         name: "no-secrets",
-        deny_patterns: ["sk-[a-zA-Z0-9]{20,}"],
+        deny_patterns: ["example-secret-[a-zA-Z0-9]{20,}"],
         scope: "tool_output",
         action: "block",
       },
@@ -66,7 +66,7 @@ describe("daemon guardrails", () => {
   test("output pattern guardrail blocks secret-like strings", () => {
     const result = evaluateOutputPatternGuardrails(
       guardrails,
-      "API key: sk-abcdefghijklmnopqrstuvwxyz1234567890",
+      "API key: example-secret-abcdefghijklmnopqrstuvwxyz1234567890",
       "tool_output",
     )
     expect(result.pass).toBe(false)
@@ -88,7 +88,7 @@ describe("daemon guardrails", () => {
     // The no-secrets guardrail has scope "tool_output" so it shouldn't match file_diff
     const result = evaluateOutputPatternGuardrails(
       guardrails,
-      "sk-abcdefghijklmnopqrstuvwxyz1234567890",
+      "example-secret-abcdefghijklmnopqrstuvwxyz1234567890",
       "file_diff",
     )
     expect(result.pass).toBe(true)

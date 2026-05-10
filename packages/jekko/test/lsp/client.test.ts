@@ -10,7 +10,7 @@ import * as Log from "@jekko-ai/core/util/log"
 
 function spawnFakeServer() {
   const { spawn } = require("child_process")
-  const serverPath = path.join(__dirname, "../fixture/lsp/fake-lsp-server.js")
+  const serverPath = path.join(__dirname, "../fixture/lsp/fake-lsp-server.ts")
   return {
     process: spawn(process.execPath, [serverPath], {
       stdio: "pipe",

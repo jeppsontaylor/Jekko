@@ -133,4 +133,12 @@ describe("HttpApi authorization middleware", () => {
       expect(response.status).toBe(401)
     }),
   )
+
+  itSecret.live("rejects non-basic authorization headers", () =>
+    Effect.gen(function* () {
+      const response = yield* getProbe({ authorization: "Bearer jekko:secret" })
+
+      expect(response.status).toBe(401)
+    }),
+  )
 })

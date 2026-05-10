@@ -31,46 +31,57 @@ export function DialogSessionList() {
   const [search, setSearch] = createDebouncedSignal("", 150)
 
   const [searchResults, { refetch }] = createResource(
-    () => ({ query: search(), filter: sync.session.query() }),
+    () => ({ query: search().trim(), filter: sync.session.query() }),
     async (input) => {
-      if (!input.query) return undefined
+      if (!input.query) return { kind: "idle" }
       const result = await sdk.client.session.list({ search: input.query, limit: 30, ...input.filter })
-      return result.data ?? []
+      return { kind: "loaded", sessions: result.data ?? [] }
     },
   )
 
   const currentSessionID = createMemo(() => (route.data.type === "session" ? route.data.sessionID : undefined))
-  const sessions = createMemo(() => searchResults() ?? sync.data.session)
+  const sessions = createMemo(() => {
+    const result = searchResults()
+    if (result?.kind === "loaded") return result.sessions
+    return sync.data.session
+  })
 
   function recover(session: NonNullable<ReturnType<typeof sessions>[number]>) {
     const workspace = project.workspace.get(session.workspaceID!)
     const list = () => dialog.replace(() => <DialogSessionList />)
+    type RecoveryWorkspaceResult =
+      | { kind: "cancelled" }
+      | { kind: "selected"; workspaceID: string }
+
+    const resolveWorkspace = async (selection: WorkspaceSelection): Promise<RecoveryWorkspaceResult> => {
+      if (selection.type === "none") return { kind: "cancelled" }
+      if (selection.type === "existing") return { kind: "selected", workspaceID: selection.workspaceID }
+
+      const result = await sdk.client.experimental.workspace
+        .create({ type: selection.workspaceType, branch: null })
+        .catch(() => undefined)
+      const workspace = result?.data
+      if (!workspace) {
+        toast.show({
+          message: `Failed to create workspace: ${errorMessage(result?.error ?? "no response")}`,
+          variant: "error",
+        })
+        return { kind: "cancelled" }
+      }
+      await project.workspace.sync()
+      return { kind: "selected", workspaceID: workspace.id }
+    }
+
     const warp = async (selection: WorkspaceSelection) => {
-      const workspaceID = await (async () => {
-        if (selection.type === "none") return null
-        if (selection.type === "existing") return selection.workspaceID
-        const result = await sdk.client.experimental.workspace
-          .create({ type: selection.workspaceType, branch: null })
-          .catch(() => undefined)
-        const workspace = result?.data
-        if (!workspace) {
-          toast.show({
-            message: `Failed to create workspace: ${errorMessage(result?.error ?? "no response")}`,
-            variant: "error",
-          })
-          return
-        }
-        await project.workspace.sync()
-        return workspace.id
-      })()
-      if (workspaceID === undefined) return
+      const resolved = await resolveWorkspace(selection)
+      if (resolved.kind === "cancelled") return
       await warpWorkspaceSession({
         dialog,
         sdk,
         sync,
         project,
         toast,
-        workspaceID,
+        workspaceID: resolved.workspaceID,
         sessionID: session.id,
         done: list,
       })

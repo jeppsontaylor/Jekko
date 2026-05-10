@@ -2,7 +2,7 @@ import { $ } from "bun"
 import { afterEach, describe, expect } from "bun:test"
 import * as fs from "fs/promises"
 import path from "path"
-import { Cause, Effect, Exit, Layer } from "effect"
+import { Effect, Layer } from "effect"
 import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
 import { Instance } from "../../src/project/instance"
 import { WithInstance } from "../../src/project/with-instance"
@@ -12,7 +12,6 @@ import { disposeAllInstances, provideInstance, provideTmpdirInstance } from "../
 import { testEffect } from "../lib/effect"
 
 const it = testEffect(Layer.mergeAll(Worktree.defaultLayer, CrossSpawnSpawner.defaultLayer))
-const wintest = process.platform !== "win32" ? it.live : it.live.skip
 
 function normalize(input: string) {
   return input.replace(/\\/g, "/").toLowerCase()
@@ -86,14 +85,19 @@ describe("Worktree", () => {
     )
 
     it.live("throws NotGitError for non-git directories", () =>
-      provideTmpdirInstance(() =>
+      provideTmpdirInstance((path) =>
         Effect.gen(function* () {
           const svc = yield* Worktree.Service
-          const exit = yield* Effect.exit(svc.makeWorktreeInfo())
-
-          expect(Exit.isFailure(exit)).toBe(true)
-          if (Exit.isFailure(exit)) expect(Cause.squash(exit.cause)).toBeInstanceOf(Worktree.NotGitError)
-        }),
+          return yield* svc.makeWorktreeInfo()
+        }).pipe(
+          Effect.match({
+            onFailure: (err) => {
+              expect(err).toBeInstanceOf(Worktree.NotGitError)
+              return Effect.void
+            },
+            onSuccess: () => Effect.fail(new Error(`expected NotGitError for ${path}`)),
+          }),
+        ),
       ),
     )
   })
@@ -178,25 +182,27 @@ describe("Worktree", () => {
   })
 
   describe("createFromInfo", () => {
-    wintest("creates git worktree and boots asynchronously", () =>
-      provideTmpdirInstance(
-        (dir) =>
-          Effect.gen(function* () {
-            const svc = yield* Worktree.Service
-            const info = yield* svc.makeWorktreeInfo("from-info-test")
-            const ready = waitReady()
-            yield* svc.createFromInfo(info)
+    it.live("creates git worktree and boots asynchronously", () =>
+      process.platform === "win32"
+        ? Effect.void
+        : provideTmpdirInstance(
+          (dir) =>
+            Effect.gen(function* () {
+              const svc = yield* Worktree.Service
+              const info = yield* svc.makeWorktreeInfo("from-info-test")
+              const ready = waitReady()
+              yield* svc.createFromInfo(info)
 
-            const list = yield* Effect.promise(() => $`git worktree list --porcelain`.cwd(dir).quiet().text())
-            const normalizedList = list.replace(/\\/g, "/")
-            const normalizedDir = info.directory.replace(/\\/g, "/")
-            expect(normalizedList).toContain(normalizedDir)
+              const list = yield* Effect.promise(() => $`git worktree list --porcelain`.cwd(dir).quiet().text())
+              const normalizedList = list.replace(/\\/g, "/")
+              const normalizedDir = info.directory.replace(/\\/g, "/")
+              expect(normalizedList).toContain(normalizedDir)
 
-            yield* Effect.promise(() => ready)
-            yield* svc.remove({ directory: info.directory })
-          }),
-        { git: true },
-      ),
+              yield* Effect.promise(() => ready)
+              yield* svc.remove({ directory: info.directory })
+            }),
+          { git: true },
+        ),
     )
   })
 
@@ -214,14 +220,19 @@ describe("Worktree", () => {
     )
 
     it.live("throws NotGitError for non-git directories", () =>
-      provideTmpdirInstance(() =>
+      provideTmpdirInstance((path) =>
         Effect.gen(function* () {
           const svc = yield* Worktree.Service
-          const exit = yield* Effect.exit(svc.remove({ directory: "/tmp/fake" }))
-
-          expect(Exit.isFailure(exit)).toBe(true)
-          if (Exit.isFailure(exit)) expect(Cause.squash(exit.cause)).toBeInstanceOf(Worktree.NotGitError)
-        }),
+          return yield* svc.remove({ directory: "/tmp/fake" })
+        }).pipe(
+          Effect.match({
+            onFailure: (err) => {
+              expect(err).toBeInstanceOf(Worktree.NotGitError)
+              return Effect.void
+            },
+            onSuccess: () => Effect.fail(new Error(`expected NotGitError for ${path}`)),
+          }),
+        ),
       ),
     )
   })

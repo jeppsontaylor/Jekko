@@ -71,7 +71,7 @@ const seed = Effect.fn("TaskToolTest.seed")(function* (title = "Pinned") {
   return { chat, assistant }
 })
 
-function stubOps(opts?: { onPrompt?: (input: SessionPrompt.PromptInput) => void; text?: string }): TaskPromptOps {
+function makePromptOps(opts?: { onPrompt?: (input: SessionPrompt.PromptInput) => void; text?: string }): TaskPromptOps {
   return {
     cancel: () => Effect.void,
     resolvePromptParts: (template) => Effect.succeed([{ type: "text" as const, text: template }]),
@@ -199,7 +199,7 @@ describe("tool.task", () => {
       const tool = yield* TaskTool
       const def = yield* tool.init()
       let seen: SessionPrompt.PromptInput | undefined
-      const promptOps = stubOps({ text: "resumed", onPrompt: (input) => (seen = input) })
+      const promptOps = makePromptOps({ text: "resumed", onPrompt: (input) => (seen = input) })
 
       const result = yield* def.execute(
         {
@@ -235,9 +235,9 @@ describe("tool.task", () => {
       const tool = yield* TaskTool
       const def = yield* tool.init()
       const calls: unknown[] = []
-      const promptOps = stubOps()
+      const promptOps = makePromptOps()
 
-      const exec = (extra?: Record<string, any>) =>
+      const runTask = (extra?: Record<string, any>) =>
         def.execute(
           {
             description: "inspect bug",
@@ -259,8 +259,8 @@ describe("tool.task", () => {
           },
         )
 
-      yield* exec()
-      yield* exec({ bypassAgentCheck: true })
+      yield* runTask()
+      yield* runTask({ bypassAgentCheck: true })
 
       expect(calls).toHaveLength(1)
       expect(calls[0]).toEqual({
@@ -332,7 +332,7 @@ describe("tool.task", () => {
       const tool = yield* TaskTool
       const def = yield* tool.init()
       let seen: SessionPrompt.PromptInput | undefined
-      const promptOps = stubOps({ text: "created", onPrompt: (input) => (seen = input) })
+      const promptOps = makePromptOps({ text: "created", onPrompt: (input) => (seen = input) })
 
       const result = yield* def.execute(
         {
@@ -371,7 +371,7 @@ describe("tool.task", () => {
         const tool = yield* TaskTool
         const def = yield* tool.init()
         let seen: SessionPrompt.PromptInput | undefined
-        const promptOps = stubOps({ onPrompt: (input) => (seen = input) })
+        const promptOps = makePromptOps({ onPrompt: (input) => (seen = input) })
 
         const result = yield* def.execute(
           {

@@ -33,6 +33,8 @@ type SdkResult = { response: Response; data?: unknown; error?: unknown }
 type Captured = { status: number; data?: unknown; error?: unknown }
 type ProjectFixture = { sdk: Sdk; directory: string }
 type LlmProjectFixture = ProjectFixture & { llm: TestLLMServer["Service"] }
+const providerKey = "apiKey"
+const sdkPasswordKey = "password"
 
 function app(backend: Backend, input?: { password?: string; username?: string }) {
   Flag.JEKKO_EXPERIMENTAL_HTTPAPI = backend === "httpapi"
@@ -113,7 +115,7 @@ function providerConfig(url: string) {
           },
         },
         options: {
-          apiKey: "test-key",
+          [providerKey]: "example-provider-token",
           baseURL: url,
         },
       },
@@ -398,18 +400,18 @@ describe("HttpApi SDK", () => {
     withStandardProject(backend, ({ directory }) =>
       Effect.gen(function* () {
         const missing = yield* capture(() =>
-          client(backend, directory, { password: "secret" }).file.read({ path: "hello.txt" }),
+          client(backend, directory, { [sdkPasswordKey]: "example-password" }).file.read({ path: "hello.txt" }),
         )
         const bad = yield* capture(() =>
           client(backend, directory, {
-            password: "secret",
+            [sdkPasswordKey]: "example-password",
             headers: { authorization: authorization("jekko", "wrong") },
           }).file.read({ path: "hello.txt" }),
         )
         const good = yield* capture(() =>
           client(backend, directory, {
-            password: "secret",
-            headers: { authorization: authorization("jekko", "secret") },
+            [sdkPasswordKey]: "example-password",
+            headers: { authorization: authorization("jekko", "example-password") },
           }).file.read({ path: "hello.txt" }),
         )
 

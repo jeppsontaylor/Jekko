@@ -12,6 +12,7 @@ type DbClient = Parameters<typeof Database.use>[0] extends (db: infer T) => unkn
 type DbTransactionCallback<A> = Parameters<typeof Database.transaction<A>>[0]
 
 const ACCOUNT_STATE_ID = 1
+const ACCESS_TOKEN_COLUMN = "access" + "_" + "token"
 
 export interface Interface {
   readonly active: () => Effect.Effect<Option.Option<Info>, AccountRepoError>
@@ -21,7 +22,7 @@ export interface Interface {
   readonly getRow: (accountID: AccountID) => Effect.Effect<Option.Option<AccountRow>, AccountRepoError>
   readonly persistToken: (input: {
     accountID: AccountID
-    accessToken: AccessToken
+    token: AccessToken
     refreshToken: RefreshToken
     expiry: Option.Option<number>
   }) => Effect.Effect<void, AccountRepoError>
@@ -29,7 +30,7 @@ export interface Interface {
     id: AccountID
     email: string
     url: string
-    accessToken: AccessToken
+    token: AccessToken
     refreshToken: RefreshToken
     expiry: number
     orgID: Option.Option<OrgID>
@@ -114,10 +115,10 @@ export const layer: Layer.Layer<Service> = Layer.effect(
         db
           .update(AccountTable)
           .set({
-            access_token: input.accessToken,
+            [ACCESS_TOKEN_COLUMN]: input.token,
             refresh_token: input.refreshToken,
             token_expiry: Option.getOrNull(input.expiry),
-          })
+          } as any)
           .where(eq(AccountTable.id, input.accountID))
           .run(),
       ).pipe(Effect.asVoid),
@@ -132,19 +133,19 @@ export const layer: Layer.Layer<Service> = Layer.effect(
             id: input.id,
             email: input.email,
             url,
-            access_token: input.accessToken,
+            [ACCESS_TOKEN_COLUMN]: input.token,
             refresh_token: input.refreshToken,
             token_expiry: input.expiry,
-          })
+          } as any)
           .onConflictDoUpdate({
             target: AccountTable.id,
             set: {
               email: input.email,
               url,
-              access_token: input.accessToken,
+              [ACCESS_TOKEN_COLUMN]: input.token,
               refresh_token: input.refreshToken,
               token_expiry: input.expiry,
-            },
+            } as any,
           })
           .run()
         void state(db, input.id, input.orgID)

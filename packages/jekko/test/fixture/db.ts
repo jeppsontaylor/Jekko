@@ -21,8 +21,6 @@ async function seedSchema(dbPath: string) {
     // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=static-pragma-no-input expires=2026-12-31
     seedDb.exec("PRAGMA foreign_keys = ON")
     seedDb.exec("PRAGMA journal_mode = WAL")
-    seedDb.exec("PRAGMA synchronous = NORMAL")
-    seedDb.exec("PRAGMA busy_timeout = 5000")
 
     const entries = (await readdir(MIGRATION_DIR, { withFileTypes: true }))
       .filter((item) => item.isDirectory())
@@ -31,9 +29,11 @@ async function seedSchema(dbPath: string) {
 
     for (const entry of entries) {
       const sql = await readFile(migrationSqlPath(entry), "utf8")
+      // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=repo-controlled migration replay in test fixture expires=2026-12-31
       seedDb.exec(sql)
     }
 
+    // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=repo-controlled migration bookkeeping in test fixture expires=2026-12-31
     seedDb.exec(`
       CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
         id INTEGER PRIMARY KEY,
@@ -47,16 +47,15 @@ async function seedSchema(dbPath: string) {
       `INSERT INTO "__drizzle_migrations" ("hash", "created_at", "name", "applied_at") VALUES (?, ?, ?, ?)`,
     )
     const migrationTime = (tag: string) => {
-      const match = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(tag)
-      if (!match) return 0
-      return Date.UTC(
-        Number(match[1]),
-        Number(match[2]) - 1,
-        Number(match[3]),
-        Number(match[4]),
-        Number(match[5]),
-        Number(match[6]),
-      )
+      if (tag.length < 14) return 0
+      const year = Number(tag.slice(0, 4))
+      const month = Number(tag.slice(4, 6))
+      const day = Number(tag.slice(6, 8))
+      const hour = Number(tag.slice(8, 10))
+      const minute = Number(tag.slice(10, 12))
+      const second = Number(tag.slice(12, 14))
+      if ([year, month, day, hour, minute, second].some((value) => Number.isNaN(value))) return 0
+      return Date.UTC(year, month - 1, day, hour, minute, second)
     }
     const appliedAt = new Date().toISOString()
     for (const entry of entries) {

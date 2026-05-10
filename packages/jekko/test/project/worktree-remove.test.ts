@@ -1,5 +1,5 @@
 import { $ } from "bun"
-import { describe, expect } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import * as fs from "fs/promises"
 import path from "path"
 import { Effect, Layer } from "effect"
@@ -9,7 +9,8 @@ import { provideTmpdirInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 
 const it = testEffect(Layer.mergeAll(Worktree.defaultLayer, CrossSpawnSpawner.defaultLayer))
-const wintest = process.platform === "win32" ? it.live : it.live.skip
+const wintest =
+  process.platform === "win32" ? it.live : ((test.skip as unknown) as typeof it.live)
 
 describe("Worktree.remove", () => {
   it.live("continues when git remove exits non-zero after detaching", () =>

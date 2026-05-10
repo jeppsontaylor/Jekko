@@ -2,7 +2,7 @@
 //
 // Routes through the actual ai-gateway-provider + @ai-sdk/openai-compatible
 // chain that provider.ts:811 builds at runtime, with only the network boundary
-// stubbed. Asserts that `reasoning_effort` (and other provider options the
+// mocked. Asserts that `reasoning_effort` (and other provider options the
 // transform emits) actually land in the body Cloudflare AI Gateway forwards
 // upstream, which is the only place the bug was observable.
 
@@ -47,8 +47,10 @@ beforeEach(() => {
     return realFetch(input, init)
   }
   // `typeof fetch` includes Bun's `preconnect` method; preserve it from realFetch.
-  const stubFetch: typeof fetch = Object.assign(handle, { preconnect: realFetch.preconnect.bind(realFetch) })
-  globalThis.fetch = stubFetch
+  const fetchWithPreconnect: typeof fetch = Object.assign(handle, {
+    preconnect: realFetch.preconnect.bind(realFetch),
+  })
+  globalThis.fetch = fetchWithPreconnect
 })
 
 afterEach(() => {

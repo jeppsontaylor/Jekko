@@ -8,7 +8,6 @@ import { isPublicUIPath } from "@/server/shared/public-ui"
 const AUTH_TOKEN_QUERY = "auth_token"
 const UNAUTHORIZED = 401
 const WWW_AUTHENTICATE = 'Basic realm="Secure Area"'
-const BASIC_AUTH_PATTERN = /^[Bb]asic\s+([A-Za-z0-9+/=]+)$/
 const BASIC_AUTH_LENGTH = 4096
 
 // Avoid HttpApiSecurity alternatives here: Effect security middleware wraps the
@@ -67,9 +66,12 @@ function credentialFromURL(url: URL, request: HttpServerRequest.HttpServerReques
   if (token) return decodeCredential(token)
   const auth = request.headers.authorization ?? ""
   if (auth.length > BASIC_AUTH_LENGTH) return Effect.succeed(emptyCredential())
-  const match = BASIC_AUTH_PATTERN.exec(auth)
-  if (match) return decodeCredential(match[1])
-  return Effect.succeed(emptyCredential())
+  const basicPrefix = "Basic "
+  if (auth.slice(0, basicPrefix.length).toLowerCase() !== basicPrefix.toLowerCase())
+    return Effect.succeed(emptyCredential())
+  const encoded = auth.slice(basicPrefix.length)
+  if (!encoded) return Effect.succeed(emptyCredential())
+  return decodeCredential(encoded)
 }
 
 function validateRawCredential<A, E, R>(

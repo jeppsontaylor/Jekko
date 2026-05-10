@@ -103,24 +103,50 @@ export async function removeTempDirs(tempDirs: string[]) {
   await Promise.all(tempDirs.splice(0).map((dir) => fsp.rm(dir, { recursive: true, force: true })))
 }
 
-function migrationTime(name: string) {
-  const match = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(name)
-  if (!match) return 0
+export function migrationTime(name: string) {
+  if (name.length < 14) return 0
+
+  const prefix = name.slice(0, 14)
+  for (const char of prefix) {
+    const code = char.charCodeAt(0)
+    if (code < 48 || code > 57) return 0
+  }
+
+  const year = Number(prefix.slice(0, 4))
+  const month = Number(prefix.slice(4, 6))
+  const day = Number(prefix.slice(6, 8))
+  const hour = Number(prefix.slice(8, 10))
+  const minute = Number(prefix.slice(10, 12))
+  const second = Number(prefix.slice(12, 14))
+
   return Date.UTC(
-    Number(match[1]),
-    Number(match[2]) - 1,
-    Number(match[3]),
-    Number(match[4]),
-    Number(match[5]),
-    Number(match[6]),
+    year,
+    month - 1,
+    day,
+    hour,
+    minute,
+    second,
   )
+}
+
+function migrationSqlPath(entry: string) {
+  const safeEntry = path.basename(entry)
+  if (safeEntry !== entry) {
+    throw new Error(`Invalid migration directory name: ${entry}`)
+  }
+
+  return path.join(repoRoot, "db", "migrations", safeEntry, "migration.sql")
 }
 
 export async function seedTestDatabase() {
   const db = new BunDatabase(Database.Path)
+  // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=static-pragma-no-input expires=2026-12-31
   db.exec("PRAGMA foreign_keys = ON")
+  // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=static-pragma-no-input expires=2026-12-31
   db.exec("PRAGMA journal_mode = WAL")
+  // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=static-pragma-no-input expires=2026-12-31
   db.exec("PRAGMA synchronous = NORMAL")
+  // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=static-pragma-no-input expires=2026-12-31
   db.exec("PRAGMA busy_timeout = 5000")
 
   const migrationDir = path.join(import.meta.dir, "..", "..", "..", "..", "db", "migrations")
@@ -129,9 +155,14 @@ export async function seedTestDatabase() {
     .map((item) => item.name)
     .sort()
   for (const entry of entries) {
-    const sqlPath = path.join(migrationDir, entry, "migration.sql")
+    const sqlPath = migrationSqlPath(entry)
+    if (sqlPath !== path.join(migrationDir, entry, "migration.sql")) {
+      throw new Error(`Unexpected migration path: ${sqlPath}`)
+    }
+    // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=repo-controlled migration replay in test fixture expires=2026-12-31
     db.exec(await fsp.readFile(sqlPath, "utf8"))
   }
+  // jankurai:allow HLT-023-INPUT-BOUNDARY-GAP reason=repo-controlled migration bookkeeping in test fixture expires=2026-12-31
   db.exec(`
     CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
       id INTEGER PRIMARY KEY,
@@ -146,7 +177,7 @@ export async function seedTestDatabase() {
   )
   const appliedAt = new Date().toISOString()
   for (const entry of entries) {
-    const sqlPath = path.join(migrationDir, entry, "migration.sql")
+    const sqlPath = migrationSqlPath(entry)
     const sql = await fsp.readFile(sqlPath, "utf8")
     insert.run(migrationHash({ sql }), migrationTime(entry), entry, appliedAt)
   }

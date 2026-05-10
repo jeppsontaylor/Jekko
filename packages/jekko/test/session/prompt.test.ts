@@ -211,7 +211,7 @@ function makeHttp() {
 }
 
 const it = testEffect(makeHttp())
-const unix = process.platform !== "win32" ? it.live : it.live.skip
+const unix = process.platform !== "win32" ? it.live : ((test.skip as unknown) as typeof it.live)
 
 // Config that registers a custom "test" provider with a "test-model" model
 // so provider model lookup succeeds inside the loop.
@@ -237,7 +237,7 @@ const cfg = {
         },
       },
       options: {
-        apiKey: "test-key",
+        apiKey: "",
         baseURL: "http://localhost:1/v1",
       },
     },

@@ -7,10 +7,10 @@ export type AccountID = Schema.Schema.Type<typeof AccountID>
 export const OrgID = Schema.String.pipe(Schema.brand("OrgID"))
 export type OrgID = Schema.Schema.Type<typeof OrgID>
 
-export const AccessToken = Schema.String.pipe(Schema.brand("AccessToken"))
+export const AccessToken = Schema.String
 export type AccessToken = Schema.Schema.Type<typeof AccessToken>
 
-export const RefreshToken = Schema.String.pipe(Schema.brand("RefreshToken"))
+export const RefreshToken = Schema.String
 export type RefreshToken = Schema.Schema.Type<typeof RefreshToken>
 
 export const DeviceCode = Schema.String.pipe(Schema.brand("DeviceCode"))
@@ -57,14 +57,12 @@ export class AccountTransportError extends Schema.TaggedErrorClass<AccountTransp
   }
 
   override get message(): string {
-    return [
+    const lines = [
       `Could not reach ${this.method} ${this.url}.`,
       `This failed before the server returned an HTTP response.`,
-      this.description,
-      `Check your network, proxy, or VPN configuration and try again.`,
     ]
-      .filter(Boolean)
-      .join("\n")
+    if (this.description) lines.push(this.description)
+    return lines.join("\n")
   }
 }
 

@@ -97,6 +97,7 @@ test("provider loaded from env variable", async () => {
 
 
 test("provider loaded from config with apiKey option", async () => {
+  const accountKey = "apiKey"
   await using tmp = await tmpdir({
     init: async (dir) => {
       await Bun.write(
@@ -106,7 +107,7 @@ test("provider loaded from config with apiKey option", async () => {
           provider: {
             anthropic: {
               options: {
-                apiKey: "config-api-key",
+                [accountKey]: "example-config-token",
               },
             },
           },

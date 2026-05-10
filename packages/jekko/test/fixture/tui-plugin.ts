@@ -183,7 +183,7 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
       add: async () => false,
       install: async () => ({
         ok: false,
-        message: "not implemented in fixture",
+        message: "fixture install path is unavailable",
       }),
     },
     lifecycle: {

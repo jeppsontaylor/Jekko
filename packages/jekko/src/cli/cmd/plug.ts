@@ -17,6 +17,20 @@ type Spin = {
   stop: (msg: string, code?: number) => void
 }
 
+type InstallFailure =
+  | {
+      kind: "run_failed"
+      detail?: string
+    }
+  | {
+      kind: "registry_mismatch"
+      detail?: string
+    }
+  | {
+      kind: "other"
+      message: string
+    }
+
 export type PlugDeps = {
   spinner: () => Spin
   log: {
@@ -67,6 +81,46 @@ function cause(err: unknown) {
   return (err as { cause?: unknown }).cause
 }
 
+function summarizeInstallFailure(hit: unknown): InstallFailure {
+  if (!(hit instanceof Process.RunFailedError)) {
+    return {
+      kind: "other",
+      message: errorMessage(hit),
+    }
+  }
+
+  const lines = hit.stderr
+    .toString()
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+  const errs = lines.filter((line) => line.startsWith("error:")).map((line) => line.replace(/^error:\s*/, ""))
+  if (lines.some((line) => line.includes("No version matching"))) {
+    return {
+      kind: "registry_mismatch",
+      detail: errs[0] ?? lines.at(-1),
+    }
+  }
+  return {
+    kind: "run_failed",
+    detail: errs[0] ?? lines.at(-1),
+  }
+}
+
+function logInstallFailure(dep: PlugDeps, mod: string, failure: InstallFailure) {
+  dep.log.error(`Could not install "${mod}"`)
+  if (failure.kind === "other") {
+    dep.log.error(failure.message)
+    return
+  }
+
+  if (failure.detail) dep.log.error(failure.detail)
+  if (failure.kind === "registry_mismatch") {
+    dep.log.info("The npm registry does not publish the requested version for this package.")
+    dep.log.info("Verify registry and auth settings before running another install.")
+  }
+}
+
 export function createPlugTask(input: PlugInput, dep: PlugDeps = defaultPlugDeps) {
   const mod = input.mod
   const force = Boolean(input.force)
@@ -78,25 +132,7 @@ export function createPlugTask(input: PlugInput, dep: PlugDeps = defaultPlugDeps
     const target = await installPlugin(mod, dep)
     if (!target.ok) {
       install.stop("Install failed", 1)
-      dep.log.error(`Could not install "${mod}"`)
-      const hit = cause(target.error) ?? target.error
-      if (hit instanceof Process.RunFailedError) {
-        const lines = hit.stderr
-          .toString()
-          .split(/\r?\n/)
-          .map((line) => line.trim())
-          .filter(Boolean)
-        const errs = lines.filter((line) => line.startsWith("error:")).map((line) => line.replace(/^error:\s*/, ""))
-        const detail = errs[0] ?? lines.at(-1)
-        if (detail) dep.log.error(detail)
-        if (lines.some((line) => line.includes("No version matching"))) {
-          dep.log.info("This package depends on a version that is not available in your npm registry.")
-          dep.log.info("Check npm registry/auth settings and try again.")
-        }
-      }
-      if (!(hit instanceof Process.RunFailedError)) {
-        dep.log.error(errorMessage(hit))
-      }
+      logInstallFailure(dep, mod, summarizeInstallFailure(cause(target.error) ?? target.error))
       return false
     }
     install.stop("Plugin package ready")

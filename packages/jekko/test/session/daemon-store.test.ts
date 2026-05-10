@@ -142,7 +142,7 @@ describe("session.daemon-store", () => {
         expect(memory).toHaveLength(1)
 
         const capsulePath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "CAPSULE.md")
-        const passPath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "PASSES", "001-scout.md")
+        const passPath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "PASSES", "001.md")
         const scorePath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "SCORE.json")
         expect(yield* Effect.promise(() => fs.readFile(capsulePath, "utf8"))).toContain("Understand the daemon store task")
         expect(yield* Effect.promise(() => fs.readFile(passPath, "utf8"))).toContain("scout")

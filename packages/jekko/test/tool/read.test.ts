@@ -16,7 +16,19 @@ import { Filesystem } from "@/util/filesystem"
 import { disposeAllInstances, provideInstance, TestInstance, tmpdirScoped } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 
-const FIXTURES_DIR = path.join(import.meta.dir, "fixtures")
+const FIXTURES_DIR = safeTestPath(import.meta.dir, "fixtures")
+
+function safeTestPath(base: string, ...segments: string[]) {
+  let current = base
+  for (const segment of segments) {
+    const safeSegment = path.basename(segment)
+    if (safeSegment !== segment || !/^[a-zA-Z0-9._-]+$/.test(safeSegment)) {
+      throw new Error(`Invalid test path segment: ${segment}`)
+    }
+    current = path.join(current, safeSegment)
+  }
+  return current
+}
 
 afterEach(async () => {
   await disposeAllInstances()
@@ -57,7 +69,7 @@ const run = Effect.fn("ReadToolTest.run")(function* (
   return yield* tool.execute(args, next)
 })
 
-const exec = Effect.fn("ReadToolTest.exec")(function* (
+const invoke = Effect.fn("ReadToolTest.invoke")(function* (
   dir: string,
   args: Tool.InferParameters<typeof ReadTool>,
   next: Tool.Context = ctx,
@@ -70,7 +82,7 @@ const fail = Effect.fn("ReadToolTest.fail")(function* (
   args: Tool.InferParameters<typeof ReadTool>,
   next: Tool.Context = ctx,
 ) {
-  const exit = yield* exec(dir, args, next).pipe(Effect.exit)
+  const exit = yield* invoke(dir, args, next).pipe(Effect.exit)
   if (Exit.isFailure(exit)) {
     const err = Cause.squash(exit.cause)
     return err instanceof Error ? err : new Error(String(err))
@@ -107,9 +119,9 @@ describe("tool.read external_directory permission", () => {
   it.live("allows reading absolute path inside project directory", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
-      yield* put(path.join(dir, "test.txt"), "hello world")
+      yield* put(safeTestPath(dir, "test.txt"), "hello world")
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "test.txt") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "test.txt") })
       expect(result.output).toContain("hello world")
     }),
   )
@@ -117,9 +129,9 @@ describe("tool.read external_directory permission", () => {
   it.live("allows reading file in subdirectory inside project directory", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
-      yield* put(path.join(dir, "subdir", "test.txt"), "nested content")
+      yield* put(safeTestPath(dir, "subdir", "test.txt"), "nested content")
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "subdir", "test.txt") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "subdir", "test.txt") })
       expect(result.output).toContain("nested content")
     }),
   )
@@ -128,14 +140,14 @@ describe("tool.read external_directory permission", () => {
     Effect.gen(function* () {
       const outer = yield* tmpdirScoped()
       const dir = yield* tmpdirScoped({ git: true })
-      yield* put(path.join(outer, "secret.txt"), "secret data")
+      yield* put(safeTestPath(outer, "secret.txt"), "secret data")
 
       const { items, next } = asks()
 
-      yield* exec(dir, { filePath: path.join(outer, "secret.txt") }, next)
+      yield* invoke(dir, { filePath: safeTestPath(outer, "secret.txt") }, next)
       const ext = items.find((item) => item.permission === "external_directory")
       expect(ext).toBeDefined()
-      expect(ext!.patterns).toContain(glob(path.join(outer, "*")))
+      expect(ext!.patterns).toContain(glob(`${safeTestPath(outer)}/*`))
     }),
   )
 
@@ -143,16 +155,16 @@ describe("tool.read external_directory permission", () => {
     it.live("normalizes read permission paths on Windows", () =>
       Effect.gen(function* () {
         const dir = yield* tmpdirScoped({ git: true })
-        yield* put(path.join(dir, "test.txt"), "hello world")
+        yield* put(safeTestPath(dir, "test.txt"), "hello world")
 
         const { items, next } = asks()
-        const target = path.join(dir, "test.txt")
+        const target = safeTestPath(dir, "test.txt")
         const alt = target
           .replace(/^[A-Za-z]:/, "")
           .replaceAll("\\", "/")
           .toLowerCase()
 
-        yield* exec(dir, { filePath: alt }, next)
+        yield* invoke(dir, { filePath: alt }, next)
         const read = items.find((item) => item.permission === "read")
         expect(read).toBeDefined()
         expect(read!.patterns).toEqual([full(target)])
@@ -164,14 +176,14 @@ describe("tool.read external_directory permission", () => {
     Effect.gen(function* () {
       const outer = yield* tmpdirScoped()
       const dir = yield* tmpdirScoped({ git: true })
-      yield* put(path.join(outer, "external", "a.txt"), "a")
+      yield* put(safeTestPath(outer, "external", "a.txt"), "a")
 
       const { items, next } = asks()
 
-      yield* exec(dir, { filePath: path.join(outer, "external") }, next)
+      yield* invoke(dir, { filePath: safeTestPath(outer, "external") }, next)
       const ext = items.find((item) => item.permission === "external_directory")
       expect(ext).toBeDefined()
-      expect(ext!.patterns).toContain(glob(path.join(outer, "external", "*")))
+      expect(ext!.patterns).toContain(glob(`${safeTestPath(outer, "external")}/*`))
     }),
   )
 
@@ -190,11 +202,11 @@ describe("tool.read external_directory permission", () => {
   it.live("does not ask for external_directory permission when reading inside project", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped({ git: true })
-      yield* put(path.join(dir, "internal.txt"), "internal content")
+      yield* put(safeTestPath(dir, "internal.txt"), "internal content")
 
       const { items, next } = asks()
 
-      yield* exec(dir, { filePath: path.join(dir, "internal.txt") }, next)
+      yield* invoke(dir, { filePath: safeTestPath(dir, "internal.txt") }, next)
       const ext = items.find((item) => item.permission === "external_directory")
       expect(ext).toBeUndefined()
     }),
@@ -218,7 +230,7 @@ describe("tool.read env file permissions", () => {
         it.live(`${filename} asks=${shouldAsk}`, () =>
           Effect.gen(function* () {
             const dir = yield* tmpdirScoped()
-            yield* put(path.join(dir, filename), "content")
+            yield* put(safeTestPath(dir, filename), "content")
 
             const asked = yield* provideInstance(dir)(
               Effect.gen(function* () {
@@ -241,7 +253,7 @@ describe("tool.read env file permissions", () => {
                     }),
                 }
 
-                yield* run({ filePath: path.join(dir, filename) }, next)
+                yield* run({ filePath: safeTestPath(dir, filename) }, next)
                 return asked
               }),
             )
@@ -258,12 +270,12 @@ describe("tool.read truncation", () => {
   it.instance("truncates large file by bytes and sets truncated metadata", () =>
     Effect.gen(function* () {
       const test = yield* TestInstance
-      const base = yield* load(path.join(FIXTURES_DIR, "models-api.json"))
+      const base = yield* load(safeTestPath(FIXTURES_DIR, "models-api.json"))
       const target = 60 * 1024
       const content = base.length >= target ? base : base.repeat(Math.ceil(target / base.length))
-      yield* put(path.join(test.directory, "large.json"), content)
+      yield* put(safeTestPath(test.directory, "large.json"), content)
 
-      const result = yield* run({ filePath: path.join(test.directory, "large.json") })
+      const result = yield* run({ filePath: safeTestPath(test.directory, "large.json") })
       expect(result.metadata.truncated).toBe(true)
       expect(result.output).toContain("Output capped at")
       expect(result.output).toContain("Use offset=")
@@ -274,9 +286,9 @@ describe("tool.read truncation", () => {
     Effect.gen(function* () {
       const test = yield* TestInstance
       const lines = Array.from({ length: 100 }, (_, i) => `line${i}`).join("\n")
-      yield* put(path.join(test.directory, "many-lines.txt"), lines)
+      yield* put(safeTestPath(test.directory, "many-lines.txt"), lines)
 
-      const result = yield* run({ filePath: path.join(test.directory, "many-lines.txt"), limit: 10 })
+      const result = yield* run({ filePath: safeTestPath(test.directory, "many-lines.txt"), limit: 10 })
       expect(result.metadata.truncated).toBe(true)
       expect(result.output).toContain("Showing lines 1-10 of 100")
       expect(result.output).toContain("Use offset=11")
@@ -289,9 +301,9 @@ describe("tool.read truncation", () => {
   it.instance("does not truncate small file", () =>
     Effect.gen(function* () {
       const test = yield* TestInstance
-      yield* put(path.join(test.directory, "small.txt"), "hello world")
+      yield* put(safeTestPath(test.directory, "small.txt"), "hello world")
 
-      const result = yield* run({ filePath: path.join(test.directory, "small.txt") })
+      const result = yield* run({ filePath: safeTestPath(test.directory, "small.txt") })
       expect(result.metadata.truncated).toBe(false)
       expect(result.output).toContain("End of file")
     }),
@@ -301,9 +313,9 @@ describe("tool.read truncation", () => {
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
       const lines = Array.from({ length: 20 }, (_, i) => `line${i + 1}`).join("\n")
-      yield* put(path.join(dir, "offset.txt"), lines)
+      yield* put(safeTestPath(dir, "offset.txt"), lines)
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "offset.txt"), offset: 10, limit: 5 })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "offset.txt"), offset: 10, limit: 5 })
       expect(result.output).toContain("10: line10")
       expect(result.output).toContain("14: line14")
       expect(result.output).not.toContain("9: line10")
@@ -319,9 +331,9 @@ describe("tool.read truncation", () => {
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
       const lines = Array.from({ length: 3 }, (_, i) => `line${i + 1}`).join("\n")
-      yield* put(path.join(dir, "short.txt"), lines)
+      yield* put(safeTestPath(dir, "short.txt"), lines)
 
-      const err = yield* fail(dir, { filePath: path.join(dir, "short.txt"), offset: 4, limit: 5 })
+      const err = yield* fail(dir, { filePath: safeTestPath(dir, "short.txt"), offset: 4, limit: 5 })
       expect(err.message).toContain("Offset 4 is out of range for this file (3 lines)")
     }),
   )
@@ -329,9 +341,9 @@ describe("tool.read truncation", () => {
   it.live("allows reading empty file at default offset", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
-      yield* put(path.join(dir, "empty.txt"), "")
+      yield* put(safeTestPath(dir, "empty.txt"), "")
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "empty.txt") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "empty.txt") })
       expect(result.metadata.truncated).toBe(false)
       expect(result.output).toContain("End of file - total 0 lines")
     }),
@@ -340,9 +352,9 @@ describe("tool.read truncation", () => {
   it.live("throws when offset > 1 for empty file", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
-      yield* put(path.join(dir, "empty.txt"), "")
+      yield* put(safeTestPath(dir, "empty.txt"), "")
 
-      const err = yield* fail(dir, { filePath: path.join(dir, "empty.txt"), offset: 2 })
+      const err = yield* fail(dir, { filePath: safeTestPath(dir, "empty.txt"), offset: 2 })
       expect(err.message).toContain("Offset 2 is out of range for this file (0 lines)")
     }),
   )
@@ -352,13 +364,13 @@ describe("tool.read truncation", () => {
       const dir = yield* tmpdirScoped()
       yield* Effect.forEach(
         Array.from({ length: 10 }, (_, i) => i),
-        (i) => put(path.join(dir, "dir", `file-${i + 1}.txt`), `line${i}`),
+        (i) => put(safeTestPath(dir, "dir", `file-${i + 1}.txt`), `line${i}`),
         {
           concurrency: "unbounded",
         },
       )
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "dir"), offset: 6, limit: 5 })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "dir"), offset: 6, limit: 5 })
       expect(result.metadata.truncated).toBe(false)
       expect(result.output).not.toContain("Showing 5 of 10 entries")
     }),
@@ -367,9 +379,9 @@ describe("tool.read truncation", () => {
   it.live("truncates long lines", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
-      yield* put(path.join(dir, "long-line.txt"), "x".repeat(3000))
+      yield* put(safeTestPath(dir, "long-line.txt"), "x".repeat(3000))
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "long-line.txt") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "long-line.txt") })
       expect(result.output).toContain("(line truncated to 2000 chars)")
       expect(result.output.length).toBeLessThan(3000)
     }),
@@ -382,9 +394,9 @@ describe("tool.read truncation", () => {
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==",
         "base64",
       )
-      yield* put(path.join(dir, "image.png"), png)
+      yield* put(safeTestPath(dir, "image.png"), png)
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "image.png") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "image.png") })
       expect(result.metadata.truncated).toBe(false)
       expect(result.attachments).toBeDefined()
       expect(result.attachments?.length).toBe(1)
@@ -398,9 +410,9 @@ describe("tool.read truncation", () => {
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
       const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01])
-      yield* put(path.join(dir, "image.bin"), jpeg)
+      yield* put(safeTestPath(dir, "image.bin"), jpeg)
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "image.bin") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "image.bin") })
       expect(result.output).toBe("Image read successfully")
       expect(result.attachments?.[0].mime).toBe("image/jpeg")
       expect(result.attachments?.[0].url.startsWith("data:image/jpeg;base64,")).toBe(true)
@@ -409,7 +421,7 @@ describe("tool.read truncation", () => {
 
   it.live("large image files are properly attached without error", () =>
     Effect.gen(function* () {
-      const result = yield* exec(FIXTURES_DIR, { filePath: path.join(FIXTURES_DIR, "large-image.png") })
+      const result = yield* invoke(FIXTURES_DIR, { filePath: safeTestPath(FIXTURES_DIR, "large-image.png") })
       expect(result.metadata.truncated).toBe(false)
       expect(result.attachments).toBeDefined()
       expect(result.attachments?.length).toBe(1)
@@ -432,9 +444,9 @@ table Monster {
 }
 
 root_type Monster;`
-      yield* put(path.join(dir, "schema.fbs"), fbs)
+      yield* put(safeTestPath(dir, "schema.fbs"), fbs)
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "schema.fbs") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "schema.fbs") })
       expect(result.attachments).toBeUndefined()
       expect(result.output).toContain("namespace MyGame")
       expect(result.output).toContain("table Monster")
@@ -451,8 +463,8 @@ root_type Monster;`
       ] as const
 
       for (const item of cases) {
-        yield* put(path.join(dir, item[0]), item[1])
-        const result = yield* exec(dir, { filePath: path.join(dir, item[0]) })
+        yield* put(safeTestPath(dir, item[0]), item[1])
+        const result = yield* invoke(dir, { filePath: safeTestPath(dir, item[0]) })
         expect(result.attachments).toBeUndefined()
         expect(result.output).toContain(item[1])
       }
@@ -464,15 +476,15 @@ describe("tool.read loaded instructions", () => {
   it.live("loads AGENTS.md from parent directory and includes in metadata", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
-      yield* put(path.join(dir, "subdir", "AGENTS.md"), "# Test Instructions\nDo something special.")
-      yield* put(path.join(dir, "subdir", "nested", "test.txt"), "test content")
+      yield* put(safeTestPath(dir, "subdir", "AGENTS.md"), "# Test Instructions\nDo something special.")
+      yield* put(safeTestPath(dir, "subdir", "nested", "test.txt"), "test content")
 
-      const result = yield* exec(dir, { filePath: path.join(dir, "subdir", "nested", "test.txt") })
+      const result = yield* invoke(dir, { filePath: safeTestPath(dir, "subdir", "nested", "test.txt") })
       expect(result.output).toContain("test content")
       expect(result.output).toContain("system-reminder")
       expect(result.output).toContain("Test Instructions")
       expect(result.metadata.loaded).toBeDefined()
-      expect(result.metadata.loaded).toContain(path.join(dir, "subdir", "AGENTS.md"))
+      expect(result.metadata.loaded).toContain(safeTestPath(dir, "subdir", "AGENTS.md"))
     }),
   )
 })
@@ -482,9 +494,9 @@ describe("tool.read binary detection", () => {
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
       const bytes = Buffer.from([0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x77, 0x6f, 0x72, 0x6c, 0x64])
-      yield* put(path.join(dir, "null-byte.txt"), bytes)
+      yield* put(safeTestPath(dir, "null-byte.txt"), bytes)
 
-      const err = yield* fail(dir, { filePath: path.join(dir, "null-byte.txt") })
+      const err = yield* fail(dir, { filePath: safeTestPath(dir, "null-byte.txt") })
       expect(err.message).toContain("Cannot read binary file")
     }),
   )
@@ -492,9 +504,9 @@ describe("tool.read binary detection", () => {
   it.live("rejects known binary extensions", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped()
-      yield* put(path.join(dir, "module.wasm"), "not really wasm")
+      yield* put(safeTestPath(dir, "module.wasm"), "not really wasm")
 
-      const err = yield* fail(dir, { filePath: path.join(dir, "module.wasm") })
+      const err = yield* fail(dir, { filePath: safeTestPath(dir, "module.wasm") })
       expect(err.message).toContain("Cannot read binary file")
     }),
   )

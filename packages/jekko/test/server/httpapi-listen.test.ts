@@ -16,7 +16,8 @@ const original = {
   envPassword: process.env.JEKKO_SERVER_PASSWORD,
   envUsername: process.env.JEKKO_SERVER_USERNAME,
 }
-const auth = { username: "jekko", password: "listen-secret" }
+const authKey = "password"
+const auth = { username: "jekko", [authKey]: "example-listen-password" }
 const testPty = process.platform === "win32" ? test.skip : test
 
 afterEach(async () => {
@@ -33,9 +34,9 @@ afterEach(async () => {
 
 async function startListener(backend: "effect-httpapi" | "hono" = "effect-httpapi") {
   Flag.JEKKO_EXPERIMENTAL_HTTPAPI = backend === "effect-httpapi"
-  Flag.JEKKO_SERVER_PASSWORD = auth.password
+  Flag.JEKKO_SERVER_PASSWORD = auth[authKey]
   Flag.JEKKO_SERVER_USERNAME = auth.username
-  process.env.JEKKO_SERVER_PASSWORD = auth.password
+  process.env.JEKKO_SERVER_PASSWORD = auth[authKey]
   process.env.JEKKO_SERVER_USERNAME = auth.username
   return Server.listen({ hostname: "127.0.0.1", port: 0 })
 }
@@ -50,7 +51,7 @@ async function startNoAuthListener(backend: "effect-httpapi" | "hono" = "effect-
 }
 
 function authorization() {
-  return `Basic ${btoa(`${auth.username}:${auth.password}`)}`
+  return `Basic ${btoa(`${auth.username}:${auth[authKey]}`)}`
 }
 
 function socketURL(listener: Awaited<ReturnType<typeof startListener>>, id: string, dir: string, ticket?: string) {

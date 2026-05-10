@@ -1,9 +1,41 @@
 {
   "workspace": "jankurai",
   "tests": {
+    "Justfile": {
+      "command": "just fast",
+      "purpose": "verify workspace task lanes stay deterministic"
+    },
+    "packages/jekko/script/schema.ts": {
+      "command": "just fast",
+      "purpose": "verify schema generation stays bounded and typed"
+    },
+    "packages/jekko/specs/v2/api.js": {
+      "command": "just fast",
+      "purpose": "verify example script proof route stays visible"
+    },
+    "packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx": {
+      "command": "just fast",
+      "purpose": "verify dialog prompt proof route stays visible"
+    },
+    "packages/jekko/src/cli/cmd/tui/util/terminal-tokenize.ts": {
+      "command": "just fast",
+      "purpose": "verify terminal tokenization proof route stays visible"
+    },
+    "packages/jekko/test/provider/copilot/copilot-chat-model.test.ts": {
+      "command": "just score",
+      "purpose": "verify copilot proof receipts remain replayable"
+    },
+    "script/sync-zed.ts": {
+      "command": "just fast",
+      "purpose": "verify Zed sync command proof route stays visible"
+    },
     "packages/web/": {
       "command": "just fast",
       "purpose": "verify web package proof routes stay visible"
+    },
+    "packages/": {
+      "command": "just fast",
+      "purpose": "verify package proof routes stay visible"
     },
     "AGENTS.md": {
       "command": "just score",
@@ -129,6 +161,14 @@
       "command": "just fast",
       "purpose": "verify husky hook proof route stays visible"
     },
+    ".husky/check-encrypted-paths": {
+      "command": "just fast",
+      "purpose": "verify husky check-encrypted-paths proof route stays visible"
+    },
+    ".husky/": {
+      "command": "just fast",
+      "purpose": "verify husky hook proof routes stay visible"
+    },
     ".jekko/agent/duplicate-pr.md": {
       "command": "just fast",
       "purpose": "verify duplicate PR guidance proof route stays visible"
@@ -177,6 +217,10 @@
       "command": "just fast",
       "purpose": "verify command proof routes stay visible"
     },
+    ".jekko/": {
+      "command": "just fast",
+      "purpose": "verify jekko root proof routes stay visible"
+    },
     ".github/CODEOWNERS": {
       "command": "just fast",
       "purpose": "verify GitHub ownership metadata remains mapped"
@@ -201,6 +245,10 @@
       "command": "just fast",
       "purpose": "verify GitHub workflow proof routes remain mapped"
     },
+    "README": {
+      "command": "just fast",
+      "purpose": "verify README proof route stays visible"
+    },
     "README.": {
       "command": "just fast",
       "purpose": "verify translated README proof routes stay visible"
@@ -217,6 +265,10 @@
       "command": "just fast",
       "purpose": "verify install proof route stays visible"
     },
+    "nix": {
+      "command": "just fast",
+      "purpose": "verify nix proof route stays visible"
+    },
     "jekko-jankurai-loop.sh": {
       "command": "just fast",
       "purpose": "verify jekko loop script proof route stays visible"
@@ -224,6 +276,10 @@
     "jnoccio-fusion/": {
       "command": "just fast",
       "purpose": "verify jnoccio-fusion proof routes stay visible"
+    },
+    "jnoccio-fusion/web/": {
+      "command": "cd jnoccio-fusion/web && npx playwright test",
+      "purpose": "verify jnoccio-fusion dashboard rendered UX proof stays visible"
     },
     "nix/": {
       "command": "just fast",
@@ -293,6 +349,14 @@
       "command": "just fast",
       "purpose": "verify jekko package proof routes stay visible"
     },
+    "packages/jekko/src/file/": {
+      "command": "just fast",
+      "purpose": "verify jekko file proof routes stay visible"
+    },
+    "packages/jekko/src/file/ripgrep.ts": {
+      "command": "just fast",
+      "purpose": "verify ripgrep proof route stays visible"
+    },
     "packages/plugin/": {
       "command": "just fast",
       "purpose": "verify plugin proof routes stay visible"
@@ -333,6 +397,18 @@
       "command": "just fast",
       "purpose": "verify sdk proof routes stay visible"
     },
+    "test-grep.ts": {
+      "command": "just fast",
+      "purpose": "verify grep test proof route stays visible"
+    },
+    "test/": {
+      "command": "just fast",
+      "purpose": "verify test proof routes stay visible"
+    },
+    "test_ts.ts": {
+      "command": "just fast",
+      "purpose": "verify test-ts proof route stays visible"
+    },
     "specs/": {
       "command": "just fast",
       "purpose": "verify specs proof routes stay visible"
@@ -344,6 +420,10 @@
     "tsconfig.json": {
       "command": "just fast",
       "purpose": "verify tsconfig proof route stays visible"
+    },
+    "ZYAL_LOOP_STOPPED_STUDY.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL loop study proof route stays visible"
     },
     "turbo.json": {
       "command": "just fast",
@@ -436,6 +516,42 @@
     "UNLOCK_WORKPLAN.md": {
       "command": "just fast",
       "purpose": "verify unlock workplan proof route stays visible"
+    },
+    "paper/": {
+      "command": "just fast",
+      "purpose": "verify paper proof routes stay visible"
+    },
+    "BABYSIT_WORK.md": {
+      "command": "just fast",
+      "purpose": "verify babysit work proof route stays visible"
+    },
+    "ZYAL_MISSION.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL mission proof route"
+    },
+    "ZYAL_WORKFLOW.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL workflow proof route"
+    },
+    "codex-jankurai-loop.sh": {
+      "command": "just fast",
+      "purpose": "verify codex jankurai loop script proof route"
+    },
+    "prompt.md": {
+      "command": "just fast",
+      "purpose": "verify prompt documentation proof route"
+    },
+    "test/local/jnoccio-unlock.local.test.ts": {
+      "command": "just fast",
+      "purpose": "verify local jnoccio unlock test proof route"
+    },
+    "test_logo.js": {
+      "command": "just fast",
+      "purpose": "verify test logo script proof route"
+    },
+    "test_logo.ts": {
+      "command": "just fast",
+      "purpose": "verify test logo script proof route"
     }
   }
 }

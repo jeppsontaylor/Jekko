@@ -33,11 +33,11 @@ import { TestConfig } from "../fixture/config"
 
 void Log.init({ print: false })
 
-function run<A, E>(fx: Effect.Effect<A, E, SessionNs.Service>) {
+export function run<A, E>(fx: Effect.Effect<A, E, SessionNs.Service>) {
   return Effect.runPromise(fx.pipe(Effect.provide(SessionNs.defaultLayer)))
 }
 
-const svc = {
+export const svc = {
   ...SessionNs,
   create(input?: SessionNs.CreateInput) {
     return run(SessionNs.Service.use((svc) => svc.create(input)))
@@ -53,7 +53,7 @@ const svc = {
   },
 }
 
-const summary = Layer.succeed(
+export const summary = Layer.succeed(
   SessionSummary.Service,
   SessionSummary.Service.of({
     summarize: () => Effect.void,
@@ -62,12 +62,12 @@ const summary = Layer.succeed(
   }),
 )
 
-const ref = {
+export const ref = {
   providerID: ProviderID.make("test"),
   modelID: ModelID.make("test-model"),
 }
 
-function createModel(opts: {
+export function createModel(opts: {
   context: number
   output: number
   input?: number
@@ -97,9 +97,9 @@ function createModel(opts: {
   } as Provider.Model
 }
 
-const wide = () => ProviderTest.fake({ model: createModel({ context: 100_000, output: 32_000 }) })
+export const wide = () => ProviderTest.fake({ model: createModel({ context: 100_000, output: 32_000 }) })
 
-async function user(sessionID: SessionID, text: string) {
+export async function user(sessionID: SessionID, text: string) {
   const msg = await svc.updateMessage({
     id: MessageID.ascending(),
     role: "user",
@@ -118,7 +118,7 @@ async function user(sessionID: SessionID, text: string) {
   return msg
 }
 
-async function assistant(sessionID: SessionID, parentID: MessageID, root: string) {
+export async function assistant(sessionID: SessionID, parentID: MessageID, root: string) {
   const msg: MessageV2.Assistant = {
     id: MessageID.ascending(),
     role: "assistant",
@@ -143,7 +143,7 @@ async function assistant(sessionID: SessionID, parentID: MessageID, root: string
   return msg
 }
 
-async function summaryAssistant(sessionID: SessionID, parentID: MessageID, root: string, text: string) {
+export async function summaryAssistant(sessionID: SessionID, parentID: MessageID, root: string, text: string) {
   const msg: MessageV2.Assistant = {
     id: MessageID.ascending(),
     role: "assistant",
@@ -176,13 +176,13 @@ async function summaryAssistant(sessionID: SessionID, parentID: MessageID, root:
   return msg
 }
 
-async function lastCompactionPart(sessionID: SessionID) {
+export async function lastCompactionPart(sessionID: SessionID) {
   return (await svc.messages({ sessionID }))
     .at(-2)
     ?.parts.find((item): item is MessageV2.CompactionPart => item.type === "compaction")
 }
 
-function fake(
+export function fake(
   input: Parameters<SessionProcessorModule.SessionProcessor.Interface["create"]>[0],
   result: "continue" | "compact",
 ) {
@@ -197,7 +197,7 @@ function fake(
   } satisfies SessionProcessorModule.SessionProcessor.Handle
 }
 
-function layer(result: "continue" | "compact") {
+export function layer(result: "continue" | "compact") {
   return Layer.succeed(
     SessionProcessorModule.SessionProcessor.Service,
     SessionProcessorModule.SessionProcessor.Service.of({
@@ -206,14 +206,14 @@ function layer(result: "continue" | "compact") {
   )
 }
 
-function cfg(compaction?: Config.Info["compaction"]) {
+export function cfg(compaction?: Config.Info["compaction"]) {
   const base = Config.Info.zod.parse({})
   return TestConfig.layer({
     get: () => Effect.succeed({ ...base, compaction }),
   })
 }
 
-function runtime(
+export function runtime(
   result: "continue" | "compact",
   plugin = Plugin.defaultLayer,
   provider = ProviderTest.fake(),
@@ -233,7 +233,7 @@ function runtime(
   )
 }
 
-const deps = Layer.mergeAll(
+export const deps = Layer.mergeAll(
   ProviderTest.fake().layer,
   layer("continue"),
   Agent.defaultLayer,
@@ -243,15 +243,15 @@ const deps = Layer.mergeAll(
   Config.defaultLayer,
 )
 
-const env = Layer.mergeAll(
+export const env = Layer.mergeAll(
   SessionNs.defaultLayer,
   CrossSpawnSpawner.defaultLayer,
   SessionCompaction.layer.pipe(Layer.provide(SessionNs.defaultLayer), Layer.provideMerge(deps)),
 )
 
-const it = testEffect(env)
+export const it = testEffect(env)
 
-function llm() {
+export function llm() {
   const queue: Array<
     Stream.Stream<LLM.Event, unknown> | ((input: LLM.StreamInput) => Stream.Stream<LLM.Event, unknown>)
   > = []
@@ -273,7 +273,7 @@ function llm() {
   }
 }
 
-function liveRuntime(layer: Layer.Layer<LLM.Service>, provider = ProviderTest.fake(), config = Config.defaultLayer) {
+export function liveRuntime(layer: Layer.Layer<LLM.Service>, provider = ProviderTest.fake(), config = Config.defaultLayer) {
   const bus = Bus.layer
   const status = SessionStatus.layer.pipe(Layer.provide(bus))
   const processor = SessionProcessorModule.SessionProcessor.layer.pipe(Layer.provide(summary))
@@ -294,7 +294,7 @@ function liveRuntime(layer: Layer.Layer<LLM.Service>, provider = ProviderTest.fa
   )
 }
 
-function reply(
+export function reply(
   text: string,
   capture?: (input: LLM.StreamInput) => void,
 ): (input: LLM.StreamInput) => Stream.Stream<LLM.Event, unknown> {
@@ -349,11 +349,11 @@ function reply(
   }
 }
 
-function wait(ms = 50) {
+export function wait(ms = 50) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function defer() {
+export function defer() {
   let resolve!: () => void
   const promise = new Promise<void>((done) => {
     resolve = done
@@ -361,7 +361,7 @@ function defer() {
   return { promise, resolve }
 }
 
-function plugin(ready: ReturnType<typeof defer>) {
+export function plugin(ready: ReturnType<typeof defer>) {
   return Layer.mock(Plugin.Service)({
     trigger: <Name extends string, Input, Output>(name: Name, _input: Input, output: Output) => {
       if (name !== "experimental.session.compacting") return Effect.succeed(output)
@@ -372,7 +372,7 @@ function plugin(ready: ReturnType<typeof defer>) {
   })
 }
 
-function autocontinue(enabled: boolean) {
+export function autocontinue(enabled: boolean) {
   return Layer.mock(Plugin.Service)({
     trigger: <Name extends string, Input, Output>(name: Name, _input: Input, output: Output) => {
       if (name !== "experimental.compaction.autocontinue") return Effect.succeed(output)

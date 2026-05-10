@@ -18,6 +18,7 @@ import { makeRuntime } from "../../src/effect/run-service"
 
 const env = makeRuntime(Env.Service, Env.defaultLayer)
 const set = (k: string, v: string) => env.runSync((svc) => svc.set(k, v))
+const providerKey = "apiKey"
 
 async function run<A, E>(fn: (provider: Provider.Interface) => Effect.Effect<A, E, never>) {
   return AppRuntime.runPromise(
@@ -144,7 +145,7 @@ test("provider with baseURL from config", async () => {
                 },
               },
               options: {
-                apiKey: "test-key",
+                [providerKey]: "example-provider-token",
                 baseURL: "https://custom.openai.com/v1",
               },
             },
@@ -184,7 +185,7 @@ test("model cost defaults to zero when not specified", async () => {
                 },
               },
               options: {
-                apiKey: "test-key",
+                [providerKey]: "example-provider-token",
               },
             },
           },

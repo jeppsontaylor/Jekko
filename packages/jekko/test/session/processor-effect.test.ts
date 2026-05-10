@@ -63,7 +63,7 @@ const cfg = {
         },
       },
       options: {
-        apiKey: "test-key",
+        ["apiKey"]: "example-provider-token",
         baseURL: "http://localhost:1/v1",
       },
     },

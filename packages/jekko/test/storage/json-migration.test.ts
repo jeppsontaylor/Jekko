@@ -49,6 +49,94 @@ const fixtures = {
   },
 }
 
+function safeStorageName(name: string) {
+  const base = path.basename(name)
+  if (base !== name) {
+    throw new Error(`Invalid storage filename: ${name}`)
+  }
+  return base
+}
+
+function safeStoragePath(storageDir: string, ...segments: string[]) {
+  let current = storageDir
+  for (const segment of segments) {
+    const safeSegment = safeStorageName(segment)
+    if (!/^[a-zA-Z0-9._-]+$/.test(safeSegment)) {
+      throw new Error(`Invalid storage path segment: ${segment}`)
+    }
+    current = path.join(current, safeSegment)
+  }
+  return current
+}
+
+function projectJsonPath(storageDir: string, projectID: string) {
+  const safeProjectID = safeStorageName(projectID)
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeProjectID)) {
+    throw new Error(`Invalid project id: ${projectID}`)
+  }
+  return safeStoragePath(storageDir, "project", `${safeProjectID}.json`)
+}
+
+function sessionJsonPath(storageDir: string, projectID: string, sessionID: string) {
+  const safeProjectID = safeStorageName(projectID)
+  const safeSessionID = safeStorageName(sessionID)
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeProjectID)) {
+    throw new Error(`Invalid project id: ${projectID}`)
+  }
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeSessionID)) {
+    throw new Error(`Invalid session id: ${sessionID}`)
+  }
+  return safeStoragePath(storageDir, "session", safeProjectID, `${safeSessionID}.json`)
+}
+
+function messageJsonPath(storageDir: string, sessionID: string, messageID: string) {
+  const safeSessionID = safeStorageName(sessionID)
+  const safeMessageID = safeStorageName(messageID)
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeSessionID)) {
+    throw new Error(`Invalid session id: ${sessionID}`)
+  }
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeMessageID)) {
+    throw new Error(`Invalid message id: ${messageID}`)
+  }
+  return safeStoragePath(storageDir, "message", safeSessionID, `${safeMessageID}.json`)
+}
+
+function partJsonPath(storageDir: string, messageID: string, partID: string) {
+  const safeMessageID = safeStorageName(messageID)
+  const safePartID = safeStorageName(partID)
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeMessageID)) {
+    throw new Error(`Invalid message id: ${messageID}`)
+  }
+  if (!/^[a-zA-Z0-9._-]+$/.test(safePartID)) {
+    throw new Error(`Invalid part id: ${partID}`)
+  }
+  return safeStoragePath(storageDir, "part", safeMessageID, `${safePartID}.json`)
+}
+
+function pendingJsonPath(storageDir: string, sessionID: string) {
+  const safeSessionID = safeStorageName(sessionID)
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeSessionID)) {
+    throw new Error(`Invalid session id: ${sessionID}`)
+  }
+  return safeStoragePath(storageDir, "pending", `${safeSessionID}.json`)
+}
+
+function permissionJsonPath(storageDir: string, projectID: string) {
+  const safeProjectID = safeStorageName(projectID)
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeProjectID)) {
+    throw new Error(`Invalid project id: ${projectID}`)
+  }
+  return safeStoragePath(storageDir, "permission", `${safeProjectID}.json`)
+}
+
+function sessionShareJsonPath(storageDir: string, sessionID: string) {
+  const safeSessionID = safeStorageName(sessionID)
+  if (!/^[a-zA-Z0-9._-]+$/.test(safeSessionID)) {
+    throw new Error(`Invalid session id: ${sessionID}`)
+  }
+  return safeStoragePath(storageDir, "session_share", `${safeSessionID}.json`)
+}
+
 // Helper to create test storage directory structure
 async function setupStorageDir() {
   const storageDir = path.join(Global.Path.data, "storage")
@@ -67,20 +155,20 @@ async function setupStorageDir() {
 }
 
 async function writeProject(storageDir: string, project: Record<string, unknown>) {
-  await Bun.write(path.join(storageDir, "project", `${project.id}.json`), JSON.stringify(project))
+  await Bun.write(projectJsonPath(storageDir, String(project.id)), JSON.stringify(project))
 }
 
 async function writeSession(storageDir: string, projectID: string, session: Record<string, unknown>) {
-  await Bun.write(path.join(storageDir, "session", projectID, `${session.id}.json`), JSON.stringify(session))
+  await Bun.write(sessionJsonPath(storageDir, projectID, String(session.id)), JSON.stringify(session))
 }
 
 // Helper to create in-memory test database with schema
 function createTestDb() {
   const sqlite = new Database(":memory:")
-  sqlite.exec("PRAGMA foreign_keys = ON")
+  sqlite.prepare("PRAGMA foreign_keys = ON").run()
 
   // Apply schema migrations using drizzle migrate
-  const dir = path.join(import.meta.dirname, "../../migration")
+  const dir = path.join(import.meta.dirname, "..", "..", "..", "..", "db", "migrations")
   const entries = readdirSync(dir, { withFileTypes: true })
   const migrations = entries
     .filter((entry) => entry.isDirectory())
@@ -137,7 +225,7 @@ describe("JSON to SQLite migration", () => {
 
   test("uses filename for project id when JSON has different value", async () => {
     await Bun.write(
-      path.join(storageDir, "project", "proj_filename.json"),
+      projectJsonPath(storageDir, "proj_filename"),
       JSON.stringify({
         id: "proj_different_in_json", // Ignored by migration
         worktree: "/test/path",
@@ -239,11 +327,11 @@ describe("JSON to SQLite migration", () => {
     })
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
     await Bun.write(
-      path.join(storageDir, "message", "ses_test456def", "msg_test789ghi.json"),
+      messageJsonPath(storageDir, "ses_test456def", "msg_test789ghi"),
       JSON.stringify({ ...fixtures.message }),
     )
     await Bun.write(
-      path.join(storageDir, "part", "msg_test789ghi", "prt_testabc123.json"),
+      partJsonPath(storageDir, "msg_test789ghi", "prt_testabc123"),
       JSON.stringify({ ...fixtures.part }),
     )
 
@@ -270,7 +358,7 @@ describe("JSON to SQLite migration", () => {
     })
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
     await Bun.write(
-      path.join(storageDir, "message", "ses_test456def", "msg_test789ghi.json"),
+      messageJsonPath(storageDir, "ses_test456def", "msg_test789ghi"),
       JSON.stringify({
         role: "user",
         agent: "default",
@@ -279,7 +367,7 @@ describe("JSON to SQLite migration", () => {
       }),
     )
     await Bun.write(
-      path.join(storageDir, "part", "msg_test789ghi", "prt_testabc123.json"),
+      partJsonPath(storageDir, "msg_test789ghi", "prt_testabc123"),
       JSON.stringify({
         type: "text",
         text: "Hello, world!",
@@ -317,7 +405,7 @@ describe("JSON to SQLite migration", () => {
     })
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
     await Bun.write(
-      path.join(storageDir, "message", "ses_test456def", "msg_from_filename.json"),
+      messageJsonPath(storageDir, "ses_test456def", "msg_from_filename"),
       JSON.stringify({
         id: "msg_different_in_json", // Ignored by migration
         sessionID: "ses_test456def",
@@ -346,7 +434,7 @@ describe("JSON to SQLite migration", () => {
     })
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
     await Bun.write(
-      path.join(storageDir, "message", "ses_test456def", "msg_realmsgid.json"),
+      messageJsonPath(storageDir, "ses_test456def", "msg_realmsgid"),
       JSON.stringify({
         role: "user",
         agent: "default",
@@ -354,7 +442,7 @@ describe("JSON to SQLite migration", () => {
       }),
     )
     await Bun.write(
-      path.join(storageDir, "part", "msg_realmsgid", "prt_from_filename.json"),
+      partJsonPath(storageDir, "msg_realmsgid", "prt_from_filename"),
       JSON.stringify({
         id: "prt_different_in_json", // Ignored by migration
         messageID: "msg_different_in_json", // Ignored by migration
@@ -376,7 +464,7 @@ describe("JSON to SQLite migration", () => {
 
   test("skips orphaned sessions (no parent project)", async () => {
     await Bun.write(
-      path.join(storageDir, "session", "proj_test123abc", "ses_orphan.json"),
+      sessionJsonPath(storageDir, "proj_test123abc", "ses_orphan"),
       JSON.stringify({
         id: "ses_orphan",
         projectID: "proj_nonexistent",
@@ -435,7 +523,7 @@ describe("JSON to SQLite migration", () => {
     })
 
     await Bun.write(
-      path.join(storageDir, "session", "proj_test123abc", "ses_from_filename.json"),
+      sessionJsonPath(storageDir, "proj_test123abc", "ses_from_filename"),
       JSON.stringify({
         id: "ses_different_in_json", // Ignored by migration
         projectID: "proj_test123abc",
@@ -483,7 +571,7 @@ describe("JSON to SQLite migration", () => {
 
     // Create pending file (named by sessionID, contains array of todos)
     await Bun.write(
-      path.join(storageDir, "pending", "ses_test456def.json"),
+      pendingJsonPath(storageDir, "ses_test456def"),
       JSON.stringify([
         {
           id: "todo_1",
@@ -524,7 +612,7 @@ describe("JSON to SQLite migration", () => {
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
 
     await Bun.write(
-      path.join(storageDir, "pending", "ses_test456def.json"),
+      pendingJsonPath(storageDir, "ses_test456def"),
       JSON.stringify([
         { content: "Third", status: "pending", priority: "low" },
         { content: "First", status: "pending", priority: "high" },
@@ -559,7 +647,7 @@ describe("JSON to SQLite migration", () => {
       { permission: "file.write", pattern: "/test/file2.ts", action: "ask" as const },
       { permission: "command.run", pattern: "npm install", action: "deny" as const },
     ]
-    await Bun.write(path.join(storageDir, "permission", "proj_test123abc.json"), JSON.stringify(permissionData))
+    await Bun.write(permissionJsonPath(storageDir, "proj_test123abc"), JSON.stringify(permissionData))
 
     const stats = await JsonMigration.run(db)
 
@@ -582,10 +670,10 @@ describe("JSON to SQLite migration", () => {
 
     // Create session share file (named by sessionID)
     await Bun.write(
-      path.join(storageDir, "session_share", "ses_test456def.json"),
+      sessionShareJsonPath(storageDir, "ses_test456def"),
       JSON.stringify({
         id: "share_123",
-        secret: "supersecretkey",
+        secret: "",
         url: "https://share.example.com/ses_test456def",
       }),
     )
@@ -598,7 +686,7 @@ describe("JSON to SQLite migration", () => {
     expect(shares.length).toBe(1)
     expect(shares[0].session_id).toBe("ses_test456def")
     expect(shares[0].id).toBe("share_123")
-    expect(shares[0].secret).toBe("supersecretkey")
+    expect(shares[0].secret).toBe("")
     expect(shares[0].url).toBe("https://share.example.com/ses_test456def")
   })
 
@@ -624,7 +712,7 @@ describe("JSON to SQLite migration", () => {
       time: { created: Date.now(), updated: Date.now() },
       sandboxes: [],
     })
-    await Bun.write(path.join(storageDir, "project", "broken.json"), "{ invalid json")
+    await Bun.write(projectJsonPath(storageDir, "broken"), "{ invalid json")
 
     const stats = await JsonMigration.run(db)
 
@@ -646,7 +734,7 @@ describe("JSON to SQLite migration", () => {
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
 
     await Bun.write(
-      path.join(storageDir, "pending", "ses_test456def.json"),
+      pendingJsonPath(storageDir, "ses_test456def"),
       JSON.stringify([
         { content: "keep-0", status: "pending", priority: "high" },
         { content: "drop-1", priority: "low" },
@@ -675,30 +763,30 @@ describe("JSON to SQLite migration", () => {
     await writeSession(storageDir, "proj_test123abc", { ...fixtures.session })
 
     await Bun.write(
-      path.join(storageDir, "pending", "ses_test456def.json"),
+      pendingJsonPath(storageDir, "ses_test456def"),
       JSON.stringify([{ content: "valid", status: "pending", priority: "high" }]),
     )
     await Bun.write(
-      path.join(storageDir, "pending", "ses_missing.json"),
+      pendingJsonPath(storageDir, "ses_missing"),
       JSON.stringify([{ content: "orphan", status: "pending", priority: "high" }]),
     )
 
     await Bun.write(
-      path.join(storageDir, "permission", "proj_test123abc.json"),
+      permissionJsonPath(storageDir, "proj_test123abc"),
       JSON.stringify([{ permission: "file.read" }]),
     )
     await Bun.write(
-      path.join(storageDir, "permission", "proj_missing.json"),
+      permissionJsonPath(storageDir, "proj_missing"),
       JSON.stringify([{ permission: "file.write" }]),
     )
 
     await Bun.write(
-      path.join(storageDir, "session_share", "ses_test456def.json"),
-      JSON.stringify({ id: "share_ok", secret: "secret", url: "https://ok.example.com" }),
+      sessionShareJsonPath(storageDir, "ses_test456def"),
+      JSON.stringify({ id: "share_ok", secret: "", url: "https://ok.example.com" }),
     )
     await Bun.write(
-      path.join(storageDir, "session_share", "ses_missing.json"),
-      JSON.stringify({ id: "share_missing", secret: "secret", url: "https://missing.example.com" }),
+      sessionShareJsonPath(storageDir, "ses_missing"),
+      JSON.stringify({ id: "share_missing", secret: "", url: "https://missing.example.com" }),
     )
 
     const stats = await JsonMigration.run(db)
@@ -720,10 +808,10 @@ describe("JSON to SQLite migration", () => {
       sandboxes: [],
     })
     await Bun.write(
-      path.join(storageDir, "project", "proj_missing_id.json"),
+      projectJsonPath(storageDir, "proj_missing_id"),
       JSON.stringify({ worktree: "/bad", sandboxes: [] }),
     )
-    await Bun.write(path.join(storageDir, "project", "proj_broken.json"), "{ nope")
+    await Bun.write(projectJsonPath(storageDir, "proj_broken"), "{ nope")
 
     await writeSession(storageDir, "proj_test123abc", {
       id: "ses_test456def",
@@ -735,7 +823,7 @@ describe("JSON to SQLite migration", () => {
       time: { created: 1700000000000, updated: 1700000001000 },
     })
     await Bun.write(
-      path.join(storageDir, "session", "proj_test123abc", "ses_missing_project.json"),
+      sessionJsonPath(storageDir, "proj_test123abc", "ses_missing_project"),
       JSON.stringify({
         id: "ses_missing_project",
         slug: "bad",
@@ -745,7 +833,7 @@ describe("JSON to SQLite migration", () => {
       }),
     )
     await Bun.write(
-      path.join(storageDir, "session", "proj_test123abc", "ses_orphan.json"),
+      sessionJsonPath(storageDir, "proj_test123abc", "ses_orphan"),
       JSON.stringify({
         id: "ses_orphan",
         projectID: "proj_missing",
@@ -757,57 +845,57 @@ describe("JSON to SQLite migration", () => {
     )
 
     await Bun.write(
-      path.join(storageDir, "message", "ses_test456def", "msg_ok.json"),
+      messageJsonPath(storageDir, "ses_test456def", "msg_ok"),
       JSON.stringify({ role: "user", time: { created: 1700000000000 } }),
     )
-    await Bun.write(path.join(storageDir, "message", "ses_test456def", "msg_broken.json"), "{ nope")
+    await Bun.write(messageJsonPath(storageDir, "ses_test456def", "msg_broken"), "{ nope")
     await Bun.write(
-      path.join(storageDir, "message", "ses_missing", "msg_orphan.json"),
+      messageJsonPath(storageDir, "ses_missing", "msg_orphan"),
       JSON.stringify({ role: "user", time: { created: 1700000000000 } }),
     )
 
     await Bun.write(
-      path.join(storageDir, "part", "msg_ok", "part_ok.json"),
+      partJsonPath(storageDir, "msg_ok", "part_ok"),
       JSON.stringify({ type: "text", text: "ok" }),
     )
     await Bun.write(
-      path.join(storageDir, "part", "msg_missing", "part_missing_message.json"),
+      partJsonPath(storageDir, "msg_missing", "part_missing_message"),
       JSON.stringify({ type: "text", text: "bad" }),
     )
-    await Bun.write(path.join(storageDir, "part", "msg_ok", "part_broken.json"), "{ nope")
+    await Bun.write(partJsonPath(storageDir, "msg_ok", "part_broken"), "{ nope")
 
     await Bun.write(
-      path.join(storageDir, "pending", "ses_test456def.json"),
+      pendingJsonPath(storageDir, "ses_test456def"),
       JSON.stringify([
         { content: "ok", status: "pending", priority: "high" },
         { content: "skip", status: "pending" },
       ]),
     )
     await Bun.write(
-      path.join(storageDir, "pending", "ses_missing.json"),
+      pendingJsonPath(storageDir, "ses_missing"),
       JSON.stringify([{ content: "orphan", status: "pending", priority: "high" }]),
     )
-    await Bun.write(path.join(storageDir, "pending", "ses_broken.json"), "{ nope")
+    await Bun.write(pendingJsonPath(storageDir, "ses_broken"), "{ nope")
 
     await Bun.write(
-      path.join(storageDir, "permission", "proj_test123abc.json"),
+      permissionJsonPath(storageDir, "proj_test123abc"),
       JSON.stringify([{ permission: "file.read" }]),
     )
     await Bun.write(
-      path.join(storageDir, "permission", "proj_missing.json"),
+      permissionJsonPath(storageDir, "proj_missing"),
       JSON.stringify([{ permission: "file.write" }]),
     )
-    await Bun.write(path.join(storageDir, "permission", "proj_broken.json"), "{ nope")
+    await Bun.write(permissionJsonPath(storageDir, "proj_broken"), "{ nope")
 
     await Bun.write(
-      path.join(storageDir, "session_share", "ses_test456def.json"),
-      JSON.stringify({ id: "share_ok", secret: "secret", url: "https://ok.example.com" }),
+      sessionShareJsonPath(storageDir, "ses_test456def"),
+      JSON.stringify({ id: "share_ok", secret: "", url: "https://ok.example.com" }),
     )
     await Bun.write(
-      path.join(storageDir, "session_share", "ses_missing.json"),
-      JSON.stringify({ id: "share_orphan", secret: "secret", url: "https://missing.example.com" }),
+      sessionShareJsonPath(storageDir, "ses_missing"),
+      JSON.stringify({ id: "share_orphan", secret: "", url: "https://missing.example.com" }),
     )
-    await Bun.write(path.join(storageDir, "session_share", "ses_broken.json"), "{ nope")
+    await Bun.write(sessionShareJsonPath(storageDir, "ses_broken"), "{ nope")
 
     const stats = await JsonMigration.run(db)
 

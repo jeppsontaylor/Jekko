@@ -149,7 +149,7 @@ export const SessionApi = HttpApi.make("session")
 HttpApiEndpoint.get("pending", SessionPaths.pending, {
            params: { sessionID: SessionID },
            success: described(Schema.Array(PendingItem.Info), "Pending list"),
-           error: [HttpApiError.BadRequest, HttpApiError.NotFound],
+           error: [HttpApiError.BadRequest, ApiNotFoundError],
          }).annotateMerge(
            OpenApi.annotations({
              identifier: "session.pending",
@@ -157,10 +157,10 @@ HttpApiEndpoint.get("pending", SessionPaths.pending, {
              description: "Retrieve the pending list associated with a specific session, showing tasks and action items.",
            }),
          ),
-         HttpApiEndpoint.get(sessionTaskKey, SessionPaths[sessionTaskKey], {
-           params: { sessionID: SessionID },
+        HttpApiEndpoint.get(sessionTaskKey, SessionPaths[sessionTaskKey], {
+          params: { sessionID: SessionID },
           success: described(Schema.Array(PendingItem.Info), "Pending list"),
-          error: [HttpApiError.BadRequest, HttpApiError.NotFound],
+          error: [HttpApiError.BadRequest, ApiNotFoundError],
         }).annotateMerge(
           OpenApi.annotations({
             identifier: join2("session.", sessionTaskKey),

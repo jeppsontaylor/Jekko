@@ -40,15 +40,23 @@ test("transforms share data to storage format", () => {
     { type: "part", data: { id: "part-2", messageID: "msg-1" } as any },
   ] as unknown as ShareData[]
 
-  const result = transformShareData(data)!
+  const result = transformShareData(data)
 
-  expect(String(result.info.id)).toBe("sess-1")
-  expect(result.messages).toHaveLength(1)
-  expect(result.messages[0].parts).toHaveLength(2)
+  expect(result.kind).toBe("ok")
+  if (result.kind !== "ok") throw new Error("expected transformed share data")
+  expect(String(result.data.info.id)).toBe("sess-1")
+  expect(result.data.messages).toHaveLength(1)
+  expect(result.data.messages[0].parts).toHaveLength(2)
 })
 
-test("returns null for invalid share data", () => {
-  expect(transformShareData([])).toBeNull()
-  expect(transformShareData([{ type: "message", data: {} as any }])).toBeNull()
-  expect(transformShareData([{ type: "session", data: { id: "s" } as any }])).toBeNull() // no messages
+test("returns empty states for invalid share data", () => {
+  expect(transformShareData([])).toEqual({ kind: "empty", reason: "missing-session" })
+  expect(transformShareData([{ type: "message", data: {} as any }])).toEqual({
+    kind: "empty",
+    reason: "missing-session",
+  })
+  expect(transformShareData([{ type: "session", data: { id: "s" } as any }])).toEqual({
+    kind: "empty",
+    reason: "missing-messages",
+  })
 })

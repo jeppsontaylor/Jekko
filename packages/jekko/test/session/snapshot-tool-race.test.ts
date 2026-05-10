@@ -185,7 +185,7 @@ const providerCfg = (url: string) => ({
         },
       },
       options: {
-        apiKey: "test-key",
+        apiKey: "",
         baseURL: url,
       },
     },

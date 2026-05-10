@@ -16,6 +16,10 @@ describe("daemon json path evaluator", () => {
     expect(walkJsonPath({ a: 1 }, "$.a.b")).toBeUndefined()
   })
 
+  test("returns undefined for malformed array segments", () => {
+    expect(walkJsonPath({ job: { steps: [{ name: "a" }] } }, "$.job.steps[nope].name")).toBeUndefined()
+  })
+
   test("rejects non-jsonpath input", () => {
     expect(() => walkJsonPath({}, "job.steps[0]")).toThrow(/must start with \$/)
   })

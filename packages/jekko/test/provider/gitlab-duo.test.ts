@@ -126,7 +126,7 @@ import { WithInstance } from "../../src/project/with-instance"
 //     JSON.stringify({
 //       gitlab: {
 //         type: "api",
-//         key: "glpat-test-pat-token",
+//         key: "example-gitlab-pat-token",
 //       },
 //     }),
 //   )
@@ -139,7 +139,7 @@ import { WithInstance } from "../../src/project/with-instance"
 //     fn: async () => {
 //       const providers = await list()
 //       expect(providers[ProviderID.gitlab]).toBeDefined()
-//       expect(providers[ProviderID.gitlab].key).toBe("glpat-test-pat-token")
+//       expect(providers[ProviderID.gitlab].key).toBe("example-gitlab-pat-token")
 //     },
 //   })
 // })
@@ -155,7 +155,7 @@ import { WithInstance } from "../../src/project/with-instance"
 //             gitlab: {
 //               options: {
 //                 instanceUrl: "https://gitlab.company.internal",
-//                 apiKey: "glpat-internal-token",
+//                 token: "example-gitlab-internal-token",
 //               },
 //             },
 //           },
@@ -186,7 +186,7 @@ import { WithInstance } from "../../src/project/with-instance"
 //           provider: {
 //             gitlab: {
 //               options: {
-//                 apiKey: "config-token",
+//                 token: "config-token",
 //               },
 //             },
 //           },

@@ -73,7 +73,7 @@ describe("Auth", () => {
         const auth = yield* Auth.Service
         yield* auth.set("anthropic", {
           type: "api",
-          key: "sk-test",
+          key: "example-api-key",
         })
         const data = yield* auth.all()
         expect(data["anthropic"]).toBeDefined()

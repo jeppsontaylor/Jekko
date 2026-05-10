@@ -1,17 +1,17 @@
 {
-  "report_fingerprint": "sha256:e244af66c7a3a326dd750a591442ce4dd33e9f6fc1d4cba6243b88e6aa889b8d",
-  "input_fingerprint": "sha256:aea086a111e1384d8580d7c13f54ef73ad22bdeab3ff2251e9a4d847e33a9aad",
-  "policy_fingerprint": "sha256:1344c6682471353eb10a07a55a14e5fdd73676dd9aafd00b9f60dffd43c8b443",
+  "report_fingerprint": "sha256:61a106c44277eb28dc95516dcb36c3618fbfcc7fa532d1b5b5374ba8d104a704",
+  "input_fingerprint": "sha256:3eceede440f9b72f1eecd4d8784b519b51b2cb745c7dd9be3e3c5d922ef0f327",
+  "policy_fingerprint": "sha256:fbb56504105354f1671b1d3f07ca356892b3f37efb2e3a2e646c5a28826fdb5e",
   "manifest_fingerprints": {
-    "owner_map": "sha256:48f806efcabeb1db4c078ac5d3f120c0236219502aba2ae2aaedb4cb8719bbac",
-    "test_map": "sha256:2d57a4a4ddce48160bf5de6e94c393d8537e180848689d82f19f8297bc8cebc1",
+    "owner_map": "sha256:5334d6482dbfbb1890de0204503a41629f114cbe87f6c92d74de425aa1e13a93",
+    "test_map": "sha256:9a7433c24223743a94d9f58cc231cd312916be0a26127c4d7305a56faf587ea3",
     "generated_zones": "sha256:31806fe74caae21bf6152feecf74580a26719cb74a85efd83416f5d079a00275",
     "boundaries": "sha256:a9130f30b09a9ed501843eb78e23d6fca84816f176ec373b156b330d1917db8d",
-    "proof_lanes": "sha256:6842c09643e87e946b4fcae2abb8aedc00df9bfad6b353a3ef13370b9d507aac",
+    "proof_lanes": "sha256:e4f242a932ed4adbc85e13aad66d8d7122d2d35e3ac1021b08e6fb5d5dce11cd",
     "standard_version": "sha256:d3e612ca82dbc3221910d7bcbe8837827cd36256841279e962066c701a1c7954"
   },
   "dirty_worktree": true,
-  "generated_at": "1778367256",
+  "generated_at": "1778376611",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -24,30 +24,27 @@
   "observed_conformance_level": "HL2",
   "conformance_decision": "block",
   "conformance_blockers": [
-    "HLT-030-SQL-BAD-BEHAVIOR on db/migrations/20260413175956_chief_energizer/migration.sql",
-    "HLT-000-SCORE-DIMENSION:vibe on jnoccio-fusion/src/fusion.rs",
-    "HLT-001-DEAD-MARKER on jnoccio-fusion/src/fusion.rs",
-    "HLT-010-SECRET-SPRAWL on packages/jekko/test/auth/auth.test.ts",
-    "HLT-023-INPUT-BOUNDARY-GAP on packages/jekko/test/fixture/db.ts"
+    "HLT-000-SCORE-DIMENSION:vibe on packages/jekko/src/agent-script/examples.ts",
+    "HLT-001-DEAD-MARKER on packages/jekko/src/cli/cmd/tui/attach.ts"
   ],
   "repo": ".",
-  "run_id": "1778367256",
-  "started_at": "1778367256",
-  "elapsed_ms": 25858,
+  "run_id": "1778376611",
+  "started_at": "1778376611",
+  "elapsed_ms": 14888,
   "scope": {
     "mode": "full",
     "paths": []
   },
-  "score": 60,
+  "score": 70,
   "raw_score": 79,
   "decision": {
-    "status": "advisory",
+    "status": "fail",
     "minimum_score": 85,
-    "passed": true,
-    "hard_findings": 5,
-    "soft_findings": 3,
+    "passed": false,
+    "hard_findings": 2,
+    "soft_findings": 2,
     "ratchet": {
-      "baseline_score": 60,
+      "baseline_score": 70,
       "allowed_drop": 0,
       "passed": false,
       "score_delta": 0,
@@ -60,7 +57,7 @@
     }
   },
   "git": {
-    "head": "404ea778b",
+    "head": "73aa1a27f",
     "base": null,
     "changed_files": 0,
     "mode": "full",
@@ -77,7 +74,7 @@
       "medium",
       "low"
     ],
-    "mode": "advisory",
+    "mode": "standard",
     "standard_version": "0.8.0",
     "auditor_version": "0.8.13",
     "schema_version": "1.6.1",
@@ -86,10 +83,7 @@
   },
   "caps_applied": [
     "fallback-soup-in-product-code",
-    "severe-duplication-in-product-code",
-    "secret-like-content-detected",
-    "input-boundary-gap",
-    "sql-bad-behavior"
+    "severe-duplication-in-product-code"
   ],
   "hard_rules": [
     {
@@ -328,6 +322,7 @@
       "evidence": [
         "one-command setup/validation lane found",
         "deterministic fast lane found",
+        "test runner present in automation surface",
         "GitHub workflow files present",
         "test/proof routing map present",
         "jankurai audit lane found in CI",
@@ -354,8 +349,7 @@
         "security lane present",
         "canonical security lane wrapper present",
         "agent-readiness audit gate found in CI",
-        "rust bad-behavior advisory signals: 515",
-        "sql bad-behavior hard findings: 1",
+        "sql bad-behavior advisory signals: 18",
         "typescript bad-behavior advisory signals: 50",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
@@ -371,19 +365,19 @@
       "score": 0,
       "weighted_points": 0.0,
       "evidence": [
-        "largest authored code file: packages/jekko/test/session/compaction.test.ts (2194 LOC)",
+        "largest authored code file: packages/jekko/src/lsp/server.ts (2108 LOC)",
         "code file exceeds 500 LOC",
         "code file exceeds 1000 LOC",
         "most code files stay under 300 LOC",
         "duplicate code block marker found",
         "fallback soup marker found",
         "IO markers found in domain/core files",
-        "rust bad-behavior advisory signals: 515",
-        "sql bad-behavior hard findings: 1",
+        "sql bad-behavior advisory signals: 18",
         "typescript bad-behavior advisory signals: 50",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
-        "gittools bad-behavior advisory signals: 1"
+        "gittools bad-behavior advisory signals: 1",
+        "no hard bad-behavior findings across detector-backed language families"
       ],
       "notes": []
     },
@@ -486,7 +480,8 @@
     "evidence": {
       "accessibility": [
         "agent/repo-score.json",
-        "agent/repo-score.md"
+        "agent/repo-score.md",
+        "jnoccio-fusion/agent/repo-score.json"
       ],
       "api_mocks": [
         "packages/jekko/src/cli/cmd/tui/context/theme.tsx"
@@ -499,17 +494,14 @@
         "crates/tuiwright-jekko-unlock/tests/zyal_paste_perf.rs"
       ],
       "design_tokens": [
-        "agent/repo-score.json",
-        "agent/repo-score.md"
+        "jnoccio-fusion/agent/repo-score.json"
       ],
       "geometry_runtime": [
-        "agent/repo-score.json",
-        "agent/repo-score.md",
-        "agent/ux-qa.toml"
+        "agent/ux-qa.toml",
+        "jnoccio-fusion/agent/repo-score.json"
       ],
       "layout_stability": [
-        "agent/repo-score.json",
-        "agent/repo-score.md",
+        "jnoccio-fusion/agent/repo-score.json",
         "jnoccio-fusion/web/package-lock.json",
         "packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx"
       ],
@@ -521,13 +513,12 @@
       "storybook": [
         ".gitignore",
         "agent/repo-score.json",
-        "agent/repo-score.md",
         "agent/test-map.json",
+        "jnoccio-fusion/agent/repo-score.json",
         "packages/jekko/src/project/vcs.ts"
       ],
       "visual_review": [
-        "agent/repo-score.json",
-        "agent/repo-score.md",
+        "jnoccio-fusion/agent/repo-score.json",
         "packages/jekko/src/cli/cmd/tui/component/logo.tsx"
       ]
     }
@@ -1325,7 +1316,7 @@
       "problem": "`Code shape and semantic surface` scored 0 below the standard floor of 85",
       "agent_fix": "split large or ambiguous authored code into smaller semantic modules with focused tests",
       "evidence": [
-        "largest authored code file: packages/jekko/test/session/compaction.test.ts (2194 LOC)",
+        "largest authored code file: packages/jekko/src/lsp/server.ts (2108 LOC)",
         "code file exceeds 500 LOC",
         "code file exceeds 1000 LOC",
         "most code files stay under 300 LOC"
@@ -1335,7 +1326,7 @@
       "confidence": 0.76,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:89eae966792b34b11884223acb4ab4fa4784d24b4501eca0737046274bcf6d66",
+      "fingerprint": "sha256:145503e5968523d994875338ee7c0d6a7b44c63dee3ad6242b982f085d38ea4e",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
@@ -1367,155 +1358,49 @@
       "owner": "workspace"
     },
     {
-      "severity": "medium",
-      "category": "proof",
-      "path": "agent/repo-score.json",
-      "problem": "human review or proof claim lacks reproducible evidence",
-      "agent_fix": "attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries",
-      "evidence": [
-        "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"delta: \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
-      ],
-      "check_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP:proof",
-      "hardness": "soft",
-      "confidence": 0.88,
-      "evidence_kind": "receipt",
-      "rerun_command": "just score",
-      "fingerprint": "sha256:bf32a9bdb185b674c1d008c82b3ccf44cc340fffa0f91b3886e5c38c1126e634",
-      "rule_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP",
-      "tlr": "Repair",
-      "lane": "audit",
-      "docs_url": "docs/testing.md",
-      "owner": "workspace",
-      "line": 1371,
-      "matched_term": "review evidence",
-      "reason": "proof and review claims need receipts"
-    },
-    {
-      "severity": "high",
-      "category": "data",
-      "path": "db/migrations/20260413175956_chief_energizer/migration.sql",
-      "problem": "destructive migration appears without nearby rollback or backup proof",
-      "agent_fix": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
-      "evidence": [
-        "detector=sql.migration.destructive-no-proof",
-        "proof-window=nearby-proof",
-        "snippet=CONSTRAINT `fk_session_entry_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE"
-      ],
-      "check_id": "HLT-030-SQL-BAD-BEHAVIOR:data",
-      "hardness": "hard",
-      "confidence": 0.95,
-      "evidence_kind": "sql",
-      "rerun_command": "just fast",
-      "fingerprint": "sha256:4ecf9093e7808de6cbc5263829297ad9d1619855c4f64ffb33c3d43216048fbd",
-      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
-      "tlr": "Contracts/data",
-      "lane": "db",
-      "docs_url": "docs/testing.md",
-      "owner": "data",
-      "line": 12,
-      "matched_term": "drop table",
-      "reason": "the migration can remove or rewrite data without local evidence of recovery"
-    },
-    {
       "severity": "high",
       "category": "vibe",
-      "path": "jnoccio-fusion/src/fusion.rs",
+      "path": "packages/jekko/src/agent-script/examples.ts",
       "problem": "duplicated product code block detected",
       "agent_fix": "extract the duplicated behavior behind one named boundary and add focused tests before changing behavior",
       "evidence": [
-        "duplicate block also appears at jnoccio-fusion/src/fusion.rs:1"
+        "duplicate block also appears at packages/jekko/src/agent-script/examples.ts:1"
       ],
       "check_id": "HLT-000-SCORE-DIMENSION:vibe",
       "hardness": "hard",
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:78c7374c9415f4837d9a4f8ec8f516e425c1fc722c1af1ad7e4dddf1a6ecb269",
+      "fingerprint": "sha256:0b2cf0bda1299a047cbd9c141ace947db6fff4e3eb5707d6fa8dd57c9b6366ad",
       "tlr": "Entropy",
       "lane": "fast",
-      "owner": "workspace",
+      "owner": "tools",
       "line": 1
     },
     {
       "severity": "high",
       "category": "vibe",
-      "path": "jnoccio-fusion/src/fusion.rs",
+      "path": "packages/jekko/src/cli/cmd/tui/attach.ts",
       "problem": "fallback soup detected in product code",
       "agent_fix": "collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance",
       "evidence": [
-        "jnoccio-fusion/src/fusion.rs:848 .unwrap_or_else(|| \"none\".to_string())"
+        "packages/jekko/src/cli/cmd/tui/attach.ts:60 if (!args.dir) return undefined"
       ],
       "check_id": "HLT-001-DEAD-MARKER:vibe",
       "hardness": "hard",
       "confidence": 0.88,
       "evidence_kind": "repository-scan",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:95ecf274cdc0d96dac2810c767fcf29657b65b4af51303e8092d202e3a6d50ba",
+      "fingerprint": "sha256:59f944295edce53e54851b2891d9feee3d61cd4cf22b334a4fafc768739a1367",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
       "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
-      "owner": "workspace",
-      "line": 848
-    },
-    {
-      "severity": "critical",
-      "category": "security",
-      "path": "packages/jekko/test/auth/auth.test.ts",
-      "problem": "secret-like value or credential material appears in repository text",
-      "agent_fix": "remove and rotate the credential, add local and CI secret scanning, and scan transcripts/artifacts/MCP config for related exposure",
-      "evidence": [
-        "key: \"sk-test\","
-      ],
-      "check_id": "HLT-010-SECRET-SPRAWL:security",
-      "hardness": "hard",
-      "confidence": 0.95,
-      "evidence_kind": "repository-scan",
-      "rerun_command": "just security",
-      "fingerprint": "sha256:74fa3d67989b9ba25abf8a7fee90daf8165735c28f2b76844ea61b86241128cd",
-      "rule_id": "HLT-010-SECRET-SPRAWL",
-      "tlr": "Security, secrets, agency",
-      "lane": "security",
-      "docs_url": "docs/audit-rubric.md#top-level-risk-mapping",
       "owner": "tools",
-      "line": 76
-    },
-    {
-      "severity": "high",
-      "category": "security",
-      "path": "packages/jekko/test/fixture/db.ts",
-      "problem": "unsafe or unvalidated input boundary marker appears in product code",
-      "agent_fix": "replace unsafe sinks with typed schemas, parameterized APIs, allowlists, or sandboxed execution plus negative tests",
-      "evidence": [
-        "seedDb.exec(\"PRAGMA synchronous = NORMAL\")"
-      ],
-      "check_id": "HLT-023-INPUT-BOUNDARY-GAP:security",
-      "hardness": "hard",
-      "confidence": 0.88,
-      "evidence_kind": "repository-scan",
-      "rerun_command": "just security",
-      "fingerprint": "sha256:a925c7548d7ef708ae64fde3b2ff768f65917cb3d88e811975765143c3405a0f",
-      "rule_id": "HLT-023-INPUT-BOUNDARY-GAP",
-      "tlr": "Security, secrets, agency",
-      "lane": "security",
-      "docs_url": "docs/audit-rubric.md#top-level-risk-mapping",
-      "owner": "tools",
-      "line": 24,
-      "matched_term": "shell execution",
-      "reason": "input handling risk needs deterministic negative tests"
+      "line": 60
     }
   ],
   "agent_fix_queue": [
-    {
-      "path": "db/migrations/20260413175956_chief_energizer/migration.sql",
-      "priority": "high",
-      "rule_id": "HLT-030-SQL-BAD-BEHAVIOR",
-      "tlr": "Contracts/data",
-      "lane": "db",
-      "owner": "data",
-      "task": "split the change into a reviewed migration with rollback, backup, and row-count evidence",
-      "why": "destructive migration appears without nearby rollback or backup proof"
-    },
     {
       "path": "Justfile",
       "priority": "medium",
@@ -1527,53 +1412,23 @@
       "why": "`Build speed signals` scored 70 below the standard floor of 85"
     },
     {
-      "path": "agent/repo-score.json",
-      "priority": "medium",
-      "rule_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP",
-      "tlr": "Repair",
-      "lane": "audit",
-      "owner": "workspace",
-      "task": "attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries",
-      "why": "human review or proof claim lacks reproducible evidence"
-    },
-    {
-      "path": "packages/jekko/test/auth/auth.test.ts",
-      "priority": "critical",
-      "rule_id": "HLT-010-SECRET-SPRAWL",
-      "tlr": "Security, secrets, agency",
-      "lane": "security",
-      "owner": "tools",
-      "task": "remove and rotate the credential, add local and CI secret scanning, and scan transcripts/artifacts/MCP config for related exposure",
-      "why": "secret-like value or credential material appears in repository text"
-    },
-    {
-      "path": "jnoccio-fusion/src/fusion.rs",
+      "path": "packages/jekko/src/agent-script/examples.ts",
       "priority": "high",
       "tlr": "Entropy",
       "lane": "fast",
-      "owner": "workspace",
+      "owner": "tools",
       "task": "extract the duplicated behavior behind one named boundary and add focused tests before changing behavior",
       "why": "duplicated product code block detected"
     },
     {
-      "path": "jnoccio-fusion/src/fusion.rs",
+      "path": "packages/jekko/src/cli/cmd/tui/attach.ts",
       "priority": "high",
       "rule_id": "HLT-001-DEAD-MARKER",
       "tlr": "Entropy",
       "lane": "fast",
-      "owner": "workspace",
+      "owner": "tools",
       "task": "collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance",
       "why": "fallback soup detected in product code"
-    },
-    {
-      "path": "packages/jekko/test/fixture/db.ts",
-      "priority": "high",
-      "rule_id": "HLT-023-INPUT-BOUNDARY-GAP",
-      "tlr": "Security, secrets, agency",
-      "lane": "security",
-      "owner": "tools",
-      "task": "replace unsafe sinks with typed schemas, parameterized APIs, allowlists, or sandboxed execution plus negative tests",
-      "why": "unsafe or unvalidated input boundary marker appears in product code"
     },
     {
       "path": ".",

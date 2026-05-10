@@ -80,6 +80,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
     })
 
     const pending = Effect.fn("SessionHttpApi.pending")(function* (ctx: { params: { sessionID: SessionID } }) {
+      yield* SessionError.mapStorageNotFound(session.get(ctx.params.sessionID))
       return yield* pendingSvc.get(ctx.params.sessionID)
     })
 

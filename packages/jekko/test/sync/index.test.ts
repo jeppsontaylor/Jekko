@@ -1,6 +1,6 @@
 import { describe, expect, beforeEach, afterEach, afterAll } from "bun:test"
 import { provideTmpdirInstance } from "../fixture/fixture"
-import { Effect, Layer, Schema } from "effect"
+import { Cause, Effect, Layer, Schema } from "effect"
 import { CrossSpawnSpawner } from "@jekko-ai/core/cross-spawn-spawner"
 import { Bus } from "../../src/bus"
 import { SyncEvent } from "../../src/sync"
@@ -10,13 +10,13 @@ import { MessageID } from "../../src/session/schema"
 import { Flag } from "@jekko-ai/core/flag/flag"
 import { initProjectors } from "../../src/server/projectors"
 import { testEffect } from "../lib/effect"
+import { resetDatabase } from "../fixture/db"
 
 const original = Flag.JEKKO_EXPERIMENTAL_WORKSPACES
 const it = testEffect(Layer.mergeAll(SyncEvent.defaultLayer, CrossSpawnSpawner.defaultLayer))
 
-beforeEach(() => {
-  Database.close()
-
+beforeEach(async () => {
+  await resetDatabase()
   Flag.JEKKO_EXPERIMENTAL_WORKSPACES = true
 })
 
@@ -49,11 +49,15 @@ describe("SyncEvent", () => {
   }
 
   function expectDefect<A, E, R>(effect: Effect.Effect<A, E, R>, pattern: RegExp) {
-    return Effect.gen(function* () {
-      const exit = yield* Effect.exit(effect)
-      if (exit._tag === "Success") throw new Error("Expected effect to fail")
-      expect(String(exit.cause)).toMatch(pattern)
-    })
+    return effect.pipe(
+      Effect.matchCauseEffect({
+        onFailure: (cause) =>
+          Effect.sync(() => {
+            expect(String(Cause.squash(cause))).toMatch(pattern)
+          }),
+        onSuccess: () => Effect.fail(new Error("Expected effect to fail")),
+      }),
+    )
   }
 
   afterAll(() => {

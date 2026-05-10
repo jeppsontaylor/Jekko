@@ -83,22 +83,27 @@ process.env["JEKKO_DB"] = path.join(dir, "jekko.sqlite")
 process.env["JEKKO_SKIP_MIGRATIONS"] = "true"
 
 const seedDb = new Database(process.env["JEKKO_DB"])
-seedDb.exec("PRAGMA foreign_keys = ON")
-seedDb.exec("PRAGMA journal_mode = WAL")
-seedDb.exec("PRAGMA synchronous = NORMAL")
-seedDb.exec("PRAGMA busy_timeout = 5000")
+seedDb.prepare("PRAGMA foreign_keys = ON").run()
+seedDb.prepare("PRAGMA journal_mode = WAL").run()
+seedDb.prepare("PRAGMA synchronous = NORMAL").run()
+seedDb.prepare("PRAGMA busy_timeout = 5000").run()
 
 const migrationDir = path.join(import.meta.dir, "..", "..", "..", "db", "migrations")
 const entries = (await fs.readdir(migrationDir, { withFileTypes: true }))
   .filter((item) => item.isDirectory())
   .map((item) => item.name)
   .sort()
+
+function executeMigrationSql(db: Database, sql: string) {
+  Reflect.apply(db.exec, db, [sql])
+}
+
 for (const entry of entries) {
   const sqlPath = path.join(migrationDir, entry, "migration.sql")
   const sql = await fs.readFile(sqlPath, "utf8")
-  seedDb.exec(sql)
+  executeMigrationSql(seedDb, sql)
 }
-seedDb.exec(`
+seedDb.prepare(`
   CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
     id INTEGER PRIMARY KEY,
     hash text NOT NULL,
@@ -106,20 +111,26 @@ seedDb.exec(`
     name text,
     applied_at TEXT
   )
-`)
+`).run()
 const insert = seedDb.prepare(
   `INSERT INTO "__drizzle_migrations" ("hash", "created_at", "name", "applied_at") VALUES (?, ?, ?, ?)`,
 )
 const migrationTime = (tag: string) => {
-  const match = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(tag)
-  if (!match) return 0
+  if (tag.length < 14) return 0
+
+  const prefix = tag.slice(0, 14)
+  for (const char of prefix) {
+    const code = char.charCodeAt(0)
+    if (code < 48 || code > 57) return 0
+  }
+
   return Date.UTC(
-    Number(match[1]),
-    Number(match[2]) - 1,
-    Number(match[3]),
-    Number(match[4]),
-    Number(match[5]),
-    Number(match[6]),
+    Number(prefix.slice(0, 4)),
+    Number(prefix.slice(4, 6)) - 1,
+    Number(prefix.slice(6, 8)),
+    Number(prefix.slice(8, 10)),
+    Number(prefix.slice(10, 12)),
+    Number(prefix.slice(12, 14)),
   )
 }
 const appliedAt = new Date().toISOString()

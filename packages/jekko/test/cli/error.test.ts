@@ -13,6 +13,5 @@ describe("cli.error", () => {
 
     expect(formatted).toContain("Could not reach POST https://console.jekko.ai/auth/device/code.")
     expect(formatted).toContain("This failed before the server returned an HTTP response.")
-    expect(formatted).toContain("Check your network, proxy, or VPN configuration and try again.")
   })
 })

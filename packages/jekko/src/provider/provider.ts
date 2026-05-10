@@ -42,9 +42,19 @@ import { ModelID, ProviderID } from "./schema"
 const log = Log.create({ service: "provider" })
 
 function shouldUseCopilotResponsesApi(modelID: string): boolean {
-  const match = /^gpt-(\d+)/.exec(modelID)
-  if (!match) return false
-  return Number(match[1]) >= 5 && !modelID.startsWith("gpt-5-mini")
+  if (!modelID.startsWith("gpt-")) return false
+
+  let version = 0
+  let sawDigit = false
+  for (let idx = 4; idx < modelID.length; idx++) {
+    const code = modelID.charCodeAt(idx)
+    if (code < 48 || code > 57) break
+    sawDigit = true
+    version = version * 10 + (code - 48)
+  }
+
+  if (!sawDigit) return false
+  return version >= 5 && !modelID.startsWith("gpt-5-mini")
 }
 
 function wrapSSE(res: Response, ms: number, ctl: AbortController) {

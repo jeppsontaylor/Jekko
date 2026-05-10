@@ -42,6 +42,18 @@ export type ShareData = Schema.Schema.Type<typeof ShareDataSchema>
 type ShareSessionInfo = Schema.Schema.Type<typeof Session.Info>
 type ShareMessageInfo = Schema.Schema.Type<typeof MessageV2.Info>
 type SharePartInfo = Schema.Schema.Type<typeof MessageV2.Part>
+type TransformShareDataResult =
+  | {
+      kind: "ok"
+      data: {
+        info: ShareSessionInfo
+        messages: Array<{ info: ShareMessageInfo; parts: SharePartInfo[] }>
+      }
+    }
+  | {
+      kind: "empty"
+      reason: "missing-session" | "missing-messages"
+    }
 
 /** Extract share ID from a share URL like https://opncd.ai/share/abc123 */
 export function parseShareUrl(url: string): string | null {
@@ -65,12 +77,14 @@ export function shouldAttachShareAuthHeaders(shareUrl: string, accountBaseUrl: s
  *
  * This groups parts by their messageID to reconstruct the hierarchy before writing to disk.
  */
-export function transformShareData(shareData: ReadonlyArray<ShareData>): {
-  info: ShareSessionInfo
-  messages: Array<{ info: ShareMessageInfo; parts: SharePartInfo[] }>
-} | null {
+export function transformShareData(shareData: ReadonlyArray<ShareData>): TransformShareDataResult {
   const sessionItem = shareData.find((d) => d.type === "session")
-  if (!sessionItem) return null
+  if (!sessionItem) {
+    return {
+      kind: "empty",
+      reason: "missing-session",
+    }
+  }
 
   const messageMap = new Map<string, ShareMessageInfo>()
   const partMap = new Map<string, SharePartInfo[]>()
@@ -86,14 +100,22 @@ export function transformShareData(shareData: ReadonlyArray<ShareData>): {
     }
   }
 
-  if (messageMap.size === 0) return null
+  if (messageMap.size === 0) {
+    return {
+      kind: "empty",
+      reason: "missing-messages",
+    }
+  }
 
   return {
-    info: sessionItem.data,
-    messages: Array.from(messageMap.values()).map((msg) => ({
-      info: msg,
-      parts: partMap.get(msg.id) ?? [],
-    })),
+    kind: "ok",
+    data: {
+      info: sessionItem.data,
+      messages: Array.from(messageMap.values()).map((msg) => ({
+        info: msg,
+        parts: partMap.get(msg.id) ?? [],
+      })),
+    },
   }
 }
 
@@ -167,13 +189,13 @@ const runImport = Effect.fn("Cli.import.body")(function* (file: string, projectI
     })
     const transformed = transformShareData(shareData)
 
-    if (!transformed) {
+    if (transformed.kind === "empty") {
       process.stdout.write(`Share not found or empty: ${slug}`)
       process.stdout.write(EOL)
       return
     }
 
-    exportData = transformed
+    exportData = transformed.data
   } else {
     exportData = yield* Effect.promise(() =>
       Filesystem.readJson<NonNullable<typeof exportData>>(file).catch(() => undefined),

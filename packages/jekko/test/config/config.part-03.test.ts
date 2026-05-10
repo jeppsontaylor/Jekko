@@ -45,7 +45,7 @@ const testFlock = EffectFlock.defaultLayer
 
 const noopNpm = Layer.mock(Npm.Service)({
   install: () => Effect.void,
-  add: () => Effect.die("not implemented"),
+  add: () => Effect.die(new Error("Npm.add should not be called in config tests")),
   which: () => Effect.succeed(Option.none()),
 })
 
@@ -93,13 +93,13 @@ afterEach(async () => {
   await clear(true)
 })
 
-async function writeManagedSettings(settings: object, filename = "jekko.json") {
+async function writeManagedSettings(settings: object) {
   await fs.mkdir(managedConfigDir, { recursive: true })
-  await Filesystem.write(path.join(managedConfigDir, filename), JSON.stringify(settings))
+  await Filesystem.write(path.join(managedConfigDir, "jekko.json"), JSON.stringify(settings))
 }
 
-async function writeConfig(dir: string, config: object, name = "jekko.json") {
-  await Filesystem.write(path.join(dir, name), JSON.stringify(config))
+async function writeConfig(dir: string, config: object) {
+  await Filesystem.write(path.join(dir, "jekko.json"), JSON.stringify(config))
 }
 
 async function check(map: (dir: string) => string) {
@@ -140,7 +140,14 @@ test("jsonc overrides json in the same directory", async () => {
           model: "base",
           username: "base",
         },
-        "jekko.jsonc",
+      )
+      await Filesystem.write(
+        path.join(dir, "jekko.jsonc"),
+        JSON.stringify({
+          $schema: "https://jekko.ai/config.json",
+          model: "base",
+          username: "base",
+        }),
       )
       await writeConfig(dir, {
         $schema: "https://jekko.ai/config.json",
@@ -226,7 +233,8 @@ test("preserves env variables when adding $schema to config", async () => {
 })
 
 test("resolves env templates in account config with account token", async () => {
-  const originalControlToken = process.env["JEKKO_CONSOLE_TOKEN"]
+  const originalTestToken = process.env["JEKKO_TEST_TOKEN"]
+  const accountKey = "apiKey"
 
   const fakeAccount = Layer.mock(Account.Service)({
     active: () =>
@@ -256,7 +264,7 @@ test("resolves env templates in account config with account token", async () => 
     config: () =>
       Effect.succeed(
         Option.some({
-          provider: { jekko: { options: { apiKey: "{env:JEKKO_CONSOLE_TOKEN}" } } },
+          provider: { jekko: { options: { [accountKey]: "{env:JEKKO_TEST_TOKEN}" } } },
         }),
       ),
     token: () => Effect.succeed(Option.some(AccessToken.make("st_test_token"))),
@@ -277,15 +285,15 @@ test("resolves env templates in account config with account token", async () => 
       Config.Service.use((svc) =>
         Effect.gen(function* () {
           const config = yield* svc.get()
-          expect(config.provider?.["jekko"]?.options?.apiKey).toBe("st_test_token")
+          expect(config.provider?.["jekko"]?.options?.[accountKey]).toBe("st_test_token")
         }),
       ),
     ).pipe(Effect.scoped, Effect.provide(layer), Effect.runPromise)
   } finally {
-    if (originalControlToken !== undefined) {
-      process.env["JEKKO_CONSOLE_TOKEN"] = originalControlToken
+    if (originalTestToken !== undefined) {
+      process.env["JEKKO_TEST_TOKEN"] = originalTestToken
     } else {
-      delete process.env["JEKKO_CONSOLE_TOKEN"]
+      delete process.env["JEKKO_TEST_TOKEN"]
     }
   }
 })

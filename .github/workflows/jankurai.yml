@@ -4,10 +4,14 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: jankurai-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   audit:
@@ -22,7 +26,7 @@ jobs:
           fetch-depth: 0
       - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
       - name: Install jankurai
-        run: cargo install --git https://github.com/jeppsontaylor/Jankurai --locked jankurai
+        run: cargo install --git https://github.com/jeppsontaylor/Jankurai --tag v0.8.12 --locked jankurai
       - name: jankurai version
         run: jankurai --version
       - name: jankurai audit
@@ -54,7 +58,7 @@ jobs:
           chmod +x packages/ux-qa/dist/cli.js
           jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json
       - name: Security scan
-        run: jankurai security run . --out target/jankurai/security/evidence.json
+        run: bash tools/security-lane.sh
       - name: Secret scanning (trufflehog)
         uses: trufflesecurity/trufflehog@ba0a524d6e51744d9d4e306bc57ac5d6ca5173ea
         with:
@@ -78,11 +82,6 @@ jobs:
         run: cargo install cargo-audit --locked
       - name: Cargo audit
         run: cd crates/tuiwright-jekko-unlock && cargo audit
-      - name: Record security evidence
-        run: |
-          mkdir -p target/jankurai/security
-          jankurai security run . --out target/jankurai/security/evidence.json
-          echo "Security lane completed" > target/jankurai/security/lane-status.txt
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:

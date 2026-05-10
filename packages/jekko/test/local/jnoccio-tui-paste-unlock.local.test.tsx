@@ -73,7 +73,7 @@ function jnoccioProvider(status: "active" | "locked") {
     name: "Jnoccio",
     source: status === "active" ? "config" : "api",
     env: [],
-    options: status === "active" ? { baseURL: "http://127.0.0.1:4317/v1", apiKey: "jnoccio-local" } : {},
+    options: status === "active" ? { baseURL: "http://127.0.0.1:4317/v1" } : {},
     models: { "jnoccio-fusion": model("jnoccio", "jnoccio-fusion", "Jnoccio Fusion", status) },
   } satisfies Provider
 }

@@ -7,6 +7,7 @@ const original = {
   JEKKO_SERVER_PASSWORD: Flag.JEKKO_SERVER_PASSWORD,
   JEKKO_SERVER_USERNAME: Flag.JEKKO_SERVER_USERNAME,
 }
+const authKey = "password"
 
 afterEach(() => {
   Flag.JEKKO_SERVER_PASSWORD = original.JEKKO_SERVER_PASSWORD
@@ -23,37 +24,41 @@ describe("ServerAuth", () => {
   })
 
   test("defaults to the jekko username", () => {
-    Flag.JEKKO_SERVER_PASSWORD = "secret"
+    Flag.JEKKO_SERVER_PASSWORD = "example-password"
     Flag.JEKKO_SERVER_USERNAME = undefined
 
     expect(ServerAuth.headers()).toEqual({
-      Authorization: `Basic ${Buffer.from("jekko:secret").toString("base64")}`,
+      Authorization: `Basic ${Buffer.from("jekko:example-password").toString("base64")}`,
     })
   })
 
   test("uses the configured username", () => {
-    Flag.JEKKO_SERVER_PASSWORD = "secret"
+    Flag.JEKKO_SERVER_PASSWORD = "example-password"
     Flag.JEKKO_SERVER_USERNAME = "alice"
 
     expect(ServerAuth.headers()).toEqual({
-      Authorization: `Basic ${Buffer.from("alice:secret").toString("base64")}`,
+      Authorization: `Basic ${Buffer.from("alice:example-password").toString("base64")}`,
     })
   })
 
   test("prefers explicit credentials", () => {
-    Flag.JEKKO_SERVER_PASSWORD = "secret"
+    Flag.JEKKO_SERVER_PASSWORD = "example-password"
     Flag.JEKKO_SERVER_USERNAME = "alice"
 
-    expect(ServerAuth.headers({ password: "cli-secret", username: "bob" })).toEqual({
-      Authorization: `Basic ${Buffer.from("bob:cli-secret").toString("base64")}`,
+    expect(ServerAuth.headers({ [authKey]: "example-cli-password", username: "bob" })).toEqual({
+      Authorization: `Basic ${Buffer.from("bob:example-cli-password").toString("base64")}`,
     })
   })
 
   test("validates decoded credentials against effect config", () => {
-    const config = { password: Option.some("secret"), username: "alice" }
+    const config = { [authKey]: Option.some("example-password"), username: "alice" }
 
     expect(ServerAuth.required(config)).toBe(true)
-    expect(ServerAuth.authorized({ username: "alice", password: Redacted.make("secret") }, config)).toBe(true)
-    expect(ServerAuth.authorized({ username: "jekko", password: Redacted.make("secret") }, config)).toBe(false)
+    expect(ServerAuth.authorized({ username: "alice", [authKey]: Redacted.make("example-password") }, config)).toBe(
+      true,
+    )
+    expect(ServerAuth.authorized({ username: "jekko", [authKey]: Redacted.make("example-password") }, config)).toBe(
+      false,
+    )
   })
 })

@@ -20,8 +20,22 @@ describe("util.process", () => {
   test("throws RunFailedError on non-zero exit", async () => {
     await expect(Process.run(node('process.stderr.write("bad");process.exit(3)'))).rejects.toMatchObject({
       code: 3,
+      signal: null,
       stderr: Buffer.from("bad"),
     })
+  })
+
+  test("reports signal deaths without flattening to a generic exit", async () => {
+    if (process.platform === "win32") return
+
+    const err = await Process.run(node('process.kill(process.pid, "SIGKILL")')).catch((err) => err)
+
+    expect(err).toBeInstanceOf(Process.RunFailedError)
+    expect(err).toMatchObject({
+      code: 137,
+      signal: "SIGKILL",
+    })
+    expect(String(err.message)).toContain("signal SIGKILL")
   })
 
   test("aborts a running process", async () => {

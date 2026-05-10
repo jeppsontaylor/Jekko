@@ -141,7 +141,9 @@ describe("pty HttpApi bridge", () => {
     })
     expect(response.status).toBe(404)
   })
-  ;(process.platform === "win32" ? effectIt.live.skip : effectIt.live)(
+  ;(process.platform === "win32"
+    ? ((test.skip as unknown) as typeof effectIt.live)
+    : effectIt.live)(
     "serves PTY websocket output and input through Effect routes",
     () =>
       Effect.gen(function* () {

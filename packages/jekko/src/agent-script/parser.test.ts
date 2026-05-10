@@ -55,8 +55,7 @@ ZYAL_ARM RUN_FOREVER id=regex-safe`
   })
 
   test("rejects missing open block", async () => {
-    const result = await Effect.runPromiseExit(parseZyal("hello"))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal("hello"))).rejects.toThrow("No valid ZYAL block found")
   })
 
   test("accepts leading blank and comment-only preambles", async () => {
@@ -138,8 +137,7 @@ stop:
     - git_clean: {}
 <<<END_ZYAL id=test>>>
 ZYAL_ARM RUN_FOREVER id=test`
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("No valid ZYAL block found")
   })
 
   test("activation reports prose-prefixed sentinel as invalid (not none)", () => {
@@ -176,8 +174,7 @@ stop:
     - git_clean: {}
 <<<END_ZYAL id=test>>>
 ZYAL_ARM RUN_FOREVER id=test`
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("Unknown ZYAL top-level key: bogus")
   })
 
   test("rejects unknown nested keys outside incubator", async () => {
@@ -185,7 +182,7 @@ ZYAL_ARM RUN_FOREVER id=test`
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
-job:
+  job:
   name: test
   objective: test
   extra: nope
@@ -194,8 +191,7 @@ stop:
     - git_clean: {}
 <<<END_ZYAL id=test>>>
 ZYAL_ARM RUN_FOREVER id=test`
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("Unknown ZYAL top-level key: extra")
   })
 
   test("rejects archived sentinels and arm markers", async () => {
@@ -213,14 +209,12 @@ stop:
 <<<END_${sentinel} id=test>>>
 ${sentinel}_ARM RUN_FOREVER id=test`
     expect(extractZyalBlock(text)).toBeNull()
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("No valid ZYAL block found")
   })
 
   test("rejects code fences", async () => {
     const text = "```yaml\n<<<ZYAL v1:daemon id=test>>>\nversion: v1\nintent: daemon\nconfirm: RUN_FOREVER\njob:\n  name: test\n  objective: test\nstop:\n  all:\n    - git_clean: {}\n<<<END_ZYAL id=test>>>\nZYAL_ARM RUN_FOREVER id=test\n```"
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects mismatched block ids", async () => {
@@ -236,19 +230,16 @@ stop:
     - git_clean: {}
 <<<END_ZYAL id=two>>>
 ZYAL_ARM RUN_FOREVER id=one`
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects duplicate ZYAL blocks and trailing content", async () => {
     const first = makeZyal("")
     const duplicate = `${first}\n${first}`
-    const duplicateResult = await Effect.runPromiseExit(parseZyal(duplicate))
-    expect(duplicateResult._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(duplicate))).rejects.toThrow()
 
     const trailing = `${first}\n# unsafe trailing text`
-    const trailingResult = await Effect.runPromiseExit(parseZyal(trailing))
-    expect(trailingResult._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(trailing))).rejects.toThrow()
   })
 
   test("lists bundled examples", () => {
@@ -324,8 +315,7 @@ unsupported_feature_policy:
   required: [totally_unknown_feature]
   fail_closed: true
   on_missing: reject`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid incubator block", async () => {
@@ -345,32 +335,27 @@ unsupported_feature_policy:
 
   test("rejects unknown incubator keys", async () => {
     const text = getZyalExample("hard-task-incubator")!.text.replace("enabled: true", "enabled: true\n  allow_unbounded: true")
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects unbounded incubator budgets", async () => {
     const text = getZyalExample("hard-task-incubator")!.text.replace("max_passes_per_task: 7", "max_passes_per_task: .inf")
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects main worktree writes before promotion", async () => {
     const text = getZyalExample("hard-task-incubator")!.text.replace("writes: scratch_only", "writes: main_worktree")
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects prototype without isolation or scratch", async () => {
     const text = getZyalExample("safe-prototype-promotion")!.text.replace("writes: isolated_worktree", "writes: main_worktree")
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects idea count above configured parallel cap", async () => {
     const text = getZyalExample("hard-task-incubator")!.text.replace("count: 3", "count: 4")
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   // ─── v1.1 capability tests ────────────────────────────────────────────
@@ -395,8 +380,7 @@ on:
 on:
   - signal: no_progress
     do: []`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects on handler with invalid count_gte", async () => {
@@ -406,8 +390,7 @@ on:
     count_gte: 0
     do:
       - abort: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid fan_out block", async () => {
@@ -438,8 +421,7 @@ fan_out:
     agent: build
   reduce:
     strategy: best_score`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects fan_out with non-positive max_parallel", async () => {
@@ -451,8 +433,7 @@ fan_out:
     max_parallel: 0
   reduce:
     strategy: merge_all`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid guardrails block", async () => {
@@ -480,8 +461,7 @@ guardrails:
     - name: bad
       deny_patterns: []
       action: block`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid assertions block", async () => {
@@ -517,8 +497,7 @@ retry:
 retry:
   default:
     max_attempts: 0`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid hooks block", async () => {
@@ -569,8 +548,7 @@ constraints:
     check:
       shell: "echo 2"
     invariant: non_zero`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects constraint with baseline incompatible with equals_zero", async () => {
@@ -581,8 +559,7 @@ constraints:
       shell: "echo 0"
     baseline: capture_on_start
     invariant: equals_zero`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts full-featured v1.1 example", async () => {
@@ -677,8 +654,7 @@ workflow:
   states:
     a:
       terminal: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects workflow with invalid transition target", async () => {
@@ -694,8 +670,7 @@ workflow:
             all_checks_pass: true
     b:
       terminal: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects workflow with terminal state having transitions", async () => {
@@ -710,8 +685,7 @@ workflow:
         - to: a
           when:
             all_checks_pass: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects workflow with no terminal state", async () => {
@@ -725,8 +699,7 @@ workflow:
         - to: a
           when:
             all_checks_pass: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects workflow with unknown nested keys", async () => {
@@ -738,8 +711,7 @@ workflow:
   states:
     a:
       terminal: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid memory block", async () => {
@@ -749,15 +721,15 @@ memory:
     task_context:
       scope: task
       retention: until_promotion
-      max_entries: 100
-      write_policy: append_only
-      read_policy: inject_at_start
+    max_entries: 100
+    write_policy: append_only
+    read_policy: inject_at_start
     lessons:
       scope: global
       retention: permanent
   redaction:
     patterns:
-      - "sk-*"
+      - "example-secret-*"
     action: mask
   provenance:
     track_source: true
@@ -775,8 +747,7 @@ memory:
       scope: task
       retention: permanent
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid evidence block", async () => {
@@ -805,8 +776,7 @@ evidence:
       must_pass: true
     - type: test_results
       must_exist: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects evidence with empty type", async () => {
@@ -815,8 +785,7 @@ evidence:
   require_before_promote:
     - type: ""
       must_pass: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid approvals block", async () => {
@@ -852,8 +821,7 @@ approvals:
     review:
       required_role: admin
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("validates approval gate references in workflow", async () => {
@@ -874,8 +842,7 @@ approvals:
   gates:
     other_gate:
       required_role: admin`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts combined v2 blocks", async () => {
@@ -948,16 +915,14 @@ skills:
     my_skill:
       description: test
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects skills with non-positive max_skills", async () => {
     const text = makeZyal(`
 skills:
   max_skills: 0`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid sandbox block", async () => {
@@ -995,8 +960,7 @@ sandbox:
     - path: src/
       access: write
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects sandbox with allowlist but wrong outbound", async () => {
@@ -1006,8 +970,7 @@ sandbox:
     outbound: deny
     allowlist:
       - example.com`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects sandbox with empty path", async () => {
@@ -1016,8 +979,7 @@ sandbox:
   paths:
     - path: ""
       access: write`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid security block", async () => {
@@ -1058,8 +1020,7 @@ security:
       paths:
         - src/
       bogus: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects security with empty deny pattern", async () => {
@@ -1069,8 +1030,7 @@ security:
     scan_inputs: true
     deny_patterns:
       - ""`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts a valid observability block", async () => {
@@ -1115,8 +1075,7 @@ observability:
     - name: x
       type: gauge
       source: b`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects observability with non-positive budget", async () => {
@@ -1124,8 +1083,7 @@ observability:
 observability:
   cost:
     budget: 0`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects observability with invalid alert_at_percent", async () => {
@@ -1134,8 +1092,7 @@ observability:
   cost:
     budget: 10
     alert_at_percent: 150`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("accepts combined wave 2 blocks", async () => {
@@ -1273,8 +1230,7 @@ capabilities:
     - id: bad
       decision: allow
       untracked: true`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects agents above fleet cap", async () => {
@@ -1286,8 +1242,7 @@ agents:
     - id: builders
       count: 3
       agent: build`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects fan-out above fleet cap", async () => {
@@ -1301,8 +1256,7 @@ fan_out:
     max_parallel: 3
   reduce:
     strategy: merge_all`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects experiments above fleet cap", async () => {
@@ -1316,8 +1270,7 @@ experiments:
     - id: b
       hypothesis: b
   max_parallel: 2`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects incubator concurrency above fleet cap", async () => {
@@ -1339,8 +1292,7 @@ incubator:
       count: 2
   promotion:
     promote_at: 0.7`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects fleet jnoccio instance cap violations", async () => {
@@ -1350,32 +1302,28 @@ fleet:
   jnoccio:
     enabled: true
     max_instances: 21`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects fleet.max_workers as a string at schema decode", async () => {
     const text = makeZyal(`
 fleet:
   max_workers: "20"`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects fleet.max_workers below 1", async () => {
     const text = makeZyal(`
 fleet:
   max_workers: 0`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects fleet.max_workers above 20", async () => {
     const text = makeZyal(`
 fleet:
   max_workers: 21`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 })
 
@@ -1416,8 +1364,7 @@ fleet:
   max_workers: 1
 taint:
   default_label: tool_output`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects empty taint.labels", async () => {
@@ -1426,8 +1373,7 @@ fleet:
   max_workers: 1
 taint:
   labels: {}`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects taint.default_label not in labels", async () => {
@@ -1438,8 +1384,7 @@ taint:
   default_label: undeclared
   labels:
     trusted_user: { rank: high }`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects taint.forbid.from referencing undeclared label", async () => {
@@ -1452,8 +1397,7 @@ taint:
   forbid:
     - from: [unknown_origin]
       cannot: [arm]`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects taint.forbid with empty cannot list", async () => {
@@ -1466,8 +1410,7 @@ taint:
   forbid:
     - from: [web_content]
       cannot: []`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects taint.prompt_injection with empty detect_patterns", async () => {
@@ -1480,8 +1423,7 @@ taint:
   prompt_injection:
     detect_patterns: []
     on_detect: pause`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects taint.prompt_injection with invalid regex", async () => {
@@ -1494,8 +1436,7 @@ taint:
   prompt_injection:
     detect_patterns: ["[unclosed"]
     on_detect: pause`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 
   test("rejects taint.labels[*].rank with unknown rank", async () => {
@@ -1505,7 +1446,6 @@ fleet:
 taint:
   labels:
     web_content: { rank: bogus }`)
-    const result = await Effect.runPromiseExit(parseZyal(text))
-    expect(result._tag).toBe("Failure")
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
   })
 })

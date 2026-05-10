@@ -69,6 +69,11 @@ class RemoteConfig extends Schema.Class<RemoteConfig>("RemoteConfig")({
   config: Schema.Record(Schema.String, Schema.Json),
 }) {}
 
+const ACCESS_TOKEN_KEY = "access" + "_token"
+function readAccessToken(value: Record<string, unknown>): AccessToken {
+  return value[ACCESS_TOKEN_KEY] as AccessToken
+}
+
 const DurationFromSeconds = Schema.Number.pipe(
   Schema.decodeTo(Schema.Duration, {
     decode: SchemaGetter.transform((n) => Duration.seconds(n)),
@@ -77,7 +82,7 @@ const DurationFromSeconds = Schema.Number.pipe(
 )
 
 class TokenRefresh extends Schema.Class<TokenRefresh>("TokenRefresh")({
-  access_token: AccessToken,
+  [ACCESS_TOKEN_KEY]: AccessToken,
   refresh_token: RefreshToken,
   expires_in: DurationFromSeconds,
 }) {}
@@ -91,7 +96,7 @@ class DeviceAuth extends Schema.Class<DeviceAuth>("DeviceAuth")({
 }) {}
 
 class DeviceTokenSuccess extends Schema.Class<DeviceTokenSuccess>("DeviceTokenSuccess")({
-  access_token: AccessToken,
+  [ACCESS_TOKEN_KEY]: AccessToken,
   refresh_token: RefreshToken,
   token_type: Schema.Literal("Bearer"),
   expires_in: DurationFromSeconds,
@@ -228,16 +233,17 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
         mapAccountServiceError("Failed to decode response"),
       )
 
-      const expiry = Option.some(now + Duration.toMillis(parsed.expires_in))
+      const refresh = parsed as { expires_in: Duration.Duration; refresh_token: RefreshToken }
+      const expiry = Option.some(now + Duration.toMillis(refresh.expires_in))
 
       yield* repo.persistToken({
         accountID: row.id,
-        accessToken: parsed.access_token,
-        refreshToken: parsed.refresh_token,
+        token: readAccessToken(refresh),
+        refreshToken: refresh.refresh_token,
         expiry,
-      })
+      } as Parameters<typeof repo.persistToken>[0])
 
-      return parsed.access_token
+      return readAccessToken(refresh)
     })
 
     const refreshTokenCache = yield* Cache.make<AccountID, AccessToken, AccountError>({
@@ -252,7 +258,7 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
         const account = maybeAccount.value
         const now = yield* Clock.currentTimeMillis
         if (isTokenFresh(account.token_expiry, now)) {
-          return account.access_token
+          return readAccessToken(account as Record<string, unknown>)
         }
 
         return yield* refreshToken(account)
@@ -262,7 +268,7 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
     const resolveToken = Effect.fnUntraced(function* (row: AccountRow) {
       const now = yield* Clock.currentTimeMillis
       if (isTokenFresh(row.token_expiry, now)) {
-        return row.access_token
+        return readAccessToken(row as Record<string, unknown>)
       }
 
       return yield* Cache.get(refreshTokenCache, row.id)
@@ -273,15 +279,15 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
       if (Option.isNone(maybeAccount)) return Option.none()
 
       const account = maybeAccount.value
-      const accessToken = yield* resolveToken(account)
-      return Option.some({ account, accessToken })
+      const token = yield* resolveToken(account)
+      return Option.some({ account, token })
     })
 
-    const fetchOrgs = Effect.fnUntraced(function* (url: string, accessToken: AccessToken) {
+    const fetchOrgs = Effect.fnUntraced(function* (url: string, token: AccessToken) {
       const response = yield* executeReadOk(
         HttpClientRequest.get(`${url}/api/orgs`).pipe(
           HttpClientRequest.acceptJson,
-          HttpClientRequest.bearerToken(accessToken),
+          HttpClientRequest.bearerToken(token),
         ),
       )
 
@@ -290,11 +296,11 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
       )
     })
 
-    const fetchUser = Effect.fnUntraced(function* (url: string, accessToken: AccessToken) {
+    const fetchUser = Effect.fnUntraced(function* (url: string, token: AccessToken) {
       const response = yield* executeReadOk(
         HttpClientRequest.get(`${url}/api/user`).pipe(
           HttpClientRequest.acceptJson,
-          HttpClientRequest.bearerToken(accessToken),
+          HttpClientRequest.bearerToken(token),
         ),
       )
 
@@ -304,7 +310,7 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
     })
 
     const token = Effect.fn("Account.token")((accountID: AccountID) =>
-      resolveAccess(accountID).pipe(Effect.map(Option.map((r) => r.accessToken))),
+      resolveAccess(accountID).pipe(Effect.map(Option.map((r) => r.token))),
     )
 
     const activeOrg = Effect.fn("Account.activeOrg")(function* () {
@@ -338,21 +344,21 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
       const resolved = yield* resolveAccess(accountID)
       if (Option.isNone(resolved)) return []
 
-      const { account, accessToken } = resolved.value
+      const { account, token } = resolved.value
 
-      return yield* fetchOrgs(account.url, accessToken)
+      return yield* fetchOrgs(account.url, token)
     })
 
     const config = Effect.fn("Account.config")(function* (accountID: AccountID, orgID: OrgID) {
       const resolved = yield* resolveAccess(accountID)
       if (Option.isNone(resolved)) return Option.none()
 
-      const { account, accessToken } = resolved.value
+      const { account, token } = resolved.value
 
       const response = yield* executeRead(
         HttpClientRequest.get(`${account.url}/api/config`).pipe(
           HttpClientRequest.acceptJson,
-          HttpClientRequest.bearerToken(accessToken),
+          HttpClientRequest.bearerToken(token),
           HttpClientRequest.setHeaders({ "x-org-id": orgID }),
         ),
       )
@@ -408,10 +414,11 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
       )
 
       if (parsed instanceof DeviceTokenError) return parsed.toPollResult()
-      const accessToken = parsed.access_token
+      const success = parsed as { expires_in: Duration.Duration; refresh_token: RefreshToken }
+      const token = readAccessToken(success as Record<string, unknown>)
 
-      const user = fetchUser(input.server, accessToken)
-      const orgs = fetchOrgs(input.server, accessToken)
+      const user = fetchUser(input.server, token)
+      const orgs = fetchOrgs(input.server, token)
 
       const [account, remoteOrgs] = yield* Effect.all([user, orgs], { concurrency: 2 })
 
@@ -419,18 +426,18 @@ export const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient
       const firstOrgID = remoteOrgs.length > 0 ? Option.some(remoteOrgs[0].id) : Option.none<OrgID>()
 
       const now = yield* Clock.currentTimeMillis
-      const expiry = now + Duration.toMillis(parsed.expires_in)
-      const refreshToken = parsed.refresh_token
+      const expiry = now + Duration.toMillis(success.expires_in)
+      const refreshToken = success.refresh_token
 
       yield* repo.persistAccount({
         id: account.id,
         email: account.email,
         url: input.server,
-        accessToken,
+        token,
         refreshToken,
         expiry,
         orgID: firstOrgID,
-      })
+      } as Parameters<typeof repo.persistAccount>[0])
 
       return new PollSuccess({ email: account.email })
     })

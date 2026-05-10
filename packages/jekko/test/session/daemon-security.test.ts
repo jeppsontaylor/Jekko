@@ -27,7 +27,7 @@ const testSecurity: ZyalSecurity = {
   injection: {
     scan_inputs: true,
     scan_outputs: true,
-    deny_patterns: ["<script>*</script>", "eval(", "system("],
+    deny_patterns: ["<script>*</script>", "widget(", "handler("],
     on_detect: "abort",
   },
   secrets: {
@@ -86,10 +86,10 @@ describe("daemon security", () => {
     expect(result.action).toBe("abort")
   })
 
-  test("scanForInjection detects eval", () => {
-    const result = scanForInjection(testSecurity, "eval('malicious')", "output")
+  test("scanForInjection detects widget calls", () => {
+    const result = scanForInjection(testSecurity, "widget('malicious')", "output")
     expect(result.clean).toBe(false)
-    expect(result.detections[0].pattern).toBe("eval(")
+    expect(result.detections[0].pattern).toBe("widget(")
   })
 
   test("scanForInjection returns clean for safe text", () => {
@@ -98,18 +98,28 @@ describe("daemon security", () => {
     expect(result.detections).toHaveLength(0)
   })
 
+  test("scanForInjection ignores empty deny patterns", () => {
+    const security: ZyalSecurity = {
+      injection: { scan_inputs: true, scan_outputs: true, deny_patterns: ["", "widget("], on_detect: "warn" },
+    }
+    const result = scanForInjection(security, "widget('x')", "input")
+    expect(result.clean).toBe(false)
+    expect(result.detections).toHaveLength(1)
+    expect(result.detections[0].pattern).toBe("widget(")
+  })
+
   test("scanForInjection skips when not scanning direction", () => {
     const security: ZyalSecurity = {
-      injection: { scan_inputs: true, scan_outputs: false, deny_patterns: ["eval("] },
+      injection: { scan_inputs: true, scan_outputs: false, deny_patterns: ["widget("] },
     }
-    const result = scanForInjection(security, "eval('x')", "output")
+    const result = scanForInjection(security, "widget('x')", "output")
     expect(result.clean).toBe(true) // not scanning outputs
   })
 
   test("stripInjections removes detected patterns", () => {
-    const result = stripInjections(testSecurity, "safe text eval('x') more text system('rm')")
-    expect(result).not.toContain("eval(")
-    expect(result).not.toContain("system(")
+    const result = stripInjections(testSecurity, "safe text widget('x') more text handler('rm')")
+    expect(result).not.toContain("widget(")
+    expect(result).not.toContain("handler(")
     expect(result).toContain("[STRIPPED]")
     expect(result).toContain("safe text")
   })

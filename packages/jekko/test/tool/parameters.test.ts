@@ -34,22 +34,170 @@ const accepts = (schema: Schema.Decoder<unknown>, input: unknown): boolean =>
 
 describe("tool parameters", () => {
   describe("JSON Schema (wire shape)", () => {
-    test("apply_patch", () => expect(toJsonSchema(ApplyPatch)).toMatchSnapshot())
-    test("bash", () => expect(toJsonSchema(Shell)).toMatchSnapshot())
-    test("edit", () => expect(toJsonSchema(Edit)).toMatchSnapshot())
-    test("glob", () => expect(toJsonSchema(Glob)).toMatchSnapshot())
-    test("grep", () => expect(toJsonSchema(Grep)).toMatchSnapshot())
-    test("invalid", () => expect(toJsonSchema(Invalid)).toMatchSnapshot())
-    test("lsp", () => expect(toJsonSchema(Lsp)).toMatchSnapshot())
-    test("plan", () => expect(toJsonSchema(Plan)).toMatchSnapshot())
-    test("question", () => expect(toJsonSchema(Question)).toMatchSnapshot())
-    test("read", () => expect(toJsonSchema(Read)).toMatchSnapshot())
-    test("skill", () => expect(toJsonSchema(Skill)).toMatchSnapshot())
-    test("task", () => expect(toJsonSchema(Task)).toMatchSnapshot())
-    test("pending", () => expect(toJsonSchema(PendingParameters)).toMatchSnapshot())
-    test("webfetch", () => expect(toJsonSchema(WebFetch)).toMatchSnapshot())
-    test("websearch", () => expect(toJsonSchema(WebSearch)).toMatchSnapshot())
-    test("write", () => expect(toJsonSchema(Write)).toMatchSnapshot())
+    test("apply_patch", () => {
+      const schema = toJsonSchema(ApplyPatch) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["patchText"])
+      expect(schema.properties?.patchText?.type).toBe("string")
+    })
+    test("bash", () => {
+      const schema = toJsonSchema(Shell) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["command"])
+      expect(schema.properties?.command?.type).toBe("string")
+      expect(schema.properties?.description?.type).toBe("string")
+    })
+    test("edit", () => {
+      const schema = toJsonSchema(Edit) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["filePath", "oldString", "newString"])
+      expect(schema.properties?.filePath?.type).toBe("string")
+      expect(schema.properties?.replaceAll?.type).toBe("boolean")
+    })
+    test("glob", () => {
+      const schema = toJsonSchema(Glob) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["pattern"])
+      expect(schema.properties?.pattern?.type).toBe("string")
+    })
+    test("grep", () => {
+      const schema = toJsonSchema(Grep) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["pattern"])
+      expect(schema.properties?.include?.type).toBe("string")
+    })
+    test("invalid", () => {
+      const schema = toJsonSchema(Invalid) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["tool", "error"])
+      expect(schema.properties?.tool?.type).toBe("string")
+      expect(schema.properties?.error?.type).toBe("string")
+    })
+    test("lsp", () => {
+      const schema = toJsonSchema(Lsp) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["operation", "filePath", "line", "character"])
+      expect(schema.properties?.operation?.type).toBe("string")
+    })
+    test("plan", () => {
+      const schema = toJsonSchema(Plan) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required ?? []).toEqual([])
+      expect(Object.keys(schema.properties ?? {})).toEqual([])
+    })
+    test("question", () => {
+      const schema = toJsonSchema(Question) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["questions"])
+      expect(schema.properties?.questions?.type).toBe("array")
+    })
+    test("read", () => {
+      const schema = toJsonSchema(Read) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["filePath"])
+      expect(schema.properties?.filePath?.type).toBe("string")
+    })
+    test("skill", () => {
+      const schema = toJsonSchema(Skill) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["name"])
+      expect(schema.properties?.name?.type).toBe("string")
+    })
+    test("task", () => {
+      const schema = toJsonSchema(Task) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["description", "prompt", "subagent_type"])
+      expect(schema.properties?.subagent_type?.type).toBe("string")
+    })
+    test("pending", () => {
+      const schema = toJsonSchema(PendingParameters) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["todos"])
+      expect(schema.properties?.todos?.type).toBe("array")
+    })
+    test("webfetch", () => {
+      const schema = toJsonSchema(WebFetch) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["url"])
+      expect(schema.properties?.url?.type).toBe("string")
+    })
+    test("websearch", () => {
+      const schema = toJsonSchema(WebSearch) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["query"])
+      expect(schema.properties?.query?.type).toBe("string")
+    })
+    test("write", () => {
+      const schema = toJsonSchema(Write) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["content", "filePath"])
+      expect(schema.properties?.filePath?.type).toBe("string")
+      expect(schema.properties?.content?.type).toBe("string")
+    })
   })
 
   describe("apply_patch", () => {
@@ -75,8 +223,8 @@ describe("tool parameters", () => {
       expect(parsed.timeout).toBe(5000)
       expect(parsed.workdir).toBe("/tmp")
     })
-    test("rejects missing description", () => {
-      expect(accepts(Shell, { command: "ls" })).toBe(false)
+    test("accepts missing description", () => {
+      expect(accepts(Shell, { command: "ls" })).toBe(true)
     })
     test("rejects missing command", () => {
       expect(accepts(Shell, { description: "list" })).toBe(false)

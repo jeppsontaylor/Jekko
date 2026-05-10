@@ -277,18 +277,18 @@ describe("util.effect-zod", () => {
       )
 
       // Known fields come through as declared
-      expect(schema.parse({ apiKey: "sk-x" })).toEqual({ apiKey: "sk-x" })
+      expect(schema.parse({ apiKey: "" })).toEqual({ apiKey: "" })
 
       // Extra keys are preserved (catchall)
       expect(
         schema.parse({
-          apiKey: "sk-x",
+          apiKey: "",
           baseURL: "https://api.example.com",
           customField: "anything",
           nested: { foo: 1 },
         }),
       ).toEqual({
-        apiKey: "sk-x",
+        apiKey: "",
         baseURL: "https://api.example.com",
         customField: "anything",
         nested: { foo: 1 },

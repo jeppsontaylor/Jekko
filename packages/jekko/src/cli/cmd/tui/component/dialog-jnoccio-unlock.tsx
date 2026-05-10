@@ -39,7 +39,9 @@ export function DialogJnoccioUnlock() {
     setBusy(true)
     setError(undefined)
     try {
-      const result = await sdk.client.provider.unlock(payload)
+      const result = await sdk.client.provider.jnoccio.unlock({
+        jnoccioUnlockInput: payload,
+      })
       if (result.error) {
         setError("Unlock failed. Try again.")
         return

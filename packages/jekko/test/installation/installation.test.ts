@@ -1,9 +1,12 @@
 import { describe, expect, test } from "bun:test"
+import fs from "fs/promises"
+import path from "path"
 import { Effect, Layer, Stream } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/unstable/http"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { Installation } from "../../src/installation"
-import { InstallationChannel } from "@jekko-ai/core/installation/version"
+import { InstallationChannel, InstallationVersion } from "@jekko-ai/core/installation/version"
+import { tmpdir } from "../fixture/fixture"
 
 const encoder = new TextEncoder()
 
@@ -163,6 +166,71 @@ describe("installation", () => {
         Installation.Service.use((svc) => svc.latest("brew")).pipe(Effect.provide(layer)),
       )
       expect(result).toBe("2.1.0")
+    })
+  })
+
+  describe("upgrade", () => {
+    test("repair mode forces brew reinstall and reports a killed smoke binary", async () => {
+      if (process.platform === "win32") return
+
+      await using tmp = await tmpdir()
+      const brewLog = path.join(tmp.path, "brew.log")
+      const brew = path.join(tmp.path, "brew")
+      const brokenJekko = path.join(tmp.path, "jekko")
+
+      await fs.writeFile(
+        brew,
+        "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$JEKKO_BREW_LOG\"\nexit 0\n",
+        "utf8",
+      )
+      await fs.writeFile(brokenJekko, "#!/bin/sh\nkill -9 $$\n", "utf8")
+      await fs.chmod(brew, 0o755)
+      await fs.chmod(brokenJekko, 0o755)
+
+      const previousPath = process.env.PATH
+      const previousLog = process.env.JEKKO_BREW_LOG
+      process.env.PATH = `${tmp.path}${path.delimiter}${previousPath ?? ""}`
+      process.env.JEKKO_BREW_LOG = brewLog
+      try {
+        const layer = testLayer(
+          () => jsonResponse({}),
+          (cmd, args) => {
+            if (cmd === "brew" && args.includes("--formula") && args.includes("anomalyco/tap/jekko")) return ""
+            if (cmd === "brew" && args.includes("--formula") && args.includes("jekko")) return "jekko"
+            return ""
+          },
+        )
+
+        const err = await Effect.runPromise(
+          Installation.Service.use((svc) =>
+            svc.upgrade("brew", InstallationVersion, { repair: true, binaryPath: brokenJekko }),
+          ).pipe(Effect.provide(layer)),
+        ).catch((err) => err)
+
+        expect(await fs.readFile(brewLog, "utf8")).toContain("reinstall jekko")
+        expect(err).toBeInstanceOf(Installation.UpgradeFailedError)
+        expect(err).toMatchObject({
+          code: 137,
+          signal: "SIGKILL",
+          binary: brokenJekko,
+          method: "brew",
+          formula: "jekko",
+        })
+        expect(err.stderr).toContain("Post-install smoke check failed")
+        expect(err.stderr).toContain("signal: SIGKILL")
+        expect(err.stderr).toContain("quarantine/signing/provenance")
+      } finally {
+        if (previousPath === undefined) {
+          delete process.env.PATH
+        } else {
+          process.env.PATH = previousPath
+        }
+        if (previousLog === undefined) {
+          delete process.env.JEKKO_BREW_LOG
+        } else {
+          process.env.JEKKO_BREW_LOG = previousLog
+        }
+      }
     })
   })
 })

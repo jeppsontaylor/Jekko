@@ -11,7 +11,7 @@ export const MemoryEvidenceTable = sqliteTable(
     project_id: text()
       .$type<ProjectID>()
       .notNull()
-      .references(() => ProjectTable.id, { onDelete: "cascade" }),
+      .references(() => ProjectTable.id, { onDelete: "restrict" }),
     tier: text().notNull(),
     subject: text().notNull(),
     predicate: text().notNull(),
@@ -37,7 +37,7 @@ export const FailedAttemptTable = sqliteTable(
     project_id: text()
       .$type<ProjectID>()
       .notNull()
-      .references(() => ProjectTable.id, { onDelete: "cascade" }),
+      .references(() => ProjectTable.id, { onDelete: "restrict" }),
     signature: text().notNull(),
     failure_kind: text().notNull(),
     owner: text().notNull().default(""),

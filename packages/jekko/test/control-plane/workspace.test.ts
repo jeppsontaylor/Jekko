@@ -4,7 +4,7 @@ import Http from "node:http"
 import path from "node:path"
 import { setTimeout as delay } from "node:timers/promises"
 import { NodeHttpServer } from "@effect/platform-node"
-import { Effect, Layer } from "effect"
+import { Duration, Effect, Layer, Schedule } from "effect"
 import { HttpServer, HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
 import { eq } from "drizzle-orm"
 import * as Log from "@jekko-ai/core/util/log"
@@ -151,18 +151,8 @@ async function eventually<T>(fn: () => T | Promise<T>, timeout = 1500) {
   throw last ?? new Error("Timed out waiting for condition")
 }
 
-function eventuallyEffect(effect: Effect.Effect<void>, timeout = 1500) {
-  return Effect.gen(function* () {
-    const started = Date.now()
-    let last: unknown
-    while (Date.now() - started < timeout) {
-      const exit = yield* Effect.exit(effect)
-      if (exit._tag === "Success") return
-      last = exit.cause
-      yield* Effect.sleep("10 millis")
-    }
-    throw last ?? new Error("Timed out waiting for condition")
-  })
+function eventuallyEffect<E, R>(effect: Effect.Effect<void, E, R>, timeout = 1500) {
+  return effect.pipe(Effect.retry(Schedule.spaced("10 millis")), Effect.timeout(Duration.millis(timeout)))
 }
 
 function recordedAdapter(input: {

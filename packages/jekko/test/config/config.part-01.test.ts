@@ -45,7 +45,7 @@ const testFlock = EffectFlock.defaultLayer
 
 const noopNpm = Layer.mock(Npm.Service)({
   install: () => Effect.void,
-  add: () => Effect.die("not implemented"),
+  add: () => Effect.die(new Error("Npm.add should not be called in config tests")),
   which: () => Effect.succeed(Option.none()),
 })
 
@@ -93,13 +93,13 @@ afterEach(async () => {
   await clear(true)
 })
 
-async function writeManagedSettings(settings: object, filename = "jekko.json") {
+async function writeManagedSettings(settings: object) {
   await fs.mkdir(managedConfigDir, { recursive: true })
-  await Filesystem.write(path.join(managedConfigDir, filename), JSON.stringify(settings))
+  await Filesystem.write(path.resolve(managedConfigDir, "jekko.json"), JSON.stringify(settings))
 }
 
-async function writeConfig(dir: string, config: object, name = "jekko.json") {
-  await Filesystem.write(path.join(dir, name), JSON.stringify(config))
+async function writeConfig(dir: string, config: object) {
+  await Filesystem.write(path.resolve(dir, "jekko.json"), JSON.stringify(config))
 }
 
 async function check(map: (dir: string) => string) {
@@ -161,6 +161,12 @@ test("loads JSON config file", async () => {
   })
 })
 
+test("writes managed settings to the canonical filename", async () => {
+  await writeManagedSettings({ snapshot: true })
+  const written = await Filesystem.readJson<{ snapshot?: boolean }>(path.join(managedConfigDir, "jekko.json"))
+  expect(written.snapshot).toBe(true)
+})
+
 test("loads shell config field", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
@@ -182,13 +188,12 @@ test("loads shell config field", async () => {
 test("updates config and preserves empty shell sentinel", async () => {
   await using tmp = await tmpdir({
     init: async (dir) => {
-      await writeConfig(
-        dir,
-        {
+      await Filesystem.write(
+        path.resolve(dir, "config.json"),
+        JSON.stringify({
           $schema: "https://jekko.ai/config.json",
           shell: "bash",
-        },
-        "config.json",
+        }),
       )
     },
   })

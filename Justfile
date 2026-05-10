@@ -18,7 +18,7 @@ typecheck-fast:
 
 # Narrow lane for package builds that can reuse Turbo cache metadata.
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=background-jobs-wait cache=turbo-build narrow-targets=true
-build-fast: plugin-build-fast sdk-build-fast
+build-fast: plugin-build-fast sdk-build-fast core-build-fast
 
 # Narrow lane for the jnoccio-fusion Rust crate compile path.
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=background-jobs-wait cache=turbo-build narrow-targets=true
