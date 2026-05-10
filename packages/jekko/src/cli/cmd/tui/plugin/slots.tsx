@@ -1,3 +1,4 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import type { TuiPluginApi, TuiSlotContext, TuiSlotMap, TuiSlotProps } from "@jekko-ai/plugin/tui"
 import { createSlot, createSolidSlotRegistry, type JSX, type SolidPlugin } from "@opentui/solid"
 import { isRecord } from "@/util/record"

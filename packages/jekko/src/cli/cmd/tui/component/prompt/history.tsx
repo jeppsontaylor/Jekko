@@ -6,6 +6,7 @@ import { createStore, produce, unwrap } from "solid-js/store"
 import { createSimpleContext } from "../../context/helper"
 import { appendFile, writeFile } from "fs/promises"
 import type { AgentPart, FilePart, TextPart } from "@jekko-ai/sdk/v2"
+import { z } from "zod"
 
 export type PromptInfo = {
   input: string
@@ -39,6 +40,11 @@ type PromptHistoryWriteState =
   | { kind: "written" }
   | { kind: "failed"; operation: "append" | "repair"; error: unknown }
 
+type PromptHistoryMoveResult =
+  | { kind: "blocked" }
+  | { kind: "selected"; prompt: PromptInfo }
+  | { kind: "cleared"; prompt: PromptInfo }
+
 function isMissingHistoryError(error: unknown) {
   return (
     typeof error === "object" &&
@@ -48,15 +54,109 @@ function isMissingHistoryError(error: unknown) {
   )
 }
 
-function parsePromptHistoryLine(line: string): PromptInfo | undefined {
+const PromptTextSourceSchema = z.object({
+  start: z.number().finite(),
+  end: z.number().finite(),
+  value: z.string(),
+})
+
+const PromptTextPartSchema = z.object({
+  type: z.literal("text"),
+  text: z.string(),
+  synthetic: z.boolean().optional(),
+  ignored: z.boolean().optional(),
+  time: z
+    .object({
+      start: z.number().finite(),
+      end: z.number().finite().optional(),
+    })
+    .optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  source: z
+    .object({
+      text: PromptTextSourceSchema,
+    })
+    .optional(),
+})
+
+const PromptFilePartSchema = z.object({
+  type: z.literal("file"),
+  mime: z.string(),
+  filename: z.string().optional(),
+  url: z.string(),
+  source: z
+    .union([
+      z.object({
+        type: z.literal("file"),
+        path: z.string(),
+        text: PromptTextSourceSchema,
+      }),
+      z.object({
+        type: z.literal("symbol"),
+        path: z.string(),
+        range: z.object({
+          start: z.object({
+            line: z.number().finite(),
+            character: z.number().finite(),
+          }),
+          end: z.object({
+            line: z.number().finite(),
+            character: z.number().finite(),
+          }),
+        }),
+        name: z.string(),
+        kind: z.number().finite(),
+        text: PromptTextSourceSchema,
+      }),
+      z.object({
+        type: z.literal("resource"),
+        clientName: z.string(),
+        uri: z.string(),
+        text: PromptTextSourceSchema,
+      }),
+    ])
+    .optional(),
+})
+
+const PromptAgentPartSchema = z.object({
+  type: z.literal("agent"),
+  name: z.string(),
+  source: z
+    .object({
+      value: z.string(),
+      start: z.number().finite(),
+      end: z.number().finite(),
+    })
+    .optional(),
+})
+
+const PromptInfoSchema = z.object({
+  input: z.string(),
+  mode: z.enum(["normal", "shell"]).optional(),
+  parts: z.array(z.union([PromptTextPartSchema, PromptFilePartSchema, PromptAgentPartSchema])),
+})
+
+type PromptHistoryLineState =
+  | { kind: "valid"; value: PromptInfo }
+  | { kind: "invalid"; reason: string }
+
+export function decodePromptHistoryLine(line: string): PromptHistoryLineState {
+  let parsed: unknown
   try {
-    return JSON.parse(line) as PromptInfo
-  } catch {
-    return undefined
+    parsed = JSON.parse(line)
+  } catch (error) {
+    return { kind: "invalid", reason: error instanceof Error ? error.message : "invalid JSON" }
   }
+
+  const decoded = PromptInfoSchema.safeParse(parsed)
+  if (!decoded.success) {
+    return { kind: "invalid", reason: decoded.error.issues[0]?.message ?? "invalid prompt history shape" }
+  }
+
+  return { kind: "valid", value: decoded.data }
 }
 
-function parsePromptHistoryText(text: string) {
+export function parsePromptHistoryText(text: string) {
   const entries: PromptInfo[] = []
   let dropped = 0
 
@@ -64,9 +164,9 @@ function parsePromptHistoryText(text: string) {
     const trimmed = line.trim()
     if (!trimmed) continue
 
-    const parsed = parsePromptHistoryLine(trimmed)
-    if (parsed) {
-      entries.push(parsed)
+    const parsed = decodePromptHistoryLine(trimmed)
+    if (parsed.kind === "valid") {
+      entries.push(parsed.value)
       continue
     }
 
@@ -170,25 +270,27 @@ export const { use: usePromptHistory, provider: PromptHistoryProvider } = create
     })
 
     return {
-      move(direction: 1 | -1, input: string) {
-        if (!store.history.length) return undefined
+      move(direction: 1 | -1, input: string): PromptHistoryMoveResult {
+        if (!store.history.length) return { kind: "blocked" }
         const current = store.history.at(store.index)
-        if (!current) return undefined
-        if (current.input !== input && input.length) return
+        if (!current) return { kind: "blocked" }
+        if (current.input !== input && input.length) return { kind: "blocked" }
+
+        const next = store.index + direction
+        if (Math.abs(next) > store.history.length) return { kind: "blocked" }
+        if (next > 0) return { kind: "blocked" }
+
         setStore(
           produce((draft) => {
-            const next = store.index + direction
-            if (Math.abs(next) > store.history.length) return
-            if (next > 0) return
             draft.index = next
           }),
         )
-        if (store.index === 0)
-          return {
-            input: "",
-            parts: [],
-          }
-        return store.history.at(store.index)
+
+        if (next === 0) return { kind: "cleared", prompt: { input: "", parts: [] } }
+
+        const prompt = store.history.at(next)
+        if (!prompt) return { kind: "blocked" }
+        return { kind: "selected", prompt }
       },
       append(item: PromptInfo) {
         const entry = structuredClone(unwrap(item))

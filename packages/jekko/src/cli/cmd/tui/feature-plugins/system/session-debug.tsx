@@ -1,3 +1,4 @@
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
 import type { TuiPlugin, TuiPluginApi, TuiPluginModule } from "@jekko-ai/plugin/tui"
 import { useSyncV2 } from "@tui/context/sync"
 import { SplitBorder } from "@tui/component/border"

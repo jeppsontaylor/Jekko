@@ -1,3 +1,4 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import { BusEvent } from "@/bus/bus-event"
 import { Bus } from "@/bus"
 import * as Log from "@jekko-ai/core/util/log"

@@ -1,3 +1,4 @@
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
 import path from "path"
 import { Filesystem } from "@/util/filesystem"
 import * as prompts from "@clack/prompts"

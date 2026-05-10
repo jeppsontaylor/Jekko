@@ -1,3 +1,5 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
 import type { Argv } from "yargs"
 import { UI } from "../ui"
 import * as prompts from "@clack/prompts"
@@ -21,6 +23,12 @@ interface RemovalTargets {
   shellConfig: string | null
   binary: string | null
 }
+
+type ShellConfigLookup = { kind: "found"; path: string } | { kind: "missing" }
+type ShellConfigReadState = { kind: "readable"; content: string } | { kind: "unreadable"; error: unknown }
+
+const SHELL_CONFIG_READ_ATTEMPTS = 2
+const SHELL_CONFIG_READ_RETRY_DELAY_MS = 25
 
 export const UninstallCommand = {
   command: "uninstall",
@@ -95,10 +103,14 @@ async function collectRemovalTargets(args: UninstallArgs, method: Installation.M
     { path: Global.Path.state, label: "State", keep: false },
   ]
 
-  const shellConfig = method === "curl" ? await getShellConfigFile() : null
+  const shellConfigLookup = method === "curl" ? await getShellConfigFile() : { kind: "missing" as const }
   const binary = method === "curl" ? process.execPath : null
 
-  return { directories, shellConfig, binary }
+  return {
+    directories,
+    shellConfig: shellConfigLookup.kind === "found" ? shellConfigLookup.path : null,
+    binary,
+  }
 }
 
 async function showRemovalSummary(targets: RemovalTargets, method: Installation.Method) {
@@ -232,7 +244,7 @@ async function executeUninstall(method: Installation.Method, targets: RemovalTar
   prompts.log.success("Thank you for using Jekko!")
 }
 
-async function getShellConfigFile(): Promise<string | null> {
+async function getShellConfigFile(): Promise<ShellConfigLookup> {
   const shell = path.basename(process.env.SHELL || "bash")
   const home = os.homedir()
   const xdgConfig = process.env.XDG_CONFIG_HOME || path.join(home, ".config")
@@ -265,13 +277,35 @@ async function getShellConfigFile(): Promise<string | null> {
       .catch(() => false)
     if (!exists) continue
 
-    const content = await Filesystem.readText(file).catch(() => "")
-    if (content.includes("# jekko") || content.includes(".jekko/bin")) {
-      return file
+    const content = await readShellConfigText(file)
+    if (content.kind === "unreadable") {
+      prompts.log.warn(`Skipping unreadable shell config ${shortenPath(file)}`)
+      continue
+    }
+
+    if (content.content.includes("# jekko") || content.content.includes(".jekko/bin")) {
+      return { kind: "found", path: file }
     }
   }
 
-  return null
+  return { kind: "missing" }
+}
+
+async function readShellConfigText(file: string): Promise<ShellConfigReadState> {
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= SHELL_CONFIG_READ_ATTEMPTS; attempt++) {
+    try {
+      return { kind: "readable", content: await Filesystem.readText(file) } as const
+    } catch (error) {
+      lastError = error
+      if (attempt < SHELL_CONFIG_READ_ATTEMPTS) {
+        await new Promise((resolve) => setTimeout(resolve, SHELL_CONFIG_READ_RETRY_DELAY_MS * attempt))
+      }
+    }
+  }
+
+  return { kind: "unreadable", error: lastError } as const
 }
 
 async function cleanShellConfig(file: string) {

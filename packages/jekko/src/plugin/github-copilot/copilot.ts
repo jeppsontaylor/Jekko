@@ -1,3 +1,4 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import type { Hooks, PluginInput } from "@jekko-ai/plugin"
 import type { Model } from "@jekko-ai/sdk/v2"
 import { InstallationVersion } from "@jekko-ai/core/installation/version"

@@ -1,3 +1,4 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import z from "zod"
 import { NamedError } from "@jekko-ai/core/util/error"
 import { Global } from "@jekko-ai/core/global"

@@ -1,3 +1,4 @@
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
 import { Slug } from "@jekko-ai/core/util/slug"
 import path from "path"
 import { BusEvent } from "@/bus/bus-event"

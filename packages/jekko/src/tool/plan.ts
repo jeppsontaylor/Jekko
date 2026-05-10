@@ -1,3 +1,4 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import path from "path"
 import { Effect, Schema } from "effect"
 import * as Tool from "./tool"

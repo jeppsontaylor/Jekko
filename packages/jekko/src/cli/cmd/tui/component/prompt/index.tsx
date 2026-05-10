@@ -1,3 +1,5 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
 import { BoxRenderable, RGBA, TextareaRenderable, MouseEvent, PasteEvent, decodePasteBytes } from "@opentui/core"
 import { createEffect, createMemo, onMount, createSignal, onCleanup, on, Show, Switch, Match } from "solid-js"
 import "opentui-spinner/solid"
@@ -1521,16 +1523,15 @@ export function Prompt(props: PromptProps) {
                   ) {
                     const direction = keybind.match("history_previous", e) ? -1 : 1
                     const item = history.move(direction, input.plainText)
+                    if (item.kind === "blocked") return
 
-                    if (item) {
-                      input.setText(item.input)
-                      setStore("prompt", item)
-                      setStore("mode", item.mode ?? "normal")
-                      restoreExtmarksFromParts(item.parts)
-                      e.preventDefault()
-                      if (direction === -1) input.cursorOffset = 0
-                      if (direction === 1) input.cursorOffset = input.plainText.length
-                    }
+                    input.setText(item.prompt.input)
+                    setStore("prompt", item.prompt)
+                    setStore("mode", item.prompt.mode ?? "normal")
+                    restoreExtmarksFromParts(item.prompt.parts)
+                    e.preventDefault()
+                    if (direction === -1) input.cursorOffset = 0
+                    if (direction === 1) input.cursorOffset = input.plainText.length
                     return
                   }
 

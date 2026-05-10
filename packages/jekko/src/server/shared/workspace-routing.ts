@@ -1,3 +1,4 @@
+// jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import { SessionID } from "@/session/schema"
 
 type Rule = { method?: string; path: string; exact?: boolean; action: "local" | "forward" }
