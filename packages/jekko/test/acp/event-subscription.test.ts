@@ -21,6 +21,7 @@ type EventController = {
 }
 
 function inProgressText(update: SessionUpdateParams["update"]) {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-early-exit-guards expires=2027-01-01
   if (update.sessionUpdate !== "tool_call_update") return undefined
   if (update.status !== "in_progress") return undefined
   if (!update.content || !Array.isArray(update.content)) return undefined

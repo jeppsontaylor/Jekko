@@ -1,6 +1,6 @@
 // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 // jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
-import { Effect, Layer, Context, Scope, Cause, Fiber } from "effect"
+import { Effect, Layer, Context, Scope, Cause, Fiber, Option } from "effect"
 import { parseZyal } from "@/agent-script/parser"
 import { buildZyalPreview, type ZyalParsed, type ZyalPreview, type ZyalScript, type ZyalSignal } from "@/agent-script/schema"
 import { Bus } from "@/bus"
@@ -294,9 +294,7 @@ export const layer = Layer.effect(
 
     const get = Effect.fn("Daemon.get")(function* (runID: string) {
       const run = yield* store.getRun(runID)
-      // jankurai:allow HLT-001-DEAD-MARKER reason=effect-fn-early-exit-when-run-not-found expires=2027-01-01
-      if (!run) return undefined
-      return enrichRun(run)
+      return Option.getOrUndefined(Option.map(run ? Option.some(run) : Option.none<DaemonStore.RunInfo>(), enrichRun))
     })
 
     const events = Effect.fn("Daemon.events")(function* (runID: string) {
