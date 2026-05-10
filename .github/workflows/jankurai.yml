@@ -56,10 +56,12 @@ jobs:
           EOF
           chmod +x packages/ux-qa/dist/cli.js
           jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json
-      - name: Language bad-behavior
-        run: |
-          mkdir -p target/jankurai
-          cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1
+      # Language bad-behavior step deferred: cargo test -p jankurai expects
+      # a jankurai workspace package to exist locally, but jankurai is a
+      # separately-installed CLI (cargo install --git above). No such package
+      # is declared in any Cargo.toml in this repo, so the step always exits
+      # 101 in CI. Re-enable if/when a local jankurai workspace member or
+      # vendored test crate is added.
       - name: Security scan
         run: |
           jankurai security run . --out target/jankurai/security/evidence.json
