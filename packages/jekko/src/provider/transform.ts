@@ -515,6 +515,24 @@ function oaiEncryptedEfforts(efforts: string[]) {
   )
 }
 
+function googleThinkingConfig() {
+  return {
+    high: { thinkingConfig: { includeThoughts: true, thinkingBudget: 16000 } },
+    max: { thinkingConfig: { includeThoughts: true, thinkingBudget: 24576 } },
+  }
+}
+
+function anthropicSimpleAdaptive(efforts: string[]) {
+  return Object.fromEntries(efforts.map((effort) => [effort, { thinking: { type: "adaptive" }, effort }]))
+}
+
+function anthropicStaticBudgets() {
+  return {
+    high: { thinking: { type: "enabled", budgetTokens: 16000 } },
+    max: { thinking: { type: "enabled", budgetTokens: 31999 } },
+  }
+}
+
 export function variants(model: Provider.Model): Record<string, Record<string, any>> {
   if (!model.capabilities.reasoning) return {}
 
@@ -572,49 +590,13 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
     case "@ai-sdk/gateway":
       if (model.id.includes("anthropic")) {
         if (adaptiveEfforts) {
-          return Object.fromEntries(
-            adaptiveEfforts.map((effort) => [
-              effort,
-              {
-                thinking: {
-                  type: "adaptive",
-                },
-                effort,
-              },
-            ]),
-          )
+          return anthropicSimpleAdaptive(adaptiveEfforts)
         }
-        return {
-          high: {
-            thinking: {
-              type: "enabled",
-              budgetTokens: 16000,
-            },
-          },
-          max: {
-            thinking: {
-              type: "enabled",
-              budgetTokens: 31999,
-            },
-          },
-        }
+        return anthropicStaticBudgets()
       }
       if (model.id.includes("google")) {
         if (id.includes("2.5")) {
-          return {
-            high: {
-              thinkingConfig: {
-                includeThoughts: true,
-                thinkingBudget: 16000,
-              },
-            },
-            max: {
-              thinkingConfig: {
-                includeThoughts: true,
-                thinkingBudget: 24576,
-              },
-            },
-          }
+          return googleThinkingConfig()
         }
         return Object.fromEntries(
           ["low", "high"].map((effort) => [
@@ -775,20 +757,7 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
     case "@ai-sdk/google":
       // https://v5.ai-sdk.dev/providers/ai-sdk-providers/google-generative-ai
       if (id.includes("2.5")) {
-        return {
-          high: {
-            thinkingConfig: {
-              includeThoughts: true,
-              thinkingBudget: 16000,
-            },
-          },
-          max: {
-            thinkingConfig: {
-              includeThoughts: true,
-              thinkingBudget: 24576,
-            },
-          },
-        }
+        return googleThinkingConfig()
       }
       let levels = ["low", "high"]
       if (id.includes("3.1")) {
@@ -847,48 +816,12 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
     case "@jerome-benoit/sap-ai-provider-v2":
       if (model.api.id.includes("anthropic")) {
         if (adaptiveEfforts) {
-          return Object.fromEntries(
-            adaptiveEfforts.map((effort) => [
-              effort,
-              {
-                thinking: {
-                  type: "adaptive",
-                },
-                effort,
-              },
-            ]),
-          )
+          return anthropicSimpleAdaptive(adaptiveEfforts)
         }
-        return {
-          high: {
-            thinking: {
-              type: "enabled",
-              budgetTokens: 16000,
-            },
-          },
-          max: {
-            thinking: {
-              type: "enabled",
-              budgetTokens: 31999,
-            },
-          },
-        }
+        return anthropicStaticBudgets()
       }
       if (model.api.id.includes("gemini") && id.includes("2.5")) {
-        return {
-          high: {
-            thinkingConfig: {
-              includeThoughts: true,
-              thinkingBudget: 16000,
-            },
-          },
-          max: {
-            thinkingConfig: {
-              includeThoughts: true,
-              thinkingBudget: 24576,
-            },
-          },
-        }
+        return googleThinkingConfig()
       }
       if (model.api.id.includes("gpt") || /\bo[1-9]/.test(model.api.id)) {
         return Object.fromEntries(WIDELY_SUPPORTED_EFFORTS.map((effort) => [effort, { reasoningEffort: effort }]))
