@@ -1,10 +1,13 @@
-export const foo: string = "42"
-export const bar: number = 123
-
-export function dummyFunction(): void {
-  // placeholder — no-op in production
+export function hasMeaningfulText(value: string | null | undefined): value is string {
+  return typeof value === "string" && value.trim().length > 0
 }
 
-export function randomHelper(): boolean {
-  return Math.random() > 0.5
+export function normalizeLabel(value: string): string {
+  return value.trim().replace(/\s+/g, " ")
+}
+
+export function formatLabel(prefix: string, value: string): string {
+  const normalizedPrefix = normalizeLabel(prefix)
+  const normalizedValue = normalizeLabel(value)
+  return normalizedPrefix ? `${normalizedPrefix}: ${normalizedValue}` : normalizedValue
 }
