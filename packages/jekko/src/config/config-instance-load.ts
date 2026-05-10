@@ -14,7 +14,7 @@ import {
   resolveLoadedPlugins,
 } from "./config-utils"
 
-async function readConfigFile(fs: any, filepath: string) {
+function readConfigFile(fs: any, filepath: string) {
   return fs.readFileStringSafe(filepath).pipe(Effect.orDie)
 }
 
@@ -36,7 +36,7 @@ export const loadConfig = Effect.fnUntraced(function* (
   if (!data.$schema) {
     data.$schema = "https://jekko.ai/config.json"
     const updated = text.replace(/^\s*\{/, '{\n  "$schema": "https://jekko.ai/config.json",')
-    yield* fsNode.writeFile(options.path, updated).catch(() => undefined)
+    yield* Effect.promise(() => fsNode.writeFile(options.path, updated).catch(() => undefined))
   }
   return data
 })
