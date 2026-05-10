@@ -19,18 +19,22 @@ export async function hash(content: string, algorithm = "SHA-256"): Promise<stri
   return hashHex
 }
 
-export function checksum(content: string): string | undefined {
-  if (!content) return undefined
+export type ChecksumResult =
+  | { readonly _tag: "some"; readonly value: string }
+  | { readonly _tag: "none" }
+
+export function checksum(content: string): ChecksumResult {
+  if (content.length === 0) return { _tag: "none" }
   let hash = 0x811c9dc5
   for (let i = 0; i < content.length; i++) {
     hash ^= content.charCodeAt(i)
     hash = Math.imul(hash, 0x01000193)
   }
-  return (hash >>> 0).toString(36)
+  return { _tag: "some", value: (hash >>> 0).toString(36) }
 }
 
-export function sampledChecksum(content: string, limit = 500_000): string | undefined {
-  if (!content) return undefined
+export function sampledChecksum(content: string, limit = 500_000): ChecksumResult {
+  if (content.length === 0) return { _tag: "none" }
   if (content.length <= limit) return checksum(content)
 
   const size = 4096
@@ -44,8 +48,9 @@ export function sampledChecksum(content: string, limit = 500_000): string | unde
   const hashes = points
     .map((point) => {
       const start = Math.max(0, Math.min(content.length - size, point - Math.floor(size / 2)))
-      return checksum(content.slice(start, start + size)) ?? ""
+      const result = checksum(content.slice(start, start + size))
+      return result._tag === "some" ? result.value : ""
     })
     .join(":")
-  return `${content.length}:${hashes}`
+  return { _tag: "some", value: `${content.length}:${hashes}` }
 }

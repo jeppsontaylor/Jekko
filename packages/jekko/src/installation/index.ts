@@ -12,12 +12,18 @@ import { makeRuntime } from "@jekko-ai/core/effect/runtime"
 import semver from "semver"
 import { InstallationChannel, InstallationVersion } from "@jekko-ai/core/installation/version"
 import { NpmConfig } from "@jekko-ai/core/npm-config"
+import { Process } from "@/util/process"
 
 const log = Log.create({ service: "installation" })
 
 export type Method = "curl" | "npm" | "yarn" | "pnpm" | "bun" | "brew" | "scoop" | "choco" | "unknown"
 
 export type ReleaseType = "patch" | "minor" | "major"
+
+export interface UpgradeOptions {
+  repair?: boolean
+  binaryPath?: string
+}
 
 export const Event = {
   Updated: BusEvent.define(
@@ -67,6 +73,14 @@ export function isLocal() {
 
 export class UpgradeFailedError extends Schema.TaggedErrorClass<UpgradeFailedError>()("UpgradeFailedError", {
   stderr: Schema.String,
+  stdout: Schema.optional(Schema.String),
+  code: Schema.optional(Schema.Number),
+  signal: Schema.optional(Schema.NullOr(Schema.String)),
+  command: Schema.optional(Schema.Array(Schema.String)),
+  binary: Schema.optional(Schema.String),
+  method: Schema.optional(Schema.String),
+  formula: Schema.optional(Schema.String),
+  hint: Schema.optional(Schema.String),
 }) {}
 
 // Response schemas for external version APIs
@@ -81,11 +95,63 @@ const ChocoPackage = Schema.Struct({
 })
 const ScoopManifest = NpmPackage
 
+type CommandResult = {
+  command: string[]
+  code: number
+  signal: NodeJS.Signals | null
+  stdout: string
+  stderr: string
+}
+
+function tail(text: string, max = 4_000) {
+  if (text.length <= max) return text
+  return text.slice(text.length - max)
+}
+
+function repairHint(signal: string | null | undefined, method: Method, binary: string) {
+  if (method === "choco") {
+    return `Chocolatey may be not running from an elevated command shell. Retry from Administrator, then retry jekko upgrade --repair -m ${method}.`
+  }
+  if (signal === "SIGKILL") {
+    return `Executable was killed by the OS. On macOS inspect quarantine/signing/provenance for ${binary}, then retry jekko upgrade --repair -m ${method}.`
+  }
+  return `Retry jekko upgrade --repair -m ${method}; if it still fails, inspect package-manager provenance and installed files for ${binary}.`
+}
+
+function formatFailure(input: {
+  stage: string
+  method: Method
+  target: string
+  binary: string
+  formula?: string
+  result?: CommandResult
+  hint?: string
+}) {
+  const lines = [
+    `${input.stage} failed`,
+    `method: ${input.method}`,
+    `target: ${input.target}`,
+    `binary: ${input.binary}`,
+  ]
+  if (input.formula) lines.push(`formula: ${input.formula}`)
+  if (input.result) {
+    lines.push(`command: ${input.result.command.join(" ")}`)
+    lines.push(`exit code: ${input.result.code}`)
+    lines.push(`signal: ${input.result.signal ?? "none"}`)
+    const stdout = tail(input.result.stdout).trim()
+    const stderr = tail(input.result.stderr).trim()
+    if (stdout) lines.push(`stdout tail:\n${stdout}`)
+    if (stderr) lines.push(`stderr tail:\n${stderr}`)
+  }
+  if (input.hint) lines.push(`hint: ${input.hint}`)
+  return lines.join("\n")
+}
+
 export interface Interface {
   readonly info: () => Effect.Effect<Info>
   readonly method: () => Effect.Effect<Method>
   readonly latest: (method?: Method) => Effect.Effect<string>
-  readonly upgrade: (method: Method, target: string) => Effect.Effect<void, UpgradeFailedError>
+  readonly upgrade: (method: Method, target: string, options?: UpgradeOptions) => Effect.Effect<void, UpgradeFailedError>
 }
 
 export class Service extends Context.Service<Service, Interface>()("@jekko/Installation") {}
@@ -114,24 +180,26 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
         Effect.catch(() => Effect.succeed("")),
       )
 
-      const run = Effect.fnUntraced(
-        function* (cmd: string[], opts?: { cwd?: string; env?: Record<string, string> }) {
-          const proc = ChildProcess.make(cmd[0], cmd.slice(1), {
+      const run = Effect.fnUntraced(function* (
+        cmd: string[],
+        opts?: { cwd?: string; env?: Record<string, string>; input?: string | Buffer | Uint8Array },
+      ) {
+        const out = yield* Effect.promise(() =>
+          Process.run(cmd, {
             cwd: opts?.cwd,
             env: opts?.env,
-            extendEnv: true,
-          })
-          const handle = yield* spawner.spawn(proc)
-          const [stdout, stderr] = yield* Effect.all(
-            [Stream.mkString(Stream.decodeText(handle.stdout)), Stream.mkString(Stream.decodeText(handle.stderr))],
-            { concurrency: 2 },
-          )
-          const code = yield* handle.exitCode
-          return { code, stdout, stderr }
-        },
-        Effect.scoped,
-        Effect.catch(() => Effect.succeed({ code: ChildProcessSpawner.ExitCode(1), stdout: "", stderr: "" })),
-      )
+            input: opts?.input,
+            nothrow: true,
+          }),
+        )
+        return {
+          command: [...cmd],
+          code: out.code,
+          signal: out.signal,
+          stdout: out.stdout.toString(),
+          stderr: out.stderr.toString(),
+        } satisfies CommandResult
+      })
 
       const getBrewFormula = Effect.fnUntraced(function* () {
         const tapFormula = yield* text(["brew", "list", "--formula", "anomalyco/tap/jekko"])
@@ -146,20 +214,8 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
           const response = yield* httpOk.execute(HttpClientRequest.get("https://jekko.ai/install"))
           const body = yield* response.text
           const bodyBytes = new TextEncoder().encode(body)
-          const proc = ChildProcess.make("bash", [], {
-            stdin: Stream.make(bodyBytes),
-            env: { VERSION: target },
-            extendEnv: true,
-          })
-          const handle = yield* spawner.spawn(proc)
-          const [stdout, stderr] = yield* Effect.all(
-            [Stream.mkString(Stream.decodeText(handle.stdout)), Stream.mkString(Stream.decodeText(handle.stderr))],
-            { concurrency: 2 },
-          )
-          const code = yield* handle.exitCode
-          return { code, stdout, stderr }
+          return yield* run(["bash"], { env: { VERSION: target }, input: bodyBytes })
         },
-        Effect.scoped,
         Effect.orDie,
       )
 
@@ -261,8 +317,37 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
           const data = yield* HttpClientResponse.schemaBodyJson(GitHubRelease)(response)
           return data.tag_name.replace(/^v/, "")
         }, Effect.orDie),
-        upgrade: Effect.fn("Installation.upgrade")(function* (m: Method, target: string) {
-          let upgradeResult: { code: ChildProcessSpawner.ExitCode; stdout: string; stderr: string } | undefined
+        upgrade: Effect.fn("Installation.upgrade")(function* (m: Method, target: string, options: UpgradeOptions = {}) {
+          let upgradeResult: CommandResult | undefined
+          let formula: string | undefined
+          const binary = options.binaryPath ?? process.execPath
+          const fail = (stage: string, result?: CommandResult) => {
+            const hint = repairHint(result?.signal, m, binary)
+            const stderr = formatFailure({ stage, method: m, target, binary, formula, result, hint })
+            log.error(stage, {
+              method: m,
+              target,
+              binary,
+              formula,
+              command: result?.command,
+              code: result?.code,
+              signal: result?.signal,
+              stdout: result ? tail(result.stdout) : undefined,
+              stderr: result ? tail(result.stderr) : undefined,
+              hint,
+            })
+            return new UpgradeFailedError({
+              stderr,
+              stdout: result?.stdout,
+              code: result?.code,
+              signal: result?.signal ?? null,
+              command: result?.command,
+              binary,
+              method: m,
+              formula,
+              hint,
+            })
+          }
           switch (m) {
             case "curl":
               upgradeResult = yield* upgradeCurl(target)
@@ -277,7 +362,7 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
               upgradeResult = yield* run(["bun", "install", "-g", `jekko-ai@${target}`])
               break
             case "brew": {
-              const formula = yield* getBrewFormula()
+              formula = yield* getBrewFormula()
               const env = { HOMEBREW_NO_AUTO_UPDATE: "1" }
               if (formula.includes("/")) {
                 const tap = yield* run(["brew", "tap", "anomalyco/tap"], { env })
@@ -295,7 +380,7 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
                   }
                 }
               }
-              upgradeResult = yield* run(["brew", "upgrade", formula], { env })
+              upgradeResult = yield* run(["brew", options.repair ? "reinstall" : "upgrade", formula], { env })
               break
             }
             case "choco":
@@ -308,16 +393,20 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
               return yield* new UpgradeFailedError({ stderr: `Unknown method: ${m}` })
           }
           if (!upgradeResult || upgradeResult.code !== 0) {
-            const stderr = m === "choco" ? "not running from an elevated command shell" : upgradeResult?.stderr || ""
-            return yield* new UpgradeFailedError({ stderr })
+            if (m === "choco" && !upgradeResult) {
+              return yield* new UpgradeFailedError({ stderr: "not running from an elevated command shell" })
+            }
+            return yield* fail("Upgrade command", upgradeResult)
           }
           log.info("upgraded", {
             method: m,
             target,
+            repair: options.repair === true,
             stdout: upgradeResult.stdout,
             stderr: upgradeResult.stderr,
           })
-          yield* text([process.execPath, "--version"])
+          const smoke = yield* run([binary, "--version"])
+          if (smoke.code !== 0) return yield* fail("Post-install smoke check", smoke)
         }),
       }
 

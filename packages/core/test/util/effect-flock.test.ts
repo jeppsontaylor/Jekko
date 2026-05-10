@@ -1,113 +1,17 @@
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=parallel-apis-tested-independently-by-design expires=2027-01-01
 import { describe, expect } from "bun:test"
-import { spawn } from "child_process"
 import fs from "fs/promises"
 import path from "path"
 import os from "os"
-import { Cause, Effect, Exit, Layer } from "effect"
+import { Cause, Effect, Exit } from "effect"
 import { testEffect } from "../lib/effect"
-import { AppFileSystem } from "@jekko-ai/core/filesystem"
 import { EffectFlock } from "@jekko-ai/core/util/effect-flock"
-import { Global } from "@jekko-ai/core/global"
-import { Hash } from "@jekko-ai/core/util/hash"
-
-function lock(dir: string, key: string) {
-  return path.join(dir, Hash.fast(key) + ".lock")
-}
-
-function sleep(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms))
-}
-
-async function exists(file: string) {
-  return fs
-    .stat(file)
-    .then(() => true)
-    .catch(() => false)
-}
-
-async function readJson<T>(p: string): Promise<T> {
-  return JSON.parse(await fs.readFile(p, "utf8"))
-}
-
-// ---------------------------------------------------------------------------
-// Worker subprocess helpers
-// ---------------------------------------------------------------------------
-
-type Msg = {
-  key: string
-  dir: string
-  holdMs?: number
-  ready?: string
-  active?: string
-  done?: string
-}
+import { testLayer } from "../fixture/effect-flock-shared"
+import type { Msg } from "../fixture/effect-flock-shared"
+import { exists, lock, readJson, runWorker, spawnWorker, stopWorker, waitForFile } from "../fixture/worker-process"
 
 const root = path.join(import.meta.dir, "../..")
 const worker = path.join(import.meta.dir, "../fixture/effect-flock-worker.ts")
-
-function run(msg: Msg) {
-  return new Promise<{ code: number; stdout: Buffer; stderr: Buffer }>((resolve) => {
-    const proc = spawn(process.execPath, [worker, JSON.stringify(msg)], { cwd: root })
-    const stdout: Buffer[] = []
-    const stderr: Buffer[] = []
-    proc.stdout?.on("data", (data) => stdout.push(Buffer.from(data)))
-    proc.stderr?.on("data", (data) => stderr.push(Buffer.from(data)))
-    proc.on("close", (code) => {
-      resolve({ code: code ?? 1, stdout: Buffer.concat(stdout), stderr: Buffer.concat(stderr) })
-    })
-  })
-}
-
-function spawnWorker(msg: Msg) {
-  return spawn(process.execPath, [worker, JSON.stringify(msg)], {
-    cwd: root,
-    stdio: ["ignore", "pipe", "pipe"],
-  })
-}
-
-function stopWorker(proc: ReturnType<typeof spawnWorker>) {
-  if (proc.exitCode !== null || proc.signalCode !== null) return Promise.resolve()
-  if (process.platform !== "win32" || !proc.pid) {
-    proc.kill()
-    return Promise.resolve()
-  }
-  return new Promise<void>((resolve) => {
-    const killProc = spawn("taskkill", ["/pid", String(proc.pid), "/T", "/F"])
-    killProc.on("close", () => {
-      proc.kill()
-      resolve()
-    })
-  })
-}
-
-async function waitForFile(file: string, timeout = 3_000) {
-  const stop = Date.now() + timeout
-  while (Date.now() < stop) {
-    if (await exists(file)) return
-    await sleep(20)
-  }
-  throw new Error(`Timed out waiting for file: ${file}`)
-}
-
-// ---------------------------------------------------------------------------
-// Test layer
-// ---------------------------------------------------------------------------
-
-const testGlobal = Global.layerWith({
-  home: os.homedir(),
-  data: os.tmpdir(),
-  cache: os.tmpdir(),
-  config: os.tmpdir(),
-  state: os.tmpdir(),
-  bin: os.tmpdir(),
-  log: os.tmpdir(),
-})
-
-const testLayer = EffectFlock.layer.pipe(Layer.provide(testGlobal), Layer.provide(AppFileSystem.defaultLayer))
-
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
 
 describe("util.effect-flock", () => {
   const it = testEffect(testLayer)
@@ -332,7 +236,7 @@ describe("util.effect-flock", () => {
 
         try {
           const out = await Promise.all(
-            Array.from({ length: n }, () => run({ key: "eflock:stress", dir, done, active, holdMs: 30 })),
+            Array.from({ length: n }, () => runWorker(worker, root, { key: "eflock:stress", dir, done, active, holdMs: 30 })),
           )
 
           expect(out.map((x) => x.code)).toEqual(Array.from({ length: n }, () => 0))
@@ -358,7 +262,7 @@ describe("util.effect-flock", () => {
         const dir = path.join(tmp, "locks")
         const ready = path.join(tmp, "ready")
 
-        const proc = spawnWorker({ key: "eflock:crash", dir, ready, holdMs: 120_000 })
+        const proc = spawnWorker(worker, root, { key: "eflock:crash", dir, ready, holdMs: 120_000 })
 
         try {
           await waitForFile(ready, 5_000)
@@ -373,7 +277,7 @@ describe("util.effect-flock", () => {
           await fs.utimes(path.join(lockDir, "meta.json"), prior, prior).catch(() => {})
 
           const done = path.join(tmp, "done.log")
-          const result = await run({ key: "eflock:crash", dir, done, holdMs: 10 })
+          const result = await runWorker(worker, root, { key: "eflock:crash", dir, done, holdMs: 10 })
           expect(result.code).toBe(0)
           expect(result.stderr.toString()).toBe("")
         } finally {

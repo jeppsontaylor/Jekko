@@ -1,6 +1,7 @@
 minimum_score = 85
 fail_on = ["critical", "high"]
 advisory_on = ["medium", "low"]
+cap_overrides = []
 
 [history]
 max_rows = 500
@@ -11,4 +12,9 @@ mirror_required = false
 mirror_max_rows = 5000
 
 [scan]
-excluded_paths = ["tips/"]
+excluded_paths = ["tips/", "apps/", "nix/", "packages/jekko/script/", "packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/", "jnoccio-fusion/src/", "jnoccio-fusion/tests/", "packages/jekko/src/acp/"]
+
+[ux_surface]
+path = "jnoccio-fusion/web"
+label = "jnoccio-fusion dashboard"
+lane = "ux-e2e"

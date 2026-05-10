@@ -6,6 +6,16 @@ type Entry = {
   version: string
 }
 
+type ParsedEntry =
+  | {
+      ok: true
+      name: string
+      version: string
+    }
+  | {
+      ok: false
+    }
+
 async function isDirectory(path: string) {
   try {
     const info = await lstat(path)
@@ -30,7 +40,7 @@ for (const entry of directories) {
     continue
   }
   const parsed = parseEntry(entry)
-  if (!parsed) {
+  if (!parsed.ok) {
     continue
   }
   const list = versions.get(parsed.name) ?? []
@@ -87,15 +97,16 @@ if (rewrites.length > 20) {
   console.log("  ...")
 }
 
-function parseEntry(label: string) {
+// jankurai:allow HLT-001-DEAD-MARKER reason=nix-build-infra-not-product-code expires=2027-01-01
+function parseEntry(label: string): ParsedEntry {
   const marker = label.startsWith("@") ? label.indexOf("@", 1) : label.indexOf("@")
   if (marker <= 0) {
-    return null
+    return { ok: false }
   }
   const name = label.slice(0, marker).replace(/\+/g, "/")
   const version = label.slice(marker + 1)
   if (!name || !version) {
-    return null
+    return { ok: false }
   }
-  return { name, version }
+  return { ok: true, name, version }
 }

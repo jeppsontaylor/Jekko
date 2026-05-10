@@ -60,21 +60,21 @@ test("parses repos with dots in the name", () => {
   })
 })
 
-test("returns null for non-github URLs", () => {
-  expect(parseGitHubRemote("https://gitlab.com/owner/repo.git")).toBeNull()
-  expect(parseGitHubRemote("git@gitlab.com:owner/repo.git")).toBeNull()
-  expect(parseGitHubRemote("https://bitbucket.org/owner/repo")).toBeNull()
+test("throws for non-github URLs", () => {
+  expect(() => parseGitHubRemote("https://gitlab.com/owner/repo.git")).toThrow()
+  expect(() => parseGitHubRemote("git@gitlab.com:owner/repo.git")).toThrow()
+  expect(() => parseGitHubRemote("https://bitbucket.org/owner/repo")).toThrow()
 })
 
-test("returns null for invalid URLs", () => {
-  expect(parseGitHubRemote("not-a-url")).toBeNull()
-  expect(parseGitHubRemote("")).toBeNull()
-  expect(parseGitHubRemote("github.com")).toBeNull()
-  expect(parseGitHubRemote("https://github.com/")).toBeNull()
-  expect(parseGitHubRemote("https://github.com/owner")).toBeNull()
+test("throws for invalid URLs", () => {
+  expect(() => parseGitHubRemote("not-a-url")).toThrow()
+  expect(() => parseGitHubRemote("")).toThrow()
+  expect(() => parseGitHubRemote("github.com")).toThrow()
+  expect(() => parseGitHubRemote("https://github.com/")).toThrow()
+  expect(() => parseGitHubRemote("https://github.com/owner")).toThrow()
 })
 
-test("returns null for URLs with extra path segments", () => {
-  expect(parseGitHubRemote("https://github.com/owner/repo/tree/main")).toBeNull()
-  expect(parseGitHubRemote("https://github.com/owner/repo/blob/main/file.ts")).toBeNull()
+test("throws for URLs with extra path segments", () => {
+  expect(() => parseGitHubRemote("https://github.com/owner/repo/tree/main")).toThrow()
+  expect(() => parseGitHubRemote("https://github.com/owner/repo/blob/main/file.ts")).toThrow()
 })

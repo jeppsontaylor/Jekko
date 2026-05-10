@@ -108,10 +108,18 @@ export const make = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
 
+  type CwdState =
+    | { readonly _tag: "inherit" }
+    | { readonly _tag: "resolved"; readonly value: string }
+
   const cwd = Effect.fnUntraced(function* (opts: ChildProcess.CommandOptions) {
-    if (Predicate.isUndefined(opts.cwd)) return undefined
-    yield* fs.access(opts.cwd)
-    return path.resolve(opts.cwd)
+    switch (opts.cwd) {
+      case undefined:
+        return { _tag: "inherit" } as const satisfies CwdState
+      default:
+        yield* fs.access(opts.cwd)
+        return { _tag: "resolved", value: path.resolve(opts.cwd) } as const satisfies CwdState
+    }
   })
 
   const env = (opts: ChildProcess.CommandOptions) =>
@@ -125,32 +133,49 @@ export const make = Effect.gen(function* () {
 
   const stdin = (opts: ChildProcess.CommandOptions): ChildProcess.StdinConfig => {
     const cfg: ChildProcess.StdinConfig = { stream: "pipe", encoding: "utf-8", endOnDone: true }
-    if (Predicate.isUndefined(opts.stdin)) return cfg
-    if (typeof opts.stdin === "string") return { ...cfg, stream: opts.stdin }
-    if (Stream.isStream(opts.stdin)) return { ...cfg, stream: opts.stdin }
-    return {
-      stream: opts.stdin.stream,
-      encoding: opts.stdin.encoding ?? cfg.encoding,
-      endOnDone: opts.stdin.endOnDone ?? cfg.endOnDone,
+    switch (opts.stdin) {
+      case undefined:
+        return cfg
+      default:
+        if (typeof opts.stdin === "string") return { ...cfg, stream: opts.stdin }
+        if (Stream.isStream(opts.stdin)) return { ...cfg, stream: opts.stdin }
+        return {
+          stream: opts.stdin.stream,
+          encoding: opts.stdin.encoding ?? cfg.encoding,
+          endOnDone: opts.stdin.endOnDone ?? cfg.endOnDone,
+        }
     }
   }
 
   const stdio = (opts: ChildProcess.CommandOptions, key: "stdout" | "stderr"): ChildProcess.StdoutConfig => {
     const cfg = opts[key]
-    if (Predicate.isUndefined(cfg)) return { stream: "pipe" }
-    if (typeof cfg === "string") return { stream: cfg }
-    if (Sink.isSink(cfg)) return { stream: cfg }
-    return { stream: cfg.stream }
+    switch (cfg) {
+      case undefined:
+        return { stream: "pipe" }
+      default:
+        if (typeof cfg === "string") return { stream: cfg }
+        if (Sink.isSink(cfg)) return { stream: cfg }
+        return { stream: cfg.stream }
+    }
   }
 
   const fds = (opts: ChildProcess.CommandOptions) => {
-    if (Predicate.isUndefined(opts.additionalFds)) return []
-    return Object.entries(opts.additionalFds)
-      .flatMap(([name, config]) => {
-        const fd = ChildProcess.parseFdName(name)
-        return Predicate.isUndefined(fd) ? [] : [{ fd, config }]
-      })
-      .toSorted((a, b) => a.fd - b.fd)
+    switch (opts.additionalFds) {
+      case undefined:
+        return []
+      default:
+        return Object.entries(opts.additionalFds)
+          .flatMap(([name, config]) => {
+            const fd = ChildProcess.parseFdName(name)
+            switch (fd) {
+              case undefined:
+                return []
+              default:
+                return [{ fd, config }]
+            }
+          })
+          .toSorted((a, b) => a.fd - b.fd)
+    }
   }
 
   const stdios = (
@@ -350,11 +375,16 @@ export const make = Effect.gen(function* () {
       ) => Effect.Effect<A, E, R>,
     ) => {
       const signal = opts?.killSignal ?? "SIGTERM"
-      if (Predicate.isUndefined(opts?.forceKillAfter)) return f(command, proc, signal)
-      return Effect.timeoutOrElse(f(command, proc, signal), {
-        duration: opts.forceKillAfter,
-        orElse: () => f(command, proc, "SIGKILL"),
-      })
+      const forceKillAfter = opts?.forceKillAfter
+      switch (forceKillAfter) {
+        case undefined:
+          return f(command, proc, signal)
+        default:
+          return Effect.timeoutOrElse(f(command, proc, signal), {
+            duration: forceKillAfter,
+            orElse: () => f(command, proc, "SIGKILL"),
+          })
+      }
     }
 
   const source = (handle: ChildProcessHandle, from: ChildProcess.PipeFromOption | undefined) => {
@@ -383,7 +413,8 @@ export const make = Effect.gen(function* () {
           const sout = stdio(command.options, "stdout")
           const serr = stdio(command.options, "stderr")
           const extra = fds(command.options)
-          const dir = yield* cwd(command.options)
+          const cwdState = yield* cwd(command.options)
+          const dir = cwdState._tag === "resolved" ? cwdState.value : undefined
 
           const [proc, signal] = yield* Effect.acquireRelease(
             spawn(command, {
@@ -484,24 +515,26 @@ export const make = Effect.gen(function* () {
               continue
             }
             const fd = ChildProcess.parseFdName(to)
-            if (Predicate.isUndefined(fd)) {
-              handle = spawnCommand(
-                ChildProcess.make(next.command, next.args, {
-                  ...next.options,
-                  stdin: { ...sin, stream },
-                }),
-              )
-              continue
+            switch (fd) {
+              case undefined:
+                handle = spawnCommand(
+                  ChildProcess.make(next.command, next.args, {
+                    ...next.options,
+                    stdin: { ...sin, stream },
+                  }),
+                )
+                continue
+              default:
+                handle = spawnCommand(
+                  ChildProcess.make(next.command, next.args, {
+                    ...next.options,
+                    additionalFds: {
+                      ...next.options.additionalFds,
+                      [toFdName(fd)]: { type: "input", stream },
+                    },
+                  }),
+                )
             }
-            handle = spawnCommand(
-              ChildProcess.make(next.command, next.args, {
-                ...next.options,
-                additionalFds: {
-                  ...next.options.additionalFds,
-                  [toFdName(fd)]: { type: "input", stream },
-                },
-              }),
-            )
           }
           return yield* handle
         }

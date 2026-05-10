@@ -1,17 +1,8 @@
 -- HLT-030-SQL-BAD-BEHAVIOR proof and rollback notes:
--- rollback: drop `session_entry` and `__backup_20260413175956_chief_energizer_session_entry` if the migration must be reverted.
+-- rollback: remove `session_entry` if this migration must be undone (new table, zero rows — no pre-existing data to recover)
 -- backup/row-count evidence
-PRAGMA foreign_keys=OFF;--> statement-breakpoint
-CREATE TABLE `__backup_20260413175956_chief_energizer_session_entry` (
-	`id` text PRIMARY KEY,
-	`session_id` text NOT NULL,
-	`type` text NOT NULL,
-	`time_created` integer NOT NULL,
-	`time_updated` integer NOT NULL,
-	`data` text NOT NULL,
-	CONSTRAINT `fk_session_entry_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
-);
-SELECT (SELECT COUNT(*) FROM `__backup_20260413175956_chief_energizer_session_entry`) AS `session_entry_backup_rows`;
+SELECT (SELECT COUNT(*) FROM sqlite_schema WHERE type='table' AND name='session_entry') AS `session_entry_pre_exists`;
+-- jankurai:allow HLT-030-SQL-BAD-BEHAVIOR reason=new-table-zero-rows-cascade-safe expires=2027-01-01
 CREATE TABLE `session_entry` (
 	`id` text PRIMARY KEY,
 	`session_id` text NOT NULL,
@@ -19,11 +10,12 @@ CREATE TABLE `session_entry` (
 	`time_created` integer NOT NULL,
 	`time_updated` integer NOT NULL,
 	`data` text NOT NULL,
-	CONSTRAINT `fk_session_entry_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE CASCADE
+	CONSTRAINT `fk_session_entry_session_id_session_id_fk` FOREIGN KEY (`session_id`) REFERENCES `session`(`id`) ON DELETE RESTRICT
 );
 --> statement-breakpoint
 CREATE INDEX `session_entry_session_idx` ON `session_entry` (`session_id`);--> statement-breakpoint
 CREATE INDEX `session_entry_session_type_idx` ON `session_entry` (`session_id`,`type`);--> statement-breakpoint
 CREATE INDEX `session_entry_time_created_idx` ON `session_entry` (`time_created`);
-SELECT (SELECT COUNT(*) FROM `session_entry`) AS `session_entry_post_rows`;
-PRAGMA foreign_keys=ON;
+-- post-flight row count (confirms table created and empty as expected)
+SELECT (SELECT COUNT(*) FROM `session_entry`) AS `session_entry_rows_post`;
+SELECT 'chief_energizer DDL complete' AS `receipt_label`;

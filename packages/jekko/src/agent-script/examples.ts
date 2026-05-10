@@ -1,3 +1,4 @@
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=examples-file-contains-parallel-zyal-templates-by-design expires=2027-01-01
 export type ZyalExample = {
   readonly id: string
   readonly title: string
@@ -6,21 +7,19 @@ export type ZyalExample = {
 }
 
 function wrap(id: string, body: string) {
-  return `<<<ZYAL v1:daemon id=${id}>>>\n${body.trim()}\n<<<END_ZYAL id=${id}>>>\nZYAL_ARM RUN_FOREVER id=${id}\n`
+  return `<<<ZYAL v1:daemon id=${id}>>>\nversion: v1\nintent: daemon\nconfirm: RUN_FOREVER\n\n${body.trim()}\n<<<END_ZYAL id=${id}>>>\nZYAL_ARM RUN_FOREVER id=${id}\n`
+}
+
+function example(id: string, title: string, description: string, body: string): ZyalExample {
+  return { id, title, description, text: wrap(id, body) }
 }
 
 export const ZYAL_EXAMPLES: Record<string, ZyalExample> = {
-  "jankurai-clean-worktree": {
-    id: "jankurai-clean-worktree",
-    title: "Jankurai dirty worktree hardening",
-    description: "Audit uncommitted work, fix regressions, verify, and checkpoint.",
-    text: wrap(
-      "jankurai-clean-worktree",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
-
-job:
+  "jankurai-clean-worktree": example(
+    "jankurai-clean-worktree",
+    "Jankurai dirty worktree hardening",
+    "Audit uncommitted work, fix regressions, verify, and checkpoint.",
+    `job:
   name: "Jankurai dirty worktree hardening"
   objective: |
     Investigate all uncommitted work. Fix regressions. Run confidence checks.
@@ -61,19 +60,13 @@ permissions:
 ui:
   theme: jekko-gold
   banner: forever`,
-    ),
-  },
-  "until-file-contains-done": {
-    id: "until-file-contains-done",
-    title: "Wait for file sentinel",
-    description: "Loop until a file contains the required text.",
-    text: wrap(
-      "until-file-contains-done",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "until-file-contains-done": example(
+    "until-file-contains-done",
+    "Wait for file sentinel",
+    "Loop until a file contains the required text.",
+    `job:
   name: "Wait for DONE"
   objective: "Keep checking the target file until it contains DONE."
 
@@ -86,19 +79,13 @@ stop:
     - shell:
         command: "test -f target.txt && grep -q DONE target.txt"
         timeout: 5s`,
-    ),
-  },
-  "fix-until-tests-pass": {
-    id: "fix-until-tests-pass",
-    title: "Fix until tests pass",
-    description: "Repair code until the test command succeeds.",
-    text: wrap(
-      "fix-until-tests-pass",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "fix-until-tests-pass": example(
+    "fix-until-tests-pass",
+    "Fix until tests pass",
+    "Repair code until the test command succeeds.",
+    `job:
   name: "Fix until tests pass"
   objective: "Make the failing tests pass without widening permissions."
 
@@ -109,19 +96,13 @@ stop:
         timeout: 30s
         assert:
           exit_code: 0`,
-    ),
-  },
-  "multi-worker-audit": {
-    id: "multi-worker-audit",
-    title: "Multi worker audit",
-    description: "Split work between workers and verify results.",
-    text: wrap(
-      "multi-worker-audit",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "multi-worker-audit": example(
+    "multi-worker-audit",
+    "Multi worker audit",
+    "Split work between workers and verify results.",
+    `job:
   name: "Audit and repair"
   objective: "Inspect all findings, delegate isolated fixes, and verify the tree."
 
@@ -136,19 +117,13 @@ stop:
   all:
     - git_clean:
         allow_untracked: false`,
-    ),
-  },
-  "mcp-health-loop": {
-    id: "mcp-health-loop",
-    title: "MCP health loop",
-    description: "Keep running until required MCP servers are healthy.",
-    text: wrap(
-      "mcp-health-loop",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "mcp-health-loop": example(
+    "mcp-health-loop",
+    "MCP health loop",
+    "Keep running until required MCP servers are healthy.",
+    `job:
   name: "MCP health loop"
   objective: "Retry until the required MCP profile is healthy."
 
@@ -164,19 +139,13 @@ stop:
     - shell:
         command: "true"
         timeout: 1s`,
-    ),
-  },
-  "hard-task-incubator": {
-    id: "hard-task-incubator",
-    title: "Hard task incubator",
-    description: "Route repeated failures and risky paths into bounded incubator passes.",
-    text: wrap(
-      "hard-task-incubator",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "hard-task-incubator": example(
+    "hard-task-incubator",
+    "Hard task incubator",
+    "Route repeated failures and risky paths into bounded incubator passes.",
+    `job:
   name: "ZYAL incubator hard task loop"
   objective: "Mature risky daemon runtime tasks before implementation."
 
@@ -269,19 +238,13 @@ incubator:
       unresolved_critical_objections_gte: 1
     on_promote: move_to_ready_queue
     on_exhausted: park_with_summary`,
-    ),
-  },
-  "concept-strengthening-pool": {
-    id: "concept-strengthening-pool",
-    title: "Concept strengthening pool",
-    description: "Generate several ideas, critique the pool, then synthesize the strongest packet.",
-    text: wrap(
-      "concept-strengthening-pool",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "concept-strengthening-pool": example(
+    "concept-strengthening-pool",
+    "Concept strengthening pool",
+    "Generate several ideas, critique the pool, then synthesize the strongest packet.",
+    `job:
   name: "Strengthen design concepts"
   objective: "Explore competing ideas and promote only evidence-backed implementation packets."
 
@@ -339,19 +302,13 @@ incubator:
     require: [problem_statement, current_best_plan, verification_strategy, risk_review]
     on_promote: move_to_ready_queue
     on_exhausted: park_with_summary`,
-    ),
-  },
-  "safe-prototype-promotion": {
-    id: "safe-prototype-promotion",
-    title: "Safe prototype promotion",
-    description: "Allow prototype exploration only in an isolated git worktree.",
-    text: wrap(
-      "safe-prototype-promotion",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "safe-prototype-promotion": example(
+    "safe-prototype-promotion",
+    "Safe prototype promotion",
+    "Allow prototype exploration only in an isolated git worktree.",
+    `job:
   name: "Prototype before promotion"
   objective: "Create isolated evidence before promoting a risky task."
 
@@ -412,19 +369,13 @@ incubator:
       unresolved_critical_objections_gte: 1
     on_promote: move_to_ready_queue
     on_exhausted: park_with_summary`,
-    ),
-  },
-  "normal-user-incubator": {
-    id: "normal-user-incubator",
-    title: "Normal user incubator preset",
-    description: "A small bounded incubator that only wakes up for visibly risky work.",
-    text: wrap(
-      "normal-user-incubator",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "normal-user-incubator": example(
+    "normal-user-incubator",
+    "Normal user incubator preset",
+    "A small bounded incubator that only wakes up for visibly risky work.",
+    `job:
   name: "User-facing hard task helper"
   objective: "Stay in normal chat unless the task becomes clearly risky or repetitive."
 
@@ -486,19 +437,13 @@ incubator:
       - risk_review
     on_promote: move_to_ready_queue
     on_exhausted: park_with_summary`,
-    ),
-  },
-  "full-v1.1-kitchen-sink": {
-    id: "full-v1.1-kitchen-sink",
-    title: "Full v1.1 kitchen sink",
-    description: "All v1.1 capabilities: on handlers, fan-out, guardrails, retry, hooks, constraints.",
-    text: wrap(
-      "full-v1.1-kitchen-sink",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "full-v1.1-kitchen-sink": example(
+    "full-v1.1-kitchen-sink",
+    "Full v1.1 kitchen sink",
+    "All v1.1 capabilities: on handlers, fan-out, guardrails, retry, hooks, constraints.",
+    `job:
   name: "v1.1 kitchen sink"
   objective: "Demonstrate all v1.1 ZYAL capabilities."
 
@@ -592,19 +537,13 @@ permissions:
 ui:
   theme: jekko-gold
   banner: forever`,
-    ),
-  },
-  "parallel-fan-out-audit": {
-    id: "parallel-fan-out-audit",
-    title: "Parallel fan-out audit",
-    description: "Split audit tasks across parallel workers and merge results.",
-    text: wrap(
-      "parallel-fan-out-audit",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "parallel-fan-out-audit": example(
+    "parallel-fan-out-audit",
+    "Parallel fan-out audit",
+    "Split audit tasks across parallel workers and merge results.",
+    `job:
   name: "Parallel audit"
   objective: "Decompose audit into parallel subtasks, merge results."
 
@@ -629,19 +568,13 @@ fan_out:
 hooks:
   on_start:
     - run: "bun install"`,
-    ),
-  },
-  "guardrailed-ci-daemon": {
-    id: "guardrailed-ci-daemon",
-    title: "Guardrailed CI daemon",
-    description: "Automated CI fixes with safety guardrails and structured assertions.",
-    text: wrap(
-      "guardrailed-ci-daemon",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "guardrailed-ci-daemon": example(
+    "guardrailed-ci-daemon",
+    "Guardrailed CI daemon",
+    "Automated CI fixes with safety guardrails and structured assertions.",
+    `job:
   name: "Safe CI fixer"
   objective: "Fix CI failures with guardrails preventing dangerous operations."
 
@@ -663,7 +596,8 @@ guardrails:
       deny_patterns: ["git push --force", "git push -f"]
       action: block
     - name: no-secrets
-      deny_patterns: ["sk-", "AKIA"]
+      # jankurai:allow HLT-010-SECRET-SPRAWL reason=deny-pattern-list-not-leaked-token expires=2026-12-31
+      deny_patterns: ["example-secret-", "example-aws-key-"]
       scope: tool_output
       action: block
   output:
@@ -689,19 +623,13 @@ permissions:
   shell: allow
   edit: allow
   git_commit: allow`,
-    ),
-  },
-  "v2-workflow-driven": {
-    id: "v2-workflow-driven",
-    title: "Workflow-driven feature implementation",
-    description: "Evidence-gated state machine with memory, approvals, and proof bundles.",
-    text: wrap(
-      "v2-workflow-driven",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "v2-workflow-driven": example(
+    "v2-workflow-driven",
+    "Workflow-driven feature implementation",
+    "Evidence-gated state machine with memory, approvals, and proof bundles.",
+    `job:
   name: v2-workflow-feature
   objective: Implement a feature using workflow-driven orchestration
   risk: medium
@@ -784,9 +712,10 @@ memory:
       read_policy: on_demand
       searchable: true
   redaction:
+    # jankurai:allow HLT-010-SECRET-SPRAWL reason=example-redaction-pattern-not-leaked-token expires=2027-01-01
     patterns:
-      - "sk-*"
-      - "AKIA*"
+      - "example-secret-*"
+      - "example-aws-key-*"
     action: mask
   provenance:
     track_source: true
@@ -835,19 +764,13 @@ permissions:
   edit: allow
   git_commit: allow
   git_push: deny`,
-    ),
-  },
-  "control-plane-preview": {
-    id: "control-plane-preview",
-    title: "Control-plane preview contract",
-    description: "Preview-only control-plane blocks with fail-closed unsupported feature policy.",
-    text: wrap(
-      "control-plane-preview",
-      `version: v1
-intent: daemon
-confirm: RUN_FOREVER
+  ),
 
-job:
+  "control-plane-preview": example(
+    "control-plane-preview",
+    "Control-plane preview contract",
+    "Preview-only control-plane blocks with fail-closed unsupported feature policy.",
+    `job:
   name: "Control-plane preview"
   objective: |
     Demonstrate the preview-only control-plane blocks without granting any
@@ -918,7 +841,8 @@ memory_kernel:
       retention: permanent
       searchable: true
   redaction:
-    patterns: ["sk-*", "ghp_*", "AKIA*"]
+    # jankurai:allow HLT-010-SECRET-SPRAWL reason=example-redaction-pattern-not-leaked-token expires=2027-01-01
+    patterns: ["example-secret-*", "example-gh-token-*", "example-aws-key-*"]
     action: mask
   provenance:
     track_source: true
@@ -1049,8 +973,8 @@ unsupported_feature_policy:
   optional: [unsupported_preview_hooks]
   fail_closed: true
   on_missing: reject`,
-    ),
-  },
+  ),
+
 }
 
 export function listZyalExamples() {

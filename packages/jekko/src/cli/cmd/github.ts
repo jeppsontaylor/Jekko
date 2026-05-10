@@ -124,6 +124,16 @@ type GitHubIssue = {
   }
 }
 
+type CreatePRResult =
+  | {
+      kind: "created"
+      number: number
+    }
+  | {
+      kind: "skipped"
+      reason: "no-new-commits"
+    }
+
 type PullRequestQueryResponse = {
   repository: {
     pullRequest: GitHubPullRequest
@@ -170,6 +180,19 @@ const SUPPORTED_EVENTS = [...USER_EVENTS, ...REPO_EVENTS] as const
 
 type UserEvent = (typeof USER_EVENTS)[number]
 type RepoEvent = (typeof REPO_EVENTS)[number]
+type ShareSetting = { kind: "default" } | { kind: "value"; value: boolean }
+type ReviewCommentContext =
+  | {
+      kind: "review_comment"
+      file: string
+      diffHunk: string
+      line: number | null
+      originalLine: number | null
+      position: number | null
+      commitId: string
+      originalCommitId: string
+    }
+  | { kind: "not_review_comment" }
 
 // Parses GitHub remote URLs in various formats:
 // - https://github.com/owner/repo.git
@@ -178,23 +201,25 @@ type RepoEvent = (typeof REPO_EVENTS)[number]
 // - git@github.com:owner/repo
 // - ssh://git@github.com/owner/repo.git
 // - ssh://git@github.com/owner/repo
-export function parseGitHubRemote(url: string): { owner: string; repo: string } | null {
+export function parseGitHubRemote(url: string): { owner: string; repo: string } {
   const match = url.match(/^(?:(?:https?|ssh):\/\/)?(?:git@)?github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?$/)
-  if (!match) return null
+  if (!match) throw new Error(`Invalid GitHub remote URL: ${url}`)
   return { owner: match[1], repo: match[2] }
 }
 
 /**
  * Extracts displayable text from assistant response parts.
- * Returns null for non-text responses (signals summary needed).
+ * Returns a tagged result so callers can request a summary for non-text responses.
  * Throws only for truly empty responses.
  */
-export function extractResponseText(parts: MessageV2.Part[]): string | null {
+export function extractResponseText(
+  parts: MessageV2.Part[],
+): { kind: "text"; text: string } | { kind: "summary_needed" } {
   const textPart = parts.findLast((p) => p.type === "text")
-  if (textPart) return textPart.text
+  if (textPart) return { kind: "text", text: textPart.text }
 
   // Non-text parts (tools, reasoning, step-start/step-finish, etc.) - signal summary needed
-  if (parts.length > 0) return null
+  if (parts.length > 0) return { kind: "summary_needed" }
 
   throw new Error("Failed to parse response: no parts returned")
 }
@@ -285,8 +310,10 @@ export const GithubInstallCommand = effectCmd({
           const info = await Effect.runPromise(gitSvc.run(["remote", "get-url", "origin"], { cwd: ctx.worktree })).then(
             (x) => x.text().trim(),
           )
-          const parsed = parseGitHubRemote(info)
-          if (!parsed) {
+          let parsed: { owner: string; repo: string }
+          try {
+            parsed = parseGitHubRemote(info)
+          } catch {
             prompts.log.error(`Could not find git repository. Please run this command from a git repository.`)
             throw new UI.CancelledError()
           }
@@ -493,7 +520,8 @@ export const GithubRunCommand = effectCmd({
       const { providerID, modelID } = normalizeModel()
       const variant = process.env["VARIANT"] || undefined
       const runId = normalizeRunId()
-      const share = normalizeShare()
+      const shareSetting = normalizeShare()
+      const share = shareSetting.kind === "value" ? shareSetting.value : undefined
       const oidcBaseUrl = normalizeOidcBaseUrl()
       const { owner, repo } = context.repo
       // For repo events (schedule, workflow_dispatch), payload has no issue/comment data
@@ -633,8 +661,8 @@ export const GithubRunCommand = effectCmd({
               summary,
               `${response}\n\nTriggered by ${triggerType}${footer({ image: true })}`,
             )
-            if (pr) {
-              console.log(`Created PR #${pr}`)
+            if (pr.kind === "created") {
+              console.log(`Created PR #${pr.number}`)
             } else {
               console.log("Skipped PR creation (no new commits)")
             }
@@ -705,8 +733,8 @@ export const GithubRunCommand = effectCmd({
               summary,
               `${response}\n\nCloses #${issueId}${footer({ image: true })}`,
             )
-            if (pr) {
-              await createComment(`Created PR #${pr}${footer({ image: true })}`)
+            if (pr.kind === "created") {
+              await createComment(`Created PR #${pr.number}${footer({ image: true })}`)
             } else {
               await createComment(`${response}${footer({ image: true })}`)
             }
@@ -757,11 +785,11 @@ export const GithubRunCommand = effectCmd({
         return value
       }
 
-      function normalizeShare() {
+      function normalizeShare(): ShareSetting {
         const value = process.env["SHARE"]
-        if (!value) return undefined
-        if (value === "true") return true
-        if (value === "false") return false
+        if (!value) return { kind: "default" }
+        if (value === "true") return { kind: "value", value: true }
+        if (value === "false") return { kind: "value", value: false }
         throw new Error(`Invalid share value: ${value}. Share must be a boolean.`)
       }
 
@@ -791,13 +819,14 @@ export const GithubRunCommand = effectCmd({
         return "issue" in event && "comment" in event
       }
 
-      function getReviewCommentContext() {
+      function getReviewCommentContext(): ReviewCommentContext {
         if (context.eventName !== "pull_request_review_comment") {
-          return null
+          return { kind: "not_review_comment" }
         }
 
         const reviewPayload = payload as PullRequestReviewCommentEvent
         return {
+          kind: "review_comment",
           file: reviewPayload.comment.path,
           diffHunk: reviewPayload.comment.diff_hunk,
           line: reviewPayload.comment.line,
@@ -829,19 +858,19 @@ export const GithubRunCommand = effectCmd({
           .map((m) => m.trim().toLowerCase())
           .filter(Boolean)
         let prompt = (() => {
-          if (!isCommentEvent) {
+          if (!isCommentEvent || reviewContext.kind !== "review_comment") {
             return "Review this pull request"
           }
           const body = (payload as IssueCommentEvent | PullRequestReviewCommentEvent).comment.body.trim()
           const bodyLower = body.toLowerCase()
           if (mentions.some((m) => bodyLower === m)) {
-            if (reviewContext) {
+            if (reviewContext.kind === "review_comment") {
               return `Review this code change and suggest improvements for the commented lines:\n\nFile: ${reviewContext.file}\nLines: ${reviewContext.line}\n\n${reviewContext.diffHunk}`
             }
             return "Summarize this thread"
           }
           if (mentions.some((m) => bodyLower.includes(m))) {
-            if (reviewContext) {
+            if (reviewContext.kind === "review_comment") {
               return `${body}\n\nContext: You are reviewing a comment on file "${reviewContext.file}" at line ${reviewContext.line}.\n\nDiff context:\n${reviewContext.diffHunk}`
             }
             return body
@@ -1021,7 +1050,7 @@ export const GithubRunCommand = effectCmd({
             }
 
             const text = extractResponseText(result.parts)
-            if (text) return text
+            if (text.kind === "text") return text.text
 
             console.log("Requesting summary from agent...")
             const summary = yield* prompt.prompt({
@@ -1051,8 +1080,8 @@ export const GithubRunCommand = effectCmd({
             }
 
             const summaryText = extractResponseText(summary.parts)
-            if (!summaryText) throw new Error("Failed to get summary from agent")
-            return summaryText
+            if (summaryText.kind !== "text") throw new Error("Failed to get summary from agent")
+            return summaryText.text
           }),
         )
       }
@@ -1362,7 +1391,7 @@ export const GithubRunCommand = effectCmd({
         })
       }
 
-      async function createPR(base: string, branch: string, title: string, body: string): Promise<number | null> {
+      async function createPR(base: string, branch: string, title: string, body: string): Promise<CreatePRResult> {
         console.log("Creating pull request...")
 
         // Check if an open PR already exists for this head→base combination
@@ -1380,7 +1409,10 @@ export const GithubRunCommand = effectCmd({
 
           if (existing.data.length > 0) {
             console.log(`PR #${existing.data[0].number} already exists for branch ${branch}`)
-            return existing.data[0].number
+            return {
+              kind: "created",
+              number: existing.data[0].number,
+            }
           }
         } catch (e) {
           // If the check fails, proceed to create - we'll get a clear error if a PR already exists
@@ -1392,7 +1424,10 @@ export const GithubRunCommand = effectCmd({
         // commit as the base, causing a 422 from GitHub.
         if (!(await hasNewCommits(base, branch))) {
           console.log(`No commits between ${base} and ${branch}, skipping PR creation`)
-          return null
+          return {
+            kind: "skipped",
+            reason: "no-new-commits",
+          }
         }
 
         try {
@@ -1406,14 +1441,20 @@ export const GithubRunCommand = effectCmd({
               body,
             }),
           )
-          return pr.data.number
+          return {
+            kind: "created",
+            number: pr.data.number,
+          }
         } catch (e: unknown) {
           // Handle "No commits between X and Y" validation error from GitHub.
           // This can happen when the branch was pushed but has no new commits
           // relative to the base (e.g. shallow clone edge cases).
           if (e instanceof Error && e.message.includes("No commits between")) {
             console.log(`GitHub rejected PR: ${e.message}`)
-            return null
+            return {
+              kind: "skipped",
+              reason: "no-new-commits",
+            }
           }
           throw e
         }

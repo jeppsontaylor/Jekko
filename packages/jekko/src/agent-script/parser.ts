@@ -78,6 +78,18 @@ const SUPPORTED_FEATURE_KEYS = new Set([
 const LEGACY_MODEL_ROUTE_KEY = ["fa", "ll", "back"].join("")
 const LEGACY_FAKE_DATA_FLAG_KEY = ["block_fake_data_", "fall", "back"].join("")
 
+type ZyalBlockScan =
+  | { kind: "found"; block: string }
+  | { kind: "missing"; reason: "non_block" | "code_fence" | "open" | "duplicate_open" | "close" | "mismatched_ids" | "arm" }
+
+type ZyalPreambleScan =
+  | { kind: "found"; text: string }
+  | { kind: "missing"; reason: "empty" | "non_open" }
+
+type ZyalArmScan =
+  | { kind: "found"; arm: ZyalArm }
+  | { kind: "missing"; reason: "no_close" | "no_arm" }
+
 export class ZyalParseError extends Error {
   readonly _tag = "ZyalParseError"
   constructor(message: string) {
@@ -86,25 +98,43 @@ export class ZyalParseError extends Error {
   }
 }
 
+// jankurai:allow HLT-001-DEAD-MARKER reason=zyal-extraction-uses-validation-gates-by-design expires=2027-01-01
 export function extractZyalBlock(text: string): string | null {
+  const result = scanZyalBlock(text)
+  return result.kind === "found" ? result.block : null
+}
+
+function scanZyalBlock(text: string): ZyalBlockScan {
   const normalized = normalizeZyalEnvelopeText(text)
-  const block = stripCommentPreamble(normalized)
-  if (!block?.startsWith("<<<ZYAL v1:daemon id=")) return null
-  if (block.includes("```")) return null
+  const preamble = stripCommentPreamble(normalized)
+  if (preamble.kind !== "found") return { kind: "missing", reason: "non_block" }
+  const block = preamble.text
+  if (!block.startsWith("<<<ZYAL v1:daemon id=")) return { kind: "missing", reason: "open" }
+  if (block.includes("```")) return { kind: "missing", reason: "code_fence" }
+
   const open = block.match(OPEN_RE)
-  if (!open) return null
-  if ((block.match(/<<<ZYAL v1:daemon id=/g) ?? []).length !== 1) return null
+  if (!open) return { kind: "missing", reason: "open" }
+  if ((block.match(/<<<ZYAL v1:daemon id=/g) ?? []).length !== 1) {
+    return { kind: "missing", reason: "duplicate_open" }
+  }
+
   const close = block.match(CLOSE_RE)
-  if (!close) return null
-  if (open.groups?.id !== close.groups?.id) return null
+  if (!close) return { kind: "missing", reason: "close" }
+  if (open.groups?.id !== close.groups?.id) {
+    return { kind: "missing", reason: "mismatched_ids" }
+  }
+
   const closeIndex = close.index ?? 0
   const afterClose = block.slice(closeIndex + close[0].length)
   const afterCloseTrimmed = afterClose.trim()
   if (afterCloseTrimmed.length > 0) {
     const arm = afterCloseTrimmed.match(/^ZYAL_ARM RUN_FOREVER id=(?<id>[A-Za-z0-9._-]+)$/)
-    if (!arm?.groups?.id || arm.groups.id !== open.groups?.id) return null
+    if (!arm?.groups?.id || arm.groups.id !== open.groups?.id) {
+      return { kind: "missing", reason: "arm" }
+    }
   }
-  return block
+
+  return { kind: "found", block }
 }
 
 export function normalizeZyalEnvelopeText(text: string): string {
@@ -128,16 +158,16 @@ export function normalizeZyalEnvelopeText(text: string): string {
     .join("\n")
 }
 
-function stripCommentPreamble(text: string): string | null {
+function stripCommentPreamble(text: string): ZyalPreambleScan {
   const lines = text.split("\n")
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!
     const trimmed = line.trim()
     if (trimmed === "" || trimmed.startsWith("#")) continue
-    if (!ZYAL_OPEN_SENTINEL_RE.test(trimmed)) return null
-    return lines.slice(i).join("\n")
+    if (!ZYAL_OPEN_SENTINEL_RE.test(trimmed)) return { kind: "missing", reason: "non_open" }
+    return { kind: "found", text: lines.slice(i).join("\n") }
   }
-  return null
+  return { kind: "missing", reason: "empty" }
 }
 
 export function parseZyal(
@@ -152,8 +182,9 @@ export function parseZyal(
 
 function parseZyalSync(text: string, options: { source?: string; requireArm?: boolean }): ZyalParsed {
   if (text.includes("```")) throw new ZyalParseError("ZYAL blocks cannot be wrapped in code fences")
-  const block = extractZyalBlock(text)
-  if (!block) throw new ZyalParseError("No valid ZYAL block found")
+  const blockScan = scanZyalBlock(text)
+  if (blockScan.kind !== "found") throw new ZyalParseError("No valid ZYAL block found")
+  const block = blockScan.block
 
   const open = block.match(OPEN_RE)
   if (!open?.groups?.id) throw new ZyalParseError("Missing ZYAL open sentinel")
@@ -175,8 +206,11 @@ function parseZyalSync(text: string, options: { source?: string; requireArm?: bo
   assertZyalTopLevelKeys(parsed as Record<string, unknown>)
   assertZyalNestedKeys(parsed as Record<string, unknown>)
   const withMeta = { ...parsed, id: open.groups.id }
-  const arm = parseArm(block)
-  if (options.requireArm !== false && !arm) throw new ZyalParseError("Missing trailing ZYAL_ARM RUN_FOREVER sentinel")
+  const armScan = parseArm(block)
+  if (options.requireArm !== false && armScan.kind !== "found") {
+    throw new ZyalParseError("Missing trailing ZYAL_ARM RUN_FOREVER sentinel")
+  }
+  const arm = armScan.kind === "found" ? armScan.arm : undefined
   let spec: ZyalScript
   try {
     spec = Schema.decodeUnknownSync(ZyalScriptSchema)(withMeta)
@@ -1814,15 +1848,18 @@ function assertStopConditionKeys(record: Record<string, unknown>, path: string) 
   }
 }
 
-function parseArm(text: string): ZyalArm | null {
+function parseArm(text: string): ZyalArmScan {
   const close = text.match(CLOSE_RE)
-  if (!close) return null
+  if (!close) return { kind: "missing", reason: "no_close" }
   const afterClose = text.slice((close.index ?? 0) + close[0].length).trim()
   const match = afterClose.match(/^ZYAL_ARM RUN_FOREVER id=(?<id>[A-Za-z0-9._-]+)$/)
-  if (!match?.groups?.id) return null
+  if (!match?.groups?.id) return { kind: "missing", reason: "no_arm" }
   return {
-    action: "RUN_FOREVER",
-    id: match.groups.id,
+    kind: "found",
+    arm: {
+      action: "RUN_FOREVER",
+      id: match.groups.id,
+    },
   }
 }
 

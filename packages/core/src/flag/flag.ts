@@ -16,9 +16,7 @@ function falsy(key: string) {
 const HTTPAPI_DEFAULT_ON_CHANNELS = new Set(["dev", "beta", "local"])
 
 function number(key: string) {
-  const value = process.env[key]
-  if (!value) return undefined
-  const parsed = Number(value)
+  const parsed = Number(process.env[key])
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined
 }
 
