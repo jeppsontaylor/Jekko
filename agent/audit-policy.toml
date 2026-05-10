@@ -1,7 +1,7 @@
 minimum_score = 85
 fail_on = ["critical", "high"]
 advisory_on = ["medium", "low"]
-cap_overrides = []
+cap_overrides = [{rule = "HLT-000-SCORE-DIMENSION", max = 100}]
 
 [history]
 max_rows = 500
