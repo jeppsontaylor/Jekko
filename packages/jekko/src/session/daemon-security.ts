@@ -102,8 +102,8 @@ export function scanForInjection(
   if (security.injection.deny_patterns) {
     for (const pattern of security.injection.deny_patterns) {
       const regex = patternToRegex(pattern)
-      let match: RegExpExecArray | null
-      while ((match = regex.exec(text)) !== null) {
+      if (regex === null) continue
+      for (const match of text.matchAll(regex)) {
         detections.push({
           pattern,
           matched: match[0],
@@ -131,6 +131,7 @@ export function stripInjections(
   let result = text
   for (const pattern of security.injection.deny_patterns) {
     const regex = patternToRegex(pattern)
+    if (regex === null) continue
     result = result.replace(regex, "[STRIPPED]")
   }
   return result
@@ -190,7 +191,8 @@ function pathInZone(filePath: string, zone: ZyalSecurityTrustZone): boolean {
   })
 }
 
-function patternToRegex(pattern: string): RegExp {
+function patternToRegex(pattern: string): RegExp | null {
+  if (!pattern.trim()) return null
   const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\*/g, ".*")
   return new RegExp(escaped, "gi")
 }

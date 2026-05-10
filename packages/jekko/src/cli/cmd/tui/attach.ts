@@ -7,6 +7,20 @@ import { errorMessage } from "@/util/error"
 import { validateSession } from "./validate-session"
 import { ServerAuth } from "@/server/auth"
 
+type AttachDirectoryResolution =
+  | { kind: "local"; directory: string }
+  | { kind: "remote"; directory: string }
+
+export function resolveAttachDirectory(args: { dir?: string }) {
+  if (!args.dir) return { kind: "local", directory: process.cwd() } as const
+  try {
+    process.chdir(args.dir)
+    return { kind: "local", directory: process.cwd() } as const
+  } catch {
+    return { kind: "remote", directory: args.dir } as const
+  }
+}
+
 export const AttachCommand = cmd({
   command: "attach <url>",
   describe: "attach to a running jekko server",
@@ -56,16 +70,7 @@ export const AttachCommand = cmd({
         return
       }
 
-      const directory = (() => {
-        if (!args.dir) return undefined
-        try {
-          process.chdir(args.dir)
-          return process.cwd()
-        } catch {
-          // If the directory doesn't exist locally (remote attach), pass it through.
-          return args.dir
-        }
-      })()
+      const directory = resolveAttachDirectory(args).directory
       const headers = ServerAuth.headers({ password: args.password, username: args.username })
       const config = await TuiConfig.get()
 

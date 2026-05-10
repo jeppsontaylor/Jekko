@@ -91,87 +91,70 @@ export function createDialogProviderOptions() {
               return
             }
 
-            const methods = sync.data.provider_auth[provider.id] ?? [
-              {
-                type: "api",
-                label: "API key",
-              },
-            ]
-            let index: number | null = 0
-            if (methods.length > 1) {
-              index = await new Promise<number | null>((resolve) => {
-                dialog.replace(
-                  () => (
-                    <DialogSelect
-                      title="Select auth method"
-                      options={methods.map((x, index) => ({
-                        title: x.label,
-                        value: index,
-                      }))}
-                      onSelect={(option) => resolve(option.value)}
-                    />
-                  ),
-                  () => resolve(null),
-                )
-              })
-            }
-            if (index == null) return
-            const method = methods[index]
-            if (method.type === "oauth") {
-              let inputs: Record<string, string> | undefined
-              if (method.prompts?.length) {
-                const value = await PromptsMethod({
-                  dialog,
-                  prompts: method.prompts,
-                })
-                if (!value) return
-                inputs = value
-              }
+            const selection = await resolveProviderAuthMethod({
+              dialog,
+              methods: sync.data.provider_auth[provider.id] ?? [],
+            })
+            if (selection.kind === "cancelled") return
+            const { index, method } = selection
+            switch (method.type) {
+              case "oauth": {
+                let inputs: Record<string, string> | undefined
+                if (method.prompts?.length) {
+                  const promptInputs = await PromptsMethod({
+                    dialog,
+                    prompts: method.prompts,
+                  })
+                  if (promptInputs.kind === "cancelled") return
+                  inputs = promptInputs.inputs
+                }
 
-              const result = await sdk.client.provider.oauth.authorize({
-                providerID: provider.id,
-                method: index,
-                inputs,
-              })
-              if (result.error) {
-                toast.show({
-                  variant: "error",
-                  message: JSON.stringify(result.error),
+                const result = await sdk.client.provider.oauth.authorize({
+                  providerID: provider.id,
+                  method: index,
+                  inputs,
                 })
-                dialog.clear()
-                return
+                if (result.error) {
+                  toast.show({
+                    variant: "error",
+                    message: JSON.stringify(result.error),
+                  })
+                  dialog.clear()
+                  return
+                }
+                if (result.data?.method === "code") {
+                  dialog.replace(() => (
+                    <CodeMethod
+                      providerID={provider.id}
+                      title={method.label}
+                      index={index}
+                      authorization={result.data!}
+                    />
+                  ))
+                }
+                if (result.data?.method === "auto") {
+                  dialog.replace(() => (
+                    <AutoMethod
+                      providerID={provider.id}
+                      title={method.label}
+                      index={index}
+                      authorization={result.data!}
+                    />
+                  ))
+                }
+                break
               }
-              if (result.data?.method === "code") {
-                dialog.replace(() => (
-                  <CodeMethod
-                    providerID={provider.id}
-                    title={method.label}
-                    index={index}
-                    authorization={result.data!}
-                  />
+              case "api": {
+                let metadata: Record<string, string> | undefined
+                if (method.prompts?.length) {
+                  const promptInputs = await PromptsMethod({ dialog, prompts: method.prompts })
+                  if (promptInputs.kind === "cancelled") return
+                  metadata = promptInputs.inputs
+                }
+                return dialog.replace(() => (
+                  <ApiMethod providerID={provider.id} title={method.label} metadata={metadata} />
                 ))
               }
-              if (result.data?.method === "auto") {
-                dialog.replace(() => (
-                  <AutoMethod
-                    providerID={provider.id}
-                    title={method.label}
-                    index={index}
-                    authorization={result.data!}
-                  />
-                ))
-              }
-            }
-            if (method.type === "api") {
-              let metadata: Record<string, string> | undefined
-              if (method.prompts?.length) {
-                const value = await PromptsMethod({ dialog, prompts: method.prompts })
-                if (!value) return
-                metadata = value
-              }
-              return dialog.replace(() => (
-                <ApiMethod providerID={provider.id} title={method.label} metadata={metadata} />
-              ))
             }
           },
         }
@@ -350,7 +333,20 @@ interface PromptsMethodProps {
   dialog: ReturnType<typeof useDialog>
   prompts: NonNullable<ProviderAuthMethod["prompts"]>[number][]
 }
-async function PromptsMethod(props: PromptsMethodProps) {
+type PromptCollectionResult =
+  | { kind: "completed"; inputs: Record<string, string> }
+  | { kind: "cancelled"; promptKey: string }
+
+type ProviderAuthSelection =
+  | { kind: "selected"; index: number; method: ProviderAuthMethod }
+  | { kind: "cancelled" }
+
+const DEFAULT_PROVIDER_AUTH_METHOD: ProviderAuthMethod = {
+  type: "api",
+  label: "API key",
+}
+
+export async function collectPromptInputs(props: PromptsMethodProps): Promise<PromptCollectionResult> {
   const inputs: Record<string, string> = {}
   for (const prompt of props.prompts) {
     if (prompt.when) {
@@ -361,7 +357,7 @@ async function PromptsMethod(props: PromptsMethodProps) {
     }
 
     if (prompt.type === "select") {
-      const value = await new Promise<string | null>((resolve) => {
+      const value = await new Promise<{ kind: "selected"; value: string } | { kind: "cancelled" }>((resolve) => {
         props.dialog.replace(
           () => (
             <DialogSelect
@@ -371,31 +367,66 @@ async function PromptsMethod(props: PromptsMethodProps) {
                 value: x.value,
                 description: x.hint,
               }))}
-              onSelect={(option) => resolve(option.value)}
+              onSelect={(option) => resolve({ kind: "selected", value: option.value })}
             />
           ),
-          () => resolve(null),
+          () => resolve({ kind: "cancelled" }),
         )
       })
-      if (value === null) return null
-      inputs[prompt.key] = value
+      if (value.kind === "cancelled") return { kind: "cancelled", promptKey: prompt.key }
+      inputs[prompt.key] = value.value
       continue
     }
 
-    const value = await new Promise<string | null>((resolve) => {
+    const value = await new Promise<{ kind: "selected"; value: string } | { kind: "cancelled" }>((resolve) => {
       props.dialog.replace(
         () => (
           <DialogPrompt
             title={prompt.message}
             default_value={prompt.default_value ?? "Enter text"}
-            onConfirm={(value) => resolve(value)}
+            onConfirm={(value) => resolve({ kind: "selected", value })}
           />
         ),
-        () => resolve(null),
+        () => resolve({ kind: "cancelled" }),
       )
     })
-    if (value === null) return null
-    inputs[prompt.key] = value
+    if (value.kind === "cancelled") return { kind: "cancelled", promptKey: prompt.key }
+    inputs[prompt.key] = value.value
   }
-  return inputs
+  return { kind: "completed", inputs }
+}
+
+async function PromptsMethod(props: PromptsMethodProps): Promise<PromptCollectionResult> {
+  return await collectPromptInputs(props)
+}
+
+export async function resolveProviderAuthMethod(props: {
+  dialog: ReturnType<typeof useDialog>
+  methods: ProviderAuthMethod[]
+}): Promise<ProviderAuthSelection> {
+  const methods = props.methods.length ? props.methods : [DEFAULT_PROVIDER_AUTH_METHOD]
+  if (methods.length === 1) {
+    return { kind: "selected", index: 0, method: methods[0] }
+  }
+
+  const index = await new Promise<number | null>((resolve) => {
+    props.dialog.replace(
+      () => (
+        <DialogSelect
+          title="Select auth method"
+          options={methods.map((x, index) => ({
+            title: x.label,
+            value: index,
+          }))}
+          onSelect={(option) => resolve(option.value)}
+        />
+      ),
+      () => resolve(null),
+    )
+  })
+
+  if (index == null) return { kind: "cancelled" }
+  const method = methods[index]
+  if (!method) return { kind: "cancelled" }
+  return { kind: "selected", index, method }
 }

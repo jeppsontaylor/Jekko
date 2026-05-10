@@ -222,8 +222,7 @@ export const layer = Layer.effect(
         await writeFile(path.join(dir, "SCORE.json"), JSON.stringify(renderScore(task, passes, artifacts), null, 2) + "\n")
         await writeFile(path.join(dir, "DECISIONS.jsonl"), decisions + (decisions ? "\n" : ""))
         for (const pass of passes) {
-          const filename = `${String(pass.pass_number).padStart(3, "0")}-${safeName(pass.pass_type)}.md`
-          await writeFile(path.join(passDir, filename), renderPassMarkdown(pass))
+          await writeFile(path.join(passDir, `${String(pass.pass_number).padStart(3, "0")}.md`), renderPassMarkdown(pass))
         }
       })
     })
@@ -978,10 +977,6 @@ function renderPassMarkdown(pass: TaskPassInfo) {
 
 function fencedJson(value: unknown) {
   return ["```json", JSON.stringify(value ?? null, null, 2), "```"].join("\n")
-}
-
-function safeName(value: string) {
-  return value.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "") || "pass"
 }
 
 function stripUndefined<T extends Record<string, unknown>>(value: T): Partial<T> {

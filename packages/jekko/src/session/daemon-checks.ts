@@ -130,11 +130,21 @@ export function walkJsonPath(value: unknown, pointer: string): unknown {
   const tokens: (string | number)[] = []
   for (const segment of pointer.slice(1).split(".")) {
     if (!segment) continue
-    const re = /([^[\]]+)|\[(\d+)\]/g
-    let match: RegExpExecArray | null
-    while ((match = re.exec(segment))) {
-      if (match[1]) tokens.push(match[1])
-      if (match[2]) tokens.push(Number(match[2]))
+    let index = 0
+    while (index < segment.length) {
+      if (segment[index] === "[") {
+        const end = segment.indexOf("]", index + 1)
+        if (end === -1) return undefined
+        const rawIndex = segment.slice(index + 1, end)
+        if (!rawIndex || !isDigits(rawIndex)) return undefined
+        tokens.push(Number(rawIndex))
+        index = end + 1
+        continue
+      }
+      const start = index
+      while (index < segment.length && segment[index] !== "[") index += 1
+      const key = segment.slice(start, index)
+      if (key) tokens.push(key)
     }
   }
   let current: unknown = value
@@ -149,6 +159,14 @@ export function walkJsonPath(value: unknown, pointer: string): unknown {
     }
   }
   return current
+}
+
+function isDigits(value: string) {
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index)
+    if (code < 48 || code > 57) return false
+  }
+  return value.length > 0
 }
 
 function checkJsonAssertions(stdout: string, expected: Record<string, unknown>) {

@@ -48,6 +48,17 @@ type EditMetadata = {
   diff?: string
 }
 
+type DirectoryResolution =
+  | { kind: "unset" }
+  | { kind: "attached"; directory: string }
+  | { kind: "changed"; directory: string }
+  | { kind: "error"; message: string }
+
+type AgentResolution =
+  | { kind: "default"; reason: "not-requested" }
+  | { kind: "default"; reason: "remote-list-failed" | "missing" | "subagent" }
+  | { kind: "selected"; agent: string }
+
 type GlobInput = Schema.Schema.Type<typeof GlobParameters>
 type GrepInput = Schema.Schema.Type<typeof GrepParameters>
 type ReadInput = Schema.Schema.Type<typeof ReadParameters>
@@ -250,6 +261,61 @@ function normalizePath(input?: string) {
   return input
 }
 
+export function resolveRunDirectory(args: { dir?: string; attach?: string }) {
+  if (!args.dir) return { kind: "unset" } as const
+  if (args.attach) return { kind: "attached", directory: args.dir } as const
+  try {
+    process.chdir(args.dir)
+    return { kind: "changed", directory: process.cwd() } as const
+  } catch {
+    return {
+      kind: "error",
+      message: "Failed to change directory to " + args.dir,
+    } as const
+  }
+}
+
+type RunAgentSdk = Pick<OpencodeClient, "app">
+type RunAgentService = {
+  get(name: string): Effect.Effect<{ mode?: string } | undefined>
+}
+
+export async function resolveRunAgent(args: { agent?: string; attach?: string }, sdk: RunAgentSdk, agentSvc: RunAgentService) {
+  if (!args.agent) return { kind: "default", reason: "not-requested" } as const
+  const name = args.agent
+
+  if (args.attach) {
+    const modes = await sdk.app
+      .agents(undefined, { throwOnError: true })
+      .then((x) => x.data ?? [])
+      .catch(() => undefined)
+
+    if (!modes) {
+      return { kind: "default", reason: "remote-list-failed" } as const
+    }
+
+    const agent = modes.find((entry) => entry.name === name)
+    if (!agent) {
+      return { kind: "default", reason: "missing" } as const
+    }
+
+    if (agent.mode === "subagent") {
+      return { kind: "default", reason: "subagent" } as const
+    }
+
+    return { kind: "selected", agent: name } as const
+  }
+
+  const entry = await Effect.runPromise(agentSvc.get(name))
+  if (!entry) {
+    return { kind: "default", reason: "missing" } as const
+  }
+  if (entry.mode === "subagent") {
+    return { kind: "default", reason: "subagent" } as const
+  }
+  return { kind: "selected", agent: name } as const
+}
+
 export function createLastAssistantMessageTracker(options?: { sessionID?: string }) {
   let assistantMessageID: string | undefined
   let partOrder: string[] = []
@@ -421,17 +487,12 @@ export const RunCommand = effectCmd({
         .map((arg) => (arg.includes(" ") ? `"${arg.replace(/"/g, '\\"')}"` : arg))
         .join(" ")
 
-      const directory = (() => {
-        if (!args.dir) return undefined
-        if (args.attach) return args.dir
-        try {
-          process.chdir(args.dir)
-          return process.cwd()
-        } catch {
-          UI.error("Failed to change directory to " + args.dir)
-          process.exit(1)
-        }
-      })()
+      const directoryResolution = resolveRunDirectory(args)
+      if (directoryResolution.kind === "error") {
+        UI.error(directoryResolution.message)
+        process.exit(1)
+      }
+      const directory = directoryResolution.kind === "unset" ? undefined : directoryResolution.directory
 
       const files: { type: "file"; url: string; filename: string; mime: string }[] = []
       if (args.file) {
@@ -682,67 +743,23 @@ export const RunCommand = effectCmd({
         }
 
         // Validate agent if specified
-        const agent = await (async () => {
-          if (!args.agent) return undefined
-          const name = args.agent
-
-          // When attaching, validate against the running server instead of local Instance state.
-          if (args.attach) {
-            const modes = await sdk.app
-              .agents(undefined, { throwOnError: true })
-              .then((x) => x.data ?? [])
-              .catch(() => undefined)
-
-            if (!modes) {
-              UI.println(
-                UI.Style.TEXT_WARNING_BOLD + "!",
-                UI.Style.TEXT_NORMAL,
-                `failed to list agents from ${args.attach}. Falling back to default agent`,
-              )
-              return undefined
-            }
-
-            const agent = modes.find((a) => a.name === name)
-            if (!agent) {
-              UI.println(
-                UI.Style.TEXT_WARNING_BOLD + "!",
-                UI.Style.TEXT_NORMAL,
-                `agent "${name}" not found. Falling back to default agent`,
-              )
-              return undefined
-            }
-
-            if (agent.mode === "subagent") {
-              UI.println(
-                UI.Style.TEXT_WARNING_BOLD + "!",
-                UI.Style.TEXT_NORMAL,
-                `agent "${name}" is a subagent, not a primary agent. Falling back to default agent`,
-              )
-              return undefined
-            }
-
-            return name
-          }
-
-          const entry = await Effect.runPromise(agentSvc.get(name))
-          if (!entry) {
+        const agentResolution = await resolveRunAgent(args, sdk, agentSvc)
+        if (agentResolution.kind === "default") {
+          if (agentResolution.reason !== "not-requested") {
+            const reason =
+              agentResolution.reason === "remote-list-failed"
+                ? `failed to list agents from ${args.attach}`
+                : agentResolution.reason === "missing"
+                  ? `agent "${args.agent}" not found`
+                  : `agent "${args.agent}" is a subagent, not a primary agent`
             UI.println(
               UI.Style.TEXT_WARNING_BOLD + "!",
               UI.Style.TEXT_NORMAL,
-              `agent "${name}" not found. Falling back to default agent`,
+              `${reason}. Using the default agent`,
             )
-            return undefined
           }
-          if (entry.mode === "subagent") {
-            UI.println(
-              UI.Style.TEXT_WARNING_BOLD + "!",
-              UI.Style.TEXT_NORMAL,
-              `agent "${name}" is a subagent, not a primary agent. Falling back to default agent`,
-            )
-            return undefined
-          }
-          return name
-        })()
+        }
+        const agent = agentResolution.kind === "selected" ? agentResolution.agent : undefined
 
         const sessionID = await session(sdk)
         if (!sessionID) {

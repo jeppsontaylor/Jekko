@@ -1,7 +1,8 @@
 import crypto from "crypto"
 import fs from "fs"
-import { sql } from "drizzle-orm"
+import { count, eq, sql } from "drizzle-orm"
 import { type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 export type MigrationEntry = {
   sql: string
@@ -41,13 +42,16 @@ type MigrationRow = {
 }
 
 const MIGRATIONS_TABLE = "__drizzle_migrations"
+const MigrationTable = sqliteTable(MIGRATIONS_TABLE, {
+  id: integer("id").primaryKey(),
+  hash: text("hash").notNull(),
+  created_at: integer("created_at").notNull(),
+  name: text("name"),
+  applied_at: text("applied_at"),
+})
 
 function quoteIdentifier(name: string) {
   return `"${name.replaceAll('"', '""')}"`
-}
-
-function quoteLiteral(value: string | number) {
-  return `'${String(value).replaceAll("'", "''")}'`
 }
 
 function stripComments(statement: string) {
@@ -114,16 +118,16 @@ function indexExists(master: MasterRow[], index: string) {
   return master.some((row) => row.type === "index" && row.name === index)
 }
 
-function countRows(db: SQLiteBunDatabase, table: string) {
-  const rows = db.all(sql.raw(`SELECT COUNT(*) AS count FROM ${quoteIdentifier(table)}`)) as Array<{ count: number }>
-  return Number(rows[0]?.count ?? 0)
+function countRows(db: SQLiteBunDatabase, master: MasterRow[], table: string) {
+  if (!tableExists(master, table)) return 0
+  const dynamicTable = sqliteTable(table, {} as never)
+  const row = db.select({ count: count() }).from(dynamicTable).get() as { count: number } | undefined
+  return Number(row?.count ?? 0)
 }
 
 function migrationRows(db: SQLiteBunDatabase) {
   if (!tableExists(masterRows(db), MIGRATIONS_TABLE)) return []
-  return db.all(
-    sql.raw(`SELECT id, hash, created_at, name, applied_at FROM ${quoteIdentifier(MIGRATIONS_TABLE)} ORDER BY id ASC`),
-  ) as MigrationRow[]
+  return db.select().from(MigrationTable).orderBy(MigrationTable.id).all() as MigrationRow[]
 }
 
 function masterRows(db: SQLiteBunDatabase) {
@@ -150,34 +154,46 @@ function backupDatabaseFiles(dbPath: string) {
   return backups
 }
 
+function stripIdentifier(value: string) {
+  return value.replaceAll(/^[`"]|[`"]$/g, "")
+}
+
 function parseAddColumn(statement: string) {
-  const match = /^ALTER\s+TABLE\s+([`"]?[^`"\s]+[`"]?)\s+ADD\s+(?:COLUMN\s+)?([`"]?[^`"\s]+[`"]?)\s+(.+)$/is.exec(
-    statement,
-  )
-  if (!match) return undefined
+  const parts = statement.trim().split(/\s+/)
+  if (parts.length < 5) return undefined
+  if (parts[0]?.toUpperCase() !== "ALTER" || parts[1]?.toUpperCase() !== "TABLE") return undefined
+  if (parts[3]?.toUpperCase() !== "ADD") return undefined
+  const columnIndex = parts[4]?.toUpperCase() === "COLUMN" ? 5 : 4
+  if (parts.length <= columnIndex + 1) return undefined
   return {
-    table: match[1].replaceAll(/^[`"]|[`"]$/g, ""),
-    column: match[2].replaceAll(/^[`"]|[`"]$/g, ""),
-    definition: match[3].trim(),
-    safe: !/\bNOT\s+NULL\b/i.test(match[3]) || /\bDEFAULT\b/i.test(match[3]),
+    table: stripIdentifier(parts[2] ?? ""),
+    column: stripIdentifier(parts[columnIndex] ?? ""),
+    definition: parts.slice(columnIndex + 1).join(" ").trim(),
+    safe: !/\bNOT\s+NULL\b/i.test(parts.slice(columnIndex + 1).join(" ")) || /\bDEFAULT\b/i.test(parts.slice(columnIndex + 1).join(" ")),
   }
 }
 
 function parseCreateIndex(statement: string) {
-  const match = /^CREATE\s+(?:UNIQUE\s+)?INDEX\s+([`"]?[^`"\s]+[`"]?)\s+ON\s+([`"]?[^`"\s]+[`"]?)/is.exec(statement)
-  if (!match) return undefined
+  const parts = statement.trim().split(/\s+/)
+  if (parts.length < 5) return undefined
+  if (parts[0]?.toUpperCase() !== "CREATE") return undefined
+  const indexIndex = parts[1]?.toUpperCase() === "UNIQUE" ? 3 : 2
+  if (parts[indexIndex - 1]?.toUpperCase() !== "INDEX") return undefined
+  if (parts[indexIndex + 1]?.toUpperCase() !== "ON") return undefined
   return {
-    index: match[1].replaceAll(/^[`"]|[`"]$/g, ""),
-    table: match[2].replaceAll(/^[`"]|[`"]$/g, ""),
+    index: stripIdentifier(parts[indexIndex] ?? ""),
+    table: stripIdentifier(parts[indexIndex + 2] ?? ""),
   }
 }
 
 function parseRenameTable(statement: string) {
-  const match = /^ALTER\s+TABLE\s+([`"]?[^`"\s]+[`"]?)\s+RENAME\s+TO\s+([`"]?[^`"\s]+[`"]?)$/is.exec(statement)
-  if (!match) return undefined
+  const parts = statement.trim().split(/\s+/)
+  if (parts.length !== 6) return undefined
+  if (parts[0]?.toUpperCase() !== "ALTER" || parts[1]?.toUpperCase() !== "TABLE") return undefined
+  if (parts[3]?.toUpperCase() !== "RENAME" || parts[4]?.toUpperCase() !== "TO") return undefined
   return {
-    from: match[1].replaceAll(/^[`"]|[`"]$/g, ""),
-    to: match[2].replaceAll(/^[`"]|[`"]$/g, ""),
+    from: stripIdentifier(parts[2] ?? ""),
+    to: stripIdentifier(parts[5] ?? ""),
   }
 }
 
@@ -196,29 +212,29 @@ function rebuildMigrationTable(db: SQLiteBunDatabase) {
 }
 
 function upsertMigrationRow(db: SQLiteBunDatabase, entry: MigrationEntry) {
-  const existing = db.all(
-    sql.raw(`SELECT id FROM ${quoteIdentifier(MIGRATIONS_TABLE)} WHERE name = ${quoteLiteral(entry.name)} LIMIT 1`),
-  ) as Array<{ id: number }>
+  const existing = db
+    .select({ id: MigrationTable.id })
+    .from(MigrationTable)
+    .where(eq(MigrationTable.name, entry.name))
+    .limit(1)
+    .all() as Array<{ id: number }>
 
   if (existing.length > 0) {
-    db.run(
-      sql.raw(
-        `UPDATE ${quoteIdentifier(MIGRATIONS_TABLE)}
-         SET hash = ${quoteLiteral(entry.hash)},
-             created_at = ${entry.timestamp},
-             name = ${quoteLiteral(entry.name)}
-         WHERE id = ${existing[0].id}`,
-      ),
-    )
+    db.update(MigrationTable)
+      .set({ hash: entry.hash, created_at: entry.timestamp, name: entry.name })
+      .where(eq(MigrationTable.id, existing[0].id))
+      .run()
     return
   }
 
-  db.run(
-    sql.raw(
-      `INSERT INTO ${quoteIdentifier(MIGRATIONS_TABLE)} ("hash", "created_at", "name", "applied_at")
-       VALUES (${quoteLiteral(entry.hash)}, ${entry.timestamp}, ${quoteLiteral(entry.name)}, ${quoteLiteral(new Date().toISOString())})`,
-    ),
-  )
+  db.insert(MigrationTable)
+    .values({
+      hash: entry.hash,
+      created_at: entry.timestamp,
+      name: entry.name,
+      applied_at: new Date().toISOString(),
+    })
+    .run()
 }
 
 export function repairSqliteMigrations(
@@ -273,7 +289,7 @@ export function repairSqliteMigrations(
         }
         const columns = new Set(tableInfo(db, addColumn.table).map((row) => row.name))
         if (columns.has(addColumn.column)) continue
-        if (countRows(db, addColumn.table) > 0 && !addColumn.safe) {
+        if (countRows(db, master, addColumn.table) > 0 && !addColumn.safe) {
           unsafe = true
           break
         }

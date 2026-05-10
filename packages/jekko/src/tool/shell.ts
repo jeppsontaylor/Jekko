@@ -209,10 +209,15 @@ function dynamic(text: string, ps: boolean) {
 }
 
 function prefix(text: string) {
-  const match = /[?*[]/.exec(text)
-  if (!match) return text
-  if (match.index === 0) return
-  return text.slice(0, match.index)
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    if (char !== "?" && char !== "*" && char !== "[") continue
+    if (i === 0) return
+    const base = text.slice(0, i)
+    if (!base.includes("/") && !base.includes("\\")) return
+    return base.endsWith("/") || base.endsWith("\\") ? base.slice(0, -1) : path.dirname(base)
+  }
+  return text
 }
 
 function pathArgs(list: Part[], ps: boolean, cmd = false) {
