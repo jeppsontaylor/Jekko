@@ -209,7 +209,13 @@ export function DialogWorkspaceSelect(props: {
     ]
   })
 
-  if (!adapters()) return null
+  if (!adapters()) {
+    return (
+      <box paddingLeft={2} paddingRight={2} paddingTop={1} paddingBottom={1}>
+        <text>Loading workspace adapters...</text>
+      </box>
+    )
+  }
   return (
     <DialogSelect<WorkspaceSelectValue>
       title="Warp"

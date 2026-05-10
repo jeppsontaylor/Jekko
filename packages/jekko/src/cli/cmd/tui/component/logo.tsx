@@ -4,6 +4,7 @@ import { createMemo, For } from "solid-js"
 export type Align = "left" | "center" | "right"
 export type RGB = { r: number; g: number; b: number }
 type HSV = { h: number; s: number; v: number }
+type VisibleIndexResult = { kind: "found"; index: number } | { kind: "missing" }
 
 export type CellLayer =
   | "global"
@@ -578,20 +579,20 @@ function normalizeArt(art: string[]): string[] {
   return art.map((line) => padGlyphs(line, width))
 }
 
-function firstVisibleIndex(line: string): number | undefined {
+export function firstVisibleIndex(line: string): VisibleIndexResult {
   const chars = Array.from(line)
   const idx = chars.findIndex(isInk)
-  return idx >= 0 ? idx : undefined
+  return idx >= 0 ? { kind: "found", index: idx } : { kind: "missing" }
 }
 
-function lastVisibleIndex(line: string): number | undefined {
+export function lastVisibleIndex(line: string): VisibleIndexResult {
   const chars = Array.from(line)
 
   for (let i = chars.length - 1; i >= 0; i--) {
-    if (isInk(chars[i]!)) return i
+    if (isInk(chars[i]!)) return { kind: "found", index: i }
   }
 
-  return undefined
+  return { kind: "missing" }
 }
 
 function artMetrics(art: string[]): ArtMetrics {
@@ -611,16 +612,18 @@ function artMetrics(art: string[]): ArtMetrics {
 
   const minVisibleX = Math.min(...allVisibleXs)
   const maxVisibleX = Math.max(...allVisibleXs)
-  const topAnchor = firstVisibleIndex(lines[0]!) ?? minVisibleX
-  const bottomAnchor = lastVisibleIndex(lines[lines.length - 1]!) ?? maxVisibleX
+  const topAnchor = firstVisibleIndex(lines[0]!)
+  const bottomAnchor = lastVisibleIndex(lines[lines.length - 1]!)
+  const gradientLeft = topAnchor.kind === "found" ? topAnchor.index : minVisibleX
+  const gradientRight = bottomAnchor.kind === "found" ? bottomAnchor.index : maxVisibleX
 
   return {
     lines,
     artWidth,
     artHeight,
-    gradientLeft: topAnchor,
-    gradientRight: bottomAnchor,
-    gradientWidth: Math.max(1, bottomAnchor - topAnchor + 1),
+    gradientLeft,
+    gradientRight,
+    gradientWidth: Math.max(1, gradientRight - gradientLeft + 1),
     gradientHeight: Math.max(1, artHeight),
   }
 }

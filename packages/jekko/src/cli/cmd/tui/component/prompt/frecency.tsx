@@ -15,6 +15,11 @@ function calculateFrecency(entry?: { frequency: number; lastOpen: number }): num
 
 const MAX_FRECENCY_ENTRIES = 1000
 
+type FrecencyEntry = { path: string; frequency: number; lastOpen: number }
+type ParsedFrecencyLine =
+  | { kind: "entry"; entry: FrecencyEntry }
+  | { kind: "invalid" }
+
 export const { use: useFrecency, provider: FrecencyProvider } = createSimpleContext({
   name: "Frecency",
   init: () => {
@@ -27,15 +32,22 @@ export const { use: useFrecency, provider: FrecencyProvider } = createSimpleCont
         .map((line) => {
           try {
             const parsed = JSON.parse(line)
-            if (typeof parsed === "object" && parsed !== null && "path" in parsed && "frequency" in parsed && "lastOpen" in parsed) {
-              return parsed as { path: string; frequency: number; lastOpen: number }
+            if (
+              typeof parsed === "object" &&
+              parsed !== null &&
+              "path" in parsed &&
+              "frequency" in parsed &&
+              "lastOpen" in parsed
+            ) {
+              return { kind: "entry", entry: parsed as FrecencyEntry } satisfies ParsedFrecencyLine
             }
-            return null
+            return { kind: "invalid" } satisfies ParsedFrecencyLine
           } catch {
-            return null
+            return { kind: "invalid" } satisfies ParsedFrecencyLine
           }
         })
-        .filter((line): line is { path: string; frequency: number; lastOpen: number } => line !== null)
+        .filter((line): line is { kind: "entry"; entry: FrecencyEntry } => line.kind === "entry")
+        .map((line) => line.entry)
 
       const latest = lines.reduce(
         (acc, entry) => {

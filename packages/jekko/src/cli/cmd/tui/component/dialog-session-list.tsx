@@ -30,23 +30,37 @@ export function DialogSessionList() {
   const [toDelete, setToDelete] = createSignal<string>()
   const [search, setSearch] = createDebouncedSignal("", 150)
 
+  type SessionEntry = NonNullable<typeof sync.data.session>[number]
+
+  type SessionSearchResult =
+    | { kind: "idle" }
+    | {
+        kind: "loaded"
+        sessions: SessionEntry[]
+      }
+
+  async function fetchSessionSearchResults(input: {
+    query: string
+    filter: ReturnType<typeof sync.session.query>
+  }): Promise<SessionSearchResult> {
+    if (!input.query) return { kind: "idle" }
+    const result = await sdk.client.session.list({ search: input.query, limit: 30, ...input.filter })
+    return { kind: "loaded", sessions: result.data ?? [] }
+  }
+
   const [searchResults, { refetch }] = createResource(
     () => ({ query: search().trim(), filter: sync.session.query() }),
-    async (input) => {
-      if (!input.query) return { kind: "idle" }
-      const result = await sdk.client.session.list({ search: input.query, limit: 30, ...input.filter })
-      return { kind: "loaded", sessions: result.data ?? [] }
-    },
+    fetchSessionSearchResults,
   )
 
   const currentSessionID = createMemo(() => (route.data.type === "session" ? route.data.sessionID : undefined))
-  const sessions = createMemo(() => {
+  const sessions = createMemo<SessionEntry[]>(() => {
     const result = searchResults()
-    if (result?.kind === "loaded") return result.sessions
-    return sync.data.session
+    if (result && result.kind === "loaded") return result.sessions
+    return sync.data.session ?? []
   })
 
-  function recover(session: NonNullable<ReturnType<typeof sessions>[number]>) {
+  function recover(session: SessionEntry) {
     const workspace = project.workspace.get(session.workspaceID!)
     const list = () => dialog.replace(() => <DialogSessionList />)
     type RecoveryWorkspaceResult =
