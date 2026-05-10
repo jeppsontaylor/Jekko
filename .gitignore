@@ -30,6 +30,17 @@ logs/
 .jekko-loop-runs/
 *.bun-build
 tsconfig.tsbuildinfo
+
+# Claude Code runtime state
+.claude/scheduled_tasks.lock
+
+# jekko daemon runtime state
+.jekko/daemon/
+
+# Debug scratch files
+test_logo.js
+test_logo.ts
+
 # jankurai scaffold .gitignore
 # Keep Jankurai receipts local without hiding the rest of target/.
 target/jankurai/

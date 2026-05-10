@@ -328,6 +328,10 @@
       "command": "just fast",
       "purpose": "verify jekko loop script proof route stays visible"
     },
+    "jekko/plugins/": {
+      "command": "just fast",
+      "purpose": "verify jekko plugin smoke route stays visible"
+    },
     "jnoccio-fusion/": {
       "command": "just fast",
       "purpose": "verify jnoccio-fusion proof routes stay visible"
@@ -543,10 +547,6 @@
     "turbo.json": {
       "command": "just fast",
       "purpose": "verify turbo proof route stays visible"
-    },
-    "jekko/plugins/": {
-      "command": "just fast",
-      "purpose": "verify jekko plugin smoke route stays visible"
     }
   },
   "workspace": "jankurai"

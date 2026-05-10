@@ -31,10 +31,14 @@ jobs:
         run: jankurai --version
       - name: jankurai audit
         run: jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl
+      - name: Jankurai ratchet audit
+        run: jankurai audit . --mode ratchet --baseline target/jankurai/accepted-baseline.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md
       - name: Proof routing
         run: jankurai proof . --changed-from origin/main --out target/jankurai/proof-plan.json --md target/jankurai/proof-plan.md
       - name: Proofbind verify
-        run: jankurai proofbind verify . --changed agent/owner-map.json --changed agent/test-map.json --changed agent/tool-adoption.toml --out target/jankurai/proofbind/surface-witness.json --obligations-out target/jankurai/proofbind/obligations.json
+        run: |
+          jankurai proofbind verify . --changed-from origin/main || \
+            jankurai proofbind verify . --changed agent/owner-map.json --changed agent/test-map.json --changed agent/tool-adoption.toml --out target/jankurai/proofbind/surface-witness.json --obligations-out target/jankurai/proofbind/obligations.json
       - name: Proofmark rust
         run: jankurai proofmark rust . --obligations target/jankurai/proofbind/obligations.json
       - name: Rust witness build
@@ -53,7 +57,13 @@ jobs:
           mkdir -p target/jankurai
           cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1
       - name: Security scan
-        run: bash tools/security-lane.sh
+        run: |
+          jankurai security run . --out target/jankurai/security/evidence.json
+          jankurai security run . --strict --profile ci --out target/jankurai/security/evidence.json
+      - name: Stage governance artifacts
+        run: |
+          cp target/jankurai/repo-score.json agent/repo-score.json
+          cp target/jankurai/repo-score.md agent/repo-score.md
       - name: Secret scanning (trufflehog)
         uses: trufflesecurity/trufflehog@ba0a524d6e51744d9d4e306bc57ac5d6ca5173ea
         with:
@@ -83,6 +93,8 @@ jobs:
           name: jankurai-adoption-evidence
           if-no-files-found: ignore
           path: |
+            agent/repo-score.json
+            agent/repo-score.md
             target/jankurai/repo-score.json
             target/jankurai/repo-score.md
             target/jankurai/jankurai.sarif
@@ -97,7 +109,6 @@ jobs:
             target/jankurai/rust/witness-graph.json
             target/jankurai/ux-qa.json
             target/jankurai/security/evidence.json
-            target/jankurai/security/lane-status.txt
       - name: Upload SARIF to code scanning
         if: always()
         uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e
