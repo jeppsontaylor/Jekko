@@ -7,9 +7,9 @@
 - Target stack ID: `rust-ts-vite-react-postgres-bounded-python`
 - Target stack: `Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service`
 - Repo: `.`
-- Run ID: `1778422286`
-- Started at: `1778422286`
-- Elapsed: `2161` ms
+- Run ID: `1778422544`
+- Started at: `1778422544`
+- Elapsed: `2002` ms
 - Scope: `full`
 - Raw score: `93`
 - Final score: `93`
@@ -139,10 +139,10 @@
 ## Security evidence (ingested)
 
 - Source: `target/jankurai/security/evidence.json`
-- Envelope exit code: `0` · elapsed: `30000` ms · strict: `false`
+- Envelope exit code: `0` · elapsed: `24000` ms · strict: `false`
 - Commands — ran: `3`, skipped: `0`, failed: `0`
-- Generated at: `1778417016`
-- Git HEAD (envelope): `e70b21ae55c8002136a331083def5914e185ab0e`
+- Generated at: `1778422518`
+- Git HEAD (envelope): `c5883af22a9a5afac51cda49f09f753ae351b10b`
 
 ## Boundary manifest (ingested)
 
@@ -157,16 +157,7 @@ No audited runtime boundary reclassifications declared.
 
 ## Findings
 
-1. `high` `boundary` `agent/boundaries.toml:1`
-   Rule: `HLT-007-HANDWRITTEN-CONTRACT`
-   Check: `HLT-007-HANDWRITTEN-CONTRACT:boundary` `hard` confidence `0.88`
-   Route: TLR `Contracts/data`, lane `contract`, owner `workspace`
-   Docs: `docs/audit-rubric.md#known-vibe-coding-insults`
-   Reason: event contract path `contracts/events` is missing
-   Fix: create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved
-   Rerun: `just fast`
-   Fingerprint: `sha256:2c043965779a8cbd99aa86ed626404ea7dc06d1ca21929151861a6b77c53d191`
-   Evidence: declared event contract path `contracts/events` does not exist
+No findings.
 
 ## Policy
 
@@ -176,5 +167,4 @@ No audited runtime boundary reclassifications declared.
 
 ## Agent Fix Queue
 
-1. `high` `HLT-007-HANDWRITTEN-CONTRACT` `agent/boundaries.toml` - create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved
-   Route: `Contracts/data`/`contract`
+No queued fixes.

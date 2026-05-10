@@ -1,17 +1,17 @@
 {
-  "report_fingerprint": "sha256:49a6524ab4c2493d204b8146f6e87e28a70a0740e3f6ae5b031bad01c060cd14",
-  "input_fingerprint": "sha256:cff43716ba96f20ac0abc476884a3de003f565781bc20b947498be09aef1954d",
+  "report_fingerprint": "sha256:ec0d008c1123870f436e552814f42d689ff7b4fb246a66cb875fd2d2ee1b19bf",
+  "input_fingerprint": "sha256:c9ca0230bbd245899b1aa668a4b4cfd7f4c31c8fb51e6daa6f7b094ccc2b7024",
   "policy_fingerprint": "sha256:201baf37c4fbcb3e4d5c0f0d11322da3f562cc8a430d6a57d02343942191602c",
   "manifest_fingerprints": {
-    "owner_map": "sha256:900772dd2197d082fe4a252f064b137d7c6c2dc239a990abb8e06c2ace7144ec",
-    "test_map": "sha256:fd4ccf0f8fc05d6dba1acaf255c6d90a6efd41a386c321667b1fa8d3681a723b",
+    "owner_map": "sha256:8b740fe2dfc86f6eee7b105ab211cfedc7696dffcd4150697532d0f5a6115cba",
+    "test_map": "sha256:4c2ad4b36e312d3408a7229d7e9a6719c683aba766750c41ed987fffca94ae32",
     "generated_zones": "sha256:62e40ec26acdc2bd1f1edcca7e13c94295ee3eb36f692fd30fb9dfa1a2dd9ee3",
     "boundaries": "sha256:b07c0fb46116a7474029823ab26a2168f87c24dc13b3add52da43eba77456aee",
     "proof_lanes": "sha256:df512653e53dd755fbab2991e3fbd8d4b9fde5133886c68d755094833a816f14",
     "standard_version": "sha256:1df4cfbdab9fc309a1a17f79901ab2950806d19778d91c27a975cb7da827bb81"
   },
   "dirty_worktree": true,
-  "generated_at": "1778422286",
+  "generated_at": "1778422544",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -21,15 +21,13 @@
   "target_stack_id": "rust-ts-vite-react-postgres-bounded-python",
   "target_stack": "Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service",
   "claimed_conformance_level": "HL3",
-  "observed_conformance_level": "HL2",
-  "conformance_decision": "block",
-  "conformance_blockers": [
-    "HLT-007-HANDWRITTEN-CONTRACT on agent/boundaries.toml"
-  ],
+  "observed_conformance_level": "HL3",
+  "conformance_decision": "pass",
+  "conformance_blockers": [],
   "repo": ".",
-  "run_id": "1778422286",
-  "started_at": "1778422286",
-  "elapsed_ms": 2161,
+  "run_id": "1778422544",
+  "started_at": "1778422544",
+  "elapsed_ms": 2002,
   "scope": {
     "mode": "full",
     "paths": []
@@ -40,12 +38,12 @@
     "status": "advisory",
     "minimum_score": 85,
     "passed": true,
-    "hard_findings": 1,
+    "hard_findings": 0,
     "soft_findings": 0,
     "ratchet": {
       "baseline_score": 93,
       "allowed_drop": 0,
-      "passed": false,
+      "passed": true,
       "score_delta": 0,
       "baseline_report_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "baseline_input_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
@@ -56,7 +54,7 @@
     }
   },
   "git": {
-    "head": "c3085c061",
+    "head": "c5883af22",
     "base": null,
     "changed_files": 0,
     "mode": "full",
@@ -324,11 +322,11 @@
         "rendered UX QA lane present or no web surface",
         "DOM geometry UX QA runtime found",
         "Rust property/integration tests present or no Rust surface",
-        "proofbind artifact found: surfaces=15 missing=15 high_or_critical_missing=7 verdict=review"
+        "proofbind artifact found: surfaces=399 missing=399 high_or_critical_missing=126 verdict=review"
       ],
       "notes": [
-        "proofbind reports 15 unresolved obligation(s)",
-        "proofbind reports 7 missing high/critical semantic proof obligation(s)"
+        "proofbind reports 399 unresolved obligation(s)",
+        "proofbind reports 126 missing high/critical semantic proof obligation(s)"
       ]
     },
     {
@@ -1015,7 +1013,7 @@
     "artifact": {
       "path": "target/jankurai/security/evidence.json",
       "envelope_exit_code": 0,
-      "elapsed_ms": 30000,
+      "elapsed_ms": 24000,
       "wrapper_strict": false,
       "profile": "local",
       "commands_ran": 3,
@@ -1024,8 +1022,8 @@
       "required_commands_skipped": 0,
       "required_commands_failed": 0,
       "blocking_commands": [],
-      "generated_at": "1778417016",
-      "git_head": "e70b21ae55c8002136a331083def5914e185ab0e"
+      "generated_at": "1778422518",
+      "git_head": "c5883af22a9a5afac51cda49f09f753ae351b10b"
     }
   },
   "boundaries": {
@@ -1319,40 +1317,6 @@
       "noncanonical_count": 0
     }
   },
-  "findings": [
-    {
-      "severity": "high",
-      "category": "boundary",
-      "path": "agent/boundaries.toml",
-      "problem": "event contract path `contracts/events` is missing",
-      "agent_fix": "create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved",
-      "evidence": [
-        "declared event contract path `contracts/events` does not exist"
-      ],
-      "check_id": "HLT-007-HANDWRITTEN-CONTRACT:boundary",
-      "hardness": "hard",
-      "confidence": 0.88,
-      "evidence_kind": "contract-manifest",
-      "rerun_command": "just fast",
-      "fingerprint": "sha256:2c043965779a8cbd99aa86ed626404ea7dc06d1ca21929151861a6b77c53d191",
-      "rule_id": "HLT-007-HANDWRITTEN-CONTRACT",
-      "tlr": "Contracts/data",
-      "lane": "contract",
-      "docs_url": "docs/audit-rubric.md#known-vibe-coding-insults",
-      "owner": "workspace",
-      "line": 1
-    }
-  ],
-  "agent_fix_queue": [
-    {
-      "path": "agent/boundaries.toml",
-      "priority": "high",
-      "rule_id": "HLT-007-HANDWRITTEN-CONTRACT",
-      "tlr": "Contracts/data",
-      "lane": "contract",
-      "owner": "workspace",
-      "task": "create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved",
-      "why": "event contract path `contracts/events` is missing"
-    }
-  ]
+  "findings": [],
+  "agent_fix_queue": []
 }
