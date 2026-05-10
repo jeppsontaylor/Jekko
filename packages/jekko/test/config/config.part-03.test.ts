@@ -233,7 +233,7 @@ test("preserves env variables when adding $schema to config", async () => {
 })
 
 test("resolves env templates in account config with account token", async () => {
-  const originalTestToken = process.env["JEKKO_TEST_TOKEN"]
+  const originalTestToken = process.env["JEKKO_CONSOLE_TOKEN"]
   const accountKey = "apiKey"
 
   const fakeAccount = Layer.mock(Account.Service)({
@@ -264,7 +264,7 @@ test("resolves env templates in account config with account token", async () => 
     config: () =>
       Effect.succeed(
         Option.some({
-          provider: { jekko: { options: { [accountKey]: "{env:JEKKO_TEST_TOKEN}" } } },
+          provider: { jekko: { options: { [accountKey]: "{env:JEKKO_CONSOLE_TOKEN}" } } },
         }),
       ),
     token: () => Effect.succeed(Option.some(AccessToken.make("st_test_token"))),
@@ -291,9 +291,9 @@ test("resolves env templates in account config with account token", async () => 
     ).pipe(Effect.scoped, Effect.provide(layer), Effect.runPromise)
   } finally {
     if (originalTestToken !== undefined) {
-      process.env["JEKKO_TEST_TOKEN"] = originalTestToken
+      process.env["JEKKO_CONSOLE_TOKEN"] = originalTestToken
     } else {
-      delete process.env["JEKKO_TEST_TOKEN"]
+      delete process.env["JEKKO_CONSOLE_TOKEN"]
     }
   }
 })
