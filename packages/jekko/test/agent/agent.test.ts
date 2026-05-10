@@ -1,5 +1,5 @@
 import { afterEach, test, expect } from "bun:test"
-import { Effect } from "effect"
+import { Effect, Option } from "effect"
 import path from "path"
 import { disposeAllInstances, provideInstance, tmpdir } from "../fixture/fixture"
 import { Instance } from "../../src/project/instance"
@@ -10,8 +10,9 @@ import { Global } from "@jekko-ai/core/global"
 
 // Helper to evaluate permission for a tool with wildcard pattern
 function evalPerm(agent: Agent.Info | undefined, permission: string): Permission.Action | undefined {
-  if (!agent) return undefined
-  return Permission.evaluate(permission, "*", agent.permission).action
+  return Option.getOrUndefined(
+    agent ? Option.some(Permission.evaluate(permission, "*", agent.permission).action) : Option.none<Permission.Action>(),
+  )
 }
 
 function load<A>(dir: string, fn: (svc: Agent.Interface) => Effect.Effect<A>) {
