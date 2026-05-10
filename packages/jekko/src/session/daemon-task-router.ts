@@ -88,9 +88,7 @@ export function computeReadiness(input: {
   if (Object.values(evidence).every((value) => value === 0) && input.baselineScore && input.baselineScore > 0) {
     return clamp(input.baselineScore, 0, 1)
   }
-  const modelSignal =
-    0.03 * clamp(input.implementationConfidence ?? 0, 0, 1) +
-    0.03 * clamp(input.verificationConfidence ?? 0, 0, 1)
+  const modelSignal = modelConfidenceCeiling(input)
   return clamp(
     evidence.testsIdentified * 0.18 +
       evidence.scopeBounded * 0.14 +
@@ -128,28 +126,26 @@ function computeRisk(input: RouteInput) {
 function routeReasons(input: RouteInput & { readinessScore: number; riskScore: number }) {
   const route = input.incubator?.route_when
   if (!route) return defaultReasons(input)
-  const reasons: string[] = []
-  const any = route.any ?? []
-  if (any.length > 0) {
-    const matched = any.flatMap((condition) => matchCondition(condition, input))
-    reasons.push(...matched)
-  }
-  const all = route.all ?? []
-  if (all.length > 0) {
-    const matched = all.flatMap((condition) => matchCondition(condition, input))
-    if (matched.length === all.length) reasons.push(...matched)
-  }
-  return [...new Set(reasons)]
+  return collectReasons(route, input)
 }
 
 function excludeReasonsFor(input: RouteInput & { readinessScore: number; riskScore: number }) {
   const route = input.incubator?.exclude_when
   if (!route) return []
+  return collectReasons(route, input)
+}
+
+function collectReasons(
+  route: {
+    any?: readonly ZyalIncubatorRouteCondition[]
+    all?: readonly ZyalIncubatorRouteCondition[]
+  },
+  input: RouteInput & { readinessScore: number; riskScore: number },
+) {
   const reasons: string[] = []
   const any = route.any ?? []
   if (any.length > 0) {
-    const matched = any.flatMap((condition) => matchCondition(condition, input))
-    reasons.push(...matched)
+    reasons.push(...any.flatMap((condition) => matchCondition(condition, input)))
   }
   const all = route.all ?? []
   if (all.length > 0) {
