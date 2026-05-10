@@ -3,27 +3,111 @@ schema_version = "1.0.0"
 [[tools]]
 id = "audit-ci"
 mode = "auto"
+local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+artifact_paths = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/repo-score.json", "target/jankurai/repo-score.md", "target/jankurai/jankurai.sarif", "target/jankurai/summary.md", "target/jankurai/repair-queue-jsonl"]
 
 [[tools]]
 id = "proof-routing"
 mode = "auto"
+local_command = "jankurai proof . --changed-from origin/main --out target/jankurai/proof-plan.json --md target/jankurai/proof-plan.md"
+ci_command = "jankurai proof . --changed-from origin/main --out target/jankurai/proof-plan.json --md target/jankurai/proof-plan.md"
+artifact_paths = ["target/jankurai/proof-plan.json", "target/jankurai/proof-plan.md"]
 
 [[tools]]
 id = "security"
 mode = "auto"
+local_command = "bash tools/security-lane.sh"
+ci_command = "bash tools/security-lane.sh"
+artifact_paths = ["target/jankurai/security/evidence.json", "target/jankurai/security/lane-status.txt"]
+
+[[tools]]
+id = "proofbind"
+mode = "auto"
+local_command = "jankurai proofbind verify . --changed agent/owner-map.json --changed agent/test-map.json --changed agent/tool-adoption.toml --out target/jankurai/proofbind/surface-witness.json --obligations-out target/jankurai/proofbind/obligations.json"
+ci_command = "jankurai proofbind verify . --changed agent/owner-map.json --changed agent/test-map.json --changed agent/tool-adoption.toml --out target/jankurai/proofbind/surface-witness.json --obligations-out target/jankurai/proofbind/obligations.json"
+artifact_paths = ["target/jankurai/proofbind/surface-witness.json", "target/jankurai/proofbind/obligations.json"]
 
 [[tools]]
 id = "ux-qa"
 mode = "auto"
+local_command = "jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json"
+ci_command = "jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json"
+artifact_paths = ["target/jankurai/ux-qa.json"]
 
 [[tools]]
 id = "db-migration-analyze"
 mode = "auto"
+local_command = "jankurai migrate . --analyze --json target/jankurai/migration-report.json"
+ci_command = "jankurai migrate . --analyze --json target/jankurai/migration-report.json"
+artifact_paths = ["target/jankurai/migration-report.json"]
 
 [[tools]]
 id = "contract-drift"
 mode = "auto"
+local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+artifact_paths = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/repo-score.json", "target/jankurai/repo-score.md", "target/jankurai/jankurai.sarif", "target/jankurai/summary.md", "target/jankurai/repair-queue-jsonl"]
 
 [[tools]]
 id = "rust-witness"
 mode = "auto"
+local_command = "jankurai rust witness build ."
+ci_command = "jankurai rust witness build ."
+artifact_paths = ["target/jankurai/rust/witness-graph.json"]
+
+[[tools]]
+id = "ci-bad-behavior"
+mode = "auto"
+local_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+ci_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+artifact_paths = ["target/jankurai/language-bad-behavior.log"]
+
+[[tools]]
+id = "git-bad-behavior"
+mode = "auto"
+local_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+ci_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+artifact_paths = ["target/jankurai/language-bad-behavior.log"]
+
+[[tools]]
+id = "release-bad-behavior"
+mode = "auto"
+local_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+ci_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+artifact_paths = ["target/jankurai/language-bad-behavior.log"]
+
+[[tools]]
+id = "authz-matrix"
+mode = "auto"
+local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+artifact_paths = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/repo-score.json", "target/jankurai/repo-score.md", "target/jankurai/jankurai.sarif", "target/jankurai/summary.md", "target/jankurai/repair-queue-jsonl"]
+
+[[tools]]
+id = "input-boundary"
+mode = "auto"
+local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+artifact_paths = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/repo-score.json", "target/jankurai/repo-score.md", "target/jankurai/jankurai.sarif", "target/jankurai/summary.md", "target/jankurai/repair-queue-jsonl"]
+
+[[tools]]
+id = "agent-tool-supply"
+mode = "auto"
+local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+artifact_paths = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/repo-score.json", "target/jankurai/repo-score.md", "target/jankurai/jankurai.sarif", "target/jankurai/summary.md", "target/jankurai/repair-queue-jsonl"]
+
+[[tools]]
+id = "release-readiness"
+mode = "auto"
+local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+artifact_paths = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/repo-score.json", "target/jankurai/repo-score.md", "target/jankurai/jankurai.sarif", "target/jankurai/summary.md", "target/jankurai/repair-queue-jsonl"]
+
+[[tools]]
+id = "cost-budget"
+mode = "auto"
+local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue-jsonl"
+artifact_paths = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/repo-score.json", "target/jankurai/repo-score.md", "target/jankurai/jankurai.sarif", "target/jankurai/summary.md", "target/jankurai/repair-queue-jsonl"]

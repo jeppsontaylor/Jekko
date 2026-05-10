@@ -1,29 +1,48 @@
+advisory_tools = [
+    "gitleaks",
+    "cargo-audit",
+    "npm",
+    "syft",
+    "cargo audit",
+    "npm audit",
+]
+enabled_tools = [
+    "gitleaks",
+    "cargo-audit",
+    "npm",
+    "cargo audit",
+    "npm audit",
+]
+required_tools = []
 schema_version = "1.0.0"
 
-enabled_tools = [
-  "gitleaks",
-  "cargo-audit",
-  "npm",
-]
-
-required_tools = []
-
+[profiles.ci]
 advisory_tools = [
-  "gitleaks",
-  "cargo-audit",
-  "npm",
-  "syft",
+    "cargo-audit",
+    "npm",
+    "syft",
 ]
+enabled_tools = [
+    "gitleaks",
+    "cargo-audit",
+    "npm",
+    "syft",
+]
+required_tools = ["gitleaks"]
+
+[profiles.local]
+advisory_tools = [
+    "gitleaks",
+    "cargo-audit",
+    "npm",
+    "syft",
+]
+enabled_tools = [
+    "gitleaks",
+    "cargo-audit",
+    "npm",
+]
+required_tools = []
 
 [severity_thresholds]
 fail_lane_on = "high"
-
-[profiles.local]
-enabled_tools = ["gitleaks", "cargo-audit", "npm"]
-required_tools = []
-advisory_tools = ["gitleaks", "cargo-audit", "npm", "syft"]
-
-[profiles.ci]
-enabled_tools = ["gitleaks", "cargo-audit", "npm", "syft"]
-required_tools = ["gitleaks"]
-advisory_tools = ["cargo-audit", "npm", "syft"]

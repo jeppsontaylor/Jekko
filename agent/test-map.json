@@ -1,133 +1,8 @@
 {
-  "workspace": "jankurai",
   "tests": {
-    "Justfile": {
-      "command": "just fast",
-      "purpose": "verify workspace task lanes stay deterministic"
-    },
-    "packages/jekko/script/schema.ts": {
-      "command": "just fast",
-      "purpose": "verify schema generation stays bounded and typed"
-    },
-    "packages/jekko/specs/v2/api.js": {
-      "command": "just fast",
-      "purpose": "verify example script proof route stays visible"
-    },
-    "packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx": {
-      "command": "just fast",
-      "purpose": "verify dialog prompt proof route stays visible"
-    },
-    "packages/jekko/src/cli/cmd/tui/util/terminal-tokenize.ts": {
-      "command": "just fast",
-      "purpose": "verify terminal tokenization proof route stays visible"
-    },
-    "packages/jekko/test/provider/copilot/copilot-chat-model.test.ts": {
-      "command": "just score",
-      "purpose": "verify copilot proof receipts remain replayable"
-    },
-    "script/sync-zed.ts": {
-      "command": "just fast",
-      "purpose": "verify Zed sync command proof route stays visible"
-    },
-    "packages/web/": {
-      "command": "just fast",
-      "purpose": "verify web package proof routes stay visible"
-    },
-    "packages/": {
-      "command": "just fast",
-      "purpose": "verify package proof routes stay visible"
-    },
-    "AGENTS.md": {
-      "command": "just score",
-      "purpose": "verify root routing remains visible to the audit"
-    },
     ".agents/": {
       "command": "just fast",
       "purpose": "verify agent instructions and workflow proof routes stay visible"
-    },
-    ".claude/": {
-      "command": "just fast",
-      "purpose": "verify Claude skill proof routes stay visible"
-    },
-    ".cursor/": {
-      "command": "just fast",
-      "purpose": "verify Cursor guidance proof routes stay visible"
-    },
-    ".github/CODEOWNERS": {
-      "command": "just fast",
-      "purpose": "verify GitHub ownership metadata remains mapped"
-    },
-    ".github/": {
-      "command": "just fast",
-      "purpose": "verify root GitHub metadata remains mapped"
-    },
-    ".github/ISSUE_TEMPLATE/": {
-      "command": "just fast",
-      "purpose": "verify GitHub issue template proof route remains mapped"
-    },
-    ".github/actions/": {
-      "command": "just fast",
-      "purpose": "verify GitHub action proof routes remain mapped"
-    },
-    ".editorconfig": {
-      "command": "just fast",
-      "purpose": "verify root editorconfig proof route stays visible"
-    },
-    "apps/": {
-      "command": "just fast",
-      "purpose": "verify app surfaces remain routed through the audit"
-    },
-    "agent/": {
-      "command": "just score",
-      "purpose": "verify manifests remain parseable and authoritative"
-    },
-    "contracts/": {
-      "command": "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md",
-      "purpose": "advisory contract drift scan until project-specific contract checks exist"
-    },
-    "db/migrations/": {
-      "command": "jankurai doctor --fail-on critical",
-      "purpose": "advisory control-plane health check until migration tests exist"
-    },
-    "db/": {
-      "command": "jankurai doctor --fail-on critical",
-      "purpose": "advisory database boundary health check"
-    },
-    "db/constraints/": {
-      "command": "jankurai doctor --fail-on critical",
-      "purpose": "advisory constraint-lane health check until DB proof exists"
-    },
-    "docs/architecture/": {
-      "command": "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md",
-      "purpose": "verify architecture docs remain visible to the audit"
-    },
-    "docs/decisions/": {
-      "command": "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md",
-      "purpose": "verify decision records remain visible to the audit"
-    },
-    "README-jankurai-scaffold.md": {
-      "command": "jankurai doctor --fail-on critical",
-      "purpose": "verify scaffold marker does not hide missing control-plane files"
-    },
-    "ops/": {
-      "command": "just fast",
-      "purpose": "verify ops surfaces remain visible to the audit"
-    },
-    "tools/": {
-    "command": "just fast",
-    "purpose": "verify Rust behavior and audit checks"
-  },
-    "examples/perfect-web-api-db/backend/src/background_job.rs": {
-      "command": "just fast",
-    "purpose": "run proofs for background‑job cell"
-  },
-    "crates/": {
-      "command": "just fast",
-      "purpose": "verify Rust behavior and audit checks"
-    },
-    "docs/": {
-      "command": "just score",
-      "purpose": "verify agent-readable documentation remains routed"
     },
     ".agents/agents.md": {
       "command": "just fast",
@@ -141,9 +16,21 @@
       "command": "just fast",
       "purpose": "verify workflow proof routes stay visible"
     },
+    ".claude/": {
+      "command": "just fast",
+      "purpose": "verify Claude skill proof routes stay visible"
+    },
     ".claude/skills/jankurai/SKILL.md": {
       "command": "just fast",
       "purpose": "verify Claude skill proof routes stay visible"
+    },
+    ".codex-loop-runs/": {
+      "command": "just fast",
+      "purpose": "verify codex loop run proof routes stay visible"
+    },
+    ".cursor/": {
+      "command": "just fast",
+      "purpose": "verify Cursor guidance proof routes stay visible"
     },
     ".cursor/rules/jankurai.mdc": {
       "command": "just fast",
@@ -153,21 +40,69 @@
       "command": "just fast",
       "purpose": "verify root editorconfig proof route stays visible"
     },
+    ".gitattributes": {
+      "command": "just fast",
+      "purpose": "verify git attributes proof route stays visible"
+    },
+    ".github/": {
+      "command": "just score-fast",
+      "purpose": "verify root GitHub metadata remains mapped"
+    },
+    ".github/CODEOWNERS": {
+      "command": "just fast",
+      "purpose": "verify GitHub ownership metadata remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/bug-report.yml": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/config.yml": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/ISSUE_TEMPLATE/feature-request.yml": {
+      "command": "just fast",
+      "purpose": "verify GitHub issue template proof route remains mapped"
+    },
+    ".github/actions/": {
+      "command": "just fast",
+      "purpose": "verify GitHub action proof routes remain mapped"
+    },
+    ".github/instructions/": {
+      "command": "just fast",
+      "purpose": "verify GitHub instruction proof routes remain mapped"
+    },
+    ".github/workflows/": {
+      "command": "just fast",
+      "purpose": "verify GitHub workflow proof routes remain mapped"
+    },
     ".gitignore": {
       "command": "just fast",
       "purpose": "verify gitignore proof route stays visible"
     },
-    ".husky/pre-push": {
+    ".husky/": {
       "command": "just fast",
-      "purpose": "verify husky hook proof route stays visible"
+      "purpose": "verify husky hook proof routes stay visible"
     },
     ".husky/check-encrypted-paths": {
       "command": "just fast",
       "purpose": "verify husky check-encrypted-paths proof route stays visible"
     },
-    ".husky/": {
+    ".husky/pre-push": {
       "command": "just fast",
-      "purpose": "verify husky hook proof routes stay visible"
+      "purpose": "verify husky hook proof route stays visible"
+    },
+    ".jekko/": {
+      "command": "just fast",
+      "purpose": "verify jekko root proof routes stay visible"
+    },
+    ".jekko/agent/": {
+      "command": "just fast",
+      "purpose": "verify agent proof routes stay visible"
     },
     ".jekko/agent/duplicate-pr.md": {
       "command": "just fast",
@@ -177,9 +112,13 @@
       "command": "just fast",
       "purpose": "verify generated zones config proof route stays visible"
     },
-    ".jekko/agent/": {
+    ".jekko/command/": {
       "command": "just fast",
-      "purpose": "verify agent proof routes stay visible"
+      "purpose": "verify command proof routes stay visible"
+    },
+    ".jekko/daemon/": {
+      "command": "just fast",
+      "purpose": "verify daemon state proof routes stay visible"
     },
     ".jekko/env.d.ts": {
       "command": "just fast",
@@ -213,45 +152,157 @@
       "command": "just fast",
       "purpose": "verify tui proof route stays visible"
     },
-    ".jekko/command/": {
+    ".oxlintrc.json": {
       "command": "just fast",
-      "purpose": "verify command proof routes stay visible"
+      "purpose": "verify oxlint config proof route stays visible"
     },
-    ".jekko/": {
+    ".prettierignore": {
       "command": "just fast",
-      "purpose": "verify jekko root proof routes stay visible"
+      "purpose": "verify prettier ignore proof route stays visible"
     },
-    ".github/CODEOWNERS": {
+    ".zed/settings.json": {
       "command": "just fast",
-      "purpose": "verify GitHub ownership metadata remains mapped"
+      "purpose": "verify zed settings proof route stays visible"
     },
-    ".github/ISSUE_TEMPLATE/bug-report.yml": {
-      "command": "just fast",
-      "purpose": "verify GitHub issue template proof route remains mapped"
+    "AGENTS.md": {
+      "command": "just score",
+      "purpose": "verify root routing remains visible to the audit"
     },
-    ".github/ISSUE_TEMPLATE/config.yml": {
+    "BABYSIT_WORK.md": {
       "command": "just fast",
-      "purpose": "verify GitHub issue template proof route remains mapped"
+      "purpose": "verify babysit work proof route stays visible"
     },
-    ".github/ISSUE_TEMPLATE/feature-request.yml": {
+    "CLAUDE.md": {
       "command": "just fast",
-      "purpose": "verify GitHub issue template proof route remains mapped"
+      "purpose": "verify Claude instructions proof route stays visible"
     },
-    ".github/instructions/": {
+    "CONTRIBUTING.md": {
       "command": "just fast",
-      "purpose": "verify GitHub instruction proof routes remain mapped"
+      "purpose": "verify contributing proof route stays visible"
     },
-    ".github/workflows/": {
+    "DO_NOT_ASK_ZYAL.md": {
       "command": "just fast",
-      "purpose": "verify GitHub workflow proof routes remain mapped"
+      "purpose": "verify ZYAL instructions proof route stays visible"
+    },
+    "GEMINI.md": {
+      "command": "just fast",
+      "purpose": "verify Gemini instructions proof route stays visible"
+    },
+    "JANKURAI_TASKLIST.md": {
+      "command": "just fast",
+      "purpose": "verify tasklist proof route stays visible"
+    },
+    "JANKURAI_TASKLIST.md.bak": {
+      "command": "just fast",
+      "purpose": "verify tasklist backup proof route stays visible"
+    },
+    "JANKURAI_TASKLIST.md.corrupted_backup": {
+      "command": "just fast",
+      "purpose": "verify tasklist backup proof route stays visible"
+    },
+    "Justfile": {
+      "command": "just workspace-build-fast",
+      "purpose": "verify Justfile proof route stays visible"
+    },
+    "LICENSE": {
+      "command": "just fast",
+      "purpose": "verify license proof route stays visible"
     },
     "README": {
       "command": "just fast",
       "purpose": "verify README proof route stays visible"
     },
+    "README-jankurai-scaffold.md": {
+      "command": "jankurai doctor --fail-on critical",
+      "purpose": "verify scaffold marker does not hide missing control-plane files"
+    },
     "README.": {
       "command": "just fast",
       "purpose": "verify translated README proof routes stay visible"
+    },
+    "SECURITY.md": {
+      "command": "just fast",
+      "purpose": "verify security doc proof route stays visible"
+    },
+    "SESSION_SCOPED_ZYAL_METRICS_PLAN.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL metrics plan proof route stays visible"
+    },
+    "STATS.md": {
+      "command": "just fast",
+      "purpose": "verify stats doc proof route stays visible"
+    },
+    "UNLOCK_WORKPLAN.md": {
+      "command": "just fast",
+      "purpose": "verify unlock workplan proof route stays visible"
+    },
+    "ZYAL_LOOP_STOPPED_STUDY.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL loop study proof route stays visible"
+    },
+    "ZYAL_MISSION.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL mission proof route"
+    },
+    "ZYAL_WORKFLOW.md": {
+      "command": "just fast",
+      "purpose": "verify ZYAL workflow proof route"
+    },
+    "agent/": {
+      "command": "just score",
+      "purpose": "verify manifests remain parseable and authoritative"
+    },
+    "apps/": {
+      "command": "just workspace-fast",
+      "purpose": "verify app surfaces remain routed through the audit"
+    },
+    "bun": {
+      "command": "just fast",
+      "purpose": "verify bun proof routes stay visible"
+    },
+    "codex-jankurai-loop.sh": {
+      "command": "just fast",
+      "purpose": "verify codex jankurai loop script proof route"
+    },
+    "contracts/": {
+      "command": "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md",
+      "purpose": "advisory contract drift scan until project-specific contract checks exist"
+    },
+    "crates/": {
+      "command": "just fast",
+      "purpose": "verify Rust behavior and audit checks"
+    },
+    "db/": {
+      "command": "jankurai doctor --fail-on critical",
+      "purpose": "advisory database boundary health check"
+    },
+    "db/constraints/": {
+      "command": "jankurai doctor --fail-on critical",
+      "purpose": "advisory constraint-lane health check until DB proof exists"
+    },
+    "db/migrations/": {
+      "command": "jankurai doctor --fail-on critical",
+      "purpose": "advisory control-plane health check until migration tests exist"
+    },
+    "docs/": {
+      "command": "just score",
+      "purpose": "verify agent-readable documentation remains routed"
+    },
+    "docs/architecture/": {
+      "command": "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md",
+      "purpose": "verify architecture docs remain visible to the audit"
+    },
+    "docs/decisions/": {
+      "command": "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md",
+      "purpose": "verify decision records remain visible to the audit"
+    },
+    "examples/perfect-web-api-db/backend/src/background_job.rs": {
+      "command": "just fast",
+      "purpose": "run proofs for background‑job cell"
+    },
+    "flake": {
+      "command": "just fast",
+      "purpose": "verify flake proof routes stay visible"
     },
     "github/": {
       "command": "just fast",
@@ -265,9 +316,13 @@
       "command": "just fast",
       "purpose": "verify install proof route stays visible"
     },
-    "nix": {
+    "jekko-jankurai-loop-common.sh": {
       "command": "just fast",
-      "purpose": "verify nix proof route stays visible"
+      "purpose": "verify jekko loop common script proof route stays visible"
+    },
+    "jekko-jankurai-loop-runner.sh": {
+      "command": "just fast",
+      "purpose": "verify jekko loop runner script proof route stays visible"
     },
     "jekko-jankurai-loop.sh": {
       "command": "just fast",
@@ -281,13 +336,25 @@
       "command": "cd jnoccio-fusion/web && npx playwright test",
       "purpose": "verify jnoccio-fusion dashboard rendered UX proof stays visible"
     },
+    "nix": {
+      "command": "just fast",
+      "purpose": "verify nix proof route stays visible"
+    },
     "nix/": {
       "command": "just fast",
       "purpose": "verify nix proof routes stay visible"
     },
+    "ops/": {
+      "command": "just check-fast",
+      "purpose": "verify ops surfaces remain visible to the audit"
+    },
     "package.json": {
       "command": "just fast",
       "purpose": "verify package proof route stays visible"
+    },
+    "packages/": {
+      "command": "just workspace-fast",
+      "purpose": "verify package proof routes stay visible"
     },
     "packages/app/": {
       "command": "just fast",
@@ -349,6 +416,22 @@
       "command": "just fast",
       "purpose": "verify jekko package proof routes stay visible"
     },
+    "packages/jekko/script/schema.ts": {
+      "command": "just fast",
+      "purpose": "verify schema generation stays bounded and typed"
+    },
+    "packages/jekko/specs/v2/api.js": {
+      "command": "just fast",
+      "purpose": "verify example script proof route stays visible"
+    },
+    "packages/jekko/src/cli/cmd/tui/ui/dialog-prompt.tsx": {
+      "command": "just fast",
+      "purpose": "verify dialog prompt proof route stays visible"
+    },
+    "packages/jekko/src/cli/cmd/tui/util/terminal-tokenize.ts": {
+      "command": "just fast",
+      "purpose": "verify terminal tokenization proof route stays visible"
+    },
     "packages/jekko/src/file/": {
       "command": "just fast",
       "purpose": "verify jekko file proof routes stay visible"
@@ -356,6 +439,10 @@
     "packages/jekko/src/file/ripgrep.ts": {
       "command": "just fast",
       "purpose": "verify ripgrep proof route stays visible"
+    },
+    "packages/jekko/test/provider/copilot/copilot-chat-model.test.ts": {
+      "command": "just score",
+      "purpose": "verify copilot proof receipts remain replayable"
     },
     "packages/plugin/": {
       "command": "just fast",
@@ -381,9 +468,21 @@
       "command": "just fast",
       "purpose": "verify ui proof routes stay visible"
     },
+    "packages/web/": {
+      "command": "just workspace-fast",
+      "purpose": "verify web package proof routes stay visible"
+    },
+    "paper/": {
+      "command": "just fast",
+      "purpose": "verify paper proof routes stay visible"
+    },
     "patches/": {
       "command": "just fast",
       "purpose": "verify patches proof routes stay visible"
+    },
+    "prompt.md": {
+      "command": "just fast",
+      "purpose": "verify prompt documentation proof route"
     },
     "python/ai-service/": {
       "command": "just fast",
@@ -393,21 +492,13 @@
       "command": "just fast",
       "purpose": "verify script proof routes stay visible"
     },
+    "script/sync-zed.ts": {
+      "command": "just fast",
+      "purpose": "verify Zed sync command proof route stays visible"
+    },
     "sdks/": {
       "command": "just fast",
       "purpose": "verify sdk proof routes stay visible"
-    },
-    "test-grep.ts": {
-      "command": "just fast",
-      "purpose": "verify grep test proof route stays visible"
-    },
-    "test/": {
-      "command": "just fast",
-      "purpose": "verify test proof routes stay visible"
-    },
-    "test_ts.ts": {
-      "command": "just fast",
-      "purpose": "verify test-ts proof route stays visible"
     },
     "specs/": {
       "command": "just fast",
@@ -417,129 +508,13 @@
       "command": "just fast",
       "purpose": "verify sst proof routes stay visible"
     },
-    "tsconfig.json": {
+    "test-grep.ts": {
       "command": "just fast",
-      "purpose": "verify tsconfig proof route stays visible"
+      "purpose": "verify grep test proof route stays visible"
     },
-    "ZYAL_LOOP_STOPPED_STUDY.md": {
+    "test/": {
       "command": "just fast",
-      "purpose": "verify ZYAL loop study proof route stays visible"
-    },
-    "turbo.json": {
-      "command": "just fast",
-      "purpose": "verify turbo proof route stays visible"
-    },
-    "SECURITY.md": {
-      "command": "just fast",
-      "purpose": "verify security doc proof route stays visible"
-    },
-    "STATS.md": {
-      "command": "just fast",
-      "purpose": "verify stats doc proof route stays visible"
-    },
-    "bun": {
-      "command": "just fast",
-      "purpose": "verify bun proof routes stay visible"
-    },
-    "flake": {
-      "command": "just fast",
-      "purpose": "verify flake proof routes stay visible"
-    },
-    ".prettierignore": {
-      "command": "just fast",
-      "purpose": "verify prettier ignore proof route stays visible"
-    },
-    ".zed/settings.json": {
-      "command": "just fast",
-      "purpose": "verify zed settings proof route stays visible"
-    },
-    "CLAUDE.md": {
-      "command": "just fast",
-      "purpose": "verify Claude instructions proof route stays visible"
-    },
-    "CONTRIBUTING.md": {
-      "command": "just fast",
-      "purpose": "verify contributing proof route stays visible"
-    },
-    "GEMINI.md": {
-      "command": "just fast",
-      "purpose": "verify Gemini instructions proof route stays visible"
-    },
-    "JANKURAI_TASKLIST.md": {
-      "command": "just fast",
-      "purpose": "verify tasklist proof route stays visible"
-    },
-    "JANKURAI_TASKLIST.md.bak": {
-      "command": "just fast",
-      "purpose": "verify tasklist backup proof route stays visible"
-    },
-    "JANKURAI_TASKLIST.md.corrupted_backup": {
-      "command": "just fast",
-      "purpose": "verify tasklist backup proof route stays visible"
-    },
-    "Justfile": {
-      "command": "just fast",
-      "purpose": "verify Justfile proof route stays visible"
-    },
-    "LICENSE": {
-      "command": "just fast",
-      "purpose": "verify license proof route stays visible"
-    },
-    ".codex-loop-runs/": {
-      "command": "just fast",
-      "purpose": "verify codex loop run proof routes stay visible"
-    },
-    ".gitattributes": {
-      "command": "just fast",
-      "purpose": "verify git attributes proof route stays visible"
-    },
-    ".husky/": {
-      "command": "just fast",
-      "purpose": "verify husky hook proof routes stay visible"
-    },
-    ".jekko/daemon/": {
-      "command": "just fast",
-      "purpose": "verify daemon state proof routes stay visible"
-    },
-    ".oxlintrc.json": {
-      "command": "just fast",
-      "purpose": "verify oxlint config proof route stays visible"
-    },
-    "DO_NOT_ASK_ZYAL.md": {
-      "command": "just fast",
-      "purpose": "verify ZYAL instructions proof route stays visible"
-    },
-    "SESSION_SCOPED_ZYAL_METRICS_PLAN.md": {
-      "command": "just fast",
-      "purpose": "verify ZYAL metrics plan proof route stays visible"
-    },
-    "UNLOCK_WORKPLAN.md": {
-      "command": "just fast",
-      "purpose": "verify unlock workplan proof route stays visible"
-    },
-    "paper/": {
-      "command": "just fast",
-      "purpose": "verify paper proof routes stay visible"
-    },
-    "BABYSIT_WORK.md": {
-      "command": "just fast",
-      "purpose": "verify babysit work proof route stays visible"
-    },
-    "ZYAL_MISSION.md": {
-      "command": "just fast",
-      "purpose": "verify ZYAL mission proof route"
-    },
-    "ZYAL_WORKFLOW.md": {
-      "command": "just fast",
-      "purpose": "verify ZYAL workflow proof route"
-    },
-    "codex-jankurai-loop.sh": {
-      "command": "just fast",
-      "purpose": "verify codex jankurai loop script proof route"
-    },
-    "prompt.md": {
-      "command": "just fast",
-      "purpose": "verify prompt documentation proof route"
+      "purpose": "verify test proof routes stay visible"
     },
     "test/local/jnoccio-unlock.local.test.ts": {
       "command": "just fast",
@@ -552,6 +527,27 @@
     "test_logo.ts": {
       "command": "just fast",
       "purpose": "verify test logo script proof route"
+    },
+    "test_ts.ts": {
+      "command": "just fast",
+      "purpose": "verify test-ts proof route stays visible"
+    },
+    "tools/": {
+      "command": "just fast",
+      "purpose": "verify Rust behavior and audit checks"
+    },
+    "tsconfig.json": {
+      "command": "just fast",
+      "purpose": "verify tsconfig proof route stays visible"
+    },
+    "turbo.json": {
+      "command": "just fast",
+      "purpose": "verify turbo proof route stays visible"
+    },
+    "jekko/plugins/": {
+      "command": "just fast",
+      "purpose": "verify jekko plugin smoke route stays visible"
     }
-  }
+  },
+  "workspace": "jankurai"
 }

@@ -1,216 +1,209 @@
-# Auto-generated file markers
-# This file lists generated zones that should not be edited directly.
-# Use the corresponding source contract to modify generated artifacts.
-
 [[zone]]
+command = "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md"
 path = "agent/repo-score.json"
-source = "installed jankurai binary"
-command = "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md"
 read_only = false
+source = "installed jankurai binary"
 
 [[zone]]
+command = "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md"
 path = "agent/repo-score.md"
-source = "installed jankurai binary"
-command = "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md"
 read_only = false
+source = "installed jankurai binary"
 
-# SDK is regenerated from OpenAPI specs via @hey-api/openapi-ts.
-# Hand-edits in src/gen/** and src/v2/gen/** are reverted on next regen.
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/client.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/types.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/sdk.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/queryKeySerializer.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/bodySerializer.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/types.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/auth.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/utils.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/pathSerializer.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/serverSentEvents.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/core/params.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/client/client.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/client/types.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/gen/client/utils.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/client.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/types.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/sdk.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/queryKeySerializer.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/bodySerializer.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/types.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/auth.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/utils.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/pathSerializer.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/serverSentEvents.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/core/params.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/client/client.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/client/types.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "bun --cwd packages/sdk/js run build"
 path = "packages/sdk/js/src/v2/gen/client/utils.gen.ts"
-source = "generated"
-command = "bun --cwd packages/sdk/js run build"
 read_only = true
+source = "generated"
 
-# SST environment ambient declarations are emitted by `sst dev` / `sst deploy`.
 [[zone]]
+command = "sst dev"
 path = "packages/core/sst-env.d.ts"
-source = "generated"
-command = "sst dev"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "sst dev"
 path = "packages/jekko/sst-env.d.ts"
-source = "generated"
-command = "sst dev"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "sst dev"
 path = "packages/plugin/sst-env.d.ts"
-source = "generated"
-command = "sst dev"
 read_only = true
+source = "generated"
 
 [[zone]]
+command = "sst dev"
 path = "packages/script/sst-env.d.ts"
-source = "generated"
-command = "sst dev"
 read_only = true
+source = "generated"
 
 [[zone]]
-path = "packages/sdk/js/sst-env.d.ts"
-source = "generated"
 command = "sst dev"
+path = "packages/sdk/js/sst-env.d.ts"
 read_only = true
+source = "generated"

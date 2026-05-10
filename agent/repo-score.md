@@ -7,15 +7,15 @@
 - Target stack ID: `rust-ts-vite-react-postgres-bounded-python`
 - Target stack: `Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service`
 - Repo: `.`
-- Run ID: `1778376929`
-- Started at: `1778376929`
-- Elapsed: `12654` ms
+- Run ID: `1778422286`
+- Started at: `1778422286`
+- Elapsed: `2161` ms
 - Scope: `full`
-- Raw score: `79`
-- Final score: `70`
-- Decision: `fail`
+- Raw score: `93`
+- Final score: `93`
+- Decision: `advisory`
 - Minimum score: `85`
-- Caps applied: `fallback-soup-in-product-code, severe-duplication-in-product-code`
+- Caps applied: `none`
 
 ## Hard Rule Caps
 
@@ -34,9 +34,9 @@
 | `too-much-python-in-product-surface` | 72 | no |
 | `boundary-reclassification-evidence-gap` | 72 | no |
 | `vibe-placeholders-in-product-code` | 68 | no |
-| `fallback-soup-in-product-code` | 70 | yes |
+| `fallback-soup-in-product-code` | 70 | no |
 | `future-hostile-dead-language-in-product-code` | 64 | no |
-| `severe-duplication-in-product-code` | 70 | yes |
+| `severe-duplication-in-product-code` | 70 | no |
 | `generated-zone-mutation-risk` | 76 | no |
 | `direct-db-access-from-wrong-layer` | 66 | no |
 | `missing-web-e2e-lane` | 82 | no |
@@ -74,13 +74,13 @@
 | Contract and boundary integrity | 13 | 98 | 12.74 | contract surface found; generated contract artifacts found |
 | Proof lanes and test routing | 12 | 100 | 12.00 | one-command setup/validation lane found; deterministic fast lane found |
 | Security and supply-chain posture | 12 | 86 | 10.32 | lockfile present; secret or dependency scan tooling found |
-| Code shape and semantic surface | 12 | 0 | 0.00 | largest authored code file: packages/jekko/src/lsp/server.ts (2108 LOC); code file exceeds 500 LOC |
+| Code shape and semantic surface | 12 | 100 | 12.00 | largest authored code file: packages/jekko/src/control-plane/workspace-crud.ts (349 LOC); most code files stay under 300 LOC |
 | Data truth and workflow safety | 8 | 95 | 7.60 | database surface present; structured db boundary manifest present |
 | Observability and repair evidence | 8 | 88 | 7.04 | observability libraries or patterns found; ops/observability directory present |
 | Context economy and agent instructions | 7 | 100 | 7.00 | root `AGENTS.md` present; root `AGENTS.md` stays short |
-| Jankurai tool adoption and CI replacement | 7 | 31 | 2.17 | control-plane files present; applicable=17 |
+| Jankurai tool adoption and CI replacement | 7 | 55 | 3.85 | control-plane files present; applicable=16 |
 | Python containment and polyglot hygiene | 4 | 100 | 4.00 | no Python files in scope |
-| Build speed signals | 4 | 70 | 2.80 | build acceleration markers found; targeted test/build commands found |
+| Build speed signals | 4 | 95 | 3.80 | build acceleration markers found; targeted test/build commands found |
 
 ## Reference Profile Structure
 
@@ -108,40 +108,48 @@
 ## Tool Adoption
 
 - Control plane present: `true`
-- Applicable tools: `17`
-- Configured: `7`
-- CI evidence: `3`
-- Artifact verified: `3`
-- Replaced count: `3`
-- Missing CI evidence: `audit-ci, proof-routing, proofbind, security, ci-bad-behavior, git-bad-behavior, release-bad-behavior, db-migration-analyze, contract-drift, authz-matrix, input-boundary, agent-tool-supply, release-readiness, cost-budget`
+- Applicable tools: `16`
+- Configured: `15`
+- CI evidence: `6`
+- Artifact verified: `6`
+- Replaced count: `6`
+- Missing CI evidence: `audit-ci, proof-routing, proofbind, security, contract-drift, authz-matrix, input-boundary, agent-tool-supply, release-readiness, cost-budget`
 
 | Tool | Category | Mode | Status | Replaced | Artifacts |
 | --- | --- | --- | --- | --- | --- |
 | `audit-ci` | `audit` | `auto` | `configured` | `manual repo scoring, ad hoc score gates` | `agent/repo-score.json, agent/repo-score.md` |
 | `proof-routing` | `proof` | `auto` | `configured` | `ad hoc proof lane selection, manual proof receipts` | `agent/repo-score.json, agent/repo-score.md, target/jankurai/repair-queue.jsonl` |
-| `proofbind` | `proof` | `auto` | `missing` | `manual changed-surface routing, ad hoc proof obligation lists` | `target/jankurai/proofbind/surface-witness.json, target/jankurai/proofbind/obligations.json` |
+| `proofbind` | `proof` | `auto` | `configured` | `manual changed-surface routing, ad hoc proof obligation lists` | `target/jankurai/proofbind/surface-witness.json, target/jankurai/proofbind/obligations.json` |
 | `proofmark-rust` | `proof` | `auto` | `artifact_verified` | `line-only coverage review, manual in-diff mutation review` | `target/jankurai/proofmark/proofmark-receipt.json, target/jankurai/proofmark/proof-receipt.json` |
 | `security` | `security` | `auto` | `configured` | `gitleaks, dependency review, SBOM/provenance` | `target/jankurai/security/evidence.json` |
-| `ci-bad-behavior` | `security` | `auto` | `missing` | `mutable workflow refs, secret echo/debug workflow checks, non-blocking security scans` | `target/jankurai/language-bad-behavior.log` |
-| `git-bad-behavior` | `audit` | `auto` | `missing` | `destructive git automation, force-push release scripts, hidden stash-based state` | `target/jankurai/language-bad-behavior.log` |
-| `release-bad-behavior` | `release` | `auto` | `missing` | `manual release checklist, ad hoc tag and artifact review, manual provenance review` | `target/jankurai/language-bad-behavior.log` |
+| `ci-bad-behavior` | `security` | `auto` | `artifact_verified` | `mutable workflow refs, secret echo/debug workflow checks, non-blocking security scans` | `target/jankurai/language-bad-behavior.log` |
+| `git-bad-behavior` | `audit` | `auto` | `artifact_verified` | `destructive git automation, force-push release scripts, hidden stash-based state` | `target/jankurai/language-bad-behavior.log` |
+| `release-bad-behavior` | `release` | `auto` | `artifact_verified` | `manual release checklist, ad hoc tag and artifact review, manual provenance review` | `target/jankurai/language-bad-behavior.log` |
 | `ux-qa` | `ux` | `auto` | `artifact_verified` | `playwright, axe-core, visual baselines` | `target/jankurai/ux-qa.json` |
-| `db-migration-analyze` | `db` | `auto` | `configured` | `manual migration review` | `target/jankurai/migration-report.json` |
+| `db-migration-analyze` | `db` | `auto` | `not_applicable` | `manual migration review` | `target/jankurai/migration-report.json` |
 | `contract-drift` | `contract` | `auto` | `configured` | `handwritten contract drift checks, openapi diff` | `agent/repo-score.json, agent/repo-score.md` |
 | `rust-witness` | `rust` | `auto` | `artifact_verified` | `manual witness graphing` | `target/jankurai/rust/witness-graph.json` |
 | `vibe-coverage` | `audit` | `auto` | `not_applicable` | `manual vibe-coding coverage spreadsheet` | `target/jankurai/vibe-coverage.json, target/jankurai/vibe-coverage.md` |
-| `authz-matrix` | `security` | `auto` | `missing` | `manual authz matrix review` | `agent/repo-score.json, agent/repo-score.md` |
-| `input-boundary` | `security` | `auto` | `missing` | `manual unsafe sink review` | `agent/repo-score.json, agent/repo-score.md` |
-| `agent-tool-supply` | `security` | `auto` | `missing` | `manual MCP/tool trust review` | `agent/repo-score.json, agent/repo-score.md` |
-| `release-readiness` | `release` | `auto` | `missing` | `manual launch checklist` | `agent/repo-score.json, agent/repo-score.md` |
-| `cost-budget` | `release` | `auto` | `missing` | `manual spend review` | `agent/repo-score.json, agent/repo-score.md` |
+| `authz-matrix` | `security` | `auto` | `configured` | `manual authz matrix review` | `agent/repo-score.json, agent/repo-score.md` |
+| `input-boundary` | `security` | `auto` | `configured` | `manual unsafe sink review` | `agent/repo-score.json, agent/repo-score.md` |
+| `agent-tool-supply` | `security` | `auto` | `configured` | `manual MCP/tool trust review` | `agent/repo-score.json, agent/repo-score.md` |
+| `release-readiness` | `release` | `auto` | `configured` | `manual launch checklist` | `agent/repo-score.json, agent/repo-score.md` |
+| `cost-budget` | `release` | `auto` | `configured` | `manual spend review` | `agent/repo-score.json, agent/repo-score.md` |
+
+## Security evidence (ingested)
+
+- Source: `target/jankurai/security/evidence.json`
+- Envelope exit code: `0` · elapsed: `30000` ms · strict: `false`
+- Commands — ran: `3`, skipped: `0`, failed: `0`
+- Generated at: `1778417016`
+- Git HEAD (envelope): `e70b21ae55c8002136a331083def5914e185ab0e`
 
 ## Boundary manifest (ingested)
 
 - Path: `agent/boundaries.toml`
 - Stack: `rust-ts-vite-react-postgres-bounded-python` · version: `0.4.0`
-- Queue path counts — adapter: `2`, event_contract: `0`, generated_type: `1`, client_marker: `7`, streaming_exception: `1`
-- Content fingerprint: `sha256:a9130f30b09a9ed501843eb78e23d6fca84816f176ec373b156b330d1917db8d`
+- Queue path counts — adapter: `2`, event_contract: `1`, generated_type: `1`, client_marker: `7`, streaming_exception: `1`
+- Content fingerprint: `sha256:b07c0fb46116a7474029823ab26a2168f87c24dc13b3add52da43eba77456aee`
 
 ## Boundary Reclassifications
 
@@ -149,44 +157,16 @@ No audited runtime boundary reclassifications declared.
 
 ## Findings
 
-1. `medium` `shape` `.`
-   Rule: `HLT-001-DEAD-MARKER`
-   Check: `HLT-001-DEAD-MARKER:shape` `soft` confidence `0.76`
-   Route: TLR `Entropy`, lane `fast`, owner `tools`
-   Docs: `docs/audit-rubric.md#future-hostile-language-rule`
-   Reason: `Code shape and semantic surface` scored 0 below the standard floor of 85
-   Fix: split large or ambiguous authored code into smaller semantic modules with focused tests
+1. `high` `boundary` `agent/boundaries.toml:1`
+   Rule: `HLT-007-HANDWRITTEN-CONTRACT`
+   Check: `HLT-007-HANDWRITTEN-CONTRACT:boundary` `hard` confidence `0.88`
+   Route: TLR `Contracts/data`, lane `contract`, owner `workspace`
+   Docs: `docs/audit-rubric.md#known-vibe-coding-insults`
+   Reason: event contract path `contracts/events` is missing
+   Fix: create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved
    Rerun: `just fast`
-   Fingerprint: `sha256:145503e5968523d994875338ee7c0d6a7b44c63dee3ad6242b982f085d38ea4e`
-   Evidence: largest authored code file: packages/jekko/src/lsp/server.ts (2108 LOC), code file exceeds 500 LOC, code file exceeds 1000 LOC, most code files stay under 300 LOC
-2. `medium` `proof` `Justfile`
-   Rule: `HLT-018-PERF-CONCURRENCY-DRIFT`
-   Check: `HLT-018-PERF-CONCURRENCY-DRIFT:proof` `soft` confidence `0.76`
-   Route: TLR `Verification`, lane `fast`, owner `workspace`
-   Docs: `docs/testing.md`
-   Reason: `Build speed signals` scored 70 below the standard floor of 85
-   Fix: add fast deterministic build/test targets, caches, and narrow proof lanes for agent iteration
-   Rerun: `just fast`
-   Fingerprint: `sha256:a256a7390d4b91a5b0a95d6f092e524c8f4080f27fe2b62e28cf0801343d0fef`
-   Evidence: build acceleration markers found, targeted test/build commands found, locked dependency graph present, CI cache hint found
-3. `high` `vibe` `packages/jekko/src/agent-script/parser.test.ts:1`
-   Check: `HLT-000-SCORE-DIMENSION:vibe` `hard` confidence `0.88`
-   Route: TLR `Entropy`, lane `fast`, owner `tools`
-   Reason: duplicated product code block detected
-   Fix: extract the duplicated behavior behind one named boundary and add focused tests before changing behavior
-   Rerun: `just fast`
-   Fingerprint: `sha256:8479e735c245b96d494be82d6acdbda6bf49027335d7122ec01c95b585972cb9`
-   Evidence: duplicate block also appears at packages/jekko/src/agent-script/parser.test.ts:1
-4. `high` `vibe` `packages/jekko/src/cli/cmd/tui/component/dialog-session-list.tsx:70`
-   Rule: `HLT-001-DEAD-MARKER`
-   Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
-   Route: TLR `Entropy`, lane `fast`, owner `tools`
-   Docs: `docs/audit-rubric.md#future-hostile-language-rule`
-   Reason: fallback soup detected in product code
-   Fix: collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance
-   Rerun: `just fast`
-   Fingerprint: `sha256:490096ce660ba04fecb78ebfa2cff9bdd10deb63bce1a687fb8243bb737593cd`
-   Evidence: packages/jekko/src/cli/cmd/tui/component/dialog-session-list.tsx:70 if (selection.type === "none") return null
+   Fingerprint: `sha256:2c043965779a8cbd99aa86ed626404ea7dc06d1ca21929151861a6b77c53d191`
+   Evidence: declared event contract path `contracts/events` does not exist
 
 ## Policy
 
@@ -196,11 +176,5 @@ No audited runtime boundary reclassifications declared.
 
 ## Agent Fix Queue
 
-1. `medium` `HLT-018-PERF-CONCURRENCY-DRIFT` `Justfile` - add fast deterministic build/test targets, caches, and narrow proof lanes for agent iteration
-   Route: `Verification`/`fast`
-2. `high` `packages/jekko/src/agent-script/parser.test.ts` - extract the duplicated behavior behind one named boundary and add focused tests before changing behavior
-   Route: `Entropy`/`fast`
-3. `high` `HLT-001-DEAD-MARKER` `packages/jekko/src/cli/cmd/tui/component/dialog-session-list.tsx` - collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance
-   Route: `Entropy`/`fast`
-4. `medium` `HLT-001-DEAD-MARKER` `.` - split large or ambiguous authored code into smaller semantic modules with focused tests
-   Route: `Entropy`/`fast`
+1. `high` `HLT-007-HANDWRITTEN-CONTRACT` `agent/boundaries.toml` - create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved
+   Route: `Contracts/data`/`contract`

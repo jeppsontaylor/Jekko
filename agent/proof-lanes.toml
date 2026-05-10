@@ -1,184 +1,347 @@
-# Proof lane definitions for opencode. Mirror canonical structure from jankurai
-# upstream (agent/proof-lanes.toml) so jankurai audit can reason about coverage.
-
 [[lane]]
-name = "fast"
 command = "just fast"
-purpose = "deterministic local health proof: typecheck + narrow jekko test slice"
 command_id = "lane.fast"
-kind = "validation"
 cost = 5
-rules_covered = ["HLT-001-DEAD-MARKER", "HLT-003-OWNERLESS-PATH", "HLT-004-UNMAPPED-PROOF", "HLT-018-PERF-CONCURRENCY-DRIFT", "HLT-031-TYPESCRIPT-BAD-BEHAVIOR"]
-required_artifacts = []
-timeout_seconds = 900
-requires_network = false
 destructive = false
-
-[[lane]]
-name = "typecheck-fast"
-command = "just typecheck-fast"
-purpose = "narrow turbo-cached typecheck across all packages"
-command_id = "lane.typecheck-fast"
 kind = "validation"
-cost = 3
-rules_covered = ["HLT-031-TYPESCRIPT-BAD-BEHAVIOR"]
+name = "fast"
+purpose = "deterministic local health proof: typecheck + narrow jekko test slice"
 required_artifacts = []
-timeout_seconds = 600
 requires_network = false
-destructive = false
+rules_covered = [
+    "HLT-001-DEAD-MARKER",
+    "HLT-003-OWNERLESS-PATH",
+    "HLT-004-UNMAPPED-PROOF",
+    "HLT-018-PERF-CONCURRENCY-DRIFT",
+    "HLT-031-TYPESCRIPT-BAD-BEHAVIOR",
+]
+timeout_seconds = 900
 
 [[lane]]
-name = "rust-fusion-fast"
-command = "just fusion-check-fast"
-purpose = "jnoccio-fusion Rust compile check for fast iteration"
-command_id = "lane.rust-fusion-fast"
+command = "just workspace-fast"
+command_id = "lane.workspace-fast"
+cost = 7
+destructive = false
 kind = "validation"
-cost = 6
-rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT", "HLT-029-RUST-BAD-BEHAVIOR"]
+name = "workspace-fast"
+purpose = "composed workspace fast lane for typecheck, build, and test iteration"
 required_artifacts = []
-timeout_seconds = 900
 requires_network = false
-destructive = false
+rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
+timeout_seconds = 1200
 
 [[lane]]
-name = "core-test"
-command = "just core-test"
-purpose = "@jekko-ai/core unit + effect tests"
-command_id = "lane.core-test"
-kind = "validation"
-cost = 8
-rules_covered = ["HLT-008-FALSE-GREEN-RISK", "HLT-029-RUST-BAD-BEHAVIOR"]
-required_artifacts = []
-timeout_seconds = 900
-requires_network = false
-destructive = false
-
-[[lane]]
-name = "audit"
-command = "just score"
-purpose = "write agent/repo-score.json + agent/repo-score.md and append score history"
-command_id = "lane.audit"
-kind = "audit"
-cost = 10
-rules_covered = ["HLT-001-DEAD-MARKER", "HLT-002-GENERATED-MUTATION", "HLT-003-OWNERLESS-PATH", "HLT-004-UNMAPPED-PROOF", "HLT-008-FALSE-GREEN-RISK"]
-required_artifacts = ["agent/repo-score.json", "agent/repo-score.md", "agent/score-history.jsonl", "agent/score-history.csv"]
-timeout_seconds = 900
-requires_network = false
-destructive = false
-
-[[lane]]
-name = "security"
-command = "just security"
-purpose = "secret, dependency, and workflow proof via tools/security-lane.sh"
-command_id = "lane.security"
-kind = "security"
-cost = 20
-rules_covered = ["HLT-009-GENERATED-SECURITY", "HLT-010-SECRET-SPRAWL", "HLT-011-PROMPT-INJECTION", "HLT-012-OVERBROAD-AGENCY", "HLT-016-SUPPLY-CHAIN-DRIFT", "HLT-020-CI-HARDENING-GAP"]
-required_artifacts = ["target/jankurai/security/evidence.json"]
-timeout_seconds = 1800
-requires_network = false
-destructive = false
-
-[[lane]]
-name = "doctor"
-command = "jankurai doctor --fail-on high"
-purpose = "validate that required canonical files exist and lockfiles are committed"
-command_id = "lane.doctor"
-kind = "validation"
+command = "just workspace-build-fast"
+command_id = "lane.workspace-build-fast"
 cost = 4
-rules_covered = ["HLT-016-SUPPLY-CHAIN-DRIFT"]
+destructive = false
+kind = "validation"
+name = "workspace-build-fast"
+purpose = "workspace build-only fast lane"
 required_artifacts = []
-timeout_seconds = 300
 requires_network = false
-destructive = false
+rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
+timeout_seconds = 900
 
 [[lane]]
-name = "db-migration-analyze"
-command = "jankurai migrate --analyze . > target/jankurai/migration-report.json"
-purpose = "write migration liability report for DB and modernization evidence"
-command_id = "lane.db-migration-analyze"
-kind = "analysis"
-cost = 15
-rules_covered = ["HLT-006-DIRECT-DB-WRONG-LAYER", "HLT-021-DESTRUCTIVE-MIGRATION", "HLT-030-SQL-BAD-BEHAVIOR"]
-required_artifacts = ["target/jankurai/migration-report.json"]
-timeout_seconds = 1800
-requires_network = false
+command = "just workspace-test-fast"
+command_id = "lane.workspace-test-fast"
+cost = 4
 destructive = false
+kind = "validation"
+name = "workspace-test-fast"
+purpose = "workspace test-only fast lane"
+required_artifacts = []
+requires_network = false
+rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
+timeout_seconds = 900
 
 [[lane]]
-name = "contract-drift"
-command = "bun --cwd packages/sdk/js run build"
-purpose = "regenerate SDK from OpenAPI spec; CI compares against committed gen output"
-command_id = "lane.contract-drift"
-kind = "analysis"
-cost = 12
-rules_covered = ["HLT-002-GENERATED-MUTATION", "HLT-007-HANDWRITTEN-CONTRACT"]
-required_artifacts = ["packages/sdk/js/src/gen/", "packages/sdk/js/src/v2/gen/"]
+command = "just typecheck-fast"
+command_id = "lane.typecheck-fast"
+cost = 3
+destructive = false
+kind = "validation"
+name = "typecheck-fast"
+purpose = "narrow turbo-cached typecheck across all packages"
+required_artifacts = []
+requires_network = false
+rules_covered = ["HLT-031-TYPESCRIPT-BAD-BEHAVIOR"]
 timeout_seconds = 600
-requires_network = false
-destructive = false
 
 [[lane]]
-name = "rust-fusion"
-command = "cargo test --manifest-path jnoccio-fusion/Cargo.toml --no-fail-fast"
-purpose = "jnoccio-fusion gateway full test suite"
-command_id = "lane.rust-fusion"
+command = "just build-fast"
+command_id = "lane.build-fast"
+cost = 4
+destructive = false
 kind = "validation"
-cost = 12
-rules_covered = ["HLT-008-FALSE-GREEN-RISK", "HLT-029-RUST-BAD-BEHAVIOR"]
+name = "build-fast"
+purpose = "narrow cached build lane for package iteration"
 required_artifacts = []
-timeout_seconds = 1800
 requires_network = false
-destructive = false
+rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
+timeout_seconds = 900
 
 [[lane]]
-name = "rust-tuiwright"
-command = "cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml --no-run"
-purpose = "tuiwright-jekko-unlock E2E test compile-clean check"
-command_id = "lane.rust-tuiwright"
-kind = "validation"
+command = "just fusion-check-fast"
+command_id = "lane.rust-fusion-fast"
 cost = 6
-rules_covered = ["HLT-029-RUST-BAD-BEHAVIOR"]
+destructive = false
+kind = "validation"
+name = "rust-fusion-fast"
+purpose = "jnoccio-fusion Rust compile check for fast iteration"
 required_artifacts = []
-timeout_seconds = 900
 requires_network = false
-destructive = false
+rules_covered = [
+    "HLT-018-PERF-CONCURRENCY-DRIFT",
+    "HLT-029-RUST-BAD-BEHAVIOR",
+]
+timeout_seconds = 900
 
 [[lane]]
-name = "ux-e2e"
-command = "cd jnoccio-fusion/web && npx playwright test"
-purpose = "rendered UX proof for jnoccio-fusion dashboard (Playwright E2E)"
-command_id = "lane.ux-e2e"
-kind = "validation"
-cost = 30
-rules_covered = ["HLT-013-RENDERED-UX-GAP"]
-required_artifacts = ["jnoccio-fusion/web/playwright-report/"]
-timeout_seconds = 3600
-requires_network = true
+command = "just core-test"
+command_id = "lane.core-test"
+cost = 8
 destructive = false
+kind = "validation"
+name = "core-test"
+purpose = "@jekko-ai/core unit + effect tests"
+required_artifacts = []
+requires_network = false
+rules_covered = [
+    "HLT-008-FALSE-GREEN-RISK",
+    "HLT-029-RUST-BAD-BEHAVIOR",
+]
+timeout_seconds = 900
 
 [[lane]]
-name = "ux-qa"
-command = "just ux-qa"
-purpose = "rendered TUI component proof via bun test (testRender-based component tests)"
-command_id = "lane.ux-qa"
+command = "just score"
+command_id = "lane.audit"
+cost = 10
+destructive = false
+kind = "audit"
+name = "audit"
+purpose = "write agent/repo-score.json + agent/repo-score.md and append score history"
+required_artifacts = [
+    "agent/repo-score.json",
+    "agent/repo-score.md",
+    "agent/score-history.jsonl",
+    "agent/score-history.csv",
+]
+requires_network = false
+rules_covered = [
+    "HLT-001-DEAD-MARKER",
+    "HLT-002-GENERATED-MUTATION",
+    "HLT-003-OWNERLESS-PATH",
+    "HLT-004-UNMAPPED-PROOF",
+    "HLT-008-FALSE-GREEN-RISK",
+]
+timeout_seconds = 900
+
+[[lane]]
+command = "just security"
+command_id = "lane.security"
+cost = 20
+destructive = false
+kind = "security"
+name = "security"
+purpose = "secret, dependency, and workflow proof via tools/security-lane.sh"
+required_artifacts = ["target/jankurai/security/evidence.json"]
+requires_network = false
+rules_covered = [
+    "HLT-009-GENERATED-SECURITY",
+    "HLT-010-SECRET-SPRAWL",
+    "HLT-011-PROMPT-INJECTION",
+    "HLT-012-OVERBROAD-AGENCY",
+    "HLT-016-SUPPLY-CHAIN-DRIFT",
+    "HLT-020-CI-HARDENING-GAP",
+]
+timeout_seconds = 1800
+
+[[lane]]
+command = "jankurai doctor --fail-on high"
+command_id = "lane.doctor"
+cost = 4
+destructive = false
 kind = "validation"
+name = "doctor"
+purpose = "validate that required canonical files exist and lockfiles are committed"
+required_artifacts = []
+requires_network = false
+rules_covered = ["HLT-016-SUPPLY-CHAIN-DRIFT"]
+timeout_seconds = 300
+
+[[lane]]
+command = "just doctor-fast"
+command_id = "lane.doctor-fast"
+cost = 2
+destructive = false
+kind = "validation"
+name = "doctor-fast"
+purpose = "narrow fast doctor check for agent iteration"
+required_artifacts = []
+requires_network = false
+rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
+timeout_seconds = 300
+
+[[lane]]
+command = "just score-fast"
+command_id = "lane.score-fast"
+cost = 4
+destructive = false
+kind = "audit"
+name = "score-fast"
+purpose = "narrow fast score check for agent iteration"
+required_artifacts = [
+    "target/jankurai/repo-score.json",
+    "target/jankurai/repo-score.md",
+]
+requires_network = false
+rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
+timeout_seconds = 900
+
+[[lane]]
+command = "just check-fast"
+command_id = "lane.check-fast"
+cost = 6
+destructive = false
+kind = "validation"
+name = "check-fast"
+purpose = "narrow fast release-precheck lane for iteration"
+required_artifacts = []
+requires_network = false
+rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
+timeout_seconds = 900
+
+[[lane]]
+command = "jankurai migrate --analyze . > target/jankurai/migration-report.json"
+command_id = "lane.db-migration-analyze"
 cost = 15
-rules_covered = ["HLT-013-RENDERED-UX-GAP"]
-required_artifacts = []
-timeout_seconds = 900
-requires_network = false
 destructive = false
+kind = "analysis"
+name = "db-migration-analyze"
+purpose = "write migration liability report for DB and modernization evidence"
+required_artifacts = ["target/jankurai/migration-report.json"]
+requires_network = false
+rules_covered = [
+    "HLT-006-DIRECT-DB-WRONG-LAYER",
+    "HLT-021-DESTRUCTIVE-MIGRATION",
+    "HLT-030-SQL-BAD-BEHAVIOR",
+]
+timeout_seconds = 1800
 
 [[lane]]
-name = "release"
-command = "just check"
-purpose = "full merge gate: fast + doctor + score + security"
-command_id = "lane.release"
-kind = "release"
-cost = 50
-supersedes = ["fast", "audit", "security", "doctor"]
-required_artifacts = ["agent/repo-score.json", "agent/repo-score.md", "target/jankurai/security/evidence.json"]
-timeout_seconds = 3600
-requires_network = false
+command = "bun --cwd packages/sdk/js run build"
+command_id = "lane.contract-drift"
+cost = 12
 destructive = false
+kind = "analysis"
+name = "contract-drift"
+purpose = "regenerate SDK from OpenAPI spec; CI compares against committed gen output"
+required_artifacts = [
+    "packages/sdk/js/src/gen/",
+    "packages/sdk/js/src/v2/gen/",
+]
+requires_network = false
+rules_covered = [
+    "HLT-002-GENERATED-MUTATION",
+    "HLT-007-HANDWRITTEN-CONTRACT",
+]
+timeout_seconds = 600
+
+[[lane]]
+command = "cargo test --manifest-path jnoccio-fusion/Cargo.toml --no-fail-fast"
+command_id = "lane.rust-fusion"
+cost = 12
+destructive = false
+kind = "validation"
+name = "rust-fusion"
+purpose = "jnoccio-fusion gateway full test suite"
+required_artifacts = []
+requires_network = false
+rules_covered = [
+    "HLT-008-FALSE-GREEN-RISK",
+    "HLT-029-RUST-BAD-BEHAVIOR",
+]
+timeout_seconds = 1800
+
+[[lane]]
+command = "cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml --no-run"
+command_id = "lane.rust-tuiwright"
+cost = 6
+destructive = false
+kind = "validation"
+name = "rust-tuiwright"
+purpose = "tuiwright-jekko-unlock E2E test compile-clean check"
+required_artifacts = []
+requires_network = false
+rules_covered = ["HLT-029-RUST-BAD-BEHAVIOR"]
+timeout_seconds = 900
+
+[[lane]]
+command = "cd jnoccio-fusion/web && npx playwright test"
+command_id = "lane.ux-e2e"
+cost = 30
+destructive = false
+kind = "validation"
+name = "ux-e2e"
+purpose = "rendered UX proof for jnoccio-fusion dashboard (Playwright E2E)"
+required_artifacts = ["jnoccio-fusion/web/playwright-report/"]
+requires_network = true
+rules_covered = ["HLT-013-RENDERED-UX-GAP"]
+timeout_seconds = 3600
+
+[[lane]]
+command = "just ux-qa"
+command_id = "lane.ux-qa"
+cost = 15
+destructive = false
+kind = "validation"
+name = "ux-qa"
+purpose = "rendered TUI component proof via bun test (testRender-based component tests)"
+required_artifacts = []
+requires_network = false
+rules_covered = ["HLT-013-RENDERED-UX-GAP"]
+timeout_seconds = 900
+
+[[lane]]
+command = "just check"
+command_id = "lane.release"
+cost = 50
+destructive = false
+kind = "release"
+name = "release"
+purpose = "full merge gate: fast + doctor + score + security"
+required_artifacts = [
+    "agent/repo-score.json",
+    "agent/repo-score.md",
+    "target/jankurai/security/evidence.json",
+]
+requires_network = false
+supersedes = [
+    "fast",
+    "audit",
+    "security",
+    "doctor",
+]
+timeout_seconds = 3600
+
+[[lane]]
+command = "just fast"
+name = "fast"
+purpose = "deterministic local health proof"
+
+[[lane]]
+command = "just score"
+name = "audit"
+purpose = "write jankurai score artifacts"
+
+[[lane]]
+command = "just security"
+name = "security"
+purpose = "secret, dependency, and workflow proof"
+
+[[lane]]
+command = "just check"
+name = "release"
+purpose = "full merge gate"

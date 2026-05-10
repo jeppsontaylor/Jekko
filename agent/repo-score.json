@@ -1,17 +1,17 @@
 {
-  "report_fingerprint": "sha256:61a106c44277eb28dc95516dcb36c3618fbfcc7fa532d1b5b5374ba8d104a704",
-  "input_fingerprint": "sha256:3eceede440f9b72f1eecd4d8784b519b51b2cb745c7dd9be3e3c5d922ef0f327",
-  "policy_fingerprint": "sha256:fbb56504105354f1671b1d3f07ca356892b3f37efb2e3a2e646c5a28826fdb5e",
+  "report_fingerprint": "sha256:49a6524ab4c2493d204b8146f6e87e28a70a0740e3f6ae5b031bad01c060cd14",
+  "input_fingerprint": "sha256:cff43716ba96f20ac0abc476884a3de003f565781bc20b947498be09aef1954d",
+  "policy_fingerprint": "sha256:201baf37c4fbcb3e4d5c0f0d11322da3f562cc8a430d6a57d02343942191602c",
   "manifest_fingerprints": {
-    "owner_map": "sha256:5334d6482dbfbb1890de0204503a41629f114cbe87f6c92d74de425aa1e13a93",
-    "test_map": "sha256:9a7433c24223743a94d9f58cc231cd312916be0a26127c4d7305a56faf587ea3",
-    "generated_zones": "sha256:31806fe74caae21bf6152feecf74580a26719cb74a85efd83416f5d079a00275",
-    "boundaries": "sha256:a9130f30b09a9ed501843eb78e23d6fca84816f176ec373b156b330d1917db8d",
-    "proof_lanes": "sha256:e4f242a932ed4adbc85e13aad66d8d7122d2d35e3ac1021b08e6fb5d5dce11cd",
-    "standard_version": "sha256:d3e612ca82dbc3221910d7bcbe8837827cd36256841279e962066c701a1c7954"
+    "owner_map": "sha256:900772dd2197d082fe4a252f064b137d7c6c2dc239a990abb8e06c2ace7144ec",
+    "test_map": "sha256:fd4ccf0f8fc05d6dba1acaf255c6d90a6efd41a386c321667b1fa8d3681a723b",
+    "generated_zones": "sha256:62e40ec26acdc2bd1f1edcca7e13c94295ee3eb36f692fd30fb9dfa1a2dd9ee3",
+    "boundaries": "sha256:b07c0fb46116a7474029823ab26a2168f87c24dc13b3add52da43eba77456aee",
+    "proof_lanes": "sha256:df512653e53dd755fbab2991e3fbd8d4b9fde5133886c68d755094833a816f14",
+    "standard_version": "sha256:1df4cfbdab9fc309a1a17f79901ab2950806d19778d91c27a975cb7da827bb81"
   },
   "dirty_worktree": true,
-  "generated_at": "1778376611",
+  "generated_at": "1778422286",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -24,27 +24,26 @@
   "observed_conformance_level": "HL2",
   "conformance_decision": "block",
   "conformance_blockers": [
-    "HLT-000-SCORE-DIMENSION:vibe on packages/jekko/src/agent-script/examples.ts",
-    "HLT-001-DEAD-MARKER on packages/jekko/src/cli/cmd/tui/attach.ts"
+    "HLT-007-HANDWRITTEN-CONTRACT on agent/boundaries.toml"
   ],
   "repo": ".",
-  "run_id": "1778376611",
-  "started_at": "1778376611",
-  "elapsed_ms": 14888,
+  "run_id": "1778422286",
+  "started_at": "1778422286",
+  "elapsed_ms": 2161,
   "scope": {
     "mode": "full",
     "paths": []
   },
-  "score": 70,
-  "raw_score": 79,
+  "score": 93,
+  "raw_score": 93,
   "decision": {
-    "status": "fail",
+    "status": "advisory",
     "minimum_score": 85,
-    "passed": false,
-    "hard_findings": 2,
-    "soft_findings": 2,
+    "passed": true,
+    "hard_findings": 1,
+    "soft_findings": 0,
     "ratchet": {
-      "baseline_score": 70,
+      "baseline_score": 93,
       "allowed_drop": 0,
       "passed": false,
       "score_delta": 0,
@@ -57,7 +56,7 @@
     }
   },
   "git": {
-    "head": "73aa1a27f",
+    "head": "c3085c061",
     "base": null,
     "changed_files": 0,
     "mode": "full",
@@ -74,17 +73,14 @@
       "medium",
       "low"
     ],
-    "mode": "standard",
+    "mode": "advisory",
     "standard_version": "0.8.0",
     "auditor_version": "0.8.13",
     "schema_version": "1.6.1",
     "paper_edition": "2026.05-ed8",
     "target_stack": "rust-ts-vite-react-postgres-bounded-python"
   },
-  "caps_applied": [
-    "fallback-soup-in-product-code",
-    "severe-duplication-in-product-code"
-  ],
+  "caps_applied": [],
   "hard_rules": [
     {
       "id": "no-root-agent-instructions",
@@ -293,9 +289,7 @@
         "reference-profile cell `ops` has local AGENTS.md guidance",
         "root `README.md` routes to workspace layout",
         "owner map covers audited paths",
-        "test map covers audited paths",
-        "authored code file exceeds 500 LOC",
-        "authored code file exceeds 1000 LOC"
+        "test map covers audited paths"
       ],
       "notes": []
     },
@@ -349,8 +343,7 @@
         "security lane present",
         "canonical security lane wrapper present",
         "agent-readiness audit gate found in CI",
-        "sql bad-behavior advisory signals: 18",
-        "typescript bad-behavior advisory signals: 50",
+        "typescript bad-behavior advisory signals: 43",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
         "gittools bad-behavior advisory signals: 1",
@@ -362,18 +355,13 @@
     {
       "name": "Code shape and semantic surface",
       "weight": 12,
-      "score": 0,
-      "weighted_points": 0.0,
+      "score": 100,
+      "weighted_points": 12.0,
       "evidence": [
-        "largest authored code file: packages/jekko/src/lsp/server.ts (2108 LOC)",
-        "code file exceeds 500 LOC",
-        "code file exceeds 1000 LOC",
+        "largest authored code file: packages/jekko/src/control-plane/workspace-crud.ts (349 LOC)",
         "most code files stay under 300 LOC",
-        "duplicate code block marker found",
-        "fallback soup marker found",
-        "IO markers found in domain/core files",
-        "sql bad-behavior advisory signals: 18",
-        "typescript bad-behavior advisory signals: 50",
+        "authored code stays below hard LOC limits with no shape markers",
+        "typescript bad-behavior advisory signals: 43",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
         "gittools bad-behavior advisory signals: 1",
@@ -390,8 +378,8 @@
         "database surface present",
         "structured db boundary manifest present",
         "db boundary routes roots, migrations, and constraints",
-        "migration directory present",
-        "constraint or RLS language found"
+        "constraint or RLS language found",
+        "db policy docs describe constraints and rollback safety"
       ],
       "notes": []
     },
@@ -431,14 +419,14 @@
     {
       "name": "Jankurai tool adoption and CI replacement",
       "weight": 7,
-      "score": 31,
-      "weighted_points": 2.17,
+      "score": 55,
+      "weighted_points": 3.85,
       "evidence": [
         "control-plane files present",
-        "applicable=17",
-        "configured=7",
-        "ci_evidence=3",
-        "artifact_verified=3"
+        "applicable=16",
+        "configured=15",
+        "ci_evidence=6",
+        "artifact_verified=6"
       ],
       "notes": [
         "some applicable tools are not configured",
@@ -462,13 +450,15 @@
     {
       "name": "Build speed signals",
       "weight": 4,
-      "score": 70,
-      "weighted_points": 2.8,
+      "score": 95,
+      "weighted_points": 3.8,
       "evidence": [
         "build acceleration markers found",
         "targeted test/build commands found",
         "locked dependency graph present",
-        "CI cache hint found"
+        "CI cache hint found",
+        "fast lane uses targeted commands and target-only audit artifacts",
+        "explicit cache marker plus narrow per-package target found"
       ],
       "notes": []
     }
@@ -484,52 +474,51 @@
         "jnoccio-fusion/agent/repo-score.json"
       ],
       "api_mocks": [
-        "packages/jekko/src/cli/cmd/tui/context/theme.tsx"
+        "packages/jekko/src/cli/cmd/tui/context/theme-core.ts"
       ],
       "artifact_backed_proof": [
         ".oxlintrc.json",
-        "agent/JANKURAI_STANDARD.md",
         "agent/ux-qa.toml",
         "crates/tuiwright-jekko-unlock/tests/jekko_unlock_pty.rs",
-        "crates/tuiwright-jekko-unlock/tests/zyal_paste_perf.rs"
+        "crates/tuiwright-jekko-unlock/tests/zyal_paste_perf.rs",
+        "crates/tuiwright-jekko-unlock/tests/zyal_session_paste.rs"
       ],
       "design_tokens": [
         "jnoccio-fusion/agent/repo-score.json"
       ],
       "geometry_runtime": [
         "agent/ux-qa.toml",
-        "jnoccio-fusion/agent/repo-score.json"
+        "jnoccio-fusion/agent/repo-score.json",
+        "jnoccio-fusion/web/scripts/ux-qa.mjs"
       ],
       "layout_stability": [
         "jnoccio-fusion/agent/repo-score.json",
-        "jnoccio-fusion/web/package-lock.json",
-        "packages/jekko/src/cli/cmd/tui/ui/dialog-select.tsx"
+        "jnoccio-fusion/web/package-lock.json"
       ],
       "playwright_visual": [
         "crates/tuiwright-jekko-unlock/tests/jekko_unlock_pty.rs",
         "crates/tuiwright-jekko-unlock/tests/zyal_paste_perf.rs",
-        "crates/tuiwright-jekko-unlock/tests/zyal_session_paste.rs"
+        "crates/tuiwright-jekko-unlock/tests/zyal_session_paste.rs",
+        "jnoccio-fusion/web/scripts/ux-qa.mjs"
       ],
       "storybook": [
         ".gitignore",
         "agent/repo-score.json",
         "agent/test-map.json",
-        "jnoccio-fusion/agent/repo-score.json",
-        "packages/jekko/src/project/vcs.ts"
+        "jnoccio-fusion/agent/repo-score.json"
       ],
       "visual_review": [
-        "jnoccio-fusion/agent/repo-score.json",
-        "packages/jekko/src/cli/cmd/tui/component/logo.tsx"
+        "jnoccio-fusion/agent/repo-score.json"
       ]
     }
   },
   "tool_adoption": {
     "control_plane_present": true,
-    "applicable_count": 17,
-    "configured_count": 7,
-    "ci_evidence_count": 3,
-    "artifact_verified_count": 3,
-    "replaced_count": 3,
+    "applicable_count": 16,
+    "configured_count": 15,
+    "ci_evidence_count": 6,
+    "artifact_verified_count": 6,
+    "replaced_count": 6,
     "items": [
       {
         "id": "audit-ci",
@@ -585,16 +574,16 @@
         "category": "proof",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "configured",
         "replaced_tools": [
           "manual changed-surface routing",
           "ad hoc proof obligation lists"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present"
         ],
         "missing": [
-          "agent/tool-adoption.toml entry",
           "CI command evidence"
         ],
         "local_command": "jankurai proofbind verify . --changed-from origin/main",
@@ -658,19 +647,19 @@
         "category": "security",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "artifact_verified",
         "replaced_tools": [
           "mutable workflow refs",
           "secret echo/debug workflow checks",
           "non-blocking security scans"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present",
+          "CI command found in workflow",
+          "artifact uploads found: target/jankurai/language-bad-behavior.log"
         ],
-        "missing": [
-          "agent/tool-adoption.toml entry",
-          "CI command evidence"
-        ],
+        "missing": [],
         "local_command": "cargo test -p jankurai --test language_bad_behavior",
         "ci_command": "cargo test -p jankurai --test language_bad_behavior",
         "artifact_paths": [
@@ -682,19 +671,19 @@
         "category": "audit",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "artifact_verified",
         "replaced_tools": [
           "destructive git automation",
           "force-push release scripts",
           "hidden stash-based state"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present",
+          "CI command found in workflow",
+          "artifact uploads found: target/jankurai/language-bad-behavior.log"
         ],
-        "missing": [
-          "agent/tool-adoption.toml entry",
-          "CI command evidence"
-        ],
+        "missing": [],
         "local_command": "cargo test -p jankurai --test language_bad_behavior",
         "ci_command": "cargo test -p jankurai --test language_bad_behavior",
         "artifact_paths": [
@@ -706,19 +695,19 @@
         "category": "release",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "artifact_verified",
         "replaced_tools": [
           "manual release checklist",
           "ad hoc tag and artifact review",
           "manual provenance review"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present",
+          "CI command found in workflow",
+          "artifact uploads found: target/jankurai/language-bad-behavior.log"
         ],
-        "missing": [
-          "agent/tool-adoption.toml entry",
-          "CI command evidence"
-        ],
+        "missing": [],
         "local_command": "cargo test -p jankurai --test language_bad_behavior",
         "ci_command": "cargo test -p jankurai --test language_bad_behavior",
         "artifact_paths": [
@@ -753,18 +742,15 @@
         "id": "db-migration-analyze",
         "category": "db",
         "mode": "auto",
-        "applicable": true,
-        "status": "configured",
+        "applicable": false,
+        "status": "not_applicable",
         "replaced_tools": [
           "manual migration review"
         ],
         "evidence": [
-          "mode=auto",
-          "tool-adoption config entry present"
+          "mode=auto"
         ],
-        "missing": [
-          "CI command evidence"
-        ],
+        "missing": [],
         "local_command": "jankurai migrate . --analyze --json target/jankurai/migration-report.json",
         "ci_command": "jankurai migrate . --analyze --json target/jankurai/migration-report.json",
         "artifact_paths": [
@@ -842,15 +828,15 @@
         "category": "security",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "configured",
         "replaced_tools": [
           "manual authz matrix review"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present"
         ],
         "missing": [
-          "agent/tool-adoption.toml entry",
           "CI command evidence"
         ],
         "local_command": "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md",
@@ -865,15 +851,15 @@
         "category": "security",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "configured",
         "replaced_tools": [
           "manual unsafe sink review"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present"
         ],
         "missing": [
-          "agent/tool-adoption.toml entry",
           "CI command evidence"
         ],
         "local_command": "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md",
@@ -888,15 +874,15 @@
         "category": "security",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "configured",
         "replaced_tools": [
           "manual MCP/tool trust review"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present"
         ],
         "missing": [
-          "agent/tool-adoption.toml entry",
           "CI command evidence"
         ],
         "local_command": "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md",
@@ -911,15 +897,15 @@
         "category": "release",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "configured",
         "replaced_tools": [
           "manual launch checklist"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present"
         ],
         "missing": [
-          "agent/tool-adoption.toml entry",
           "CI command evidence"
         ],
         "local_command": "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md",
@@ -934,15 +920,15 @@
         "category": "release",
         "mode": "auto",
         "applicable": true,
-        "status": "missing",
+        "status": "configured",
         "replaced_tools": [
           "manual spend review"
         ],
         "evidence": [
-          "mode=auto"
+          "mode=auto",
+          "tool-adoption config entry present"
         ],
         "missing": [
-          "agent/tool-adoption.toml entry",
           "CI command evidence"
         ],
         "local_command": "jankurai audit . --mode advisory --json agent/repo-score.json --md agent/repo-score.md",
@@ -954,7 +940,7 @@
       }
     ],
     "evidence": {
-      "applicable_count": 17,
+      "applicable_count": 16,
       "applicable_tools": [
         "audit-ci",
         "proof-routing",
@@ -965,7 +951,6 @@
         "git-bad-behavior",
         "release-bad-behavior",
         "ux-qa",
-        "db-migration-analyze",
         "contract-drift",
         "rust-witness",
         "authz-matrix",
@@ -974,28 +959,42 @@
         "release-readiness",
         "cost-budget"
       ],
-      "artifact_verified_count": 3,
+      "artifact_verified_count": 6,
       "artifact_verified_tools": [
         "proofmark-rust",
+        "ci-bad-behavior",
+        "git-bad-behavior",
+        "release-bad-behavior",
         "ux-qa",
         "rust-witness"
       ],
-      "ci_evidence_count": 3,
+      "ci_evidence_count": 6,
       "ci_evidence_tools": [
         "proofmark-rust",
+        "ci-bad-behavior",
+        "git-bad-behavior",
+        "release-bad-behavior",
         "ux-qa",
         "rust-witness"
       ],
       "config_present": true,
-      "configured_count": 7,
+      "configured_count": 15,
       "configured_tools": [
         "audit-ci",
         "proof-routing",
+        "proofbind",
         "security",
+        "ci-bad-behavior",
+        "git-bad-behavior",
+        "release-bad-behavior",
         "ux-qa",
-        "db-migration-analyze",
         "contract-drift",
-        "rust-witness"
+        "rust-witness",
+        "authz-matrix",
+        "input-boundary",
+        "agent-tool-supply",
+        "release-readiness",
+        "cost-budget"
       ],
       "control_plane_present": true
     },
@@ -1004,10 +1003,6 @@
       "proof-routing",
       "proofbind",
       "security",
-      "ci-bad-behavior",
-      "git-bad-behavior",
-      "release-bad-behavior",
-      "db-migration-analyze",
       "contract-drift",
       "authz-matrix",
       "input-boundary",
@@ -1016,15 +1011,31 @@
       "cost-budget"
     ]
   },
-  "security_evidence": {},
+  "security_evidence": {
+    "artifact": {
+      "path": "target/jankurai/security/evidence.json",
+      "envelope_exit_code": 0,
+      "elapsed_ms": 30000,
+      "wrapper_strict": false,
+      "profile": "local",
+      "commands_ran": 3,
+      "commands_skipped": 0,
+      "commands_failed": 0,
+      "required_commands_skipped": 0,
+      "required_commands_failed": 0,
+      "blocking_commands": [],
+      "generated_at": "1778417016",
+      "git_head": "e70b21ae55c8002136a331083def5914e185ab0e"
+    }
+  },
   "boundaries": {
     "artifact": {
       "path": "agent/boundaries.toml",
-      "content_fingerprint": "sha256:a9130f30b09a9ed501843eb78e23d6fca84816f176ec373b156b330d1917db8d",
+      "content_fingerprint": "sha256:b07c0fb46116a7474029823ab26a2168f87c24dc13b3add52da43eba77456aee",
       "stack_id": "rust-ts-vite-react-postgres-bounded-python",
       "stack_version": "0.4.0",
       "adapter_path_count": 2,
-      "event_contract_path_count": 0,
+      "event_contract_path_count": 1,
       "generated_type_path_count": 1,
       "client_marker_count": 7,
       "streaming_exception_count": 1
@@ -1310,135 +1321,38 @@
   },
   "findings": [
     {
-      "severity": "medium",
-      "category": "shape",
-      "path": ".",
-      "problem": "`Code shape and semantic surface` scored 0 below the standard floor of 85",
-      "agent_fix": "split large or ambiguous authored code into smaller semantic modules with focused tests",
-      "evidence": [
-        "largest authored code file: packages/jekko/src/lsp/server.ts (2108 LOC)",
-        "code file exceeds 500 LOC",
-        "code file exceeds 1000 LOC",
-        "most code files stay under 300 LOC"
-      ],
-      "check_id": "HLT-001-DEAD-MARKER:shape",
-      "hardness": "soft",
-      "confidence": 0.76,
-      "evidence_kind": "repository-scan",
-      "rerun_command": "just fast",
-      "fingerprint": "sha256:145503e5968523d994875338ee7c0d6a7b44c63dee3ad6242b982f085d38ea4e",
-      "rule_id": "HLT-001-DEAD-MARKER",
-      "tlr": "Entropy",
-      "lane": "fast",
-      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
-      "owner": "tools"
-    },
-    {
-      "severity": "medium",
-      "category": "proof",
-      "path": "Justfile",
-      "problem": "`Build speed signals` scored 70 below the standard floor of 85",
-      "agent_fix": "add fast deterministic build/test targets, caches, and narrow proof lanes for agent iteration",
-      "evidence": [
-        "build acceleration markers found",
-        "targeted test/build commands found",
-        "locked dependency graph present",
-        "CI cache hint found"
-      ],
-      "check_id": "HLT-018-PERF-CONCURRENCY-DRIFT:proof",
-      "hardness": "soft",
-      "confidence": 0.76,
-      "evidence_kind": "repository-scan",
-      "rerun_command": "just fast",
-      "fingerprint": "sha256:a256a7390d4b91a5b0a95d6f092e524c8f4080f27fe2b62e28cf0801343d0fef",
-      "rule_id": "HLT-018-PERF-CONCURRENCY-DRIFT",
-      "tlr": "Verification",
-      "lane": "fast",
-      "docs_url": "docs/testing.md",
-      "owner": "workspace"
-    },
-    {
       "severity": "high",
-      "category": "vibe",
-      "path": "packages/jekko/src/agent-script/examples.ts",
-      "problem": "duplicated product code block detected",
-      "agent_fix": "extract the duplicated behavior behind one named boundary and add focused tests before changing behavior",
+      "category": "boundary",
+      "path": "agent/boundaries.toml",
+      "problem": "event contract path `contracts/events` is missing",
+      "agent_fix": "create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved",
       "evidence": [
-        "duplicate block also appears at packages/jekko/src/agent-script/examples.ts:1"
+        "declared event contract path `contracts/events` does not exist"
       ],
-      "check_id": "HLT-000-SCORE-DIMENSION:vibe",
+      "check_id": "HLT-007-HANDWRITTEN-CONTRACT:boundary",
       "hardness": "hard",
       "confidence": 0.88,
-      "evidence_kind": "repository-scan",
+      "evidence_kind": "contract-manifest",
       "rerun_command": "just fast",
-      "fingerprint": "sha256:0b2cf0bda1299a047cbd9c141ace947db6fff4e3eb5707d6fa8dd57c9b6366ad",
-      "tlr": "Entropy",
-      "lane": "fast",
-      "owner": "tools",
+      "fingerprint": "sha256:2c043965779a8cbd99aa86ed626404ea7dc06d1ca21929151861a6b77c53d191",
+      "rule_id": "HLT-007-HANDWRITTEN-CONTRACT",
+      "tlr": "Contracts/data",
+      "lane": "contract",
+      "docs_url": "docs/audit-rubric.md#known-vibe-coding-insults",
+      "owner": "workspace",
       "line": 1
-    },
-    {
-      "severity": "high",
-      "category": "vibe",
-      "path": "packages/jekko/src/cli/cmd/tui/attach.ts",
-      "problem": "fallback soup detected in product code",
-      "agent_fix": "collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance",
-      "evidence": [
-        "packages/jekko/src/cli/cmd/tui/attach.ts:60 if (!args.dir) return undefined"
-      ],
-      "check_id": "HLT-001-DEAD-MARKER:vibe",
-      "hardness": "hard",
-      "confidence": 0.88,
-      "evidence_kind": "repository-scan",
-      "rerun_command": "just fast",
-      "fingerprint": "sha256:59f944295edce53e54851b2891d9feee3d61cd4cf22b334a4fafc768739a1367",
-      "rule_id": "HLT-001-DEAD-MARKER",
-      "tlr": "Entropy",
-      "lane": "fast",
-      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
-      "owner": "tools",
-      "line": 60
     }
   ],
   "agent_fix_queue": [
     {
-      "path": "Justfile",
-      "priority": "medium",
-      "rule_id": "HLT-018-PERF-CONCURRENCY-DRIFT",
-      "tlr": "Verification",
-      "lane": "fast",
+      "path": "agent/boundaries.toml",
+      "priority": "high",
+      "rule_id": "HLT-007-HANDWRITTEN-CONTRACT",
+      "tlr": "Contracts/data",
+      "lane": "contract",
       "owner": "workspace",
-      "task": "add fast deterministic build/test targets, caches, and narrow proof lanes for agent iteration",
-      "why": "`Build speed signals` scored 70 below the standard floor of 85"
-    },
-    {
-      "path": "packages/jekko/src/agent-script/examples.ts",
-      "priority": "high",
-      "tlr": "Entropy",
-      "lane": "fast",
-      "owner": "tools",
-      "task": "extract the duplicated behavior behind one named boundary and add focused tests before changing behavior",
-      "why": "duplicated product code block detected"
-    },
-    {
-      "path": "packages/jekko/src/cli/cmd/tui/attach.ts",
-      "priority": "high",
-      "rule_id": "HLT-001-DEAD-MARKER",
-      "tlr": "Entropy",
-      "lane": "fast",
-      "owner": "tools",
-      "task": "collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance",
-      "why": "fallback soup detected in product code"
-    },
-    {
-      "path": ".",
-      "priority": "medium",
-      "rule_id": "HLT-001-DEAD-MARKER",
-      "tlr": "Entropy",
-      "lane": "fast",
-      "owner": "tools",
-      "task": "split large or ambiguous authored code into smaller semantic modules with focused tests",
-      "why": "`Code shape and semantic surface` scored 0 below the standard floor of 85"
+      "task": "create `contracts/events` with event schemas, or update `agent/boundaries.toml` if the path was moved",
+      "why": "event contract path `contracts/events` is missing"
     }
   ]
 }

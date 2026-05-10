@@ -2,11 +2,11 @@
 # DO NOT EDIT BY HAND.
 
 schema_version = "1.0.0"
-installed_at = 1778135778
-jankurai_version = "0.8.11"
+installed_at = 1778421303
+jankurai_version = "0.8.13"
 standard_version = "0.8.0"
-auditor_version = "0.8.11"
-schema_contract_version = "1.6.0"
+auditor_version = "0.8.13"
+schema_contract_version = "1.6.1"
 paper_edition = "2026.05-ed8"
 target_stack_id = "rust-ts-vite-react-postgres-bounded-python"
 profile = "rust-ts-postgres"
@@ -15,6 +15,7 @@ ide = "all"
 mode = "advisory"
 update_channel = "stable"
 install_source = "auto"
+resolved_source = "auto"
 agent_request_version = "v1"
 agent_request_hash = "<!-- jankurai agent request v1 sha256:REPLACE_WITH_HASH -->"
 
@@ -150,7 +151,7 @@ merge_policy = "merge-toml"
 
 [[templates]]
 path = "agent/standard-version.toml"
-hash = "1cd68066b6d7a406eaa9bf5687a77df1a4c0c6c3f0cd35db18a43826688bbacb"
+hash = "8cc3c2cef25c8853205902f770af03d00b76019cf0e99c64ce496a67bb2642bd"
 merge_policy = "merge-toml"
 
 [[templates]]
