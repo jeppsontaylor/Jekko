@@ -82,8 +82,10 @@ const cfModel = (apiId: string, releaseDate = "2026-03-05"): Provider.Model => (
 // ai-gateway-provider sends an array of step descriptors; each entry's `query`
 // is the body forwarded to the upstream provider.
 function extractUpstreamQuery(body: unknown): Record<string, unknown> | undefined {
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-guard-returns expires=2027-01-01
   if (!Array.isArray(body) || body.length === 0) return undefined
   const first = body[0]
+  // jankurai:allow HLT-001-DEAD-MARKER reason=test-helper-guard-returns expires=2027-01-01
   if (!isRecord(first)) return undefined
   const query = first.query
   return isRecord(query) ? query : undefined
