@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+// jankurai:allow HLT-037-RELEASE-BAD-BEHAVIOR reason=beta-merge-needs-force-and-no-verify-by-design expires=2027-01-01
 
 import { $ } from "bun"
 import fs from "fs/promises"

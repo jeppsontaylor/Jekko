@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+// jankurai:allow HLT-037-RELEASE-BAD-BEHAVIOR reason=tag-release-and-dev-sync-require-no-verify-and-force-with-lease expires=2027-01-01
 
 import { Script } from "@jekko-ai/script"
 import { $ } from "bun"
