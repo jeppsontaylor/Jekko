@@ -73,6 +73,7 @@ jq -n \
       schema_version: "1.0.0",
       enabled_tools: ["gitleaks", "cargo-audit", "npm"],
       required_tools: [],
+      require_one_of: [],
       advisory_tools: ["syft"],
       fail_lane_on: "high",
       profile: $profile
@@ -85,22 +86,40 @@ jq -n \
     exit_code: 0,
     elapsed_ms: $elapsed_ms,
     log_path: $gitleaks_log,
-    checks: [
+    commands: [
       {
         name: "gitleaks",
-        command: "gitleaks detect --source . --no-git --no-banner --redact --report-format json --report-path target/jankurai/security/gitleaks.json --exit-code 0",
+        label: "Secret scanning",
+        tool: "gitleaks",
+        shell_command: "gitleaks detect --source . --no-git --no-banner --redact --report-format json --report-path target/jankurai/security/gitleaks.json --exit-code 0",
+        status: (if $gitleaks_status == 0 then "ran" else "failed" end),
+        required_by_policy: false,
+        blocking: false,
+        advisory: true,
         exit_code: $gitleaks_status,
         log_path: $gitleaks_log
       },
       {
         name: "cargo-audit",
-        command: "cd crates/tuiwright-jekko-unlock && cargo audit --no-fetch --format json --json --file Cargo.lock",
+        label: "Rust dependency audit",
+        tool: "cargo-audit",
+        shell_command: "cd crates/tuiwright-jekko-unlock && cargo audit --no-fetch --format json --json --file Cargo.lock",
+        status: (if $cargo_audit_status == 0 then "ran" else "failed" end),
+        required_by_policy: false,
+        blocking: false,
+        advisory: true,
         exit_code: $cargo_audit_status,
         log_path: $cargo_audit_log
       },
       {
         name: "npm-audit",
-        command: "cd jnoccio-fusion/web && npm audit --offline --audit-level=high --json",
+        label: "Node dependency audit",
+        tool: "npm",
+        shell_command: "cd jnoccio-fusion/web && npm audit --offline --audit-level=high --json",
+        status: (if $npm_audit_status == 0 then "ran" else "failed" end),
+        required_by_policy: false,
+        blocking: false,
+        advisory: true,
         exit_code: $npm_audit_status,
         log_path: $npm_audit_log
       }
