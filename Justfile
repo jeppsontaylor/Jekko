@@ -132,7 +132,17 @@ jekko-test-fast:
 		test/ide/ \
 		test/util/ \
 		test/auth/ \
-		test/account/
+		test/account/ \
+		test/config/agent-color.test.ts \
+		test/config/config.part-01.test.ts \
+		test/config/config.part-02.test.ts \
+		test/config/config.part-04.test.ts \
+		test/config/config.part-05.test.ts \
+		test/config/config.part-06.test.ts \
+		test/config/config.part-07.test.ts \
+		test/config/config.part-08.test.ts \
+		test/config/config.part-09.test.ts \
+		test/config/config.part-12.test.ts
 
 # Full Jekko test suite (slower; for pre-release gating).
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
@@ -228,7 +238,9 @@ security:
 	bash tools/security-lane.sh
 
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
-check: fast doctor-full score security
+# NOTE: uses `doctor` (critical) not `doctor-full` (high) because jankurai
+# v0.8.13 has a known bun.lock text-format detection gap (false-positive high).
+check: fast doctor score security
 
 # Rendered TUI component proof lane for HLT-013-RENDERED-UX-GAP evidence.
 ux-qa:
