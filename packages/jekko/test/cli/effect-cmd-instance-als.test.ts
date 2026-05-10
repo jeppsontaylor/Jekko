@@ -1,7 +1,8 @@
 import { afterEach, expect, test } from "bun:test"
-import { Effect } from "effect"
+import { Effect, Option } from "effect"
 import fs from "fs/promises"
 import { Instance } from "../../src/project/instance"
+import type { InstanceContext } from "../../src/project/instance-context"
 import { disposeAllInstances, provideTestInstance, tmpdir } from "../fixture/fixture"
 
 afterEach(async () => {
@@ -35,13 +36,13 @@ test("Instance.current reachable from inner runPromise inside Effect.promise(asy
           const current = await Effect.runPromise(
             Effect.sync(() => {
               try {
-                return Instance.current
+                return Option.some<InstanceContext>(Instance.current)
               } catch {
-                return undefined
+                return Option.none<InstanceContext>()
               }
             }),
           )
-          expect(current?.directory).toBe(dir.path)
+          expect(Option.getOrUndefined(current)?.directory).toBe(dir.path)
         }),
       ),
   })
