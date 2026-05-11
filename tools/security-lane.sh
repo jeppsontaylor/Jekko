@@ -91,11 +91,12 @@ jq -n \
         tool: "gitleaks",
         shell_command: "gitleaks detect --source . --no-git --no-banner --redact --report-format json --report-path target/jankurai/security/gitleaks.json --exit-code 0",
         status: (if $gitleaks_status == 0 then "ran" else "failed" end),
-        required_by_policy: false,
-        blocking: false,
-        advisory: true,
+        required_by_policy: true,
+        blocking: true,
+        advisory: false,
         exit_code: $gitleaks_status,
-        log_path: $gitleaks_log
+        log_path: $gitleaks_log,
+        report_path: "target/jankurai/security/gitleaks.json"
       },
       {
         name: "cargo-audit",

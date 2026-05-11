@@ -1,6 +1,6 @@
 {
-  "report_fingerprint": "sha256:312b24608600ac655c6f4e37018f75017bb85932549d11bb8efb810223242800",
-  "input_fingerprint": "sha256:c508f91d4380ddbb82aebb63afac7a25acf8123e866f8adc7889456d05fbaa7e",
+  "report_fingerprint": "sha256:17ee61b3d31da205a19172523b83844ee725e34c83c08c5d6a11bcf9c9520087",
+  "input_fingerprint": "sha256:ea27e27b26429d0274421fc5d04ba2444f7d82eebe40cf79cafef8a0498c0d87",
   "policy_fingerprint": "sha256:c7368e0846ead8ec4849b1e3f3b2be9e49b93c1073fd453d805608a088240ed1",
   "manifest_fingerprints": {
     "owner_map": "sha256:5ac1b006fc3b4a86d127aa12e3e7fd7923f82594e37640f9a8ef54ac7ac0e5fd",
@@ -11,7 +11,7 @@
     "standard_version": "sha256:59494689d3b980c10d2a268a8826bb960a7fb0a7eb8077651f0c36d215da98af"
   },
   "dirty_worktree": true,
-  "generated_at": "1778530166",
+  "generated_at": "1778531009",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -25,9 +25,9 @@
   "conformance_decision": "pass",
   "conformance_blockers": [],
   "repo": ".",
-  "run_id": "1778530166",
-  "started_at": "1778530166",
-  "elapsed_ms": 2170,
+  "run_id": "1778531009",
+  "started_at": "1778531009",
+  "elapsed_ms": 2126,
   "scope": {
     "mode": "full",
     "paths": []
@@ -54,7 +54,7 @@
     }
   },
   "git": {
-    "head": "b35794372",
+    "head": "e6f3e2f4b",
     "base": null,
     "changed_files": 0,
     "mode": "full",
@@ -1031,17 +1031,17 @@
     "artifact": {
       "path": "target/jankurai/security/evidence.json",
       "envelope_exit_code": 0,
-      "elapsed_ms": 28000,
-      "wrapper_strict": false,
-      "profile": "local",
-      "commands_ran": 2,
-      "commands_skipped": 1,
+      "elapsed_ms": 40943,
+      "wrapper_strict": true,
+      "profile": "ci",
+      "commands_ran": 1,
+      "commands_skipped": 0,
       "commands_failed": 0,
       "required_commands_skipped": 0,
       "required_commands_failed": 0,
       "blocking_commands": [],
-      "generated_at": "1778529683",
-      "git_head": "b3579437279a15c6a0be704acc6921829682a80a"
+      "generated_at": "1778531006",
+      "git_head": "e6f3e2f4b641963f97c68803cb12d08a2947c884"
     }
   },
   "boundaries": {
