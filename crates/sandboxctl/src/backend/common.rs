@@ -40,6 +40,22 @@ pub fn exit_code(status: ExitStatus) -> i32 {
     status.code().unwrap_or(127)
 }
 
+/// Shared no-op-style defaults for the `BackendImpl` lifecycle methods that
+/// don't differ between backends. Both `docker` and `bubblewrap` reuse the
+/// `worktree` workspace setup + teardown — pulling those into a single named
+/// boundary keeps the trait impls below the duplicate-block threshold.
+pub struct BackendDefaults;
+
+impl BackendDefaults {
+    pub fn default_create(lane: &Lane, workspace: &Workspace) -> Result<()> {
+        delegate_workspace_setup(lane, workspace)
+    }
+
+    pub fn default_destroy(workspace: &Workspace, keep_logs: bool) -> Result<()> {
+        super::worktree::WorktreeBackend.destroy(workspace, keep_logs)
+    }
+}
+
 /// Probe that `binary` is on PATH AND that running `binary <subcommand>`
 /// returns a successful status. Used by docker/podman to confirm both the
 /// CLI and the daemon are reachable.

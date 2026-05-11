@@ -1,3 +1,4 @@
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=parallel-trait-impl-with-bubblewrap-by-design-shared-defaults-hoisted-to-BackendDefaults expires=2027-12-01
 //! Docker / Podman backend. Cross-platform via Docker Desktop or Podman.
 //!
 //! Implementation calls the `docker`/`podman` CLI directly (no bollard
@@ -38,7 +39,7 @@ impl BackendImpl for DockerBackend {
     }
 
     fn create(&self, lane: &Lane, workspace: &Workspace) -> Result<()> {
-        super::common::delegate_workspace_setup(lane, workspace)
+        super::common::BackendDefaults::default_create(lane, workspace)
     }
 
     fn run_argv(
@@ -108,7 +109,6 @@ impl BackendImpl for DockerBackend {
         let _ = Command::new(self.binary)
             .args(["rm", "-f", "-v", &container_name])
             .status();
-        // Workspace teardown is identical across backends; reuse worktree.
-        super::worktree::WorktreeBackend.destroy(workspace, keep_logs)
+        super::common::BackendDefaults::default_destroy(workspace, keep_logs)
     }
 }

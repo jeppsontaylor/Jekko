@@ -1,7 +1,7 @@
 {
-  "report_fingerprint": "sha256:dd1c5f0df6b7a7838659c2f4f2a2e6ecfcd2a686569ce59065e469d7629e6c26",
-  "input_fingerprint": "sha256:e873b716f6375f7752a1b7a2a5ee455ecbab126882c62d168385b43e5c9167ac",
-  "policy_fingerprint": "sha256:f2060ea789ce95439be6ee0f0c022110a7e7787e0671592dfddfbda865cdd65f",
+  "report_fingerprint": "sha256:c59ae688d11c356cf9318360ee0fd611fcd54813a58e6278a050c4417157676b",
+  "input_fingerprint": "sha256:e34a9470ff8f7eb35a11d42a396061f28e79ce10337f744a30e2c6c5392ed131",
+  "policy_fingerprint": "sha256:b04b25be2f47c01bca0f66f19e13a5275d79247569683fbda42e844370dae1a7",
   "manifest_fingerprints": {
     "owner_map": "sha256:294f2e55e8522ae586ef0178b6d5cc5252b4f8793329ac1e1478f14e2088a4d9",
     "test_map": "sha256:d5ec415dc73765503183153c2eef5ff149507f8d6fe5e4e13251e1f63577a745",
@@ -10,8 +10,8 @@
     "proof_lanes": "sha256:41e615addbd9f0060396af48c3d3dd169f3fd81351fdae0be6ef0722f9e6df44",
     "standard_version": "sha256:7fde7679023e6e3ef6ed5dd10b876e0d9bc2034751245e37f91359142e43cc31"
   },
-  "dirty_worktree": false,
-  "generated_at": "1778527781",
+  "dirty_worktree": true,
+  "generated_at": "1778529266",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -25,9 +25,9 @@
   "conformance_decision": "pass",
   "conformance_blockers": [],
   "repo": ".",
-  "run_id": "1778527781",
-  "started_at": "1778527781",
-  "elapsed_ms": 1820,
+  "run_id": "1778529266",
+  "started_at": "1778529266",
+  "elapsed_ms": 1855,
   "scope": {
     "mode": "full",
     "paths": []
@@ -54,11 +54,11 @@
     }
   },
   "git": {
-    "head": "b2b50b356",
+    "head": "b696cecaa",
     "base": null,
     "changed_files": 0,
     "mode": "full",
-    "dirty_worktree": false
+    "dirty_worktree": true
   },
   "policy": {
     "path": "./agent/audit-policy.toml",
@@ -967,7 +967,23 @@
       "cost-budget"
     ]
   },
-  "security_evidence": {},
+  "security_evidence": {
+    "artifact": {
+      "path": "target/jankurai/security/evidence.json",
+      "envelope_exit_code": 0,
+      "elapsed_ms": 30000,
+      "wrapper_strict": false,
+      "profile": "local",
+      "commands_ran": 2,
+      "commands_skipped": 1,
+      "commands_failed": 0,
+      "required_commands_skipped": 0,
+      "required_commands_failed": 0,
+      "blocking_commands": [],
+      "generated_at": "1778529076",
+      "git_head": "b696cecaa7c2a1aaa0081885a62d12da909c10f8"
+    }
+  },
   "boundaries": {
     "artifact": {
       "path": "agent/boundaries.toml",

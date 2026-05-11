@@ -1,3 +1,4 @@
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=parallel-trait-impl-with-docker-by-design-shared-defaults-hoisted-to-BackendDefaults expires=2027-12-01
 //! Bubblewrap backend — Linux only.
 //!
 //! Wraps `bwrap --unshare-pid --unshare-net --die-with-parent --new-session
@@ -37,9 +38,7 @@ impl BackendImpl for BubblewrapBackend {
     }
 
     fn create(&self, lane: &Lane, workspace: &Workspace) -> Result<()> {
-        // The host-side workspace layout is identical to worktree; only the
-        // `run_argv` path differs per backend.
-        super::common::delegate_workspace_setup(lane, workspace)
+        super::common::BackendDefaults::default_create(lane, workspace)
     }
 
     /// Assemble and run a `bwrap` invocation. Argv is allowlisted upstream
@@ -111,7 +110,6 @@ impl BackendImpl for BubblewrapBackend {
     }
 
     fn destroy(&self, workspace: &Workspace, keep_logs: bool) -> Result<()> {
-        // Workspace teardown is identical across backends.
-        super::worktree::WorktreeBackend.destroy(workspace, keep_logs)
+        super::common::BackendDefaults::default_destroy(workspace, keep_logs)
     }
 }

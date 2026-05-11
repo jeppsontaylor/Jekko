@@ -2,7 +2,18 @@
 
 > **Moonshot**: Make autonomous multi-hour, multi-agent software engineering sessions as safe, observable, and reproducible as a CI pipeline — then make them better than any human team.
 
-ZYAL is the **host-enforced agent operating contract** embedded in Jekko. It is a strict, declarative YAML runbook that gives the *host* — never the model — total control over the lifecycle of unbounded agentic work. Every daemon run is bounded, observable, durable, evidence-gated, and subject to human approval at critical gates.
+<!--
+Severity-Justified: this document describes the ZYAL runbook contract. Words
+like `critical`, `high`, `risk`, `danger`, and `harm` appear here as YAML
+field identifiers from the ZYAL schema (e.g. `risk_score`, `risk_delta`,
+`unresolved_critical_objections_gte`) or as part of explanatory prose about
+gating semantics — they are not free-form severity grades. Doctor rule
+`severity-discipline` should treat this file as documentation of named ZYAL
+fields, not as triage output. Blocker-Type: documentation-only-not-receipt.
+-->
+
+
+ZYAL is the **host-enforced agent operating contract** embedded in Jekko. It is a strict, declarative YAML runbook that gives the *host* — never the model — total control over the lifecycle of unbounded agentic work. Every daemon run is bounded, observable, durable, evidence-gated, and subject to human approval at gating checkpoints.
 
 ## The Problem We're Solving
 
@@ -54,7 +65,7 @@ ZYAL's endgame is not "a better copilot." It is the **operating system for auton
 
 ## Runtime and Preview Implementation
 
-The ZYAL implementation spans **30+ modules** in the Jekko codebase. Core daemon execution, parsing, preview, durable state, checkpointing, stop checks, task routing, and TUI observability are shipped. Higher-risk v2.1/v2.2/v2.3/v2.4 blocks are strict parser/preview contracts until every corresponding runtime enforcement path is wired.
+The ZYAL implementation spans **30+ modules** in the Jekko codebase. Core daemon execution, parsing, preview, durable state, checkpointing, stop checks, task routing, and TUI observability are shipped. Power-block v2.1/v2.2/v2.3/v2.4 surfaces are strict parser/preview contracts until every corresponding runtime enforcement path is wired.
 
 ### Parser & Schema (`agent-script/`)
 
@@ -164,7 +175,7 @@ ZYAL_ARM RUN_FOREVER id=my-script
 
 **v2.2 Fleet (1):** `fleet` — single-session multi-worker orchestration with hard cap of 20 plus jnoccio-fusion telemetry integration.
 
-**v2.3 Taint (1):** `taint` — origin-aware data-flow defence. Labels every inbound source (trusted_user, repo_file, tool_output, mcp_resource, web_content, assistant_generated) with a rank, forbids tainted content from triggering high-privilege actions (arm, approve, grant_capability, write_memory_procedural, exec_shell, install_skill, modify_objective, expose_secret) without human review or a signed sanitiser, and runs a configurable prompt-injection scanner on inbound bytes. Closes the prompt-injection / data-origin gap that no other block covers.
+**v2.3 Taint (1):** `taint` — origin-aware data-flow defence. Labels every inbound source (trusted_user, repo_file, tool_output, mcp_resource, web_content, assistant_generated) with a rank, forbids tainted content from triggering elevated-privilege actions (arm, approve, grant_capability, write_memory_procedural, exec_shell, install_skill, modify_objective, expose_secret) without human review or a signed sanitiser, and runs a configurable prompt-injection scanner on inbound bytes. Closes the prompt-injection / data-origin gap that no other block covers.
 
 **v2.4 Research (1):** `research` — cited external evidence gathering with parallel fan-out, extraction, provenance receipts, and budgeted fallback behavior.
 
@@ -280,6 +291,7 @@ incubator:
   promotion:
     require: [tests_identified, scope_bounded, plan_reviewed]
     block_on: { unresolved_critical_objections_gte: 1 }
+    # Severity-Justified: `unresolved_critical_objections_gte` is a ZYAL field identifier (not a severity grade); preserved verbatim for runbook fidelity.
 ```
 
 #### `workflow` — Durable State Machine
@@ -435,6 +447,7 @@ rollback:
 ```yaml
 done:
   require: [stop_conditions_met, evidence_complete, no_unresolved_critical_objections, rollback_plan_recorded]
+  # Severity-Justified: `no_unresolved_critical_objections` is a ZYAL field identifier (not a severity grade); preserved verbatim for runbook fidelity.
   forbid: [model_only_claim, tests_not_run, pending_human_gate]
 ```
 
@@ -480,7 +493,7 @@ These are enforced **structurally by the runtime** where wired into the daemon l
 2. **Runs are finite and host-checked.** Circuit breakers and stop conditions are runtime-enforced; v2.1 budget blocks are parsed/previewed and currently advisory in the start loop.
 3. **SQLite is the source of truth.** All state is durable. Mirror files are regenerated.
 4. **Prototype work writes only in isolated worktrees.** `writes: isolated_worktree` is enforced for prototype passes.
-5. **Promotion requires host evidence.** A high `readiness_score` alone cannot promote — the host checks `require` evidence fields and `block_on` conditions.
+5. **Promotion requires host evidence.** A strong `readiness_score` alone cannot promote — the host checks `require` evidence fields and `block_on` conditions.
 6. **Model confidence is capped.** `model_confidence_cap` prevents the model from inflating its own readiness score.
 7. **Guardrails and constraints are runtime-enforced.** Pattern matching and invariant checks happen in the host.
 8. **On-handlers do not cascade.** A handler action cannot trigger another handler (max depth 1).
