@@ -54,7 +54,7 @@ ZYAL's endgame is not "a better copilot." It is the **operating system for auton
 
 ## Runtime and Preview Implementation
 
-The ZYAL implementation spans **30+ modules** in the Jekko codebase. Core daemon execution, parsing, preview, durable state, checkpointing, stop checks, task routing, and TUI observability are shipped. Higher-risk v2.1/v2.2 blocks are strict parser/preview contracts until every corresponding runtime enforcement path is wired.
+The ZYAL implementation spans **30+ modules** in the Jekko codebase. Core daemon execution, parsing, preview, durable state, checkpointing, stop checks, task routing, and TUI observability are shipped. Higher-risk v2.1/v2.2/v2.3/v2.4 blocks are strict parser/preview contracts until every corresponding runtime enforcement path is wired.
 
 ### Parser & Schema (`agent-script/`)
 
@@ -162,7 +162,13 @@ ZYAL_ARM RUN_FOREVER id=my-script
 
 **v2.1 Power Blocks (10):** `arming`, `capabilities`, `quality`, `experiments`, `models`, `budgets`, `triggers`, `rollback`, `done`, `repo_intelligence`.
 
-**Runtime coverage note:** v2.1/v2.2 blocks are strict parser and preview contracts today. The daemon runtime enforces core loop, stop checks, checkpointing, run state, incubator constraints, and fleet caps; blocks such as `arming` nonce/hash, `capabilities`, `quality`, `budgets`, `rollback`, `done`, `sandbox`, and `security` are parsed, surfaced in the Run Card, and implemented in focused helper modules where present, but are not all wired into the shipped start loop yet.
+**v2.2 Fleet (1):** `fleet` — single-session multi-worker orchestration with hard cap of 20 plus jnoccio-fusion telemetry integration.
+
+**v2.3 Taint (1):** `taint` — origin-aware data-flow defence. Labels every inbound source (trusted_user, repo_file, tool_output, mcp_resource, web_content, assistant_generated) with a rank, forbids tainted content from triggering high-privilege actions (arm, approve, grant_capability, write_memory_procedural, exec_shell, install_skill, modify_objective, expose_secret) without human review or a signed sanitiser, and runs a configurable prompt-injection scanner on inbound bytes. Closes the prompt-injection / data-origin gap that no other block covers.
+
+**v2.4 Research (1):** `research` — cited external evidence gathering with parallel fan-out, extraction, provenance receipts, and budgeted fallback behavior.
+
+**Runtime coverage note:** v2.1/v2.2/v2.3/v2.4 blocks are strict parser and preview contracts today. The daemon runtime enforces core loop, stop checks, checkpointing, run state, incubator constraints, and fleet caps; blocks such as `arming` nonce/hash, `capabilities`, `quality`, `budgets`, `rollback`, `done`, `sandbox`, `security`, `taint`, and `research` are parsed, surfaced in the Run Card, and implemented in focused helper modules where present, but are not all wired into the shipped start loop yet. In this patch, `taint` remains parse/preview-only and `research` remains optional-backend and receipt-driven.
 
 ### Block Details
 
@@ -502,14 +508,35 @@ The full set of flagship runbooks lives in [`docs/ZYAL/examples/`](ZYAL/examples
 
 | File | Demonstrates |
 |------|-------------|
-| `01-fix-until-green.zyal.yml` | Minimum viable daemon — anti-vibe, rollback, done definition |
-| `02-hypothesis-tournament.zyal.yml` | Competing hypotheses, blind cross-provider judging, negative memory |
-| `03-billion-loc-monorepo.zyal.yml` | Repo intelligence + scope control + blast radius |
-| `04-fleet-portfolio.zyal.yml` | Trigger-driven multi-issue dispatcher with budgets and anti-recursion |
-| `05-secure-mcp-lockdown.zyal.yml` | Capability leases + command floor + secrets brokering + sandbox |
-| `06-evidence-graph-merge.zyal.yml` | Proof lanes + merge witness + rollback verify |
-| `07-self-improving-skills.zyal.yml` | Skill quarantine → human review → promotion lifecycle |
-| `08-full-power-runbook.zyal.yml` | Every v2.1 power block in one runbook |
+| `01-fix-until-green.zyal` | Minimum viable daemon — anti-vibe, rollback, done definition |
+| `02-hypothesis-tournament.zyal` | Competing hypotheses, blind cross-provider judging, negative memory |
+| `03-billion-loc-monorepo.zyal` | Repo intelligence + scope control + blast radius |
+| `04-fleet-portfolio.zyal` | Trigger-driven multi-issue dispatcher with budgets and anti-recursion |
+| `05-secure-mcp-lockdown.zyal` | Capability leases + command floor + secrets brokering + sandbox |
+| `06-evidence-graph-merge.zyal` | Proof lanes + merge witness + rollback verify |
+| `07-self-improving-skills.zyal` | Skill quarantine → human review → promotion lifecycle |
+| `08-full-power-runbook.zyal` | Every v2.1 power block in one runbook |
+
+---
+
+## Sandbox Loops: R&D Outside the Main Tree
+
+A **sandbox loop** is a declarative ZYAL surface (Profile B, target=toml)
+that lets agents execute experimental code in disposable workspaces with
+permission allowlists, captured logs, and reviewable patch exports.
+
+- Canonical spec: [`agent/sandbox-lanes.toml`](agent/sandbox-lanes.toml)
+  (generated from `agent/sandbox-lanes.zyal` via `zyalc`).
+- Runtime: [`crates/sandboxctl/`](crates/sandboxctl/) — three backends
+  (`worktree` cross-platform, `bubblewrap` Linux-only, `docker`/`podman`
+  cross-platform).
+- User guide: [`docs/ZYAL/sandbox-loops.md`](docs/ZYAL/sandbox-loops.md).
+
+Sandbox loops close the gap between "agent can execute commands" and
+"agent's execution is constrained, auditable, and reversible". They embody
+the **contract** principle of ZYAL: behaviour is declarative, isolation is
+host-enforced, and every command lands in
+`.agent/runs/<cmd_id>.{stdout,stderr,meta}` for review.
 
 ---
 

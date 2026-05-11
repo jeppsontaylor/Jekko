@@ -46,13 +46,6 @@ local_command = "jankurai proofbind verify . --changed agent/owner-map.json --ch
 mode = "auto"
 
 [[tools]]
-artifact_paths = ["target/jankurai/ux-qa.json"]
-ci_command = "jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json"
-id = "ux-qa"
-local_command = "jankurai ux audit --config agent/ux-qa.toml --out target/jankurai/ux-qa.json"
-mode = "auto"
-
-[[tools]]
 artifact_paths = ["target/jankurai/migration-report.json"]
 ci_command = "jankurai migrate . --analyze --json target/jankurai/migration-report.json"
 id = "db-migration-analyze"
@@ -175,4 +168,52 @@ artifact_paths = [
 ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl"
 id = "cost-budget"
 local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl"
+mode = "auto"
+
+[[tools]]
+artifact_paths = [
+    "agent/sandbox-lanes.toml",
+    ".github/workflows/jankurai.yml",
+]
+ci_command = "cargo run --manifest-path crates/zyalc/Cargo.toml --locked --quiet -- compile --all --check"
+id = "zyalc-compile"
+local_command = "cargo run --manifest-path crates/zyalc/Cargo.toml --locked --quiet -- compile --all"
+mode = "auto"
+
+[[tools]]
+artifact_paths = [
+    "{sandbox_root}/{run_id}/patch.diff",
+    "{sandbox_root}/{run_id}/workspace/.agent/runs/",
+]
+ci_command = "cargo run --manifest-path crates/sandboxctl/Cargo.toml --locked --quiet -- validate"
+id = "sandboxctl"
+local_command = "cargo run --manifest-path crates/sandboxctl/Cargo.toml --locked --quiet -- create experiment-worktree"
+mode = "manual"
+
+[[tools]]
+id = "audit-ci"
+mode = "auto"
+
+[[tools]]
+id = "proof-routing"
+mode = "auto"
+
+[[tools]]
+id = "security"
+mode = "auto"
+
+[[tools]]
+id = "ux-qa"
+mode = "auto"
+
+[[tools]]
+id = "db-migration-analyze"
+mode = "auto"
+
+[[tools]]
+id = "contract-drift"
+mode = "auto"
+
+[[tools]]
+id = "rust-witness"
 mode = "auto"

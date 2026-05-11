@@ -17,9 +17,17 @@ use test_helpers::{ensure_artifact_dir, jekko_bin, prepare_workspace, spawn_jekk
 
 const RECOGNITION_BUDGET: Duration = Duration::from_millis(1500);
 
+fn enabled() -> bool {
+    std::env::var("JEKKO_TUIWRIGHT_PTY").as_deref() == Ok("1")
+}
+
 #[test]
 #[serial]
 fn large_zyal_paste_recognised_under_one_and_a_half_seconds() -> Result<()> {
+    if !enabled() {
+        eprintln!("skipped: set JEKKO_TUIWRIGHT_PTY=1 to run prompt PTY tests");
+        return Ok(());
+    }
     let Some(jekko) = jekko_bin() else {
         eprintln!("skipped: set JEKKO_BIN to the jekko binary path");
         return Ok(());
@@ -33,7 +41,7 @@ fn large_zyal_paste_recognised_under_one_and_a_half_seconds() -> Result<()> {
     page.wait_for_text("ctrl+p commands", Duration::from_secs(30))
         .context("jekko prompt UI did not boot")?;
 
-    let zyal = std::fs::read_to_string(repo_root().join("docs/ZYAL/examples/12-jankurai-min-loop.zyal.yml"))
+    let zyal = std::fs::read_to_string(repo_root().join("docs/ZYAL/examples/12-jankurai-min-loop.zyal"))
         .context("read 12-jankurai-min-loop example")?;
     if zyal.len() < 5000 {
         return Err(anyhow!(

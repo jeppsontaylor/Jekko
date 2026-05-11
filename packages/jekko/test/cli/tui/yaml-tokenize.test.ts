@@ -173,7 +173,7 @@ describe("tokenizeYaml", () => {
   })
 
   test("covers the real minimal Jankurai fleet example with rich scopes", () => {
-    const text = example("12-jankurai-min-loop.zyal.yml")
+    const text = example("12-jankurai-min-loop.zyal")
     const tokens = tokenizeYaml(text)
     const scopes = new Set(scopesIn(tokens))
 

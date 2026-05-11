@@ -6,6 +6,7 @@ import path from "path"
 import { detectZyal, scanZyalEnvelope } from "./activation"
 import { getZyalExample, listZyalExamples } from "./examples"
 import { extractZyalBlock, parseZyal } from "./parser"
+import { ZYAL_CONTRACT_VERSION, ZYAL_RESEARCH_BLOCK_VERSION, ZYAL_RUNTIME_SENTINEL_VERSION } from "./version"
 
 describe("ZYAL parser", () => {
   test("fast envelope scan recognises complete pasted ZYAL without schema parsing", () => {
@@ -38,12 +39,31 @@ ZYAL_ARM RUN_FOREVER id=regex-safe`
     })
   })
 
+  test("rejects vv1 sentinels", async () => {
+    const text = `<<<ZYAL vv1:daemon id=test>>>
+version: v1
+intent: daemon
+confirm: RUN_FOREVER
+job:
+  name: test
+  objective: test
+stop:
+  all:
+    - git_clean: {}
+<<<END_ZYAL id=test>>>
+ZYAL_ARM RUN_FOREVER id=test`
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("No valid ZYAL block found")
+  })
+
   test("accepts a valid example", async () => {
     const example = getZyalExample("jankurai-clean-worktree")
     expect(example).toBeDefined()
     const parsed = await Effect.runPromise(parseZyal(example!.text))
     expect(parsed.spec.intent).toBe("daemon")
     expect(parsed.spec.confirm).toBe("RUN_FOREVER")
+    expect(parsed.preview.contract_version).toBe(ZYAL_CONTRACT_VERSION)
+    expect(parsed.preview.runtime_sentinel_version).toBe(ZYAL_RUNTIME_SENTINEL_VERSION)
+    expect(parsed.preview.research_block_version).toBe(ZYAL_RESEARCH_BLOCK_VERSION)
     expect(parsed.preview.armed).toBe(true)
   })
 
@@ -183,10 +203,10 @@ ZYAL_ARM RUN_FOREVER id=test`
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
-  job:
+job:
   name: test
   objective: test
-  extra: nope
+extra: nope
 stop:
   all:
     - git_clean: {}
@@ -250,20 +270,21 @@ ZYAL_ARM RUN_FOREVER id=one`
 
   test("parses full docs ZYAL examples", async () => {
     const examplesDir = path.resolve(import.meta.dir, "../../../../docs/ZYAL/examples")
-    const files = fs.readdirSync(examplesDir).filter((file) => file.endsWith(".zyal.yml")).sort()
+    const files = fs.readdirSync(examplesDir).filter((file) => file.endsWith(".zyal")).sort()
     expect(files).toEqual([
-      "01-fix-until-green.zyal.yml",
-      "02-hypothesis-tournament.zyal.yml",
-      "03-billion-loc-monorepo.zyal.yml",
-      "04-fleet-portfolio.zyal.yml",
-      "05-secure-mcp-lockdown.zyal.yml",
-      "06-evidence-graph-merge.zyal.yml",
-      "07-self-improving-skills.zyal.yml",
-      "08-full-power-runbook.zyal.yml",
-      "09-control-plane-preview.zyal.yml",
-      "10-jankurai-master-loop.zyal.yml",
-      "11-jankurai-fleet-loop.zyal.yml",
-      "12-jankurai-min-loop.zyal.yml",
+      "01-fix-until-green.zyal",
+      "02-hypothesis-tournament.zyal",
+      "03-billion-loc-monorepo.zyal",
+      "04-fleet-portfolio.zyal",
+      "05-secure-mcp-lockdown.zyal",
+      "06-evidence-graph-merge.zyal",
+      "07-self-improving-skills.zyal",
+      "08-full-power-runbook.zyal",
+      "09-control-plane-preview.zyal",
+      "10-jankurai-master-loop.zyal",
+      "11-jankurai-fleet-loop.zyal",
+      "12-jankurai-min-loop.zyal",
+      "13-advanced-research-loop.zyal",
     ])
     for (const file of files) {
       const text = fs.readFileSync(path.join(examplesDir, file), "utf8")
@@ -276,7 +297,7 @@ ZYAL_ARM RUN_FOREVER id=one`
   test("master loop runbook hardens with v2.3 taint defence", async () => {
     const masterPath = path.resolve(
       import.meta.dir,
-      "../../../../docs/ZYAL/examples/10-jankurai-master-loop.zyal.yml",
+      "../../../../docs/ZYAL/examples/10-jankurai-master-loop.zyal",
     )
     const text = fs.readFileSync(masterPath, "utf8")
     const parsed = await Effect.runPromise(parseZyal(text))
@@ -308,6 +329,17 @@ ZYAL_ARM RUN_FOREVER id=one`
     expect(parsed.preview.reasoning_privacy_enabled).toBe(true)
     expect(parsed.preview.unsupported_feature_policy_enabled).toBe(true)
     expect(parsed.preview.unsupported_feature_policy_summary).toContain("required:14")
+  })
+
+  test("accepts the advanced research example", async () => {
+    const parsed = await Effect.runPromise(parseZyal(getZyalExample("advanced-research-loop")!.text))
+    expect(parsed.preview.research_enabled).toBe(true)
+    expect(parsed.preview.research_mode).toBe("mixed")
+    expect(parsed.preview.research_max_parallel).toBe(6)
+    expect(parsed.preview.research_summary).toContain("autonomy:require_plan")
+    expect(parsed.preview.research_provider_summary).toContain("prefer:official_api,primary_source,privacy_first")
+    expect(parsed.preview.research_evidence_summary).toContain("citations")
+    expect(parsed.preview.research_safety_summary).toContain("block_internal")
   })
 
   test("rejects unsupported required features in fail-closed preview policy", async () => {
@@ -606,11 +638,27 @@ permissions:
   list: allow
   glob: allow
   grep: allow
+  research: allow
+  websearch: deny
+  webfetch: ask
   external_directory: ask`)
     const parsed = await Effect.runPromise(parseZyal(text))
     expect(parsed.spec.permissions?.read).toBe("allow")
     expect(parsed.spec.permissions?.glob).toBe("allow")
     expect(parsed.spec.permissions?.external_directory).toBe("ask")
+    expect(parsed.spec.permissions?.research).toBe("allow")
+    expect(parsed.spec.permissions?.websearch).toBe("deny")
+    expect(parsed.spec.permissions?.webfetch).toBe("ask")
+    expect(parsed.preview.permissions).toContain("research:allow")
+    expect(parsed.preview.permissions).toContain("websearch:deny")
+    expect(parsed.preview.permissions).toContain("webfetch:ask")
+  })
+
+  test("rejects OpenQG-style ui.mode keys", async () => {
+    const text = makeZyal(`
+ui:
+  mode: gold`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("Unknown ZYAL key: ui.mode")
   })
 
   test("accepts unattended interaction metadata", async () => {
@@ -722,9 +770,9 @@ memory:
     task_context:
       scope: task
       retention: until_promotion
-    max_entries: 100
-    write_policy: append_only
-    read_policy: inject_at_start
+      max_entries: 100
+      write_policy: append_only
+      read_policy: inject_at_start
     lessons:
       scope: global
       retention: permanent

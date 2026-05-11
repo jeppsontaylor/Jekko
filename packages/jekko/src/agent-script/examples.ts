@@ -1,4 +1,6 @@
 // jankurai:allow HLT-000-SCORE-DIMENSION reason=examples-file-contains-parallel-zyal-templates-by-design expires=2027-01-01
+import { ZYAL_RUNTIME_SENTINEL_VERSION } from "./version"
+
 export type ZyalExample = {
   readonly id: string
   readonly title: string
@@ -7,7 +9,7 @@ export type ZyalExample = {
 }
 
 function wrap(id: string, body: string) {
-  return `<<<ZYAL v1:daemon id=${id}>>>\nversion: v1\nintent: daemon\nconfirm: RUN_FOREVER\n\n${body.trim()}\n<<<END_ZYAL id=${id}>>>\nZYAL_ARM RUN_FOREVER id=${id}\n`
+  return `<<<ZYAL ${ZYAL_RUNTIME_SENTINEL_VERSION}:daemon id=${id}>>>\nversion: v1\nintent: daemon\nconfirm: RUN_FOREVER\n\n${body.trim()}\n<<<END_ZYAL id=${id}>>>\nZYAL_ARM RUN_FOREVER id=${id}\n`
 }
 
 function example(id: string, title: string, description: string, body: string): ZyalExample {
@@ -957,7 +959,7 @@ channels:
 
 imports:
   list:
-    - source: "docs/ZYAL/examples/08-full-power-runbook.zyal.yml"
+    - source: "docs/ZYAL/examples/08-full-power-runbook.zyal"
       optional: true
     - source: "zyal://stdlib/control-plane-preview@1"
       optional: true
@@ -973,6 +975,59 @@ unsupported_feature_policy:
   optional: [unsupported_preview_hooks]
   fail_closed: true
   on_missing: reject`,
+  ),
+
+  "advanced-research-loop": example(
+    "advanced-research-loop",
+    "Advanced research loop",
+    "Evidence-first external research with citations and receipt tracking.",
+    `job:
+  name: "Advanced research loop"
+  objective: |
+    Research external facts with cited evidence, then feed the verified
+    findings back into implementation work.
+
+loop:
+  policy: forever
+  sleep: 5s
+
+stop:
+  all:
+    - git_clean:
+        allow_untracked: false
+
+permissions:
+  research: allow
+  websearch: allow
+  webfetch: allow
+
+research:
+  version: v1
+  mode: mixed
+  autonomy: require_plan
+  max_parallel: 6
+  timeout_seconds: 30
+  provider_policy:
+    prefer: [official_api, primary_source, privacy_first]
+    allow: [openalex, crossref, arxiv, pubmed, gdelt, brave, tavily, exa, searxng, firecrawl, jina, github]
+    missing_provider: skip_with_receipt
+  extraction:
+    enabled: true
+    max_pages: 12
+    allowed_extractors: [built_in, jina, firecrawl]
+  evidence:
+    require_citations: true
+    claim_level: true
+    store: sqlite
+  safety:
+    redact_secrets: true
+    block_internal_urls: true
+    prompt_injection: quarantine
+    taint_label: web_content
+  budgets:
+    max_queries: 24
+    max_pages: 20
+    max_cost_usd: 1.0`,
   ),
 
 }

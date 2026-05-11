@@ -224,6 +224,10 @@
       "command": "just fast",
       "purpose": "verify translated README proof routes stay visible"
     },
+    "SANDBOX_WORKPLAN.md": {
+      "command": "just fast",
+      "purpose": "verify sandbox-loop audit doc proof route stays visible"
+    },
     "SECURITY.md": {
       "command": "just fast",
       "purpose": "verify security doc proof route stays visible"
@@ -256,6 +260,18 @@
       "command": "just score",
       "purpose": "verify manifests remain parseable and authoritative"
     },
+    "agent/sandbox-lanes.toml": {
+      "command": "just sandbox-validate",
+      "purpose": "verify sandbox-lane TOML schema parses and every lane validates"
+    },
+    "agent/sandbox-lanes.zyal": {
+      "command": "just zyalc-compile-check",
+      "purpose": "verify zyal source compiles cleanly and matches checked-in TOML"
+    },
+    "agent/workflows/": {
+      "command": "just zyalc-compile-check",
+      "purpose": "verify workflow .zyal sources compile cleanly to .github/workflows/*.yml"
+    },
     "apps/": {
       "command": "just workspace-fast",
       "purpose": "verify app surfaces remain routed through the audit"
@@ -275,6 +291,14 @@
     "crates/": {
       "command": "just fast",
       "purpose": "verify Rust behavior and audit checks"
+    },
+    "crates/sandboxctl/": {
+      "command": "just sandboxctl-fast",
+      "purpose": "verify sandboxctl runtime + unit tests + worktree smoke"
+    },
+    "crates/zyalc/": {
+      "command": "just zyalc-fast",
+      "purpose": "verify zyalc compile parity (round-trip + idempotency)"
     },
     "db/": {
       "command": "jankurai doctor --fail-on critical",
@@ -302,7 +326,7 @@
     },
     "examples/perfect-web-api-db/backend/src/background_job.rs": {
       "command": "just fast",
-      "purpose": "run proofs for background\u2011job cell"
+      "purpose": "run proofs for background‑job cell"
     },
     "flake": {
       "command": "just fast",
@@ -340,10 +364,6 @@
       "command": "just fast",
       "purpose": "verify jnoccio-fusion proof routes stay visible"
     },
-    "jnoccio-fusion/web/": {
-      "command": "cd jnoccio-fusion/web && npx playwright test",
-      "purpose": "verify jnoccio-fusion dashboard rendered UX proof stays visible"
-    },
     "nix": {
       "command": "just fast",
       "purpose": "verify nix proof route stays visible"
@@ -352,9 +372,17 @@
       "command": "just fast",
       "purpose": "verify nix proof routes stay visible"
     },
+    "opencode.json": {
+      "command": "just fast",
+      "purpose": "verify OpenCode permission allowlist remains parseable"
+    },
     "ops/": {
       "command": "just check-fast",
       "purpose": "verify ops surfaces remain visible to the audit"
+    },
+    "package-lock.json": {
+      "command": "jankurai doctor --fail-on high",
+      "purpose": "verify the root lockfile sentinel stays visible to doctor"
     },
     "package.json": {
       "command": "just fast",
@@ -364,30 +392,6 @@
       "command": "just workspace-fast",
       "purpose": "verify package proof routes stay visible"
     },
-    "packages/app/": {
-      "command": "just fast",
-      "purpose": "verify app package proof routes stay visible"
-    },
-    "packages/console/app/": {
-      "command": "just fast",
-      "purpose": "verify console app proof routes stay visible"
-    },
-    "packages/console/core/": {
-      "command": "just fast",
-      "purpose": "verify console core proof routes stay visible"
-    },
-    "packages/console/function/": {
-      "command": "just fast",
-      "purpose": "verify console function proof routes stay visible"
-    },
-    "packages/console/mail/": {
-      "command": "just fast",
-      "purpose": "verify console mail proof routes stay visible"
-    },
-    "packages/console/resource/": {
-      "command": "just fast",
-      "purpose": "verify console resource proof routes stay visible"
-    },
     "packages/containers/": {
       "command": "just fast",
       "purpose": "verify container proof routes stay visible"
@@ -395,30 +399,6 @@
     "packages/core/": {
       "command": "just fast",
       "purpose": "verify core proof routes stay visible"
-    },
-    "packages/desktop/": {
-      "command": "just fast",
-      "purpose": "verify desktop proof routes stay visible"
-    },
-    "packages/docs/": {
-      "command": "just fast",
-      "purpose": "verify docs proof routes stay visible"
-    },
-    "packages/enterprise/": {
-      "command": "just fast",
-      "purpose": "verify enterprise proof routes stay visible"
-    },
-    "packages/extensions/zed/": {
-      "command": "just fast",
-      "purpose": "verify zed extension proof routes stay visible"
-    },
-    "packages/function/": {
-      "command": "just fast",
-      "purpose": "verify function proof routes stay visible"
-    },
-    "packages/identity/": {
-      "command": "just fast",
-      "purpose": "verify identity proof routes stay visible"
     },
     "packages/jekko/": {
       "command": "just fast",
@@ -463,22 +443,6 @@
     "packages/sdk/": {
       "command": "just fast",
       "purpose": "verify sdk proof routes stay visible"
-    },
-    "packages/slack/": {
-      "command": "just fast",
-      "purpose": "verify slack proof routes stay visible"
-    },
-    "packages/storybook/": {
-      "command": "just fast",
-      "purpose": "verify storybook proof routes stay visible"
-    },
-    "packages/ui/": {
-      "command": "just fast",
-      "purpose": "verify ui proof routes stay visible"
-    },
-    "packages/web/": {
-      "command": "just workspace-fast",
-      "purpose": "verify web package proof routes stay visible"
     },
     "paper/": {
       "command": "just fast",
@@ -543,6 +507,10 @@
     "tools/": {
       "command": "just fast",
       "purpose": "verify Rust behavior and audit checks"
+    },
+    "tools/sandbox-wrap.sh": {
+      "command": "just sandboxctl-fast",
+      "purpose": "verify sandbox wrapper forwards correctly into sandboxctl"
     },
     "tsconfig.json": {
       "command": "just fast",

@@ -124,6 +124,11 @@ jekko-typecheck-fast:
 jekko-build-fast:
 	bun turbo --cache-dir "$TURBO_CACHE_DIR" --cache=local:rw --parallel build --filter=jekko
 
+# Build only the host Jekko binary for PTY/TUI smoke lanes.
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
+jekko-build-host-fast:
+	bun --cwd packages/jekko ./script/build.ts --single --skip-install
+
 # Narrow lane for the main Jekko package behavior checks.
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
 jekko-test-fast:
@@ -238,10 +243,75 @@ security:
 	bash tools/security-lane.sh
 
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
-# NOTE: uses `doctor` (critical) not `doctor-full` (high) because jankurai
-# v0.8.13 has a known bun.lock text-format detection gap (false-positive high).
-check: fast doctor score security
+# Uses `doctor-full` now that the root package-lock sentinel satisfies the
+# lockfile heuristic without relying on the older false-positive gap.
+check: fast doctor-full score security
 
 # Rendered TUI component proof lane for HLT-013-RENDERED-UX-GAP evidence.
 ux-qa:
 	bun --cwd packages/jekko test test/cli/tui/ test/cli/cmd/tui/
+
+# Host binary smoke for the TUI-only product surface.
+tui-binary-smoke: jekko-build-host-fast
+	bun --cwd packages/jekko ./script/tui-binary-smoke.ts
+
+# CI-safe TUI lane: no production keys, no browser lane.
+tui-ci: tui-binary-smoke
+	bun --cwd packages/jekko test test/cli/tui/ test/cli/cmd/tui/
+	JEKKO_BIN="$(bun --cwd packages/jekko ./script/host-binary-path.ts)" cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml --no-run
+	JEKKO_BIN="$(bun --cwd packages/jekko ./script/host-binary-path.ts)" cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml --no-fail-fast
+
+# Copy approved local Jekko/Jnoccio keys from home-level env files into the
+# canonical outside-repo live TUI test env file, redacting all output.
+tui-live-prod-init:
+	bun --cwd packages/jekko ./script/tui-live-prod-init.ts
+
+# Local-only live production TUI lane. This refuses to run in CI.
+tui-live-prod: jekko-build-host-fast
+	bun --cwd packages/jekko ./script/tui-live-prod.ts
+
+# Narrow lane for the sandboxctl Rust crate compile path.
+# jankurai:proof HLT-012-OVERBROAD-AGENCY parallel=1 cache=cargo-build narrow-targets=true
+sandboxctl-check:
+	cargo check --manifest-path crates/sandboxctl/Cargo.toml --locked --all-targets
+
+# Narrow lane for the sandboxctl Rust crate test compile path.
+# jankurai:proof HLT-012-OVERBROAD-AGENCY parallel=1 cache=cargo-test narrow-targets=true
+sandboxctl-test:
+	cargo test --manifest-path crates/sandboxctl/Cargo.toml --locked --tests --no-fail-fast
+
+# Narrow lane for the sandboxctl Rust crate build path.
+# jankurai:proof HLT-012-OVERBROAD-AGENCY parallel=1 cache=cargo-build narrow-targets=true
+sandboxctl-build:
+	cargo build --manifest-path crates/sandboxctl/Cargo.toml --locked
+
+# Composed sandboxctl fast lane.
+# jankurai:proof HLT-012-OVERBROAD-AGENCY parallel=1 cache=cargo-build narrow-targets=true
+sandboxctl-fast: sandboxctl-check sandboxctl-build sandboxctl-test
+
+# Schema-validate agent/sandbox-lanes.toml.
+sandbox-validate:
+	cargo run --manifest-path crates/sandboxctl/Cargo.toml --locked --quiet -- validate
+
+# Narrow lane for the zyalc compiler crate check path.
+# jankurai:proof HLT-032-ZYAL-COMPILE-DRIFT parallel=1 cache=cargo-build narrow-targets=true
+zyalc-check:
+	cargo check --manifest-path crates/zyalc/Cargo.toml --locked --all-targets
+
+# Narrow lane for the zyalc compiler crate tests.
+# jankurai:proof HLT-032-ZYAL-COMPILE-DRIFT parallel=1 cache=cargo-test narrow-targets=true
+zyalc-test:
+	cargo test --manifest-path crates/zyalc/Cargo.toml --locked --tests --no-fail-fast
+
+# Build + drift-check across every registered .zyal source.
+# jankurai:proof HLT-032-ZYAL-COMPILE-DRIFT parallel=1 cache=cargo-build narrow-targets=true
+zyalc-compile-check:
+	cargo run --manifest-path crates/zyalc/Cargo.toml --locked --quiet -- compile --all --check
+
+# Composed zyalc fast lane.
+zyalc-fast: zyalc-check zyalc-test zyalc-compile-check
+
+# Local sandbox-loop experiment entrypoint. Override `cmd` to change the inner command.
+# jankurai:proof HLT-012-OVERBROAD-AGENCY parallel=1 cache=cargo-build narrow-targets=true
+experiment cmd="just --list":
+	tools/sandbox-wrap.sh --lane experiment-worktree -- {{cmd}}

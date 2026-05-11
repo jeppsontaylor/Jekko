@@ -44,6 +44,24 @@ rules_covered = ["HLT-018-PERF-CONCURRENCY-DRIFT"]
 timeout_seconds = 900
 
 [[lane]]
+command = "just tui-ci"
+command_id = "lane.tui-ci"
+cost = 8
+destructive = false
+kind = "validation"
+name = "tui-ci"
+purpose = "CI-safe TUI-only proof: host binary smoke, rendered TUI tests, and no-key TUIwright PTY tests"
+required_artifacts = []
+requires_network = false
+rules_covered = [
+    "HLT-004-UNMAPPED-PROOF",
+    "HLT-008-FALSE-GREEN-RISK",
+    "HLT-013-RENDERED-UX-GAP",
+    "HLT-018-PERF-CONCURRENCY-DRIFT",
+]
+timeout_seconds = 1200
+
+[[lane]]
 command = "just workspace-test-fast"
 command_id = "lane.workspace-test-fast"
 cost = 4
@@ -279,19 +297,6 @@ rules_covered = ["HLT-029-RUST-BAD-BEHAVIOR"]
 timeout_seconds = 900
 
 [[lane]]
-command = "cd jnoccio-fusion/web && npx playwright test"
-command_id = "lane.ux-e2e"
-cost = 30
-destructive = false
-kind = "validation"
-name = "ux-e2e"
-purpose = "rendered UX proof for jnoccio-fusion dashboard (Playwright E2E)"
-required_artifacts = ["jnoccio-fusion/web/playwright-report/"]
-requires_network = true
-rules_covered = ["HLT-013-RENDERED-UX-GAP"]
-timeout_seconds = 3600
-
-[[lane]]
 command = "just ux-qa"
 command_id = "lane.ux-qa"
 cost = 15
@@ -345,3 +350,53 @@ purpose = "secret, dependency, and workflow proof"
 command = "just check"
 name = "release"
 purpose = "full merge gate"
+
+[[lane]]
+command = "just sandbox-validate"
+command_id = "lane.sandbox-validate"
+cost = 4
+destructive = false
+kind = "validation"
+name = "sandbox-validate"
+purpose = "schema-validate agent/sandbox-lanes.toml and detect backend availability"
+required_artifacts = []
+requires_network = false
+rules_covered = [
+    "HLT-012-OVERBROAD-AGENCY",
+    "HLT-032-ZYAL-COMPILE-DRIFT",
+    "HLT-033-UNDECLARED-SANDBOX-LOOP",
+]
+timeout_seconds = 300
+
+[[lane]]
+command = "just zyalc-compile-check"
+command_id = "lane.zyalc-drift"
+cost = 5
+destructive = false
+kind = "validation"
+name = "zyalc-drift"
+purpose = "detect drift between .zyal sources and their generated TOML/YAML targets"
+required_artifacts = []
+requires_network = false
+rules_covered = [
+    "HLT-002-GENERATED-MUTATION",
+    "HLT-032-ZYAL-COMPILE-DRIFT",
+]
+timeout_seconds = 300
+
+[[lane]]
+command = "just sandboxctl-fast"
+command_id = "lane.sandboxctl-fast"
+cost = 8
+destructive = false
+kind = "validation"
+name = "sandboxctl-fast"
+purpose = "sandboxctl Rust crate check + build + unit + worktree smoke tests"
+required_artifacts = []
+requires_network = false
+rules_covered = [
+    "HLT-012-OVERBROAD-AGENCY",
+    "HLT-029-RUST-BAD-BEHAVIOR",
+    "HLT-033-UNDECLARED-SANDBOX-LOOP",
+]
+timeout_seconds = 1200

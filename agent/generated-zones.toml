@@ -207,3 +207,9 @@ command = "sst dev"
 path = "packages/sdk/js/sst-env.d.ts"
 read_only = true
 source = "generated"
+
+[[zone]]
+command = "cargo run -p zyalc --manifest-path crates/zyalc/Cargo.toml -- compile agent/sandbox-lanes.zyal"
+path = "agent/sandbox-lanes.toml"
+read_only = true
+source = "zyalc"

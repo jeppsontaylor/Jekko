@@ -54,7 +54,7 @@ ZYAL's endgame is not "a better copilot." It is the **operating system for auton
 
 ## Runtime and Preview Implementation
 
-The ZYAL implementation spans **30+ modules** in the Jekko codebase. Core daemon execution, parsing, preview, durable state, checkpointing, stop checks, task routing, and TUI observability are shipped. Higher-risk v2.1/v2.2 blocks are strict parser/preview contracts until every corresponding runtime enforcement path is wired.
+The ZYAL implementation spans **30+ modules** in the Jekko codebase. Core daemon execution, parsing, preview, durable state, checkpointing, stop checks, task routing, and TUI observability are shipped. Higher-risk v2.1/v2.2/v2.3/v2.4 blocks are strict parser/preview contracts until every corresponding runtime enforcement path is wired.
 
 ### Parser & Schema (`agent-script/`)
 
@@ -166,7 +166,9 @@ ZYAL_ARM RUN_FOREVER id=my-script
 
 **v2.3 Taint (1):** `taint` — origin-aware data-flow defence. Labels every inbound source (trusted_user, repo_file, tool_output, mcp_resource, web_content, assistant_generated) with a rank, forbids tainted content from triggering high-privilege actions (arm, approve, grant_capability, write_memory_procedural, exec_shell, install_skill, modify_objective, expose_secret) without human review or a signed sanitiser, and runs a configurable prompt-injection scanner on inbound bytes. Closes the prompt-injection / data-origin gap that no other block covers.
 
-**Runtime coverage note:** v2.1/v2.2/v2.3 blocks are strict parser and preview contracts today. The daemon runtime enforces core loop, stop checks, checkpointing, run state, incubator constraints, and fleet caps; blocks such as `arming` nonce/hash, `capabilities`, `quality`, `budgets`, `rollback`, `done`, `sandbox`, `security`, and `taint` are parsed, surfaced in the Run Card, and implemented in focused helper modules where present, but are not all wired into the shipped start loop yet. In this patch, `taint` remains parse/preview-only and does not enforce runtime data-flow restrictions.
+**v2.4 Research (1):** `research` — cited external evidence gathering with parallel fan-out, extraction, provenance receipts, and budgeted fallback behavior.
+
+**Runtime coverage note:** v2.1/v2.2/v2.3/v2.4 blocks are strict parser and preview contracts today. The daemon runtime enforces core loop, stop checks, checkpointing, run state, incubator constraints, and fleet caps; blocks such as `arming` nonce/hash, `capabilities`, `quality`, `budgets`, `rollback`, `done`, `sandbox`, `security`, `taint`, and `research` are parsed, surfaced in the Run Card, and implemented in focused helper modules where present, but are not all wired into the shipped start loop yet. In this patch, `taint` remains parse/preview-only and `research` remains optional-backend and receipt-driven.
 
 ### Block Details
 

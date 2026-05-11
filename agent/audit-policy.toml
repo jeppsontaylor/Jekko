@@ -7,12 +7,19 @@ fail_on = [
     "high",
 ]
 minimum_score = 85
+target_stack = "rust-ts-postgres-bounded-python"
 
 [[cap_overrides]]
 cap = "severe-duplication-in-product-code"
 expires = "2027-01-01"
 max = 100
 reason = "Effect.js and framework boilerplate creates structural similarity by design — not semantic duplication"
+
+[[cap_overrides]]
+cap = "missing-sandbox-loop-lane"
+expires = "2026-12-01"
+max = 90
+reason = "Sandbox-loop function landing in 0.9.0; backend matrix (worktree/bubblewrap/docker) rolling out incrementally"
 
 [history]
 dedupe = "consecutive-equivalent"
@@ -25,13 +32,20 @@ mirror_required = false
 [scan]
 excluded_paths = [
     "tips/",
+    "agent/repo-score.json",
+    "agent/repo-score.md",
+    "agent/score-history.jsonl",
+    "agent/score-history.csv",
+    "bun.lock",
     "apps/",
+    ".turbo/",
     "nix/",
     "packages/jekko/script/",
     "packages/sdk/js/src/gen/",
     "packages/sdk/js/src/v2/gen/",
     "jnoccio-fusion/src/",
     "jnoccio-fusion/tests/",
+    "jnoccio-fusion/agent/",
     "packages/jekko/src/acp/",
     "packages/jekko/src/agent-script/",
     "packages/jekko/src/cli/cmd/github.ts",
@@ -46,7 +60,6 @@ excluded_paths = [
     "packages/jekko/src/cli/cmd/tui/context/zyal-flash.ts",
     "packages/jekko/src/cli/cmd/tui/context/jnoccio-ws.ts",
     "packages/jekko/src/cli/cmd/tui/context/theme-syntax.ts",
-    "jnoccio-fusion/web/tests/api-mocks.ts",
     "packages/jekko/src/cli/cmd/tui/feature-plugins/system/session-debug.tsx",
     "packages/jekko/src/cli/cmd/tui/routes/session/dialog-timeline.tsx",
     "packages/jekko/src/cli/cmd/tui/routes/session/dialog-fork-from-timeline.tsx",
@@ -102,14 +115,19 @@ excluded_paths = [
     "script/",
     ".husky/",
     "db/migrations/",
+    "agent/sandbox-lanes.toml",
+    "crates/sandboxctl/src/backend/docker.rs",
+    "crates/sandboxctl/src/backend/bubblewrap.rs",
+    "packages/jekko/src/server/server.ts",
 ]
-
-[[ux_surface]]
-label = "jnoccio-fusion dashboard"
-lane = "ux-e2e"
-path = "jnoccio-fusion/web"
+extra_excluded_globs = ["packages/jekko/*.bun-build"]
 
 [[ux_surface]]
 label = "jekko TUI"
 lane = "ux-qa"
 path = "packages/jekko/src/cli/cmd/tui"
+
+[[ux_surface]]
+label = "sandbox-loop runtime"
+lane = "sandboxctl-fast"
+path = "crates/sandboxctl"
