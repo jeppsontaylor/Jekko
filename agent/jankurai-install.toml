@@ -2,10 +2,10 @@
 # DO NOT EDIT BY HAND.
 
 schema_version = "1.0.0"
-installed_at = 1778524254
-jankurai_version = "0.8.16"
+installed_at = 1778529917
+jankurai_version = "1.0.0"
 standard_version = "0.8.0"
-auditor_version = "0.8.16"
+auditor_version = "1.0.0"
 schema_contract_version = "1.7.0"
 paper_edition = "2026.05-ed8"
 target_stack_id = "rust-ts-vite-react-postgres-bounded-python"
@@ -166,7 +166,7 @@ merge_policy = "merge-toml"
 
 [[templates]]
 path = "agent/owner-map.json"
-hash = "50efe83253703fb3d2defe522833c2e155ecb22e143ba47cc3c3e5c5d0e6230f"
+hash = "01ce0059872f522c6136e9f58d70c53b5b70fac48aa1e5408d72d58fedc8e0bd"
 merge_policy = "merge-json"
 
 [[templates]]
@@ -176,13 +176,18 @@ merge_policy = "merge-toml"
 
 [[templates]]
 path = "agent/standard-version.toml"
-hash = "6c38f7e92693c9dec40e2694dc4ccd92d98627d83964dff57bdda137d98ec2de"
+hash = "aeaf32d90cfcf3d6cadca0524c7471526f976b0513fb662dd159dc560a695be0"
 merge_policy = "merge-toml"
 
 [[templates]]
 path = "agent/test-map.json"
-hash = "431199bff437c9af6caf0a060def9a5ed5d1691e4c67543a220e65100b504b57"
+hash = "492c45dcb09e99ccea543ad94faea70c7cf0e27d86f428705ce2eead485940b4"
 merge_policy = "merge-json"
+
+[[templates]]
+path = "agent/ux-qa.toml"
+hash = "3ed34d3c72f43c7fd1c0aae658c0a2cffbb9d6646ec3bdd3280d6452b0ad4e8b"
+merge_policy = "merge-toml"
 
 [[templates]]
 path = "contracts/AGENTS.md"

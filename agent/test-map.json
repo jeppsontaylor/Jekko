@@ -260,6 +260,10 @@
       "command": "just score",
       "purpose": "verify manifests remain parseable and authoritative"
     },
+    "agent/coverage-sources.toml": {
+      "command": "jankurai coverage audit . --config agent/coverage-sources.toml --json target/jankurai/coverage/coverage-audit.json --md target/jankurai/coverage/coverage-audit.md && just score",
+      "purpose": "verify coverage evidence source routing and score import"
+    },
     "agent/sandbox-lanes.toml": {
       "command": "just sandbox-validate",
       "purpose": "verify sandbox-lane TOML schema parses and every lane validates"
@@ -271,6 +275,10 @@
     "agent/workflows/": {
       "command": "just zyalc-compile-check",
       "purpose": "verify workflow .zyal sources compile cleanly to .github/workflows/*.yml"
+    },
+    "agent/zyal/": {
+      "command": "just score",
+      "purpose": "verify canonical ZYAL runbooks stay under agent/zyal and only use the .zyal extension"
     },
     "apps/": {
       "command": "just workspace-fast",
@@ -291,6 +299,22 @@
     "crates/": {
       "command": "just fast",
       "purpose": "verify Rust behavior and audit checks"
+    },
+    "crates/jankurai/": {
+      "command": "cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast",
+      "purpose": "verify ci/git/release bad-behavior lane coverage"
+    },
+    "crates/jankurai/src/audit/coverage.rs": {
+      "command": "jankurai coverage audit . --config agent/coverage-sources.toml --json target/jankurai/coverage/coverage-audit.json --md target/jankurai/coverage/coverage-audit.md && just score",
+      "purpose": "verify coverage parsers and evidence normalization"
+    },
+    "crates/jankurai/src/commands/coverage.rs": {
+      "command": "jankurai coverage audit . --config agent/coverage-sources.toml --json target/jankurai/coverage/coverage-audit.json --md target/jankurai/coverage/coverage-audit.md && just score",
+      "purpose": "verify coverage audit command behavior"
+    },
+    "crates/jankurai/tests/fixtures/coverage/": {
+      "command": "jankurai coverage audit . --config agent/coverage-sources.toml --json target/jankurai/coverage/coverage-audit.json --md target/jankurai/coverage/coverage-audit.md",
+      "purpose": "verify coverage parser fixture contracts"
     },
     "crates/sandboxctl/": {
       "command": "just sandboxctl-fast",
@@ -315,6 +339,10 @@
     "docs/": {
       "command": "just score",
       "purpose": "verify agent-readable documentation remains routed"
+    },
+    "docs/COVERAGE_*.md": {
+      "command": "just score",
+      "purpose": "verify coverage evidence docs remain routed"
     },
     "docs/architecture/": {
       "command": "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md",
@@ -459,6 +487,10 @@
     "python/ai-service/": {
       "command": "just fast",
       "purpose": "verify python ai service proof routes stay visible"
+    },
+    "schemas/coverage-*.schema.json": {
+      "command": "just score",
+      "purpose": "verify coverage evidence schemas and fixtures"
     },
     "script/": {
       "command": "just fast",

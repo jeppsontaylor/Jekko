@@ -1,18 +1,18 @@
 # jankurai Repo Score
 
 - Standard: `jankurai`
-- Auditor: `0.8.16`
+- Auditor: `1.0.0`
 - Schema: `1.7.0`
 - Paper edition: `2026.05-ed8`
 - Target stack ID: `rust-ts-vite-react-postgres-bounded-python`
 - Target stack: `Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service`
 - Repo: `.`
-- Run ID: `1778529266`
-- Started at: `1778529266`
-- Elapsed: `1855` ms
+- Run ID: `1778530166`
+- Started at: `1778530166`
+- Elapsed: `2170` ms
 - Scope: `full`
-- Raw score: `92`
-- Final score: `92`
+- Raw score: `91`
+- Final score: `91`
 - Decision: `advisory`
 - Minimum score: `85`
 - Caps applied: `none`
@@ -65,6 +65,7 @@
 | `release-bad-behavior` | 70 | no |
 | `web-security-bad-behavior` | 68 | no |
 | `repo-rot-bad-behavior` | 88 | no |
+| `comment-hygiene-dangerous-residue` | 72 | no |
 
 ## Dimensions
 
@@ -78,7 +79,7 @@
 | Data truth and workflow safety | 8 | 95 | 7.60 | database surface present; structured db boundary manifest present |
 | Observability and repair evidence | 8 | 88 | 7.04 | observability libraries or patterns found; ops/observability directory present |
 | Context economy and agent instructions | 7 | 100 | 7.00 | root `AGENTS.md` present; root `AGENTS.md` stays short |
-| Jankurai tool adoption and CI replacement | 7 | 29 | 2.03 | control-plane files present; applicable=15 |
+| Jankurai tool adoption and CI replacement | 7 | 24 | 1.68 | control-plane files present; applicable=15 |
 | Python containment and polyglot hygiene | 4 | 100 | 4.00 | no Python files in scope |
 | Build speed signals | 4 | 95 | 3.80 | build acceleration markers found; targeted test/build commands found |
 
@@ -104,16 +105,17 @@
 - Web surface: `false`
 - Layered UX lane: `true`
 - Missing: `none`
+- Tuiwright TUI flows: `1` flow(s) across `1` file(s); assertions=`1` actions=`3` artifacts=`screenshot=1`
 
 ## Tool Adoption
 
 - Control plane present: `true`
 - Applicable tools: `15`
 - Configured: `0`
-- CI evidence: `4`
-- Artifact verified: `4`
-- Replaced count: `4`
-- Missing CI evidence: `audit-ci, proof-routing, ci-bad-behavior, git-bad-behavior, release-bad-behavior, contract-drift, authz-matrix, input-boundary, agent-tool-supply, release-readiness, cost-budget`
+- CI evidence: `3`
+- Artifact verified: `3`
+- Replaced count: `3`
+- Missing CI evidence: `audit-ci, proof-routing, security, ci-bad-behavior, git-bad-behavior, release-bad-behavior, contract-drift, authz-matrix, input-boundary, agent-tool-supply, release-readiness, cost-budget`
 
 | Tool | Category | Mode | Status | Replaced | Artifacts |
 | --- | --- | --- | --- | --- | --- |
@@ -121,7 +123,7 @@
 | `proof-routing` | `proof` | `auto` | `missing` | `ad hoc proof lane selection, manual proof receipts` | `agent/repo-score.json, agent/repo-score.md, target/jankurai/repair-queue.jsonl` |
 | `proofbind` | `proof` | `auto` | `artifact_verified` | `manual changed-surface routing, ad hoc proof obligation lists` | `target/jankurai/proofbind/surface-witness.json, target/jankurai/proofbind/obligations.json` |
 | `proofmark-rust` | `proof` | `auto` | `artifact_verified` | `line-only coverage review, manual in-diff mutation review` | `target/jankurai/proofmark/proofmark-receipt.json, target/jankurai/proofmark/proof-receipt.json` |
-| `security` | `security` | `auto` | `artifact_verified` | `gitleaks, dependency review, SBOM/provenance` | `target/jankurai/security/evidence.json` |
+| `security` | `security` | `auto` | `missing` | `gitleaks, dependency review, SBOM/provenance` | `target/jankurai/security/evidence.json` |
 | `ci-bad-behavior` | `security` | `auto` | `missing` | `mutable workflow refs, secret echo/debug workflow checks, non-blocking security scans` | `target/jankurai/language-bad-behavior.log` |
 | `git-bad-behavior` | `audit` | `auto` | `missing` | `destructive git automation, force-push release scripts, hidden stash-based state` | `target/jankurai/language-bad-behavior.log` |
 | `release-bad-behavior` | `release` | `auto` | `missing` | `manual release checklist, ad hoc tag and artifact review, manual provenance review` | `target/jankurai/language-bad-behavior.log` |
@@ -130,6 +132,7 @@
 | `contract-drift` | `contract` | `auto` | `missing` | `handwritten contract drift checks, openapi diff` | `agent/repo-score.json, agent/repo-score.md` |
 | `rust-witness` | `rust` | `auto` | `artifact_verified` | `manual witness graphing` | `target/jankurai/rust/witness-graph.json` |
 | `vibe-coverage` | `audit` | `auto` | `not_applicable` | `manual vibe-coding coverage spreadsheet` | `target/jankurai/vibe-coverage.json, target/jankurai/vibe-coverage.md` |
+| `coverage-evidence` | `proof` | `auto` | `not_applicable` | `manual coverage report review, ad hoc mutation survivor review` | `target/jankurai/coverage/coverage-audit.json, target/jankurai/coverage/coverage-audit.md` |
 | `authz-matrix` | `security` | `auto` | `missing` | `manual authz matrix review` | `agent/repo-score.json, agent/repo-score.md` |
 | `input-boundary` | `security` | `auto` | `missing` | `manual unsafe sink review` | `agent/repo-score.json, agent/repo-score.md` |
 | `agent-tool-supply` | `security` | `auto` | `missing` | `manual MCP/tool trust review` | `agent/repo-score.json, agent/repo-score.md` |
@@ -139,10 +142,10 @@
 ## Security evidence (ingested)
 
 - Source: `target/jankurai/security/evidence.json`
-- Envelope exit code: `0` · elapsed: `30000` ms · strict: `false`
+- Envelope exit code: `0` · elapsed: `28000` ms · strict: `false`
 - Commands — ran: `2`, skipped: `1`, failed: `0`
-- Generated at: `1778529076`
-- Git HEAD (envelope): `b696cecaa7c2a1aaa0081885a62d12da909c10f8`
+- Generated at: `1778529683`
+- Git HEAD (envelope): `b3579437279a15c6a0be704acc6921829682a80a`
 
 ## Boundary manifest (ingested)
 

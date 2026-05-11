@@ -10,9 +10,9 @@ artifact_paths = [
     "target/jankurai/summary.md",
     "target/jankurai/repair-queue.jsonl",
 ]
-ci_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl"
+ci_command = "jankurai audit . --mode ratchet --baseline agent/baselines/main.repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl"
 id = "audit-ci"
-local_command = "jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl"
+local_command = "jankurai audit . --mode ratchet --baseline agent/baselines/main.repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl"
 mode = "auto"
 
 [[tools]]
@@ -76,23 +76,23 @@ mode = "auto"
 
 [[tools]]
 artifact_paths = ["target/jankurai/language-bad-behavior.log"]
-ci_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+ci_command = "cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast > target/jankurai/language-bad-behavior.log 2>&1"
 id = "ci-bad-behavior"
-local_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+local_command = "cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast > target/jankurai/language-bad-behavior.log 2>&1"
 mode = "auto"
 
 [[tools]]
 artifact_paths = ["target/jankurai/language-bad-behavior.log"]
-ci_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+ci_command = "cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast > target/jankurai/language-bad-behavior.log 2>&1"
 id = "git-bad-behavior"
-local_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+local_command = "cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast > target/jankurai/language-bad-behavior.log 2>&1"
 mode = "auto"
 
 [[tools]]
 artifact_paths = ["target/jankurai/language-bad-behavior.log"]
-ci_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+ci_command = "cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast > target/jankurai/language-bad-behavior.log 2>&1"
 id = "release-bad-behavior"
-local_command = "cargo test -p jankurai --test language_bad_behavior > target/jankurai/language-bad-behavior.log 2>&1"
+local_command = "cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast > target/jankurai/language-bad-behavior.log 2>&1"
 mode = "auto"
 
 [[tools]]

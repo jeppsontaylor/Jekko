@@ -112,7 +112,18 @@ pub fn inspect(source: &Path) -> Result<InspectInfo> {
 
 fn default_target(source: &Path, profile: &Profile) -> PathBuf {
     match profile {
-        Profile::DeclarativeToml { .. } => source.with_extension("toml"),
+        Profile::DeclarativeToml { .. } => {
+            // Declarative `.zyal` sources canonically live under `agent/zyal/`
+            // per the jankurai v1.0.0 conformance rule; the compiled TOML
+            // belongs one directory up at `agent/<stem>.toml` so other tools
+            // (proof-lanes, validators) find it on the well-known path.
+            let stem = source.file_stem().and_then(|s| s.to_str()).unwrap_or("out");
+            if let Some(parent) = source.parent().and_then(|p| p.parent()) {
+                parent.join(format!("{stem}.toml"))
+            } else {
+                source.with_extension("toml")
+            }
+        }
         Profile::Workflow { .. } => {
             let stem = source.file_stem().and_then(|s| s.to_str()).unwrap_or("workflow");
             PathBuf::from(format!(".github/workflows/{stem}.yml"))
@@ -237,7 +248,7 @@ fn sha256(raw: &str) -> String {
 
 fn discover(root: &Path) -> Result<Vec<PathBuf>> {
     let mut out = Vec::new();
-    let candidates = ["agent/sandbox-lanes.zyal", "agent/workflows"];
+    let candidates = ["agent/zyal", "agent/workflows"];
     for c in candidates {
         let p = root.join(c);
         if p.is_file() && p.extension().and_then(|e| e.to_str()) == Some("zyal") {

@@ -25,7 +25,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
 
       - name: Install jankurai
-        run: cargo install --git https://github.com/jeppsontaylor/Jankurai --tag v0.8.13 --locked jankurai
+        run: cargo install --git https://github.com/neverhuman/jankurai --tag v1.0.0 --locked jankurai
+
+      - name: Install gitleaks
+        run: |
+          go install github.com/gitleaks/gitleaks/v8@v8.24.2
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: Jankurai security lane
         run: bash tools/security-lane.sh

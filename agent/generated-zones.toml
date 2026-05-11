@@ -209,7 +209,7 @@ read_only = true
 source = "generated"
 
 [[zone]]
-command = "cargo run -p zyalc --manifest-path crates/zyalc/Cargo.toml -- compile agent/sandbox-lanes.zyal"
+command = "cargo run -p zyalc --manifest-path crates/zyalc/Cargo.toml -- compile agent/zyal/sandbox-lanes.zyal --out agent/sandbox-lanes.toml"
 path = "agent/sandbox-lanes.toml"
 read_only = true
 source = "zyalc"

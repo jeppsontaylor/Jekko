@@ -1,49 +1,54 @@
 {
-  "report_fingerprint": "sha256:312b24608600ac655c6f4e37018f75017bb85932549d11bb8efb810223242800",
-  "input_fingerprint": "sha256:c508f91d4380ddbb82aebb63afac7a25acf8123e866f8adc7889456d05fbaa7e",
-  "policy_fingerprint": "sha256:c7368e0846ead8ec4849b1e3f3b2be9e49b93c1073fd453d805608a088240ed1",
+  "report_fingerprint": "sha256:563645948c58c93deb8598392fdce56682e0c674864ed6641f1c8b8046165049",
+  "input_fingerprint": "sha256:460e43878c7ccd3b557422b575f4ca64adfa981c4675683338b2a319a0dfe4ce",
+  "policy_fingerprint": "sha256:b04b25be2f47c01bca0f66f19e13a5275d79247569683fbda42e844370dae1a7",
   "manifest_fingerprints": {
-    "owner_map": "sha256:5ac1b006fc3b4a86d127aa12e3e7fd7923f82594e37640f9a8ef54ac7ac0e5fd",
-    "test_map": "sha256:477fbe91dd8018a47e08fc6d459986f0c36ad892a8103b26af36488652e8f5cb",
-    "generated_zones": "sha256:2176d1d2170554d31ac5f8bea90f7d6a6cc61dfb34475f6b333b3d2de94cef82",
+    "owner_map": "sha256:b93c3ac63da37577e040f64cc02945d1657fc471d7b484875280a5ff47862048",
+    "test_map": "sha256:793778ab213be8045e9235424b6d451dff859ef5eedea5b795a3797d62129ddd",
+    "generated_zones": "sha256:0a76c0e883a2908da5a1675bbc80ff460de2b62af9dd3f1d4edf69ffab6b8bb3",
     "boundaries": "sha256:1728cb8b16f9482558294802ef86c1ab69558ed3bc1dbce573ba001e82018785",
     "proof_lanes": "sha256:41e615addbd9f0060396af48c3d3dd169f3fd81351fdae0be6ef0722f9e6df44",
-    "standard_version": "sha256:59494689d3b980c10d2a268a8826bb960a7fb0a7eb8077651f0c36d215da98af"
+    "standard_version": "sha256:7fde7679023e6e3ef6ed5dd10b876e0d9bc2034751245e37f91359142e43cc31"
   },
   "dirty_worktree": true,
-  "generated_at": "1778530166",
+  "generated_at": "1778529817",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
-  "auditor_version": "1.0.0",
+  "auditor_version": "0.8.16",
   "schema_version": "1.7.0",
   "paper_edition": "2026.05-ed8",
   "target_stack_id": "rust-ts-vite-react-postgres-bounded-python",
   "target_stack": "Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service",
   "claimed_conformance_level": "HL3",
-  "observed_conformance_level": "HL3",
-  "conformance_decision": "pass",
-  "conformance_blockers": [],
+  "observed_conformance_level": "HL2",
+  "conformance_decision": "block",
+  "conformance_blockers": [
+    "HLT-024-AGENT-TOOL-SUPPLY-GAP on agent/zyal/sandbox-lanes.toml",
+    "HLT-024-AGENT-TOOL-SUPPLY-GAP on agent/zyal/sandbox-lanes.zyal",
+    "HLT-024-AGENT-TOOL-SUPPLY-GAP on packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/constants.ts",
+    "HLT-024-AGENT-TOOL-SUPPLY-GAP on packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/view.tsx"
+  ],
   "repo": ".",
-  "run_id": "1778530166",
-  "started_at": "1778530166",
-  "elapsed_ms": 2170,
+  "run_id": "1778529817",
+  "started_at": "1778529817",
+  "elapsed_ms": 2006,
   "scope": {
     "mode": "full",
     "paths": []
   },
-  "score": 91,
+  "score": 78,
   "raw_score": 91,
   "decision": {
     "status": "advisory",
     "minimum_score": 85,
     "passed": true,
-    "hard_findings": 0,
+    "hard_findings": 4,
     "soft_findings": 0,
     "ratchet": {
-      "baseline_score": 91,
+      "baseline_score": 78,
       "allowed_drop": 0,
-      "passed": true,
+      "passed": false,
       "score_delta": 0,
       "baseline_report_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "baseline_input_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
@@ -78,7 +83,9 @@
     "paper_edition": "2026.05-ed8",
     "target_stack": "rust-ts-vite-react-postgres-bounded-python"
   },
-  "caps_applied": [],
+  "caps_applied": [
+    "agent-tool-supply-chain-gap"
+  ],
   "hard_rules": [
     {
       "id": "no-root-agent-instructions",
@@ -324,7 +331,6 @@
         "jankurai audit lane found in CI",
         "web e2e lane present or no web surface",
         "rendered UX QA lane present or no web surface",
-        "DOM geometry UX QA runtime found",
         "Rust property/integration tests present or no Rust surface"
       ],
       "notes": []
@@ -342,7 +348,7 @@
         "canonical security lane wrapper present",
         "agent-readiness audit gate found in CI",
         "rust bad-behavior advisory signals: 69",
-        "typescript bad-behavior advisory signals: 34",
+        "typescript bad-behavior advisory signals: 35",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
         "gittools bad-behavior advisory signals: 1",
@@ -361,7 +367,7 @@
         "most code files stay under 300 LOC",
         "authored code stays below hard LOC limits with no shape markers",
         "rust bad-behavior advisory signals: 69",
-        "typescript bad-behavior advisory signals: 34",
+        "typescript bad-behavior advisory signals: 35",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
         "gittools bad-behavior advisory signals: 1",
@@ -476,15 +482,13 @@
       ],
       "artifact_backed_proof": [
         ".oxlintrc.json",
-        "agent/ux-qa.toml",
         "crates/tuiwright-jekko-unlock/tests/jekko_unlock_pty.rs",
         "crates/tuiwright-jekko-unlock/tests/jnoccio_tui_dashboard.rs",
-        "crates/tuiwright-jekko-unlock/tests/live_prod_tui.rs"
+        "crates/tuiwright-jekko-unlock/tests/live_prod_tui.rs",
+        "crates/tuiwright-jekko-unlock/tests/readme_demo.rs"
       ],
       "design_tokens": [],
-      "geometry_runtime": [
-        "agent/ux-qa.toml"
-      ],
+      "geometry_runtime": [],
       "layout_stability": [],
       "playwright_visual": [
         "crates/tuiwright-jekko-unlock/tests/jekko_unlock_pty.rs",
@@ -1335,6 +1339,153 @@
       "noncanonical_count": 0
     }
   },
-  "findings": [],
-  "agent_fix_queue": []
+  "findings": [
+    {
+      "severity": "high",
+      "category": "security",
+      "path": "agent/zyal/sandbox-lanes.toml",
+      "problem": "ZYAL runbooks under agent/zyal must use the .zyal extension",
+      "agent_fix": "rename the file to `*.zyal` and keep it under `agent/zyal/`",
+      "evidence": [
+        "path=agent/zyal/sandbox-lanes.toml",
+        "supported_contract_version=2.4.0",
+        "release_tag=v1.0.0"
+      ],
+      "check_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP:security",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just security",
+      "fingerprint": "sha256:444a0b1dbd89bf3d9cc10a097955b513d196d6300f6adf463ba2eb8a653a326f",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "docs_url": "docs/audit-rubric.md#top-level-risk-mapping",
+      "owner": "workspace",
+      "line": 1,
+      "matched_term": "sandbox-lanes.toml",
+      "reason": "canonical ZYAL placement"
+    },
+    {
+      "severity": "high",
+      "category": "security",
+      "path": "agent/zyal/sandbox-lanes.zyal",
+      "problem": "first non-comment line is not a ZYAL open sentinel",
+      "agent_fix": "keep the runbook envelope at the top of the file after optional comments",
+      "evidence": [
+        "supported_contract_version=2.4.0",
+        "runtime_sentinel_version=v1"
+      ],
+      "check_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP:security",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just security",
+      "fingerprint": "sha256:b2a299af938e370b48e782c2a21ac41d91eb6a027364994144504e2a12b4894e",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "docs_url": "docs/audit-rubric.md#top-level-risk-mapping",
+      "owner": "agent",
+      "line": 3,
+      "matched_term": "<<<ZYAL",
+      "reason": "non-open sentinel"
+    },
+    {
+      "severity": "high",
+      "category": "security",
+      "path": "packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/constants.ts",
+      "problem": "ZYAL runbooks must live under agent/zyal as *.zyal files",
+      "agent_fix": "move the runbook to `agent/zyal/` and rename it to `*.zyal`",
+      "evidence": [
+        "path=packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/constants.ts",
+        "supported_contract_version=2.4.0",
+        "release_tag=v1.0.0",
+        "canonical_root=agent/zyal"
+      ],
+      "check_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP:security",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just security",
+      "fingerprint": "sha256:1275afc152e4c6dbca425bc42df07347eda78f28f8d35d210977d3b15ba6324e",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "docs_url": "docs/audit-rubric.md#top-level-risk-mapping",
+      "owner": "tools",
+      "line": 1,
+      "matched_term": "agent/zyal",
+      "reason": "canonical ZYAL repository root"
+    },
+    {
+      "severity": "high",
+      "category": "security",
+      "path": "packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/view.tsx",
+      "problem": "ZYAL runbooks must live under agent/zyal as *.zyal files",
+      "agent_fix": "move the runbook to `agent/zyal/` and rename it to `*.zyal`",
+      "evidence": [
+        "path=packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/view.tsx",
+        "supported_contract_version=2.4.0",
+        "release_tag=v1.0.0",
+        "canonical_root=agent/zyal"
+      ],
+      "check_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP:security",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "policy-manifest",
+      "rerun_command": "just security",
+      "fingerprint": "sha256:e3333c2384225ff86bf95ead1e7ed71e2f5ddf38cfb844f2d9e6fa72bed92a51",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "docs_url": "docs/audit-rubric.md#top-level-risk-mapping",
+      "owner": "tools",
+      "line": 1,
+      "matched_term": "agent/zyal",
+      "reason": "canonical ZYAL repository root"
+    }
+  ],
+  "agent_fix_queue": [
+    {
+      "path": "agent/zyal/sandbox-lanes.toml",
+      "priority": "high",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "owner": "workspace",
+      "task": "rename the file to `*.zyal` and keep it under `agent/zyal/`",
+      "why": "ZYAL runbooks under agent/zyal must use the .zyal extension"
+    },
+    {
+      "path": "agent/zyal/sandbox-lanes.zyal",
+      "priority": "high",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "owner": "agent",
+      "task": "keep the runbook envelope at the top of the file after optional comments",
+      "why": "first non-comment line is not a ZYAL open sentinel"
+    },
+    {
+      "path": "packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/constants.ts",
+      "priority": "high",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "owner": "tools",
+      "task": "move the runbook to `agent/zyal/` and rename it to `*.zyal`",
+      "why": "ZYAL runbooks must live under agent/zyal as *.zyal files"
+    },
+    {
+      "path": "packages/jekko/src/cli/cmd/tui/feature-plugins/sidebar/zyal/view.tsx",
+      "priority": "high",
+      "rule_id": "HLT-024-AGENT-TOOL-SUPPLY-GAP",
+      "tlr": "Security, secrets, agency",
+      "lane": "security",
+      "owner": "tools",
+      "task": "move the runbook to `agent/zyal/` and rename it to `*.zyal`",
+      "why": "ZYAL runbooks must live under agent/zyal as *.zyal files"
+    }
+  ]
 }

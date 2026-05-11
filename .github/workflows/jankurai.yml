@@ -27,16 +27,15 @@ jobs:
           fetch-depth: 0
       - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
       - name: Install jankurai
-        run: cargo install --git https://github.com/jeppsontaylor/Jankurai --tag v0.8.13 --locked jankurai
+        run: cargo install --git https://github.com/neverhuman/jankurai --tag v1.0.0 --locked jankurai
+      - name: Install gitleaks
+        run: |
+          go install github.com/gitleaks/gitleaks/v8@v8.24.2
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
       - name: jankurai version
         run: jankurai --version
       - name: jankurai audit
-        run: jankurai audit . --mode advisory --baseline agent/repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl
-      # Ratchet audit deferred: requires committing lane-evidence artifacts or
-      # a CI step that generates them before audit. Without that, ratchet
-      # caps "missing-rendered-ux-qa-lane" and
-      # "missing-rust-property-or-integration-tests" fire on every CI run.
-      # Re-enable after evidence pipeline lands.
+        run: jankurai audit . --mode ratchet --baseline agent/baselines/main.repo-score.json --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --sarif target/jankurai/jankurai.sarif --github-step-summary target/jankurai/summary.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl
       - name: Proof routing
         run: jankurai proof . --changed-from origin/main --out target/jankurai/proof-plan.json --md target/jankurai/proof-plan.md
       - name: Proofbind verify
@@ -53,20 +52,11 @@ jobs:
         run: |
           cargo build --manifest-path crates/sandboxctl/Cargo.toml --locked
           cargo test  --manifest-path crates/sandboxctl/Cargo.toml --locked --tests --no-fail-fast
-      # Language bad-behavior step deferred: cargo test -p jankurai expects
-      # a jankurai workspace package to exist locally, but jankurai is a
-      # separately-installed CLI (cargo install --git above). No such package
-      # is declared in any Cargo.toml in this repo, so the step always exits
-      # 101 in CI. Re-enable if/when a local jankurai workspace member or
-      # vendored test crate is added.
+      - name: Language bad-behavior tests
+        run: cargo test --manifest-path crates/jankurai/Cargo.toml --test language_bad_behavior --no-fail-fast
       - name: Security scan
         run: |
-          jankurai security run . --out target/jankurai/security/evidence.json
-          # Strict CI profile deferred: requires gitleaks evidence (per
-          # "security lane blocked by required tool evidence: gitleaks"
-          # error). Re-enable after a Secret-scan-tool-install step lands
-          # before this one, or after agent/security-policy.toml drops the
-          # gitleaks requirement.
+          jankurai security run . --strict --profile ci --out target/jankurai/security/evidence.json
       - name: Stage governance artifacts
         run: |
           cp target/jankurai/repo-score.json agent/repo-score.json
