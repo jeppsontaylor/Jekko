@@ -133,7 +133,16 @@ export const layer = Layer.effect(
         }
 
         for (const item of Object.values(Formatter)) {
-          formatters[item.name] = item
+          if (
+            !item ||
+            typeof item !== "object" ||
+            typeof (item as Formatter.Info).enabled !== "function" ||
+            typeof (item as Formatter.Info).name !== "string"
+          ) {
+            continue
+          }
+          const info = item as Formatter.Info
+          formatters[info.name] = info
         }
 
         if (cfg.formatter !== true) {

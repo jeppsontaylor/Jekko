@@ -32,7 +32,7 @@ function isDiff(value: unknown): value is Diff {
   )
 }
 
-const repo = process.env.GH_REPO ?? "anomalyco/jekko"
+const repo = process.env.GH_REPO ?? "neverhuman/jekko"
 const bot = ["actions-user", "github-actions[bot]", "jekko", "jekko-agent[bot]"]
 const team = [
   ...(await Bun.file(new URL("../.github/TEAM_MEMBERS", import.meta.url))

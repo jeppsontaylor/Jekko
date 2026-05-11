@@ -66,6 +66,19 @@ export const ProviderRoutes = lazy(() =>
         description:
           "Unlock local Jnoccio Fusion source with an encrypted unlock secret, or a git-crypt key file path.",
         operationId: "provider.jnoccio.unlock",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  unlockSecret: { type: "string" },
+                  keyPath: { type: "string" },
+                },
+              },
+            },
+          },
+        },
         responses: {
           200: {
             description: "Jnoccio unlock result",

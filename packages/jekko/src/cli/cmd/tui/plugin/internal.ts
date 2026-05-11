@@ -8,6 +8,7 @@ import SidebarLsp from "../feature-plugins/sidebar/lsp"
 import SidebarPending from "../feature-plugins/sidebar/pending"
 import SidebarFiles from "../feature-plugins/sidebar/files"
 import SidebarFooter from "../feature-plugins/sidebar/footer"
+import JnoccioDashboard from "../feature-plugins/jnoccio/index"
 import PluginManager from "../feature-plugins/system/plugins"
 import SessionV2Debug from "../feature-plugins/system/session-debug"
 import type { TuiPlugin, TuiPluginModule } from "@jekko-ai/plugin/tui"
@@ -29,6 +30,7 @@ export const INTERNAL_TUI_PLUGINS: InternalTuiPlugin[] = [
   SidebarPending,
   SidebarFiles,
   SidebarFooter,
+  JnoccioDashboard,
   PluginManager,
   ...(Flag.JEKKO_EXPERIMENTAL_EVENT_SYSTEM ? [SessionV2Debug] : []),
 ]

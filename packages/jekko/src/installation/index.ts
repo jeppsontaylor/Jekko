@@ -310,7 +310,7 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
           }
 
           const response = yield* httpOk.execute(
-            HttpClientRequest.get("https://api.github.com/repos/anomalyco/jekko/releases/latest").pipe(
+            HttpClientRequest.get("https://api.github.com/repos/neverhuman/jekko/releases/latest").pipe(
               HttpClientRequest.acceptJson,
             ),
           )

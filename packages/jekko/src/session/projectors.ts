@@ -5,7 +5,7 @@ import { Database } from "@/storage/db"
 import { SyncEvent } from "@/sync"
 import * as Session from "./session"
 import { MessageV2 } from "./message"
-import { SessionTable, MessageTable, PartTable } from "./session.sql"
+import { SessionTable, MessageTable, PartTable, SessionMessageTable } from "./session.sql"
 import { SessionID } from "./schema"
 import {
   DaemonArtifactTable,
@@ -124,6 +124,10 @@ export default [
 
   SyncEvent.project(Session.Event.Deleted, (db, data) => {
     removeDaemonDataForSession(db, data.sessionID)
+    // SessionMessageTable has ON DELETE RESTRICT in the migration (schema drift
+    // vs session.sql.ts cascade declaration); clear rows explicitly so session
+    // deletion does not violate the FK.
+    db.delete(SessionMessageTable).where(eq(SessionMessageTable.session_id, data.sessionID)).run()
     db.delete(SessionTable).where(eq(SessionTable.id, data.sessionID)).run()
   }),
 

@@ -34,6 +34,9 @@ describe("daemon permissions", () => {
           shell: "ask",
           edit: "allow",
           git_push: "deny",
+          research: "allow",
+          websearch: "deny",
+          webfetch: "ask",
         },
       }),
     )
@@ -44,6 +47,9 @@ describe("daemon permissions", () => {
     expect(Permission.evaluate("bash", "echo ok", rules).action).toBe("ask")
     expect(Permission.evaluate("edit", "src/file.ts", rules).action).toBe("allow")
     expect(Permission.evaluate("bash", "git push origin main", rules).action).toBe("deny")
+    expect(Permission.evaluate("research", "external fact", rules).action).toBe("allow")
+    expect(Permission.evaluate("websearch", "search terms", rules).action).toBe("deny")
+    expect(Permission.evaluate("webfetch", "https://example.com", rules).action).toBe("ask")
   })
 
   test("applies markers to the session and writes an event receipt", async () => {

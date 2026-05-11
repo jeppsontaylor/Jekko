@@ -34,10 +34,8 @@ cargo_audit_status=0
 ) >"$cargo_audit_report" 2>"$cargo_audit_log" || cargo_audit_status=$?
 
 npm_audit_status=0
-(
-  cd jnoccio-fusion/web
-  npm audit --offline --audit-level=high --json
-) >"$npm_audit_report" 2>"$npm_audit_log" || npm_audit_status=$?
+printf '{"status":"not_applicable","reason":"browser frontend removed; TUI-only product surface"}\n' >"$npm_audit_report"
+printf 'npm audit skipped: browser frontend removed; TUI-only product surface\n' >"$npm_audit_log"
 
 end_epoch="$(date -u +%s)"
 elapsed_ms="$(( (end_epoch - start_epoch) * 1000 ))"
@@ -71,7 +69,7 @@ jq -n \
     lane: $lane,
     policy: {
       schema_version: "1.0.0",
-      enabled_tools: ["gitleaks", "cargo-audit", "npm"],
+      enabled_tools: ["gitleaks", "cargo-audit"],
       required_tools: [],
       require_one_of: [],
       advisory_tools: ["syft"],
@@ -115,8 +113,8 @@ jq -n \
         name: "npm-audit",
         label: "Node dependency audit",
         tool: "npm",
-        shell_command: "cd jnoccio-fusion/web && npm audit --offline --audit-level=high --json",
-        status: (if $npm_audit_status == 0 then "ran" else "failed" end),
+        shell_command: "printf not_applicable",
+        status: "not_applicable",
         required_by_policy: false,
         blocking: false,
         advisory: true,

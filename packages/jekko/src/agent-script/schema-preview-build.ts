@@ -1,5 +1,10 @@
 import type { ZyalArm, ZyalScript } from "./schema-core"
 import type { ZyalPreview } from "./schema-preview"
+import {
+  ZYAL_CONTRACT_VERSION,
+  ZYAL_RUNTIME_SENTINEL_VERSION,
+  ZYAL_RESEARCH_BLOCK_VERSION,
+} from "./version"
 
 export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): ZyalPreview {
   const stopChecks = input.spec.stop.all.map(describeCondition)
@@ -39,9 +44,59 @@ export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): Zy
         .map(([key, value]) => `${key}:${value}`)
         .join(" ")
     : undefined
+  const research = input.spec.research
+  const summarizeResearchProviders = research?.provider_policy
+    ? [
+        research.provider_policy.prefer?.length ? `prefer:${research.provider_policy.prefer.join(",")}` : null,
+        research.provider_policy.allow?.length ? `allow:${research.provider_policy.allow.length}` : null,
+        research.provider_policy.missing_provider ? `missing:${research.provider_policy.missing_provider}` : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || "configured"
+    : undefined
+  const summarizeResearchExtraction = research?.extraction
+    ? [
+        research.extraction.enabled ? "extraction:on" : null,
+        research.extraction.max_pages ? `pages:${research.extraction.max_pages}` : null,
+        research.extraction.allowed_extractors?.length ? `extractors:${research.extraction.allowed_extractors.join(",")}` : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || "configured"
+    : undefined
+  const summarizeResearchEvidence = research?.evidence
+    ? [
+        research.evidence.require_citations ? "citations" : null,
+        research.evidence.claim_level ? "claim_level" : null,
+        research.evidence.store ? `store:${research.evidence.store}` : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || "configured"
+    : undefined
+  const summarizeResearchSafety = research?.safety
+    ? [
+        research.safety.redact_secrets ? "redact" : null,
+        research.safety.block_internal_urls ? "block_internal" : null,
+        research.safety.prompt_injection ? `prompt_injection:${research.safety.prompt_injection}` : null,
+        research.safety.taint_label ? `taint:${research.safety.taint_label}` : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || "configured"
+    : undefined
+  const summarizeResearchBudget = research?.budgets
+    ? [
+        research.budgets.max_queries ? `queries:${research.budgets.max_queries}` : null,
+        research.budgets.max_pages ? `pages:${research.budgets.max_pages}` : null,
+        research.budgets.max_cost_usd ? `cost:$${research.budgets.max_cost_usd}` : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || "configured"
+    : undefined
 
   return {
     id: input.spec.id,
+    contract_version: ZYAL_CONTRACT_VERSION,
+    runtime_sentinel_version: ZYAL_RUNTIME_SENTINEL_VERSION,
+    research_block_version: ZYAL_RESEARCH_BLOCK_VERSION,
     armed: input.arm !== undefined,
     objective: input.spec.job.objective,
     loop_policy: input.spec.loop?.policy,
@@ -240,6 +295,25 @@ export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): Zy
           .filter(Boolean)
           .join(" ")
       : undefined,
+    research_enabled: research !== undefined,
+    research_mode: research?.mode,
+    research_max_parallel: research?.max_parallel ?? 0,
+    research_timeout_seconds: research?.timeout_seconds,
+    research_summary: research
+      ? [
+          research.mode ? `mode:${research.mode}` : null,
+          research.autonomy ? `autonomy:${research.autonomy}` : null,
+          research.max_parallel ? `parallel:${research.max_parallel}` : null,
+          research.timeout_seconds ? `timeout:${research.timeout_seconds}s` : null,
+        ]
+          .filter(Boolean)
+          .join(" ") || "configured"
+      : undefined,
+    research_provider_summary: summarizeResearchProviders,
+    research_extraction_summary: summarizeResearchExtraction,
+    research_evidence_summary: summarizeResearchEvidence,
+    research_safety_summary: summarizeResearchSafety,
+    research_budget_summary: summarizeResearchBudget,
     taint_enabled: input.spec.taint !== undefined,
     taint_label_count: input.spec.taint ? Object.keys(input.spec.taint.labels).length : 0,
     taint_forbid_count: input.spec.taint?.forbid?.length ?? 0,

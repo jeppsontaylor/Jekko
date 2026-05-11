@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "1.14.39",
+  "version": "1.0.0",
   "name": "jekko",
   "type": "module",
   "license": "MIT",
@@ -15,8 +15,8 @@
     "fast:typecheck": "tsgo --noEmit",
     "fix-node-pty": "bun run script/fix-node-pty.ts",
     "upgrade-opentui": "bun run script/upgrade-opentui.ts",
-    "dev": "bun run --conditions=browser ./src/index.ts",
-    "dev:temporary": "bun run --conditions=browser ./src/temporary.ts",
+    "dev": "bun run ./src/index.ts",
+    "dev:temporary": "bun run ./src/temporary.ts",
     "db": "bun drizzle-kit"
   },
   "bin": {

@@ -2,7 +2,7 @@
  * Jnoccio Fusion server auto-boot lifecycle.
  *
  * Runs once at TUI startup (called from App onMount).
- * Exposes a reactive signal so UI components can show live status.
+ * Exposes a live signal so UI components can show status.
  *
  * The boot sequence is:
  * 1. Always health-check 127.0.0.1:4317 first — if a server is already

@@ -391,7 +391,7 @@ export async function run(db: SQLiteBunDatabase<any, any> | NodeSQLiteDatabase<a
         orphans.shares++
         continue
       }
-      if (!data?.id || !data?.secret || !data?.url) {
+      if (!data?.id || data?.secret == null || !data?.url) {
         errs.push(`session_share missing id/secret/url: ${shareFiles[i + j]}`)
         continue
       }

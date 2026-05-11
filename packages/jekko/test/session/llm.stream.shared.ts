@@ -30,13 +30,9 @@ export async function getModel(providerID: ProviderID, modelID: ModelID) {
 export const llm = makeRuntime(LLM.Service, LLM.defaultLayer)
 export const providerKey = "apiKey"
 
-let hooksInstalled = false
 let originalFetch: typeof fetch | null = null
 
 export function setupLlmStreamEnv() {
-  if (hooksInstalled) return
-  hooksInstalled = true
-
   beforeAll(() => {
     if (state.server) return
     const origin = new URL("http://mock.llm.test")

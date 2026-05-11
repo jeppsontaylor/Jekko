@@ -22,6 +22,7 @@ import { Parameters as Shell } from "../../src/tool/shell"
 import { Parameters as Skill } from "../../src/tool/skill"
 import { Parameters as Task } from "../../src/tool/task"
 import { Parameters as PendingParameters } from "../../src/tool/pending"
+import { Parameters as Research } from "../../src/tool/research"
 import { Parameters as WebFetch } from "../../src/tool/webfetch"
 import { Parameters as WebSearch } from "../../src/tool/websearch"
 import { Parameters as Write } from "../../src/tool/write"
@@ -166,6 +167,17 @@ describe("tool parameters", () => {
       expect(schema.type).toBe("object")
       expect(schema.required).toEqual(["todos"])
       expect(schema.properties?.todos?.type).toBe("array")
+    })
+    test("research", () => {
+      const schema = toJsonSchema(Research) as {
+        type?: string
+        properties?: Record<string, { type?: string }>
+        required?: string[]
+      }
+      expect(schema.type).toBe("object")
+      expect(schema.required).toEqual(["query"])
+      expect(schema.properties?.query?.type).toBe("string")
+      expect(schema.properties?.mode?.type).toBe("string")
     })
     test("webfetch", () => {
       const schema = toJsonSchema(WebFetch) as {
@@ -365,6 +377,29 @@ describe("tool parameters", () => {
     })
     test("rejects missing pending items", () => {
       expect(accepts(PendingParameters, {})).toBe(false)
+    })
+  })
+
+  describe("research", () => {
+    test("accepts query and optional controls", () => {
+      expect(
+        parse(Research, {
+          query: "primary source for citation receipts",
+          mode: "mixed",
+          objective: "gather evidence",
+          maxParallel: 4,
+          timeoutSeconds: 10,
+        }),
+      ).toEqual({
+        query: "primary source for citation receipts",
+        mode: "mixed",
+        objective: "gather evidence",
+        maxParallel: 4,
+        timeoutSeconds: 10,
+      })
+    })
+    test("rejects missing query", () => {
+      expect(accepts(Research, {})).toBe(false)
     })
   })
 

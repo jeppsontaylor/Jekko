@@ -137,7 +137,7 @@ export const InstanceRoutes = (upgrade: UpgradeWebSocket, opts?: CorsOptions): H
     app.get(SessionPaths.get, httpApiHandler)
     app.get(SessionPaths.children, httpApiHandler)
     app.get(SessionPaths.pending, httpApiHandler)
-    app.get(SessionPaths["pending-list"], httpApiHandler)
+    app.get(SessionPaths.task, httpApiHandler)
     app.get(SessionPaths.diff, httpApiHandler)
     app.get(SessionPaths.messages, httpApiHandler)
     app.get(SessionPaths.message, httpApiHandler)

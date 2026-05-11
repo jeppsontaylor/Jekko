@@ -3,6 +3,7 @@ import { spawn } from "child_process"
 import fs from "fs"
 import path from "path"
 import * as Log from "@jekko-ai/core/util/log"
+import { ensureJnoccioRpcToken } from "./jnoccio-token"
 
 const JNOCCIO_FUSION_PORT = 4317
 const HEALTH_TIMEOUT_MS = 2000
@@ -69,6 +70,16 @@ function spawnServer(binaryPath: string, cwd: string): boolean {
       fs.mkdirSync(stateDir, { recursive: true })
     }
 
+    // Resolve (or generate) the RPC bearer token so the /rpc endpoint
+    // enforces auth from the moment it starts. The token is persisted
+    // to ~/.env.jnoccio-rpc for OpenHuman cloud-mode connections.
+    const rpcToken = ensureJnoccioRpcToken()
+
+    // Discover the OpenHuman app version so the boot-check gate's strict
+    // `coreVersion === APP_VERSION` comparison passes.  The compatibility
+    // bridge echoes this back as its own version via `JNOCCIO_COMPAT_VERSION`.
+    const compatVersion = discoverOpenHumanVersion()
+
     const out = fs.openSync(logFile, "a")
     const err = fs.openSync(logFile, "a")
 
@@ -79,6 +90,8 @@ function spawnServer(binaryPath: string, cwd: string): boolean {
       env: {
         ...process.env,
         RUST_LOG: process.env.RUST_LOG ?? "info",
+        JNOCCIO_CORE_TOKEN: rpcToken,
+        ...(compatVersion.kind === "found" ? { JNOCCIO_COMPAT_VERSION: compatVersion.version } : {}),
       },
     })
 
@@ -89,6 +102,8 @@ function spawnServer(binaryPath: string, cwd: string): boolean {
       binary: binaryPath,
       cwd,
       logFile,
+      rpcAuthEnabled: true,
+      compatVersion: compatVersion.kind === "found" ? compatVersion.version : "none",
     })
 
     return true
@@ -152,4 +167,90 @@ export async function ensureJnoccioFusionServer(repoRoot: string): Promise<void>
   } finally {
     spawnInProgress = false
   }
+}
+
+/**
+ * Try to discover the OpenHuman desktop app version.
+ * This is needed so the jnoccio-fusion RPC bridge can echo back the correct
+ * version during the boot-check gate's strict equality comparison.
+ *
+ * Search order:
+ *   1. JNOCCIO_COMPAT_VERSION env var (explicit override)
+ *   2. Installed OpenHuman.app (macOS Info.plist — the actual running app)
+ *   3. ~/Code/openhuman/app/package.json (dev source)
+ */
+type VersionLookup = { kind: "found"; version: string } | { kind: "missing"; reason: string }
+
+function discoverOpenHumanVersion(): VersionLookup {
+  // Explicit override wins.
+  const fromEnv = process.env.JNOCCIO_COMPAT_VERSION?.trim()
+  if (fromEnv) return { kind: "found", version: fromEnv }
+
+  // Check the installed macOS app first — this is what the user actually runs.
+  const installedVersion = readInstalledAppVersion()
+  if (installedVersion.kind === "found") return installedVersion
+
+  // Fall back to source package.json for dev builds.
+  const home = process.env.HOME ?? process.env.USERPROFILE ?? ""
+  const candidates = [
+    path.join(home, "Code", "openhuman", "app", "package.json"),
+    path.join(home, "code", "openhuman", "app", "package.json"),
+  ]
+
+  for (const candidate of candidates) {
+    try {
+      const raw = fs.readFileSync(candidate, "utf8")
+      const parsed = JSON.parse(raw)
+      if (
+        typeof parsed === "object" &&
+        parsed !== null &&
+        !Array.isArray(parsed) &&
+        "version" in parsed &&
+        typeof (parsed as Record<string, unknown>).version === "string"
+      ) {
+        const version = (parsed as Record<string, string>).version.trim()
+        if (version) {
+          log.info("discovered openhuman version from source", { version, source: candidate })
+          return { kind: "found", version }
+        }
+      }
+    } catch {
+      // Not found, try next.
+    }
+  }
+
+  return { kind: "missing", reason: "openhuman version not discovered" }
+}
+
+/**
+ * Read the version from the installed OpenHuman.app on macOS.
+ * Checks both /Applications and ~/Applications.
+ */
+function readInstalledAppVersion(): VersionLookup {
+  if (process.platform !== "darwin") return { kind: "missing", reason: "non-mac platform" }
+
+  const home = process.env.HOME ?? ""
+  const plistPaths = [
+    path.join(home, "Applications", "OpenHuman.app", "Contents", "Info.plist"),
+    "/Applications/OpenHuman.app/Contents/Info.plist",
+  ]
+
+  for (const plist of plistPaths) {
+    try {
+      if (!fs.existsSync(plist)) continue
+      const { execSync } = require("child_process") as typeof import("child_process")
+      const version = execSync(
+        `defaults read "${path.dirname(plist).replace(/\/Contents$/, "")}" CFBundleShortVersionString`,
+        { encoding: "utf8", timeout: 2000 }
+      ).trim()
+      if (version && /^\d+\.\d+/.test(version)) {
+        log.info("discovered openhuman version from installed app", { version, source: plist })
+        return { kind: "found", version }
+      }
+    } catch {
+      // Not readable, try next.
+    }
+  }
+
+  return { kind: "missing", reason: "installed app not found" }
 }

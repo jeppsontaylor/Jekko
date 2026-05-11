@@ -138,6 +138,16 @@ function zyalRunCard(preview: ZyalPreview) {
     `Checkpoint: ${preview.checkpoint_checks.join(", ") || "(none)"}`,
     `Workers: ${preview.worker_count}`,
     `Fleet/Jnoccio: ${zyalPreviewValue(preview.fleet_summary)}`,
+    `Research: ${preview.research_enabled ? zyalPreviewValue(preview.research_summary) : "(none)"}`,
+    ...(preview.research_enabled
+      ? [
+          `Research providers: ${zyalPreviewValue(preview.research_provider_summary)}`,
+          `Research extraction: ${zyalPreviewValue(preview.research_extraction_summary)}`,
+          `Research evidence: ${zyalPreviewValue(preview.research_evidence_summary)}`,
+          `Research safety: ${zyalPreviewValue(preview.research_safety_summary)}`,
+          `Research budgets: ${zyalPreviewValue(preview.research_budget_summary)}`,
+        ]
+      : []),
     `Incubator: ${preview.incubator_enabled ? "enabled" : "disabled"}`,
     ...incubatorLines,
     `Arming: ${preview.arming_enabled ? zyalPreviewValue(preview.arming_summary) : "(none)"}`,

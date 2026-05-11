@@ -76,9 +76,10 @@ export const layer = Layer.effect(
           Effect.map(() => ({ kind: "timeout" as const, code: 124 })),
         ),
       ])
+      const expectedExitCode = input.assert?.exit_code ?? 0
       const jsonPath = input.assert?.json ? checkJsonAssertions(stdout.text, input.assert.json) : true
       const matched =
-        (input.assert?.exit_code === undefined || input.assert.exit_code === exit.code) &&
+        expectedExitCode === exit.code &&
         (input.assert?.stdout_contains?.every((needle) => stdout.text.includes(needle)) ?? true) &&
         (input.assert?.stdout_regex?.every((pattern) => new RegExp(pattern, "m").test(stdout.text)) ?? true) &&
         jsonPath

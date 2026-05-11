@@ -7,6 +7,7 @@ export const ZyalMemoryStore = Schema.Struct({
     Schema.Literal("run"),
     Schema.Literal("global"),
     Schema.Literal("agent"),
+    Schema.Literal("repo"),
   ]),
   retention: Schema.Union([
     Schema.Literal("until_promotion"),
@@ -124,6 +125,7 @@ export const ZyalSkillDefinition = Schema.Struct({
   trust: Schema.optional(Schema.Union([
     Schema.Literal("builtin"),
     Schema.Literal("verified"),
+    Schema.Literal("unverified"),
     Schema.Literal("community"),
     Schema.Literal("local"),
   ])),

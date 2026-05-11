@@ -5,7 +5,9 @@ import * as Primitives from "./schema-primitives"
 import * as Routing from "./schema-routing"
 import * as Runtime from "./schema-runtime"
 import * as Power from "./schema-power"
+import * as Research from "./schema-research"
 import * as PreviewBlocks from "./schema-preview-blocks"
+import { ZYAL_RUNTIME_SENTINEL_VERSION } from "./version"
 
 const DaemonAction = Schema.Literal("daemon")
 const ArmAction = Schema.Literal("RUN_FOREVER")
@@ -18,7 +20,7 @@ export const ZyalArm = Schema.Struct({
 export type ZyalArm = Schema.Schema.Type<typeof ZyalArm>
 
 export const ZyalSpec = Schema.Struct({
-  version: Schema.Literal("v1"),
+  version: Schema.Literal(ZYAL_RUNTIME_SENTINEL_VERSION),
   intent: DaemonAction,
   confirm: ArmAction,
   id: Schema.String,
@@ -59,6 +61,7 @@ export const ZyalSpec = Schema.Struct({
   done: Schema.optional(Power.ZyalDone),
   repo_intelligence: Schema.optional(Power.ZyalRepoIntelligence),
   fleet: Schema.optional(Power.ZyalFleet),
+  research: Schema.optional(Research.ZyalResearch),
   taint: Schema.optional(PreviewBlocks.ZyalTaint),
   interaction: Schema.optional(PreviewBlocks.ZyalInteraction),
   interop: Schema.optional(PreviewBlocks.ZyalInterop),

@@ -107,12 +107,19 @@ function listenRemoteHttp(handler: (request: ProxiedRequest) => Response | Promi
 }
 
 function eventStreamResponse() {
+  const encoder = new TextEncoder()
+  let timer: ReturnType<typeof setInterval> | undefined
   return new Response(
     new ReadableStream({
       start(controller) {
-        controller.enqueue(
-          new TextEncoder().encode('data: {"payload":{"type":"server.connected","properties":{}}}\n\n'),
-        )
+        controller.enqueue(encoder.encode(":\n\n"))
+        controller.enqueue(encoder.encode('data: {"payload":{"type":"server.connected","properties":{}}}\n\n'))
+        timer = setInterval(() => {
+          controller.enqueue(encoder.encode(":\n\n"))
+        }, 1000)
+      },
+      cancel() {
+        if (timer) clearInterval(timer)
       },
     }),
     {
@@ -324,7 +331,15 @@ describe("workspace HttpApi", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ type: "remote-target", branch: null }),
       })
-      const workspace = (yield* Effect.promise(() => created.json())) as Workspace.Info
+      const createdText = yield* Effect.promise(() => created.text())
+      expect({ status: created.status, body: createdText }).toMatchObject({ status: 200 })
+      const workspace = JSON.parse(createdText) as Workspace.Info
+      expect(String(workspace.id)).toStartWith("wrk_")
+      yield* Session.Service.use((svc) => svc.create()).pipe(
+        Effect.provideService(WorkspaceRef, workspace.id),
+        provideInstance(dir),
+      )
+      yield* Workspace.Service.use((svc) => svc.startWorkspaceSyncing(project.project.id)).pipe(provideInstance(dir))
 
       const url = new URL("http://localhost/config")
       url.searchParams.set("workspace", workspace.id)
@@ -391,11 +406,16 @@ describe("workspace HttpApi", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ type: "remote-session-target", branch: null }),
       })
-      const workspace = (yield* Effect.promise(() => created.json())) as Workspace.Info
+      const createdText = yield* Effect.promise(() => created.text())
+      expect({ status: created.status, body: createdText }).toMatchObject({ status: 200 })
+      const workspace = JSON.parse(createdText) as Workspace.Info
+      expect(String(workspace.id)).toStartWith("wrk_")
       const session = yield* Session.Service.use((svc) => svc.create()).pipe(
         Effect.provideService(WorkspaceRef, workspace.id),
         provideInstance(dir),
       )
+      expect(session.workspaceID).toBe(workspace.id)
+      yield* Workspace.Service.use((svc) => svc.startWorkspaceSyncing(project.project.id)).pipe(provideInstance(dir))
 
       try {
         const response = yield* request(`http://localhost/session/${session.id}/message`, dir, {

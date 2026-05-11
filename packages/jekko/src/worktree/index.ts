@@ -210,7 +210,7 @@ export const layer: Layer.Layer<
     const makeWorktreeInfo = Effect.fn("Worktree.makeWorktreeInfo")(function* (name?: string) {
       const ctx = yield* InstanceState.context
       if (ctx.project.vcs !== "git") {
-        throw new NotGitError({ message: "Worktrees are only supported for git projects" })
+        return yield* Effect.fail(new NotGitError({ message: "Worktrees are only supported for git projects" }))
       }
 
       const root = pathSvc.join(Global.Path.data, "worktree", ctx.project.id)
@@ -356,7 +356,7 @@ export const layer: Layer.Layer<
     const remove = Effect.fn("Worktree.remove")(function* (input: RemoveInput) {
       const ctx = yield* InstanceState.context
       if (ctx.project.vcs !== "git") {
-        throw new NotGitError({ message: "Worktrees are only supported for git projects" })
+        return yield* Effect.fail(new NotGitError({ message: "Worktrees are only supported for git projects" }))
       }
 
       const directory = yield* canonical(input.directory)

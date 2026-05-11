@@ -1,6 +1,7 @@
 import path from "path"
 import os from "os"
 import { existsSync } from "fs"
+import { mergeDeep } from "remeda"
 import { Effect, Exit, Fiber, Option } from "effect"
 import { Flag } from "@jekko-ai/core/flag/flag"
 import { InstallationLocal, InstallationVersion } from "@jekko-ai/core/installation/version"
@@ -170,7 +171,7 @@ export function loadInstanceState(
     if (process.env.JEKKO_CONFIG_CONTENT) {
       const source = "JEKKO_CONFIG_CONTENT"
       const next = yield* loadConfig(process.env.JEKKO_CONFIG_CONTENT, {
-        dir: "",
+        dir: ctx.directory,
         source,
       })
       yield* merge(source, next, "local")

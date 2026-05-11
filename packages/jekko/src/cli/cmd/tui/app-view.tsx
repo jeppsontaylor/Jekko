@@ -76,7 +76,7 @@ export function App(props: { onSnapshot?: () => Promise<string[]> }) {
     theme: themeState,
     toast,
   })
-  const [ready, setReady] = createSignal(false)
+  const [ready, setReady] = createSignal(process.env.JEKKO_FAST_BOOT === "1")
   TuiPluginRuntime.init({
     api,
     config: tuiConfig,

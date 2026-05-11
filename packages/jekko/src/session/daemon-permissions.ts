@@ -43,6 +43,9 @@ export function buildDaemonPermissionRules(spec: ZyalScript): Permission.Ruleset
   addMode(rules, "bash", modes?.git_push, "git push *")
   addMode(rules, "task", modes?.workers)
   addMode(rules, "mcp_*", modes?.mcp)
+  addMode(rules, "research", modes?.research)
+  addMode(rules, "websearch", modes?.websearch)
+  addMode(rules, "webfetch", modes?.webfetch)
 
   return rules
 }

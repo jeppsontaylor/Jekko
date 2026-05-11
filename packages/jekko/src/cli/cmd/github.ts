@@ -459,7 +459,7 @@ jobs:
           persist-credentials: false
 
       - name: Run jekko
-        uses: anomalyco/jekko/github@latest${envStr}
+        uses: neverhuman/jekko/github@latest${envStr}
         with:
           model: ${provider}/${model}`,
           )

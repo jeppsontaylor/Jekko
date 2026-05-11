@@ -109,8 +109,8 @@ function init() {
 
       let list: Accessor<CommandOption[]> | undefined
 
-      // TUI plugins now register commands via an async store that runs outside an active reactive scope.
-      // runWithOwner attaches createMemo/onCleanup to this owner so plugin registrations stay reactive and dispose correctly.
+      // TUI plugins now register commands via an async store that runs outside an active signal owner.
+      // runWithOwner attaches createMemo/onCleanup to this owner so plugin registrations stay live and dispose correctly.
       runWithOwner(owner, () => {
         list = createMemo(cb)
         const ref = list

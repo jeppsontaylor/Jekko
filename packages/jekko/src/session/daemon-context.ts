@@ -43,6 +43,12 @@ export function buildDaemonIterationPrompt(input: {
     `Objective: ${input.parsed.spec.job.objective}`,
     `Loop policy: ${policy}`,
     `Stop checks: ${input.parsed.preview.stop_checks.join("; ") || "(none)"}`,
+    input.parsed.preview.research_enabled
+      ? `Research policy: ${input.parsed.preview.research_summary ?? "(configured)"}`
+      : `Research policy: (none)`,
+    input.parsed.preview.research_enabled
+      ? `Research evidence: ${input.parsed.preview.research_evidence_summary ?? "(configured)"}`
+      : `Research evidence: (none)`,
     `Checkpoint: ${input.checkpointSha ?? "(none)"}`,
     `Active locks: ${input.locks?.join(", ") || "(none)"}`,
     `Last iteration: ${input.lastIteration?.terminal_reason ?? "(none)"}`,
@@ -101,4 +107,3 @@ export function buildDaemonStateSummary(input: {
 }
 
 export * as DaemonContext from "./daemon-context"
-

@@ -11,6 +11,8 @@ concurrency:
 jobs:
   check-guidelines:
     if: |
+      github.repository == 'neverhuman/jekko' &&
+      vars.JEKKO_AUTOMATION_ENABLED == '1' &&
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/review') &&
       contains(fromJson('["OWNER","MEMBER"]'), github.event.comment.author_association)

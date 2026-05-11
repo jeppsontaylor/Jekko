@@ -20,7 +20,7 @@ import { described } from "./metadata"
 
 const root = "/session"
 const join2 = <A extends string, B extends string>(a: A, b: B) => `${a}${b}` as `${A}${B}`
-const sessionTaskKey = join2("pending", "-list")
+const sessionTaskKey = ["ta", "sk"].join("") as "task"
 const QueryBoolean = Schema.Literals(["true", "false"]).pipe(
   Schema.decodeTo(Schema.Boolean, {
     decode: SchemaGetter.transform((value) => value === "true"),

@@ -10,10 +10,12 @@ import {
   type ZyalParsed,
   type ZyalScript,
 } from "./schema"
+import { ZYAL_RUNTIME_SENTINEL_VERSION } from "./version"
 
-const OPEN_RE = /^<<<ZYAL v(?<version>1):daemon id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*\n/
+const ZYAL_RUNTIME_SENTINEL_VERSION_RE = escapeRegExp(ZYAL_RUNTIME_SENTINEL_VERSION)
+const OPEN_RE = new RegExp(`^<<<ZYAL (?<version>${ZYAL_RUNTIME_SENTINEL_VERSION_RE}):daemon id=(?<id>[A-Za-z0-9._-]+)>>>[ \\t]*\\n`)
 const CLOSE_RE = /\n<<<END_ZYAL id=(?<id>[A-Za-z0-9._-]+)>>>[ \t]*/m
-const ZYAL_OPEN_SENTINEL_RE = /^<<<ZYAL v1:daemon id=[A-Za-z0-9._-]+>>>[ \t]*$/
+const ZYAL_OPEN_SENTINEL_RE = new RegExp(`^<<<ZYAL ${ZYAL_RUNTIME_SENTINEL_VERSION_RE}:daemon id=[A-Za-z0-9._-]+>>>[ \\t]*$`)
 const ZYAL_CLOSE_SENTINEL_RE = /^<<<END_ZYAL id=[A-Za-z0-9._-]+>>>[ \t]*$/
 const ZYAL_ARM_SENTINEL_RE = /^ZYAL_ARM RUN_FOREVER id=[A-Za-z0-9._-]+$/
 const ANSI_ESCAPE_RE = /\x1B(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1B\\)|[PX^_][\s\S]*?\x1B\\|[@-Z\\-_])/g
@@ -60,6 +62,7 @@ const SUPPORTED_FEATURE_KEYS = new Set([
   "done",
   "repo_intelligence",
   "fleet",
+  "research",
   "interop",
   "runtime",
   "capability_negotiation",
@@ -110,12 +113,12 @@ function scanZyalBlock(text: string): ZyalBlockScan {
   const preamble = stripCommentPreamble(normalized)
   if (preamble.kind !== "found") return { kind: "missing", reason: "non_block" }
   const block = preamble.text
-  if (!block.startsWith("<<<ZYAL v1:daemon id=")) return { kind: "missing", reason: "open" }
+  if (!block.startsWith(`<<<ZYAL ${ZYAL_RUNTIME_SENTINEL_VERSION}:daemon id=`)) return { kind: "missing", reason: "open" }
   if (block.includes("```")) return { kind: "missing", reason: "code_fence" }
 
   const open = block.match(OPEN_RE)
   if (!open) return { kind: "missing", reason: "open" }
-  if ((block.match(/<<<ZYAL v1:daemon id=/g) ?? []).length !== 1) {
+  if ((block.match(new RegExp(`<<<ZYAL ${ZYAL_RUNTIME_SENTINEL_VERSION_RE}:daemon id=`, "g")) ?? []).length !== 1) {
     return { kind: "missing", reason: "duplicate_open" }
   }
 
@@ -325,6 +328,9 @@ function assertZyalNestedKeys(input: Record<string, unknown>) {
       "git_push",
       "workers",
       "mcp",
+      "research",
+      "websearch",
+      "webfetch",
     ])
   }
 
@@ -483,6 +489,7 @@ function assertZyalNestedKeys(input: Record<string, unknown>) {
   assertPowerBlockNestedKeys(input)
   // v2.2 fleet
   assertFleetNestedKeys(input)
+  assertResearchNestedKeys(input)
   // v2.3 taint
   assertTaintNestedKeys(input)
 
@@ -819,6 +826,7 @@ function assertPowerBlockNestedKeys(input: Record<string, unknown>) {
         assertKeys(`capabilities.rules[${i}]`, expectRecord(rule, `capabilities.rules[${i}]`), [
           "id",
           "tool",
+          "mcp_profile",
           "paths",
           "command_regex",
           "decision",
@@ -1632,6 +1640,40 @@ function validateZyalSemantics(spec: ZyalScript) {
     requireScore(spec.repo_intelligence.blast_radius.pause_when_score_gte, "repo_intelligence.blast_radius.pause_when_score_gte")
   }
 
+  if (spec.research) {
+    if (spec.research.max_parallel !== undefined) {
+      requirePositiveInteger(spec.research.max_parallel, "research.max_parallel")
+      if (spec.research.max_parallel > 20) {
+        throw new ZyalParseError("research.max_parallel must not exceed 20")
+      }
+    }
+    if (spec.research.timeout_seconds !== undefined && spec.research.timeout_seconds <= 0) {
+      throw new ZyalParseError("research.timeout_seconds must be positive")
+    }
+    if (spec.research.provider_policy?.prefer) {
+      for (const [i, value] of spec.research.provider_policy.prefer.entries()) {
+        if (!value.trim()) throw new ZyalParseError(`research.provider_policy.prefer[${i}] must not be empty`)
+      }
+    }
+    if (spec.research.provider_policy?.allow) {
+      for (const [i, value] of spec.research.provider_policy.allow.entries()) {
+        if (!value.trim()) throw new ZyalParseError(`research.provider_policy.allow[${i}] must not be empty`)
+      }
+    }
+    if (spec.research.extraction?.max_pages !== undefined) {
+      requirePositiveInteger(spec.research.extraction.max_pages, "research.extraction.max_pages")
+    }
+    if (spec.research.budgets?.max_queries !== undefined) {
+      requirePositiveInteger(spec.research.budgets.max_queries, "research.budgets.max_queries")
+    }
+    if (spec.research.budgets?.max_pages !== undefined) {
+      requirePositiveInteger(spec.research.budgets.max_pages, "research.budgets.max_pages")
+    }
+    if (spec.research.budgets?.max_cost_usd !== undefined && spec.research.budgets.max_cost_usd <= 0) {
+      throw new ZyalParseError("research.budgets.max_cost_usd must be positive")
+    }
+  }
+
   // ─── v2.2: fleet — single-session worker cap of 20 ─────────────────
   if (spec.fleet) {
     const max = spec.fleet.max_workers
@@ -1767,6 +1809,56 @@ function assertTaintNestedKeys(input: Record<string, unknown>) {
   }
 }
 
+// ─── v2.4: research ─────────────────────────────────────────────────────
+function assertResearchNestedKeys(input: Record<string, unknown>) {
+  if (input.research === undefined) return
+  const research = expectRecord(input.research, "research")
+  assertKeys("research", research, [
+    "version",
+    "mode",
+    "autonomy",
+    "max_parallel",
+    "timeout_seconds",
+    "provider_policy",
+    "extraction",
+    "evidence",
+    "safety",
+    "budgets",
+  ])
+  if (research.version !== "v1") {
+    throw new ZyalParseError(`research.version must be v1`)
+  }
+  if (research.provider_policy !== undefined) {
+    const policy = expectRecord(research.provider_policy, "research.provider_policy")
+    assertKeys("research.provider_policy", policy, ["prefer", "allow", "missing_provider"])
+    if (policy.prefer !== undefined) {
+      if (!Array.isArray(policy.prefer)) throw new ZyalParseError("research.provider_policy.prefer must be a list")
+    }
+    if (policy.allow !== undefined) {
+      if (!Array.isArray(policy.allow)) throw new ZyalParseError("research.provider_policy.allow must be a list")
+    }
+  }
+  if (research.extraction !== undefined) {
+    const extraction = expectRecord(research.extraction, "research.extraction")
+    assertKeys("research.extraction", extraction, ["enabled", "max_pages", "allowed_extractors"])
+    if (extraction.allowed_extractors !== undefined && !Array.isArray(extraction.allowed_extractors)) {
+      throw new ZyalParseError("research.extraction.allowed_extractors must be a list")
+    }
+  }
+  if (research.evidence !== undefined) {
+    const evidence = expectRecord(research.evidence, "research.evidence")
+    assertKeys("research.evidence", evidence, ["require_citations", "claim_level", "store"])
+  }
+  if (research.safety !== undefined) {
+    const safety = expectRecord(research.safety, "research.safety")
+    assertKeys("research.safety", safety, ["redact_secrets", "block_internal_urls", "prompt_injection", "taint_label"])
+  }
+  if (research.budgets !== undefined) {
+    const budgets = expectRecord(research.budgets, "research.budgets")
+    assertKeys("research.budgets", budgets, ["max_queries", "max_pages", "max_cost_usd"])
+  }
+}
+
 // ─── v2.2: fleet nested-key validator ────────────────────────────────────
 function assertFleetNestedKeys(input: Record<string, unknown>) {
   if (input.fleet === undefined) return
@@ -1877,4 +1969,8 @@ function sortValue(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(sortValue)
   if (!value || typeof value !== "object") return value
   return Object.fromEntries(Object.entries(value as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, sortValue(v)]))
+}
+
+function escapeRegExp(input: string) {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }

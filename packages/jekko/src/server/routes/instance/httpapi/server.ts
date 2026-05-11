@@ -1,8 +1,7 @@
 import { Context, Effect, Layer } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { FetchHttpClient, HttpClient, HttpMiddleware, HttpRouter, HttpServer } from "effect/unstable/http"
+import { FetchHttpClient, HttpMiddleware, HttpRouter, HttpServer } from "effect/unstable/http"
 import * as Socket from "effect/unstable/socket/Socket"
-import { AppFileSystem } from "@jekko-ai/core/filesystem"
 import { Account } from "@/account/account"
 import { Agent } from "@/agent/agent"
 import { Auth } from "@/auth"
@@ -50,7 +49,6 @@ import { Vcs } from "@/project/vcs"
 import { Worktree } from "@/worktree"
 import { Workspace } from "@/control-plane/workspace"
 import { CorsConfig, isAllowedCorsOrigin, type CorsOptions } from "@/server/cors"
-import { serveUIEffect } from "@/server/shared/ui"
 import { ServerAuth } from "@/server/auth"
 import { InstanceHttpApi, RootHttpApi } from "./api"
 import { authorizationLayer, authorizationRouterMiddleware } from "./middleware/authorization"
@@ -140,16 +138,8 @@ const instanceRoutes = Layer.mergeAll(rawInstanceRoutes, instanceApiRoutes).pipe
   ]),
 )
 
-const uiRoute = HttpRouter.use((router) =>
-  Effect.gen(function* () {
-    const fs = yield* AppFileSystem.Service
-    const client = yield* HttpClient.HttpClient
-    yield* router.add("*", "/*", (request) => serveUIEffect(request, { fs, client }))
-  }),
-).pipe(Layer.provide(authorizationRouterMiddleware.layer.pipe(Layer.provide(ServerAuth.Config.defaultLayer))))
-
 export function createRoutes(corsOptions?: CorsOptions) {
-  return Layer.mergeAll(rootApiRoutes, eventApiRoutes, instanceRoutes, uiRoute).pipe(
+  return Layer.mergeAll(rootApiRoutes, eventApiRoutes, instanceRoutes).pipe(
     Layer.provide([
       errorLayer,
       cors(corsOptions),
@@ -197,7 +187,6 @@ export function createRoutes(corsOptions?: CorsOptions) {
       Workspace.defaultLayer,
       Worktree.appLayer,
       Bus.layer,
-      AppFileSystem.defaultLayer,
       FetchHttpClient.layer,
       HttpServer.layerServices,
     ]),

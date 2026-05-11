@@ -7,7 +7,7 @@ import { fileURLToPath } from "url"
 const rootDir = fileURLToPath(new URL("../../..", import.meta.url))
 process.chdir(rootDir)
 
-const reg = process.env.REGISTRY ?? "ghcr.io/anomalyco"
+const reg = process.env.REGISTRY ?? "ghcr.io/neverhuman"
 const tag = process.env.TAG ?? "24.04"
 const push = process.argv.includes("--push") || process.env.PUSH === "1"
 
@@ -17,7 +17,7 @@ const manager = pkg.packageManager ?? ""
 const bun = manager.startsWith("bun@") ? manager.slice(4) : ""
 if (!bun) throw new Error("packageManager must be bun@<version>")
 
-const images = ["base", "bun-node", "rust", "tauri-linux", "publish"]
+const images = ["base", "bun-node", "rust", "publish"]
 
 const setup = async () => {
   if (!push) return

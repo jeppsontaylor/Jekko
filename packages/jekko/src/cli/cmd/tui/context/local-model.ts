@@ -119,7 +119,8 @@ export function createLocalModel({ sync, sdk, toast, agent, parseModel, isModelV
     })
 
     return {
-      current: currentModel,
+      current: currentResolvedModel,
+      resolution: currentModel,
       get ready() {
         return modelStore.ready
       },

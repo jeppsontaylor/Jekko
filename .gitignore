@@ -3,6 +3,11 @@ node_modules
 .worktrees
 .sst
 .env
+.env.local
+.env.*.local
+.live-prod.env
+live-prod.env
+*.prod.local.env
 .idea
 .vscode
 .codex
@@ -53,5 +58,4 @@ jnoccio-fusion/.env.jnoccio
 
 # Build/debug artifacts
 typecheck_output.txt
-debug-storybook.log
 jekko-branch-ruleset.json

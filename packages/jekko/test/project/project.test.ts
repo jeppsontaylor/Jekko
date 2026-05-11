@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Bus } from "@/bus"
+import { Git } from "@/git"
 import { Project } from "@/project/project"
 import * as Log from "@jekko-ai/core/util/log"
 import { $ } from "bun"
@@ -63,7 +64,7 @@ function mockGitFailure(failArg: string) {
 
 function projectLayerWithFailure(failArg: string) {
   return Project.layer.pipe(
-    Layer.provide(mockGitFailure(failArg)),
+    Layer.provide(Git.layer.pipe(Layer.provide(mockGitFailure(failArg)))),
     Layer.provide(Bus.defaultLayer),
     Layer.provide(AppFileSystem.defaultLayer),
     Layer.provide(NodePath.layer),

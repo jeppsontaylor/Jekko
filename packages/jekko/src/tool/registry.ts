@@ -12,6 +12,7 @@ import { WebFetchTool } from "./webfetch"
 import { WriteTool } from "./write"
 import { InvalidTool } from "./invalid"
 import { SkillTool } from "./skill"
+import { ResearchTool } from "./research"
 import * as Tool from "./tool"
 import { Config } from "@/config/config"
 import { type ToolContext as PluginToolContext, type ToolDefinition } from "@jekko-ai/plugin"
@@ -89,6 +90,7 @@ export const layer = Layer.effect(
     const plan = yield* PlanExitTool
     const webfetch = yield* WebFetchTool
     const websearch = yield* WebSearchTool
+    const research = yield* ResearchTool
     const shell = yield* ShellTool
     const globtool = yield* GlobTool
     const writetool = yield* WriteTool
@@ -189,6 +191,7 @@ export const layer = Layer.effect(
           fetch: Tool.init(webfetch),
           pending: Tool.init(pending),
           search: Tool.init(websearch),
+          research: Tool.init(research),
           skill: Tool.init(skilltool),
           patch: Tool.init(patchtool),
           question: Tool.init(question),
@@ -212,6 +215,7 @@ export const layer = Layer.effect(
             tool.fetch,
             tool.pending,
             tool.search,
+            tool.research,
             tool.skill,
             tool.patch,
             ...tool.daemon,

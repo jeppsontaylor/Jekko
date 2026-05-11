@@ -29,7 +29,15 @@ import { makeWorkspaceSync } from "./workspace-sync"
 import { makeWorkspaceCrud } from "./workspace-crud"
 
 export type { Info, ConnectionStatus, CreateInput, SessionWarpInput, CreateError, SessionWarpError, WaitForSyncError }
-export { Event, SyncHttpError, WorkspaceNotFoundError, SessionEventsNotFoundError, SessionWarpHttpError, SyncTimeoutError, SyncAbortedError }
+export {
+  Event,
+  SyncHttpError,
+  WorkspaceNotFoundError,
+  SessionEventsNotFoundError,
+  SessionWarpHttpError,
+  SyncTimeoutError,
+  SyncAbortedError,
+}
 
 export interface Interface {
   readonly create: (input: CreateInput) => Effect.Effect<Info, CreateError>
@@ -93,6 +101,7 @@ export const layer = Layer.effect(
       prompt,
       http,
       sync,
+      status: syncActions.status,
       startSync: syncActions.startSync,
       stopSync: syncActions.stopSync,
       syncHistory: syncActions.syncHistory,

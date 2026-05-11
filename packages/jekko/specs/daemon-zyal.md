@@ -1,5 +1,10 @@
 # ZYAL v1
 
+- Contract version: `2.4.0`
+- Release tag: `v1.0.0`
+- Runtime sentinel version: `v1`
+- Research block version: `v1`
+
 `ZYAL` is the host-enforced daemon/runbook format for Jekko.
 
 Rules:
@@ -12,6 +17,10 @@ Rules:
 6. Top-level keys are strict. Unknown keys are rejected.
 7. Code fences and duplicate ZYAL blocks are rejected.
 8. Nested keys are strict inside every block, including `job`, `loop`, `stop`, `context`, `checkpoint`, `tasks`, `agents`, `mcp`, `permissions`, `ui`, `incubator`, v2, v2.1, and `fleet`.
+
+The shipped parser also accepts `memory` store scopes `task`, `run`, `global`, `agent`, and `repo`, plus skill trust values `builtin`, `verified`, `unverified`, `community`, and `local`.
+
+Existing `.zyal.yml` runbooks remain valid unless a new unknown key appears.
 
 The runtime owns continuation. The model may finish an iteration, but it does not get to declare the daemon complete.
 

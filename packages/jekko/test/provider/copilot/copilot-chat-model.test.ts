@@ -400,14 +400,14 @@ describe("doStream", () => {
 
     expect(toolParts).toContainEqual({
       type: "tool-input-start",
-      id: "call_MHxqRDd5WVo3NU8wUXRaMmc0MFE",
+      id: "call_fixture",
       toolName: "list_project_files",
     })
 
     expect(toolParts).toContainEqual(
       expect.objectContaining({
         type: "tool-call",
-        toolCallId: "call_MHxqRDd5WVo3NU8wUXRaMmc0MFE",
+        toolCallId: "call_fixture",
         toolName: "list_project_files",
       }),
     )

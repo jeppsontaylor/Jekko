@@ -31,7 +31,7 @@ export function ErrorComponent(props: {
   })
   const [copied, setCopied] = createSignal(false)
 
-  const issueURL = new URL("https://github.com/anomalyco/jekko/issues/new?template=bug-report.yml")
+  const issueURL = new URL("https://github.com/neverhuman/jekko/issues/new?template=bug-report.yml")
 
   // Choose safe alternative_path colors per mode since theme context may not be available
   const isLight = props.mode === "light"

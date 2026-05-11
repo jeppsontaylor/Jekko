@@ -1,4 +1,4 @@
-import { Effect, Schema } from "effect"
+import { Cause, Effect, Schema } from "effect"
 import { HttpApiBuilder, HttpApiError } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
 import { DaemonPaths, type DaemonPreviewPayload, type DaemonStartPayload, DaemonTaskActionPayload } from "../groups/daemon"
@@ -16,7 +16,13 @@ export const daemonHandlers = HttpApiBuilder.group(InstanceHttpApi, "daemon", (h
     const preview = Effect.fn("DaemonHttpApi.preview")(function* (ctx: { payload: Schema.Schema.Type<typeof DaemonPreviewPayload> }) {
       return yield* daemon.preview({ text: ctx.payload.text }).pipe(
         Effect.map(jsonSafe),
-        Effect.catch(() => Effect.fail(new HttpApiError.BadRequest({}))),
+        Effect.catchCause((cause) =>
+          Effect.sync(() => {
+            const message = Cause.pretty(cause)
+            console.error(message)
+            return message
+          }).pipe(Effect.flatMap((message) => Effect.fail(new HttpApiError.BadRequest({ message })))),
+        ),
       )
     })
 

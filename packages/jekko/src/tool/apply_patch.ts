@@ -128,7 +128,12 @@ export const ApplyPatchTool = Tool.define(
             try {
               const fileUpdate = Patch.deriveNewContentsFromChunks(filePath, hunk.chunks, oldContent)
               newContent = fileUpdate.content
-              bom = fileUpdate.bom
+              // Preserve original BOM: `deriveNewContentsFromChunks` only sees the
+              // stripped content we pass in, so its returned `bom` flag can't tell
+              // us about the original file. Fall back to the BOM we already
+              // detected from `currentBytes` and OR with any new BOM introduced
+              // by the patch payload itself.
+              bom = source.bom || fileUpdate.bom
             } catch (error) {
               return yield* Effect.fail(new Error(`apply_patch verification failed: ${error}`))
             }

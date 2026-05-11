@@ -41,6 +41,10 @@ stop:\n  all:\n    - git_clean: {}\n\
 <<<END_ZYAL id=tuiwright-session>>>\n\
 ZYAL_ARM RUN_FOREVER id=tuiwright-session";
 
+fn enabled() -> bool {
+    std::env::var("JEKKO_TUIWRIGHT_PTY").as_deref() == Ok("1")
+}
+
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
@@ -87,6 +91,12 @@ fn prepare_workspace() -> Result<Workspace> {
     for dir in [&xdg_data, &xdg_cache, &xdg_config, &xdg_state] {
         std::fs::create_dir_all(dir)?;
     }
+    let config_dir = xdg_config.join("jekko");
+    std::fs::create_dir_all(&config_dir)?;
+    std::fs::write(
+        config_dir.join("jekko.json"),
+        r#"{"provider":{"jekko":{"options":{"apiKey":"tuiwright-offline-fake-key"}}}}"#,
+    )?;
     Ok(Workspace {
         parent,
         project,
@@ -129,7 +139,6 @@ fn start_serve(jekko: &PathBuf, ws: &Workspace) -> Result<Server> {
         .env("XDG_STATE_HOME", &ws.xdg_state)
         .env("JEKKO_DISABLE_AUTOUPDATE", "1")
         .env("JEKKO_DISABLE_LSP_DOWNLOAD", "1")
-        .env("JEKKO_DISABLE_MODELS_FETCH", "1")
         .env("JEKKO_DISABLE_PRUNE", "1")
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
@@ -253,10 +262,11 @@ fn spawn_session_tui(jekko: &PathBuf, ws: &Workspace, session_id: &str) -> Resul
         .env("TERM", "xterm-256color")
         .env("COLORTERM", "truecolor")
         .env("HOME", home_str(ws))
+        .env("JEKKO_API_KEY", "tuiwright-offline-fake-key")
         .env("JEKKO_DISABLE_AUTOUPDATE", "1")
         .env("JEKKO_DISABLE_LSP_DOWNLOAD", "1")
-        .env("JEKKO_DISABLE_MODELS_FETCH", "1")
         .env("JEKKO_DISABLE_PRUNE", "1")
+        .env("JEKKO_FAST_BOOT", "1")
         .env("XDG_DATA_HOME", ws.xdg_data.to_string_lossy().as_ref())
         .env("XDG_CACHE_HOME", ws.xdg_cache.to_string_lossy().as_ref())
         .env("XDG_CONFIG_HOME", ws.xdg_config.to_string_lossy().as_ref())
@@ -278,6 +288,10 @@ fn spawn_session_tui(jekko: &PathBuf, ws: &Workspace, session_id: &str) -> Resul
 #[test]
 #[serial]
 fn pasting_zyal_inside_a_session_lights_up_the_right_sidebar() -> Result<()> {
+    if !enabled() {
+        eprintln!("skipped: set JEKKO_TUIWRIGHT_PTY=1 to run prompt PTY tests");
+        return Ok(());
+    }
     let Some(jekko) = jekko_bin() else {
         eprintln!("skipped: set JEKKO_BIN to the jekko binary path");
         return Ok(());
@@ -286,11 +300,11 @@ fn pasting_zyal_inside_a_session_lights_up_the_right_sidebar() -> Result<()> {
     let ws = prepare_workspace()?;
     let artifact_dir = ensure_artifact_dir()?;
 
-    // 1-3: serve → POST /session → tear down.
+    // 1-3: serve → POST /session → keep the server alive until the TUI has
+    // hydrated the session view.
     let server = start_serve(&jekko, &ws).context("start jekko serve")?;
     let session_id =
         create_session(&server.base_url).context("create session via POST /session")?;
-    server.shutdown();
 
     // 4: spawn TUI directly into the session route.
     let page = spawn_session_tui(&jekko, &ws, &session_id)
@@ -317,6 +331,8 @@ fn pasting_zyal_inside_a_session_lights_up_the_right_sidebar() -> Result<()> {
     page.wait_for_text("∞ ZYAL MODE", Duration::from_secs(3))
         .context("session sidebar `∞ ZYAL MODE` panel did not surface")?;
     page.screenshot(artifact_dir.join("zyal-session-03-sidebar.png"))?;
+
+    server.shutdown();
 
     Ok(())
 }

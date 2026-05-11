@@ -357,6 +357,22 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               }
             }
 
+            if (permission === "research") {
+              const query = typeof data.query === "string" ? data.query : ""
+              const mode = typeof data.mode === "string" ? data.mode : "auto"
+              return {
+                icon: "◈",
+                title: `Research ${mode}`,
+                body: (
+                  <Show when={query}>
+                    <box paddingLeft={1}>
+                      <text fg={theme.textMuted}>{"Query: " + query}</text>
+                    </box>
+                  </Show>
+                ),
+              }
+            }
+
             if (permission === "external_directory") {
               const meta = props.request.metadata ?? {}
               const parent = typeof meta["parentDir"] === "string" ? meta["parentDir"] : undefined

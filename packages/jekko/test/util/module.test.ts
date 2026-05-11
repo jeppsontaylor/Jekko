@@ -18,7 +18,7 @@ describe("util.module", () => {
   test("resolves packages through ancestor node_modules", async () => {
     await using tmp = await tmpdir()
     const root = path.join(tmp.path, "proj")
-    const cwd = path.join(root, "apps/web")
+    const cwd = path.join(root, "apps/api")
     const file = path.join(root, "node_modules/eslint/lib/api.js")
     await Filesystem.write(file, "export {}\n")
     await Filesystem.writeJson(path.join(root, "node_modules/eslint/package.json"), {

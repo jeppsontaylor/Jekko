@@ -10,6 +10,7 @@ import {
   type TuiTheme,
 } from "@jekko-ai/plugin/tui"
 import path from "path"
+import { fileURLToPath } from "node:url"
 import { TuiConfig } from "@/cli/cmd/tui/config/tui"
 import { ConfigPlugin } from "@/config/plugin"
 import * as Log from "@jekko-ai/core/util/log"

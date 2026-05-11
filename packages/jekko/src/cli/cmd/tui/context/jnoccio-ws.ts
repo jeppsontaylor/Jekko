@@ -1,5 +1,8 @@
 // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 import { incrementJnoccioCounters, setZyalFlashSource, updateZyalMetrics } from "./zyal-flash-state"
+import { createStore, produce, reconcile } from "solid-js/store"
+import type { DashboardSnapshot, DashboardModel, MetricEvent } from "./jnoccio-types"
+import { emptySnapshot, normalizeSnapshot, totalsFromModels } from "./jnoccio-types"
 
 /**
  * Jnoccio Fusion live-metrics WebSocket subscriber.
@@ -25,6 +28,39 @@ const SOURCE_ID = "jnoccio:ws"
 const RECONNECT_INITIAL_MS = 1_000
 const RECONNECT_MAX_MS = 30_000
 const HEARTBEAT_TIMEOUT_MS = 60_000
+const MAX_DASHBOARD_EVENTS = 300
+
+// ── Full Dashboard Snapshot Store ──────────────────────────────────────────
+// Provides the complete snapshot data for the Jnoccio TUI plugin.
+// Uses lazy init to avoid running createStore at module import time
+// before SolidJS root is ready (which would crash the TUI).
+
+let _dashboardStore: DashboardSnapshot | null = null
+let _setDashboardStore: ((fn: any) => void) | null = null
+let _lastHbTs: { ts: number | null } | null = null
+let _setLastHbTs: ((key: string, val: any) => void) | null = null
+
+function ensureDashboardStore() {
+  if (_dashboardStore) return
+  const [store, setStore] = createStore<DashboardSnapshot>(emptySnapshot())
+  _dashboardStore = store
+  _setDashboardStore = setStore as any
+  const [hb, setHb] = createStore<{ ts: number | null }>({ ts: null })
+  _lastHbTs = hb
+  _setLastHbTs = setHb as any
+}
+
+/** Reactive accessor for the full Jnoccio dashboard snapshot. */
+export function useJnoccioSnapshot(): DashboardSnapshot {
+  ensureDashboardStore()
+  return _dashboardStore!
+}
+
+/** Reactive accessor for the last heartbeat timestamp. */
+export function useJnoccioLastHeartbeat(): number | null {
+  ensureDashboardStore()
+  return _lastHbTs!.ts
+}
 
 type ConnectInput = {
   baseUrl: string
@@ -110,6 +146,14 @@ export function applyJnoccioSnapshot(snapshot: any) {
     jnoccioWorkerThreads: snapshot.worker_threads != null ? Number(snapshot.worker_threads) : null,
     jnoccioInstanceRole: typeof snapshot.instance_role === "string" ? snapshot.instance_role : null,
   })
+
+  // Update full dashboard store for the TUI plugin
+  try {
+    ensureDashboardStore()
+    _setDashboardStore!(reconcile(normalizeSnapshot(snapshot as DashboardSnapshot)))
+  } catch {
+    // Tolerate malformed snapshots — ZYAL metrics already applied above
+  }
 }
 
 export function applyJnoccioRequestEvent(event: any) {
@@ -139,6 +183,21 @@ export function applyJnoccioRequestEvent(event: any) {
     failures: failuresDelta || undefined,
     avgLatencyMs: Number.isFinite(latencyMs) ? (latencyMs as number) : undefined,
   })
+
+  // Prepend to dashboard store recent_events for the TUI plugin
+  try {
+    ensureDashboardStore()
+    const me = event as MetricEvent
+    _setDashboardStore!(produce((draft: DashboardSnapshot) => {
+      if (draft.recent_events.some((e) => e.id === me.id)) return
+      draft.recent_events.unshift(me)
+      if (draft.recent_events.length > MAX_DASHBOARD_EVENTS) {
+        draft.recent_events.length = MAX_DASHBOARD_EVENTS
+      }
+    }))
+  } catch {
+    // Tolerate type mismatches
+  }
 }
 
 function applyHeartbeat(timestamp: number) {
@@ -146,6 +205,12 @@ function applyHeartbeat(timestamp: number) {
     jnoccioConnected: true,
     jnoccioLastHeartbeat: Number.isFinite(timestamp) ? timestamp * 1000 : Date.now(),
   })
+  try {
+    ensureDashboardStore()
+    _setLastHbTs!("ts", Number.isFinite(timestamp) ? timestamp : null)
+  } catch {
+    // Tolerate init failures
+  }
 }
 
 function clearJnoccioMetrics() {

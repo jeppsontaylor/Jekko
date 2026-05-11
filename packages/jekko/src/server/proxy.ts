@@ -3,7 +3,6 @@ import type { UpgradeWebSocket } from "hono/ws"
 import * as Log from "@jekko-ai/core/util/log"
 import * as Fence from "./shared/fence"
 import type { WorkspaceID } from "@/control-plane/schema"
-import { Workspace } from "@/control-plane/workspace"
 import { AppRuntime } from "@/effect/app-runtime"
 import { ProxyUtil } from "./proxy-util"
 import { Effect, Stream } from "effect"
@@ -71,16 +70,6 @@ function statusText(response: unknown) {
 
 export function httpEffect(url: string | URL, extra: HeadersInit | undefined, req: Request, workspaceID: WorkspaceID) {
   return Effect.gen(function* () {
-    const syncing = yield* Workspace.Service.use((workspace) => workspace.isSyncing(workspaceID))
-    if (!syncing) {
-      return new Response(`broken sync connection for workspace: ${workspaceID}`, {
-        status: 503,
-        headers: {
-          "content-type": "text/plain; charset=utf-8",
-        },
-      })
-    }
-
     const response = yield* HttpClient.execute(
       HttpClientRequest.make(req.method as never)(url, {
         headers: ProxyUtil.headers(req, extra),

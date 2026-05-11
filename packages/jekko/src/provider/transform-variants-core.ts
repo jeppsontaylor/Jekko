@@ -5,10 +5,9 @@ import {
   WIDELY_SUPPORTED_EFFORTS,
 } from "./transform-shared"
 
-export function openaiReasoningEfforts(apiId: string, releaseDate: string): string[] | null {
+export function openaiReasoningEfforts(apiId: string, releaseDate: string): string[] {
   const id = apiId.toLowerCase()
-  // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
-  if (id === "gpt-5-pro" || id === "openai/gpt-5-pro") return null
+  if (id === "gpt-5-pro" || id === "openai/gpt-5-pro") return []
   if (id.includes("codex")) {
     if (id.includes("5.2") || id.includes("5.3")) return [...WIDELY_SUPPORTED_EFFORTS, "xhigh"]
     return [...WIDELY_SUPPORTED_EFFORTS]
@@ -20,14 +19,14 @@ export function openaiReasoningEfforts(apiId: string, releaseDate: string): stri
   return efforts
 }
 
-export function anthropicAdaptiveEfforts(apiId: string): string[] | null {
+export function anthropicAdaptiveEfforts(apiId: string): string[] {
   if (["opus-4-7", "opus-4.7"].some((v) => apiId.includes(v))) {
     return ["low", "medium", "high", "xhigh", "max"]
   }
   if (["opus-4-6", "opus-4.6", "sonnet-4-6", "sonnet-4.6"].some((v) => apiId.includes(v))) {
     return ["low", "medium", "high", "max"]
   }
-  return null
+  return []
 }
 
 export function oaiEncryptedEfforts(efforts: string[]) {

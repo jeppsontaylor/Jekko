@@ -43,7 +43,7 @@ forbidden_domain_imports = [
 ]
 
 [stack]
-id = "rust-ts-vite-react-postgres-bounded-python"
+id = "rust-ts-postgres-bounded-python"
 version = "0.4.0"
 
 [[streaming_exception]]

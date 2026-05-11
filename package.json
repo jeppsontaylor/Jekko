@@ -6,7 +6,7 @@
   "type": "module",
   "packageManager": "bun@1.3.13",
   "scripts": {
-    "dev": "bun run --cwd packages/jekko --conditions=browser src/index.ts",
+    "dev": "bun run --cwd packages/jekko src/index.ts",
     "lint": "oxlint",
     "build": "just build-fast",
     "fast": "just fast",
@@ -86,7 +86,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/anomalyco/jekko"
+    "url": "https://github.com/neverhuman/jekko"
   },
   "license": "MIT",
   "prettier": {

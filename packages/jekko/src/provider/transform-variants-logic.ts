@@ -15,6 +15,7 @@ export function buildModelVariants(model: Provider.Model): Record<string, Record
 
   const id = model.id.toLowerCase()
   const adaptiveEfforts = anthropicAdaptiveEfforts(model.api.id)
+  const hasAdaptiveEfforts = adaptiveEfforts.length > 0
   if (
     id.includes("deepseek-chat") ||
     id.includes("deepseek-reasoner") ||
@@ -51,7 +52,7 @@ export function buildModelVariants(model: Provider.Model): Record<string, Record
     case "ai-gateway-provider": {
       if (model.api.id.startsWith("openai/")) {
         const efforts = openaiReasoningEfforts(model.api.id, model.release_date)
-        if (!efforts) return {}
+        if (efforts.length === 0) return {}
         return Object.fromEntries(efforts.map((effort) => [effort, { reasoningEffort: effort }]))
       }
       return Object.fromEntries(WIDELY_SUPPORTED_EFFORTS.map((effort) => [effort, { reasoningEffort: effort }]))
@@ -59,7 +60,7 @@ export function buildModelVariants(model: Provider.Model): Record<string, Record
 
     case "@ai-sdk/gateway":
       if (model.id.includes("anthropic")) {
-        if (adaptiveEfforts) {
+        if (hasAdaptiveEfforts) {
           return anthropicSimpleAdaptive(adaptiveEfforts)
         }
         return anthropicStaticBudgets()
@@ -118,13 +119,13 @@ export function buildModelVariants(model: Provider.Model): Record<string, Record
 
     case "@ai-sdk/openai": {
       const efforts = openaiReasoningEfforts(model.api.id, model.release_date)
-      if (!efforts) return {}
+      if (efforts.length === 0) return {}
       return oaiEncryptedEfforts(efforts)
     }
 
     case "@ai-sdk/anthropic":
     case "@ai-sdk/google-vertex/anthropic":
-      if (adaptiveEfforts) {
+      if (hasAdaptiveEfforts) {
         let efforts = [...adaptiveEfforts]
         if (model.providerID === "github-copilot") {
           if (model.api.id.includes("opus-4.7")) {
@@ -164,7 +165,7 @@ export function buildModelVariants(model: Provider.Model): Record<string, Record
       }
 
     case "@ai-sdk/amazon-bedrock":
-      if (adaptiveEfforts) {
+      if (hasAdaptiveEfforts) {
         return Object.fromEntries(
           adaptiveEfforts.map((effort) => [
             effort,
@@ -264,7 +265,7 @@ export function buildModelVariants(model: Provider.Model): Record<string, Record
 
     case "@jerome-benoit/sap-ai-provider-v2":
       if (model.api.id.includes("anthropic")) {
-        if (adaptiveEfforts) {
+        if (hasAdaptiveEfforts) {
           return anthropicSimpleAdaptive(adaptiveEfforts)
         }
         return anthropicStaticBudgets()

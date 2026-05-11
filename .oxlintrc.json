@@ -12,7 +12,7 @@
     "require-yield": "off",
     // SolidJS uses `let ref: T | undefined` for JSX ref bindings assigned at runtime
     "no-unassigned-vars": "off",
-    // SolidJS tracks reactive deps by reading properties inside createEffect
+    // SolidJS tracks signal deps by reading properties inside createEffect
     "no-unused-expressions": "off",
     // Intentional control char matching (ANSI escapes, null byte sanitization)
     "no-control-regex": "off",

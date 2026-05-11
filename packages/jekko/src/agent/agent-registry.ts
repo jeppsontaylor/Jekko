@@ -78,7 +78,7 @@ export function buildAgentRegistry(input: { cfg: Config.Info; skillDirs: string[
     },
     general: {
       name: "general",
-      description: `General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel.`,
+      description: `General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel and pair it with the \`research\` tool for cited external evidence.`,
       permission: Permission.merge(
         defaults,
         Permission.fromConfig({
@@ -114,7 +114,7 @@ export function buildAgentRegistry(input: { cfg: Config.Info; skillDirs: string[
         }),
         user,
       ),
-      description: `Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns (eg. "src/components/**/*.tsx"), search code for keywords (eg. "API endpoints"), or answer questions about the codebase (eg. "how do API endpoints work?"). When calling this agent, specify the desired thoroughness level: "quick" for basic searches, "medium" for moderate exploration, or "very thorough" for comprehensive analysis across multiple locations and naming conventions.`,
+      description: `Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns (eg. "src/components/**/*.tsx"), search code for keywords (eg. "API endpoints"), answer questions about the codebase (eg. "how do API endpoints work?"), or hand off external evidence gathering to the \`research\` tool first. When calling this agent, specify the desired thoroughness level: "quick" for basic searches, "medium" for moderate exploration, or "very thorough" for comprehensive analysis across multiple locations and naming conventions.`,
       prompt: PROMPT_EXPLORE,
       options: {},
       mode: "subagent",

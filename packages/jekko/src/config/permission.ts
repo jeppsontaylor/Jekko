@@ -33,6 +33,7 @@ const InputObject = Schema.StructWithRest(
     external_directory: Schema.optional(Rule),
     todowrite: Schema.optional(Action),
     question: Schema.optional(Action),
+    research: Schema.optional(Action),
     webfetch: Schema.optional(Action),
     websearch: Schema.optional(Action),
     lsp: Schema.optional(Rule),

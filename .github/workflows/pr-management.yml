@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   check-duplicates:
+    if: github.repository == 'neverhuman/jekko' && vars.JEKKO_AUTOMATION_ENABLED == '1'
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
     permissions:
@@ -77,6 +78,7 @@ jobs:
           fi
 
   add-contributor-label:
+    if: github.repository == 'neverhuman/jekko' && vars.JEKKO_AUTOMATION_ENABLED == '1'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

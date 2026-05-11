@@ -14,7 +14,7 @@ Jnoccio is a standalone OpenAI-compatible gateway for routing one visible model,
 
 ## Dashboard
 
-The dashboard is served from `/dashboard/` and shows model health, wins, latency, token usage, capacity, recent events, and context-run histograms. Failed context buckets are shown in red with learned safe-limit markers for selected models.
+The dashboard is now served natively in the Jekko TUI. Press `Ctrl+J` to open the Jnoccio Fusion dashboard with real-time model health, wins, latency, token usage, capacity, recent events, and context-run histograms. The legacy `/dashboard/` web UI has been removed.
 
 ## Runtime And Scaling
 
@@ -47,11 +47,10 @@ Agent MCP snippets live in:
 ```bash
 rtk cargo test
 rtk cargo check
-cd web && rtk npm run build
 ```
 
 Run `rtk ./scripts/smoke.sh` only when upstream keys are present.
 
 ## Safety
 
-Do not commit `.env.jnoccio`, `KEYS.md`, `state/`, `receipts/`, `target/`, `web/dist/`, Playwright reports, or SQLite files. Failure receipts are local runtime artifacts and may include provider error bodies after secret redaction.
+Do not commit `.env.jnoccio`, `KEYS.md`, `state/`, `receipts/`, `target/`, or SQLite files. Failure receipts are local runtime artifacts and may include provider error bodies after secret redaction.

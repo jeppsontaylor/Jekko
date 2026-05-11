@@ -422,7 +422,7 @@ describe("tool.edit", () => {
             edit.execute(
               {
                 filePath: filepath,
-                oldString: "prior",
+                oldString: "old",
                 newString: "new",
               },
               ctx,

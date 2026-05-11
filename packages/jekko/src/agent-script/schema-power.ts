@@ -23,6 +23,7 @@ export type ZyalArmingPolicy = Schema.Schema.Type<typeof ZyalArmingPolicy>
 export const ZyalCapabilityRule = Schema.Struct({
   id: Schema.String,
   tool: Schema.optional(Schema.String),
+  mcp_profile: Schema.optional(Schema.String),
   paths: Schema.optional(Schema.Array(Schema.String)),
   command_regex: Schema.optional(Schema.String),
   decision: Schema.Union([Schema.Literal("allow"), Schema.Literal("ask"), Schema.Literal("deny")]),

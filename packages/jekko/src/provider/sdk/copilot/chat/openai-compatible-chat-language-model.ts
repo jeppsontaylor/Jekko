@@ -468,14 +468,21 @@ export class OpenAICompatibleChatLanguageModel implements LanguageModelV3 {
 
             // Capture reasoning_opaque for Copilot multi-turn reasoning
             if (delta.reasoning_opaque) {
-              if (reasoningOpaque != null) {
+              // When the same chunk includes both content/tool_calls and a fresh
+              // reasoning_opaque (or the provider emits opaque tokens for tool
+              // calls after reasoning has already ended) we accept the latest
+              // value rather than failing the stream. The provider treats
+              // reasoning_opaque as the per-message thinking token, so the
+              // final non-empty value wins.
+              if (reasoningOpaque == null || !isActiveReasoning) {
+                reasoningOpaque = delta.reasoning_opaque
+              } else {
                 throw new InvalidResponseDataError({
                   data: delta,
                   message:
                     "Multiple reasoning_opaque values received in a single response. Only one thinking part per response is supported.",
                 })
               }
-              reasoningOpaque = delta.reasoning_opaque
             }
 
             // enqueue reasoning before text deltas (Copilot uses reasoning_text):

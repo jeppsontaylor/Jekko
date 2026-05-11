@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   check-duplicates:
-    if: github.event.action == 'opened'
+    if: github.repository == 'neverhuman/jekko' && vars.JEKKO_AUTOMATION_ENABLED == '1' && github.event.action == 'opened'
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
     permissions:
@@ -123,7 +123,7 @@ jobs:
           Remember: post at most ONE comment combining all findings. If everything is fine, post nothing."
 
   recheck-compliance:
-    if: github.event.action == 'edited' && contains(github.event.issue.labels.*.name, 'needs:compliance')
+    if: github.repository == 'neverhuman/jekko' && vars.JEKKO_AUTOMATION_ENABLED == '1' && github.event.action == 'edited' && contains(github.event.issue.labels.*.name, 'needs:compliance')
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
     permissions:

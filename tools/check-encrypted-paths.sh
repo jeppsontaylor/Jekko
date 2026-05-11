@@ -60,6 +60,8 @@ EXCEPTIONS=(
   "jnoccio-fusion/.env.jnoccio.example"
   "jnoccio-fusion/KEYS.md"
   "jnoccio-fusion/ENCRYPTION.md"
+  "jnoccio-fusion/VERSION.md"
+  "jnoccio-fusion/CHANGELOG.md"
 )
 
 is_exception() {

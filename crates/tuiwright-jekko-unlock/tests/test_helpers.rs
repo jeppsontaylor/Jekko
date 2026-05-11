@@ -46,6 +46,12 @@ pub fn prepare_workspace(subdir: &str, readme_content: &str) -> Result<(TempDir,
     for dir in [&xdg_data, &xdg_cache, &xdg_config, &xdg_state] {
         std::fs::create_dir_all(dir)?;
     }
+    let config_dir = xdg_config.join("jekko");
+    std::fs::create_dir_all(&config_dir)?;
+    std::fs::write(
+        config_dir.join("jekko.json"),
+        r#"{"provider":{"jekko":{"options":{"apiKey":"tuiwright-offline-fake-key"}}}}"#,
+    )?;
     Ok((parent, project, xdg_data, xdg_cache, xdg_config, xdg_state))
 }
 
@@ -60,9 +66,9 @@ pub fn spawn_jekko(parent: &TempDir, jekko: &PathBuf) -> Result<Page> {
         .env("TERM", "xterm-256color")
         .env("COLORTERM", "truecolor")
         .env("HOME", parent.path().to_string_lossy().as_ref())
+        .env("JEKKO_API_KEY", "tuiwright-offline-fake-key")
         .env("JEKKO_DISABLE_AUTOUPDATE", "1")
         .env("JEKKO_DISABLE_LSP_DOWNLOAD", "1")
-        .env("JEKKO_DISABLE_MODELS_FETCH", "1")
         .env("JEKKO_DISABLE_PRUNE", "1")
         .env("XDG_DATA_HOME", xdg.join("data").to_string_lossy().as_ref())
         .env("XDG_CACHE_HOME", xdg.join("cache").to_string_lossy().as_ref())

@@ -174,8 +174,8 @@ export const layer = Layer.effect(Service)(
 
     const remove: Interface["remove"] = Effect.fn("SyncEvent.remove")(function* (aggregateID) {
       Database.transaction((tx) => {
-        tx.delete(EventSequenceTable).where(eq(EventSequenceTable.aggregate_id, aggregateID)).run()
         tx.delete(EventTable).where(eq(EventTable.aggregate_id, aggregateID)).run()
+        tx.delete(EventSequenceTable).where(eq(EventSequenceTable.aggregate_id, aggregateID)).run()
       })
     })
 

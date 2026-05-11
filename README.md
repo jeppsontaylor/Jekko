@@ -1,17 +1,12 @@
-<p align="center">
-  <a href="https://jekko.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="Jekko logo">
-    </picture>
-  </a>
-</p>
 <p align="center">The open source AI coding agent.</p>
 <p align="center">
   <a href="https://jekko.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
   <a href="https://www.npmjs.com/package/jekko-ai"><img alt="npm" src="https://img.shields.io/npm/v/jekko-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/jekko/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/jekko/publish.yml?style=flat-square&branch=dev" /></a>
+  <a href="https://github.com/neverhuman/jekko/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/neverhuman/jekko/publish.yml?style=flat-square&branch=main" /></a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/jekko-tui-zyal-demo.gif" alt="Jekko TUI launching and running a ZYAL research loop" width="100%" />
 </p>
 
 <p align="center">
@@ -39,7 +34,7 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![Jekko Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://jekko.ai)
+[![Jekko Terminal UI](docs/assets/jekko-tui-zyal-demo.gif)](https://jekko.ai)
 
 ---
 
@@ -53,12 +48,12 @@ curl -fsSL https://jekko.ai/install | bash
 npm i -g jekko-ai@latest        # or bun/pnpm/yarn
 scoop install jekko             # Windows
 choco install jekko             # Windows
-brew install anomalyco/tap/jekko # macOS and Linux (recommended, always up to date)
+brew install neverhuman/tap/jekko # macOS and Linux (recommended, always up to date)
 brew install jekko              # macOS and Linux (official brew formula, updated less)
 sudo pacman -S jekko            # Arch Linux (Stable)
 paru -S jekko-bin               # Arch Linux (Latest from AUR)
 mise use -g jekko               # Any OS
-nix run nixpkgs#jekko           # or github:anomalyco/jekko for latest dev branch
+nix run nixpkgs#jekko           # or github:neverhuman/jekko for latest dev branch
 ```
 
 > [!TIP]
@@ -97,6 +92,32 @@ Learn more about [agents](https://jekko.ai/docs/agents).
 ### Documentation
 
 For more info on how to configure Jekko, [**head over to our docs**](https://jekko.ai/docs).
+
+### Audits
+
+These are the supported repo audit and release gates:
+
+```bash
+just check-fast
+just score-fast
+just score
+just security
+tools/check-encrypted-paths.sh --index
+jankurai doctor --fail-on critical
+jankurai doctor --fail-on high
+```
+
+`just score-fast` is the quick release check. `just score` is the full repo score refresh. `tools/check-encrypted-paths.sh --index` verifies the git-crypt policy on staged content.
+
+### ZYAL
+
+ZYAL is Jekko's daemon/runbook contract. Start here:
+
+- [ZYAL mission and runtime model](docs/ZYAL_MISSION.md)
+- [ZYAL example runbooks](docs/ZYAL/examples/README.md)
+- [ZYAL daemon spec](packages/jekko/specs/daemon-zyal.md)
+
+The README demo GIF above shows the current ZYAL research loop preview in the TUI.
 
 ### Local Iteration
 

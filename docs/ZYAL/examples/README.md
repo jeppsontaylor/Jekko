@@ -1,6 +1,6 @@
 # ZYAL Powerful Examples
 
-Ten flagship runbooks that show what ZYAL v2.3 makes possible. Each is a complete `<<<ZYAL v1:daemon>>>` block — paste any of them into a trusted Jekko prompt to preview the runtime plan, then explicitly arm to execute.
+Thirteen flagship runbooks that show what ZYAL v2.4 makes possible. Each is a complete `<<<ZYAL v1:daemon>>>` block — paste any of them into a trusted Jekko prompt to preview the runtime plan, then explicitly arm to execute.
 
 | File | Demonstrates | Power blocks |
 |---|---|---|
@@ -14,6 +14,7 @@ Ten flagship runbooks that show what ZYAL v2.3 makes possible. Each is a complet
 | [`08-full-power-runbook.zyal.yml`](08-full-power-runbook.zyal.yml) | Every v2.1 power block in one runbook | All |
 | [`09-control-plane-preview.zyal.yml`](09-control-plane-preview.zyal.yml) | Preview-only control-plane contract with interop, runtime, trust, taint, and release metadata | `interop`, `runtime`, `capability_negotiation`, `memory_kernel`, `evidence_graph`, `trust`, `taint`, `requirements`, `evaluation`, `release`, `roles`, `channels`, `imports`, `reasoning_privacy`, `unsupported_feature_policy` |
 | [`10-jankurai-master-loop.zyal.yml`](10-jankurai-master-loop.zyal.yml) | Forever-running jankurai master runbook: audit + tasklist rotation + complexity router + commit/push per checkpoint + hard context clear, hardened with v2.3 `taint` injection defence | `taint`, `fleet.jnoccio`, `incubator`, `quality`, `capabilities`, `budgets`, `rollback`, `done`, `observability` |
+| [`13-advanced-research-loop.zyal.yml`](13-advanced-research-loop.zyal.yml) | Evidence-first external research loop with parallel cited search and extraction controls; powers the README demo asset | `research`, `permissions`, `evidence`, `budgets` |
 
 ## Running an example
 
@@ -26,3 +27,4 @@ Ten flagship runbooks that show what ZYAL v2.3 makes possible. Each is a complet
 ## Safety reminder
 
 These examples grant real capabilities. Read the `capabilities`, `permissions`, `rollback`, and `done` blocks before arming. The current runtime parses and previews `arming` policies, but the shipped start path still accepts the simple `ZYAL_ARM RUN_FOREVER id=<run-id>` sentinel; host nonce/hash arming is a preview contract until the start API is extended. The `taint` block is also parse/preview-only in this patch; it is summarized in the Run Card but not enforced in daemon execution yet.
+The new `research` block is parsed and previewed as a host contract for current external evidence gathering; it is summarized in the Run Card and daemon prompt, while the hosted research backend remains optional and receipt-driven.

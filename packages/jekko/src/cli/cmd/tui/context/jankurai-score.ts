@@ -1,6 +1,6 @@
 // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
 /**
- * Jankurai conformance score — reactive context for TUI sidebar.
+ * Jankurai conformance score context for TUI sidebar.
  *
  * Watches `agent/repo-score.json` in the workspace directory using `fs.watch()`
  * for near-instant change detection with zero CPU cost at idle. Falls back to

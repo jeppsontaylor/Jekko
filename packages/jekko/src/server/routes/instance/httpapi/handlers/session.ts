@@ -358,7 +358,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       .handle("get", get)
       .handle("children", children)
       .handle("pending", pending)
-      .handle("pending-list", pending)
+      .handle("task", pending)
       .handle("diff", diff)
       .handle("messages", messages)
       .handle("message", message)

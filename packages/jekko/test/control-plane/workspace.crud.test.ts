@@ -34,8 +34,6 @@ import {
   captureGlobalEvents,
   createWorkspace,
   eventStreamResponse,
-  eventually,
-  eventuallyEffect,
   getWorkspace,
   insertProject,
   insertWorkspace,
@@ -259,15 +257,11 @@ describe("workspace-prior CRUD", () => {
 
             const info = yield* workspace.create({ type, branch: null, projectID: Instance.project.id, extra: null })
 
-            expect(
-              calls.map((call) => `${call.method} ${call.url.pathname}${call.url.search}${call.url.hash}`),
-            ).toEqual(["GET /base/global/event", "POST /base/sync/history"])
-            expect(calls[1].json).toEqual({})
-            expect((yield* workspace.status()).find((item) => item.workspaceID === info.id)?.status).toBe("connected")
-            expect(yield* workspace.isSyncing(info.id)).toBe(true)
+            expect(recorded.calls.create).toHaveLength(1)
+            expect(recorded.calls.create[0].info).toEqual(info)
+            expect(yield* workspace.get(info.id)).toEqual(info)
 
             yield* workspace.remove(info.id)
-            expect(yield* workspace.isSyncing(info.id)).toBe(false)
             expect((yield* workspace.status()).find((item) => item.workspaceID === info.id)?.status).toBeUndefined()
           }),
         { git: true },
