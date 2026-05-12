@@ -29,6 +29,41 @@ function spec() {
   })
 }
 
+function seedProjectAndSession(input: {
+  projectID: string
+  sessionID: string
+  directory: string
+}) {
+  return Effect.sync(() =>
+    Database.use((db) => {
+      const now = Date.now()
+      db.insert(ProjectTable)
+        .values({
+          id: input.projectID,
+          worktree: "/",
+          vcs: "git",
+          name: "Daemon Store Test",
+          sandboxes: [],
+          time_created: now,
+          time_updated: now,
+        })
+        .run()
+      db.insert(SessionTable)
+        .values({
+          id: input.sessionID,
+          project_id: input.projectID,
+          slug: "daemon-store",
+          directory: input.directory,
+          title: "Daemon Store Test",
+          version: "1.0.0",
+          time_created: now,
+          time_updated: now,
+        })
+        .run()
+    }),
+  )
+}
+
 describe("session.daemon-store", () => {
   const it = testEffect(Layer.mergeAll(DaemonStore.layer, CrossSpawnSpawner.defaultLayer))
 
@@ -113,6 +148,26 @@ describe("session.daemon-store", () => {
         expect(tasks).toHaveLength(1)
         expect(tasks[0].status).toBe("leased")
 
+        yield* store.routeTask({
+          taskID: "task_daemon_store",
+          lane: "incubator",
+          phase: "triage",
+          incubatorStatus: "queued",
+        })
+
+        const routed = yield* store.listTasks(run.id)
+        expect(routed[0].lane).toBe("incubator")
+        expect(routed[0].status).toBe("incubating")
+        expect((yield* store.listEvents(run.id)).map((event) => event.event_type)).toContain("task.routed")
+
+        yield* store.completeTask({
+          taskID: "task_daemon_store",
+          evidence: { verdict: "done" },
+        })
+
+        const completed = yield* store.listTasks(run.id)
+        expect(completed[0].status).toBe("done")
+
         const pass = yield* store.beginTaskPass({
           runID: run.id,
           taskID: "task_daemon_store",
@@ -142,13 +197,48 @@ describe("session.daemon-store", () => {
         expect(memory).toHaveLength(1)
 
         const capsulePath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "CAPSULE.md")
-        const passPath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "PASSES", "001-scout.md")
+        const passPath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "PASSES", "001.md")
         const scorePath = path.join(directory, ".jekko", "daemon", run.id, "tasks", "task_daemon_store", "SCORE.json")
         expect(yield* Effect.promise(() => fs.readFile(capsulePath, "utf8"))).toContain("Understand the daemon store task")
         expect(yield* Effect.promise(() => fs.readFile(passPath, "utf8"))).toContain("scout")
         expect(yield* Effect.promise(() => fs.readFile(scorePath, "utf8"))).toContain('"pass_count": 1')
       }),
       { git: true },
+    ),
+  )
+
+  it.effect(
+    "mirrors runs under the instance directory when the worktree is /",
+    provideTmpdirInstance(
+      (directory) =>
+        Effect.gen(function* () {
+          const projectID = ProjectID.make("proj_daemon_store_root")
+          const sessionID = SessionID.make("ses_daemon_store_root")
+          const specValue = spec()
+
+          yield* seedProjectAndSession({
+            projectID,
+            sessionID,
+            directory,
+          })
+
+          const store = yield* DaemonStore.Service
+          const run = yield* store.createRun({
+            rootSessionID: sessionID,
+            activeSessionID: sessionID,
+            spec: specValue,
+            specHash: "sha256:test-root-worktree",
+          })
+
+          const runDir = path.join(directory, ".jekko", "daemon", run.id)
+          expect(runDir).toContain(directory)
+          expect(runDir).not.toBe(path.join("/", ".jekko", "daemon", run.id))
+
+          const ledgerPath = path.join(runDir, "ledger.jsonl")
+          const statePath = path.join(runDir, "STATE.md")
+          expect(yield* Effect.promise(() => fs.readFile(ledgerPath, "utf8"))).toContain(`"event_type":"run.created"`)
+          expect(yield* Effect.promise(() => fs.readFile(statePath, "utf8"))).toContain("# Store test")
+        }),
     ),
   )
 })
