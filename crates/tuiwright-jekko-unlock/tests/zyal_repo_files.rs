@@ -1,3 +1,4 @@
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -29,8 +30,16 @@ fn tracked_zyal_files(root: &Path) -> Result<Vec<PathBuf>> {
         .filter(|line| !line.trim().is_empty())
         .map(|line| root.join(line))
         .collect::<Vec<_>>();
+    paths.retain(|path| !is_declarative_zyal(path));
     paths.sort();
     Ok(paths)
+}
+
+fn is_declarative_zyal(path: &Path) -> bool {
+    fs::read_to_string(path)
+        .ok()
+        .and_then(|text| text.lines().next().map(str::to_owned))
+        .is_some_and(|line| line.trim_start().starts_with("# zyal: declarative"))
 }
 
 #[test]

@@ -1,9 +1,20 @@
 # ZYAL Version Contract
 
-- Contract version: `2.5.0`
+- Contract version: `2.6.0`
 - Release tag: `v1.0.0`
 - Runtime sentinel version: `<<<ZYAL v1:daemon ...>>>`
 - `research.version`: `v1`
+
+## Jankurai host block (2.6.0)
+
+ZYAL now has a first-class `jankurai:` block. It is host-enforced by Jekko,
+not preview-only: the daemon can run `jankurai audit`, build repair plans,
+ingest findings into durable tasks, route risky packets to incubator lanes,
+verify candidates, block regressions, roll back unverified work, checkpoint,
+and compare the branch against `origin/main`.
+
+The runtime sentinel remains `v1`; only the ZYAL contract and preview surface
+advance to `2.6.0`.
 
 ## Extension migration (2.5.0)
 

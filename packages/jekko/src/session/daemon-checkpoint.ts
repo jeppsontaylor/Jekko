@@ -64,6 +64,16 @@ export const layer = Layer.effect(
       const sha = yield* git.run(["rev-parse", "HEAD"], { cwd: input.cwd }).pipe(
         Effect.map((result) => (result.exitCode === 0 ? result.text().trim() : undefined)),
       )
+      if (input.spec.jankurai?.enabled && input.spec.jankurai.verification?.require_clean_after_checkpoint !== false) {
+        const afterStatus = yield* git.status(input.cwd)
+        if (afterStatus.length > 0) {
+          return {
+            ok: false,
+            reason: `jankurai requires a clean checkout after checkpoint; dirty paths: ${afterStatus.map((item) => item.file).join(", ")}`,
+            sha,
+          }
+        }
+      }
       if (input.checkpoint.git?.push === "allow") {
         const push = yield* git.run(["push"], { cwd: input.cwd })
         if (push.exitCode !== 0) return { ok: false, reason: push.stderr.toString() || push.text() || "push failed" }

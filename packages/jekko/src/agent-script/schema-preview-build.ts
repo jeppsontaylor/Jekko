@@ -91,6 +91,32 @@ export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): Zy
         .filter(Boolean)
         .join(" ") || "configured"
     : undefined
+  const jankurai = input.spec.jankurai
+  const jankuraiAuditMode = jankurai?.audit?.mode ?? "advisory"
+  const jankuraiTaskSource = jankurai?.task_source ?? "repair_plan"
+  const jankuraiMaxRisk = jankurai?.selection?.max_risk ?? "low"
+  const jankuraiWorkerCount = input.spec.fleet?.max_workers ?? workers.reduce((sum: number, worker) => sum + worker.count, 0)
+  const jankuraiVerification = jankurai?.verification
+    ? [
+        jankurai.verification.require_clean_start ? "clean_start" : null,
+        jankurai.verification.require_clean_after_checkpoint ? "clean_checkpoint" : null,
+        jankurai.verification.proof_from_test_map ? "test_map" : null,
+        jankurai.verification.commands?.length ? `commands:${jankurai.verification.commands.length}` : null,
+        `audit_delta:${jankurai.verification.audit_delta ?? "no_new_findings"}`,
+        jankurai.verification.rollback_unverified !== false ? "rollback_unverified" : null,
+      ]
+        .filter(Boolean)
+        .join(" ")
+    : undefined
+  const jankuraiRegression = jankurai?.regression
+    ? [
+        `main:${jankurai.regression.main_ref ?? "origin/main"}`,
+        `every:${jankurai.regression.compare_every_iterations ?? 5}`,
+        `mode:${jankurai.regression.mode ?? jankuraiAuditMode}`,
+        `max_new_hard:${jankurai.regression.max_new_hard_findings ?? 0}`,
+        `max_score_drop:${jankurai.regression.max_score_drop ?? 0}`,
+      ].join(" ")
+    : undefined
 
   return {
     id: input.spec.id,
@@ -314,6 +340,20 @@ export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): Zy
     research_evidence_summary: summarizeResearchEvidence,
     research_safety_summary: summarizeResearchSafety,
     research_budget_summary: summarizeResearchBudget,
+    jankurai_enabled: jankurai?.enabled === true,
+    jankurai_summary: jankurai
+      ? [
+          `mode:${jankuraiAuditMode}`,
+          `source:${jankuraiTaskSource}`,
+          `order:${jankurai.selection?.order ?? "quick_wins_first"}`,
+          `max_risk:${jankuraiMaxRisk}`,
+          `workers:${jankuraiWorkerCount}`,
+        ].join(" ")
+      : undefined,
+    jankurai_task_source: jankurai ? jankuraiTaskSource : undefined,
+    jankurai_max_risk: jankurai ? jankuraiMaxRisk : undefined,
+    jankurai_verification_summary: jankuraiVerification,
+    jankurai_regression_summary: jankuraiRegression,
     taint_enabled: input.spec.taint !== undefined,
     taint_label_count: input.spec.taint ? Object.keys(input.spec.taint.labels).length : 0,
     taint_forbid_count: input.spec.taint?.forbid?.length ?? 0,

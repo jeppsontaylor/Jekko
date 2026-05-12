@@ -1,5 +1,16 @@
 # ZYAL Changelog
 
+## 2.6.0 - 2026-05-12
+
+- Added first-class `jankurai:` syntax for host-enforced audit, repair-plan
+  ingestion, task routing, verification, rollback, checkpoint, and branch/main
+  regression checks.
+- Added bundled examples `jankurai-continuous-repair` and
+  `jankurai-porting-advanced`, both requiring `unsupported_feature_policy:
+  required: [jankurai]`.
+- Kept the runtime sentinel at `v1`; the contract and preview metadata move
+  to `2.6.0`.
+
 ## 2.5.0 - 2026-05-11
 
 - Renamed canonical extension from `.zyal.yml` to bare `.zyal`. Docs examples

@@ -301,13 +301,15 @@ ZYAL_ARM RUN_FOREVER id=one`
     )
     const text = fs.readFileSync(masterPath, "utf8")
     const parsed = await Effect.runPromise(parseZyal(text))
-    expect(parsed.spec.id).toBe("jankurai-master-loop")
+    expect(parsed.spec.id).toBe("jankurai-porting-advanced")
     expect(parsed.preview.taint_enabled).toBe(true)
     expect(parsed.preview.taint_label_count).toBeGreaterThanOrEqual(5)
     expect(parsed.preview.taint_forbid_count).toBeGreaterThanOrEqual(1)
     expect(parsed.preview.taint_summary).toContain("injection:pause")
-    expect(parsed.preview.fleet_summary).toContain("max:20")
+    expect(parsed.preview.fleet_summary).toContain("max:10")
     expect(parsed.preview.fleet_summary).toContain("jnoccio:on")
+    expect(parsed.preview.jankurai_enabled).toBe(true)
+    expect(parsed.preview.jankurai_summary).toContain("source:repair_plan")
   })
 
   test("accepts the control-plane preview example", async () => {
@@ -1496,5 +1498,97 @@ taint:
   labels:
     web_content: { rank: bogus }`)
     await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
+  })
+})
+
+describe("ZYAL parser jankurai block", () => {
+  test("accepts first-class jankurai repair configuration and previews it", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 10
+jankurai:
+  enabled: true
+  root: "."
+  audit:
+    mode: advisory
+    json: target/jankurai/repo-score.json
+    md: target/jankurai/repo-score.md
+    repair_queue_jsonl: target/jankurai/repair-queue.jsonl
+    sarif: target/jankurai/jankurai.sarif
+    no_score_history: true
+  repair_plan:
+    enabled: true
+    json: target/jankurai/repair-plan.json
+    md: target/jankurai/repair-plan.md
+  task_source: repair_plan
+  selection:
+    order: quick_wins_first
+    randomize_ties: true
+    max_risk: low
+    skip_human_review_required: true
+    incubate_risk_at: medium
+    defer_rules: [HLT-010-SECRET-SPRAWL]
+    incubate_rules: [HLT-006-DIRECT-DB-WRONG-LAYER]
+  regression:
+    main_ref: origin/main
+    compare_every_iterations: 5
+    mode: advisory
+    max_new_hard_findings: 0
+    max_score_drop: 0
+  verification:
+    require_clean_start: true
+    require_clean_after_checkpoint: true
+    proof_from_test_map: true
+    commands:
+      - "just fast"
+    audit_delta: no_new_findings
+    rollback_unverified: true
+unsupported_feature_policy:
+  required: [jankurai]`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.jankurai?.enabled).toBe(true)
+    expect(parsed.preview.jankurai_enabled).toBe(true)
+    expect(parsed.preview.jankurai_summary).toContain("source:repair_plan")
+    expect(parsed.preview.jankurai_summary).toContain("workers:10")
+    expect(parsed.preview.jankurai_verification_summary).toContain("audit_delta:no_new_findings")
+    expect(parsed.preview.unsupported_feature_policy_summary).toContain("required:1")
+  })
+
+  test("rejects unknown nested jankurai keys", async () => {
+    const text = makeZyal(`
+jankurai:
+  enabled: true
+  surprise: false`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("Unknown ZYAL key: jankurai.surprise")
+  })
+
+  test("rejects invalid jankurai risk literals", async () => {
+    const text = makeZyal(`
+jankurai:
+  enabled: true
+  selection:
+    max_risk: tiny`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
+  })
+
+  test("rejects invalid jankurai audit modes", async () => {
+    const text = makeZyal(`
+jankurai:
+  enabled: true
+  audit:
+    mode: experimental`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
+  })
+
+  test("accepts unsupported feature policy requiring jankurai", async () => {
+    const text = makeZyal(`
+jankurai:
+  enabled: true
+unsupported_feature_policy:
+  required: [jankurai]
+  fail_closed: true
+  on_missing: reject`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.preview.jankurai_enabled).toBe(true)
   })
 })

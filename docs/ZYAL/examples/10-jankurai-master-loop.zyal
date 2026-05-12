@@ -1,309 +1,128 @@
-# ZYAL v2.3 — Jankurai Master Loop
-#
-# The flagship long-running ZYAL runbook: continuously audit with jankurai,
-# rotate completed work, claim a task, route trivial vs risky to direct or
-# multi-pass incubator, commit + push every verified change, hard-clear
-# context between tasks. Stops only when jankurai reports zero findings,
-# the worktree is clean, and HEAD is fully pushed to origin/main.
-#
-# Hardens against the #1 long-loop attack surface — prompt injection — via
-# the v2.3 `taint` block: every inbound source labelled, hostile content
-# blocked from arming/approving/granting/exec_shell/memory writes without
-# human review or a signed sanitiser.
-#
-# # Setup
-#
-# Before arming, ensure these prerequisites are satisfied:
-#   1. `jankurai` CLI is on $PATH (`which jankurai`).
-#   2. A `JANKURAI_TASKLIST.md` exists at the repo root (the on_start hook
-#      will `touch` it if missing).
-#   3. Node-side test/typecheck commands resolve from `packages/jekko/`:
-#      `bun test --timeout 60000` and `bun run typecheck`. If the jekko
-#      package's test suite has known failures, run from inside it:
-#      `cd packages/jekko && bun run typecheck` first to confirm 0 errors,
-#      then iterate the failing tests under hardlane-incubated tasks.
-#   4. **Provider setup**: this runbook routes `provider: jnoccio` through
-#      jnoccio-fusion at `http://127.0.0.1:4317`. Until a native jnoccio
-#      provider is registered in `packages/jekko/src/provider/provider.ts`,
-#      register the gateway via `@ai-sdk/openai-compatible` in
-#      `~/.jekko/config.json`:
-#
-#        "provider": {
-#          "jnoccio": {
-#            "name": "Jnoccio",
-#            "npm": "@ai-sdk/openai-compatible",
-#            "options": {
-#              "baseURL": "http://127.0.0.1:4317/v1",
-#              "apiKey": "jnoccio-local",
-#              "includeUsage": true
-#            },
-#            "models": {
-#              "jnoccio-fusion": { "context": 128000, "output": 32000 }
-#            }
-#          }
-#        }
-#
-#      Then start the fusion server: `cargo run --release` from
-#      `jnoccio-fusion/`. Verify health: `curl http://127.0.0.1:4317/health`.
-
-<<<ZYAL v1:daemon id=jankurai-master-loop>>>
+# Advanced jankurai porting and repair loop.
+<<<ZYAL v1:daemon id=jankurai-porting-advanced>>>
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
 
 job:
-  name: "Jankurai master loop"
+  name: "Jankurai advanced porting loop"
   objective: |
-    UNATTENDED JOB — never ask the user anything; make best-effort decisions always.
-    Run forever: audit with jankurai, harvest new work into JANKURAI_TASKLIST.md,
-    rotate completed items into JANKURAI_TASKLIST.md.completed, claim ONE task at
-    random from the eligible Pending set, route trivial tasks to direct execution
-    and risky tasks to the multi-pass incubator, commit and push every verified
-    change, hard-clear context between tasks. Stop only when jankurai reports
-    zero issues, the worktree is clean, and HEAD is fully pushed to origin/main.
-    If blocked on a task: mark Status: Blocked with reason and claim the next
-    random one.
-
-    RANDOM SELECTION — REQUIRED. Multiple workers run this loop in parallel
-    (see fleet.max_workers below). Never claim the first / top / lowest-id
-    Pending task — that produces deterministic collisions. Filter the Pending
-    list to eligible candidates first (apply the `Eligibility` and safety
-    filters from agent/JANKURAI_STANDARD.md), then pick exactly one uniformly
-    at random (`shuf -n 1` over the candidate list, or `awk` with `srand()`).
-    Re-randomise on every iteration; never bias toward the same task across
-    iterations.
-
-    HARD CONTEXT RESET — REQUIRED. `context.strategy: hard` with
-    `hard_clear_every: 1` means every iteration starts with a wiped context
-    window. The ONLY state that survives is on disk: JANKURAI_TASKLIST.md,
-    JANKURAI_TASKLIST.md.completed, the jankurai audit JSON, and the
-    `preserve:` keys (objective, current_task_id, failed_approaches, …). Never
-    rely on prior-turn memory; re-read AGENTS.md, JANKURAI_STANDARD.md, and the
-    tasklist at the start of every iteration. Treat each iteration as a fresh
-    boot from disk-persisted state.
+    Run a robust continuous jankurai loop for porting and repair work. Keep
+    low-risk quick wins automatic, route medium and high-risk findings through
+    incubator passes, run five planning lanes for ambitious refactors, retain
+    task memory and evidence, compare the branch to origin/main every five
+    iterations, and roll back any unverified primary-checkout candidate.
   risk:
-    - Long-running with autonomous git_commit; bounded by per-iteration verify
-    - Touches arbitrary files; bounded by capability rules and anti-vibe gates
-    - Inbound tool/MCP/web content is hostile by default — bounded by `taint` rules
+    - secrets require human rotation
+    - generated zones must be fixed at their source
+    - migrations and public API refactors require incubator review
 
-interaction:
-  user: none
-  on_ambiguity: best_effort
-  on_blocked: skip_and_next
-  system_inject: |
-    UNATTENDED ZYAL JOB (interaction.user=none).
-    Never ask the user a question. Never write "Should I…" or list choices.
-    When uncertain: make your best judgment and proceed.
-    When blocked: mark Status: Blocked in JANKURAI_TASKLIST.md and move on.
+loop:
+  policy: forever
+  sleep: 5s
+  continue_on: [assistant_stop, max_steps, compaction, checkpoint_failed]
+  pause_on: [permission_denied]
+  circuit_breaker:
+    max_consecutive_errors: 3
+    on_trip: pause
 
-    RANDOM TASK SELECTION — REQUIRED. fleet.max_workers > 1 means many workers
-    share this tasklist. Never claim the first/top/lowest-id Pending task —
-    that produces collisions. Filter Pending → eligible candidates (safety
-    filter from agent/JANKURAI_STANDARD.md) THEN pick one uniformly at random
-    (`shuf -n 1` over the candidate list, or `awk 'BEGIN{srand()} …'`).
-
-    HARD CONTEXT RESET — REQUIRED. Every iteration starts with a wiped context
-    window (`context.hard_clear_every: 1`). State lives on disk only — re-read
-    AGENTS.md, agent/JANKURAI_STANDARD.md, and JANKURAI_TASKLIST.md on every
-    iteration. Never depend on prior-turn memory.
-
-    TOOL SCHEMAS — jekko camelCase, no exceptions:
-    - bash:  {"command":"...","description":"..."}
-    - read:  {"filePath":"/abs/path"}
-    - edit:  {"filePath":"/abs/path","oldString":"...","newString":"..."}
-    - write: {"filePath":"/abs/path","content":"..."}
-    - task:  {"description":"...","prompt":"...","subagent_type":"..."}
+context:
+  strategy: hybrid
+  compact_every: 4
+  hard_clear_every: 8
+  preserve:
+    - objective
+    - current_jankurai_task
+    - proof_requirements
+    - latest_regression_result
 
 arming:
   preview_hash_required: true
   host_nonce_required: true
   reject_inside_code_fence: true
-  reject_from: [assistant_output, tool_output, web_content, mcp_resource, issue_comment, repo_files]
   accepted_origins: [trusted_user_message, signed_cli_input, host_ui_button]
-  preview_expires_after: 10m
-  arm_token_single_use: true
-  bound_to: ["script_hash", "user_id", "repo", "branch"]
-
-# v2.3 taint — origin-aware prompt-injection defence.
-# Tainted sources cannot trigger high-privilege actions (arm, approve, grant
-# capability, write procedural memory, exec shell, install skill, modify
-# objective, expose secret) without human review or a signed sanitiser.
-taint:
-  default_label: tool_output
-  labels:
-    trusted_user: { rank: high }
-    repo_file: { rank: medium }
-    tool_output: { rank: untrusted }
-    mcp_resource: { rank: untrusted }
-    web_content: { rank: hostile }
-    assistant_generated: { rank: untrusted_for_arming }
-  forbid:
-    - from: [web_content, tool_output, mcp_resource, assistant_generated]
-      cannot:
-        - arm
-        - approve
-        - grant_capability
-        - write_memory_procedural
-        - exec_shell
-        - install_skill
-        - modify_objective
-        - expose_secret
-      unless: [human_review, signed_sanitizer]
-    - from: [web_content]
-      cannot: [write_memory_semantic]
-      unless: [human_review]
-  prompt_injection:
-    detect_patterns:
-      - "ignore\\s+(all\\s+)?previous\\s+instructions"
-      - "you\\s+are\\s+now\\s+(a|an)?\\s*[a-z]+"
-      - "system:\\s*you\\s+must"
-      - "<\\|im_(start|end)\\|>"
-      - "disregard\\s+the\\s+system\\s+prompt"
-    on_detect: pause
-    scan_sources: [tool_output, mcp_resource, web_content]
 
 fleet:
-  max_workers: 20
-  isolation: same_session
+  max_workers: 10
+  isolation: hybrid
   jnoccio:
     enabled: true
-    base_url: "http://127.0.0.1:4317"
-    metrics_ws: "/v1/jnoccio/metrics/ws"
-    spawn_on_demand: true
     register_workers: true
-    heartbeat_path: "/v1/jnoccio/agents/heartbeat"
-    heartbeat_interval: 30s
+    heartbeat_interval: 10s
+    max_instances: 10
   telemetry:
     publish_to: jnoccio
-    headers:
-      x-jekko-run-id: "${run.id}"
-      x-jekko-session: "${session.id}"
-      x-jekko-process-role: worker
 
-loop:
-  policy: forever
-  sleep: 5s
-  continue_on:
-    - assistant_stop
-    - max_steps
-    - compaction
-    - permission_denied
-    - checkpoint_failed
-    - error
-  pause_on: []
-  circuit_breaker:
-    max_consecutive_errors: 10
-    on_trip: continue
+agents:
+  supervisor:
+    agent: plan
+  workers:
+    - id: jankurai-repair
+      count: 10
+      agent: build
+      isolation: git_worktree
 
-context:
-  strategy: hard
-  compact_every: 1
-  hard_clear_every: 1
-  preserve:
-    - objective
-    - current_task_id
-    - failed_approaches
-    - jankurai_findings_count
-    - rollback_plan
-
-stop:
-  all:
-    - shell:
-        command: "jankurai audit --json /tmp/jankurai-stop.json >/dev/null 2>&1 && jq -e '.findings | length == 0' /tmp/jankurai-stop.json"
-        timeout: 120s
-        assert: { exit_code: 0 }
-    - git_clean: { allow_untracked: false }
-    - shell:
-        command: "git fetch -q origin && [ -z \"$(git log origin/main..HEAD --oneline)\" ]"
-        timeout: 30s
-        assert: { exit_code: 0 }
-
-hooks:
-  on_start:
-    - run: "git fetch -q origin"
-    - run: "mkdir -p .jekko/daemon && touch JANKURAI_TASKLIST.md JANKURAI_TASKLIST.md.completed"
-    - run: |
-        if grep -q '^- \[x\]' JANKURAI_TASKLIST.md 2>/dev/null; then
-          { echo ""; echo "## Rotated $(date -u +%Y-%m-%dT%H:%M:%SZ)"; grep '^- \[x\]' JANKURAI_TASKLIST.md; } >> JANKURAI_TASKLIST.md.completed
-          sed -i.bak '/^- \[x\]/d' JANKURAI_TASKLIST.md && rm -f JANKURAI_TASKLIST.md.bak
-        fi
-      on_fail: warn
-  before_iteration:
-    - run: "git rebase origin/main --autostash"
-      on_fail: warn
-    - run: |
-        jankurai audit --json .jekko/daemon/jankurai-latest.json >/dev/null 2>&1 || echo '{"findings":[]}' > .jekko/daemon/jankurai-latest.json
-        jq -r '.findings[] | "- [ ] " + .id + " — " + .title + " (" + (.severity // "med") + ", " + (.file // "?") + ")"' .jekko/daemon/jankurai-latest.json > .jekko/daemon/jankurai-new.txt || true
-        if [ -s .jekko/daemon/jankurai-new.txt ]; then
-          grep -F -v -f <(grep -oE '\b[A-Z]+-[0-9]+' JANKURAI_TASKLIST.md 2>/dev/null | sort -u || true) .jekko/daemon/jankurai-new.txt >> JANKURAI_TASKLIST.md || true
-        fi
-      on_fail: warn
-    - run: |
-        if grep -q '^- \[x\]' JANKURAI_TASKLIST.md; then
-          { echo ""; echo "## Rotated $(date -u +%Y-%m-%dT%H:%M:%SZ)"; grep '^- \[x\]' JANKURAI_TASKLIST.md; } >> JANKURAI_TASKLIST.md.completed
-          sed -i.bak '/^- \[x\]/d' JANKURAI_TASKLIST.md && rm -f JANKURAI_TASKLIST.md.bak
-        fi
-      on_fail: warn
-  before_checkpoint:
-    # `bun run lint` does not exist in packages/jekko yet — typecheck is the
-    # canonical pre-checkpoint signal. If lint becomes available later,
-    # promote it to a verify step.
-    - run: "(cd packages/jekko && bun run typecheck) 2>/dev/null || true"
-  after_checkpoint:
-    - run: "git push origin HEAD"
-      on_fail: pause
-  on_stop:
-    - run: "git push origin HEAD || true"
-      on_fail: warn
-    - run: "echo '✅ Jankurai master loop exited cleanly'"
-
-tasks:
-  ledger: sqlite
-  # Discover surfaces Pending candidates in RANDOM order so parallel workers
-  # under fleet.max_workers never collide on the same top-of-list task. The
-  # agent must still apply the safety filter from agent/JANKURAI_STANDARD.md
-  # before claiming. Re-shuffle every iteration.
-  discover:
-    - command: "grep -nE '^- \\[ \\] ' JANKURAI_TASKLIST.md | shuf | head -50"
-      timeout: 10s
-
-on:
-  - signal: no_progress
-    count_gte: 2
-    do:
-      - incubate_current_task: true
-      - notify: "Routing stuck task to incubator"
-  - signal: checkpoint_failed
-    do:
-      - incubate_current_task: true
-  - signal: error
-    message_contains: "merge conflict"
-    do:
-      - pause: true
-      - notify: "Merge conflict — human review required"
+jankurai:
+  enabled: true
+  root: "."
+  audit:
+    mode: advisory
+    json: target/jankurai/repo-score.json
+    md: target/jankurai/repo-score.md
+    repair_queue_jsonl: target/jankurai/repair-queue.jsonl
+    sarif: target/jankurai/jankurai.sarif
+    no_score_history: true
+  repair_plan:
+    enabled: true
+    json: target/jankurai/repair-plan.json
+    md: target/jankurai/repair-plan.md
+  task_source: repair_plan
+  selection:
+    order: quick_wins_first
+    randomize_ties: true
+    max_risk: low
+    skip_human_review_required: true
+    incubate_risk_at: medium
+    defer_rules:
+      - HLT-010-SECRET-SPRAWL
+      - HLT-021-DESTRUCTIVE-MIGRATION
+    incubate_rules:
+      - HLT-006-DIRECT-DB-WRONG-LAYER
+      - HLT-009-GENERATED-SECURITY
+      - HLT-020-CI-HARDENING-GAP
+      - HLT-023-INPUT-BOUNDARY-GAP
+  regression:
+    main_ref: origin/main
+    compare_every_iterations: 5
+    mode: advisory
+    max_new_hard_findings: 0
+    max_score_drop: 0
+  verification:
+    require_clean_start: true
+    require_clean_after_checkpoint: true
+    proof_from_test_map: true
+    commands:
+      - "just fast"
+    audit_delta: no_new_findings
+    rollback_unverified: true
 
 incubator:
   enabled: true
   strategy: generate_pool_strengthen
   route_when:
     any:
-      - repeated_attempts_gte: 2
-      - no_progress_iterations_gte: 2
-      - risk_score_gte: 0.65
+      - risk_score_gte: 0.5
       - touches_paths:
+          - "db/migrations/**"
+          - "agent/sandbox-lanes.toml"
+          - "packages/sdk/js/src/gen/**"
           - "packages/jekko/src/session/**"
-          - "packages/jekko/src/agent-script/**"
-          - "packages/jekko/migration/**"
-          - "packages/jekko/src/cli/cmd/tui/**"
-          - "packages/jekko/src/auth/**"
   exclude_when:
     any:
-      - readiness_score_lt: 0.20
       - touches_paths:
           - "docs/**"
-          - "**/*.md"
   budget:
-    max_passes_per_task: 6
+    max_passes_per_task: 8
     max_rounds_per_task: 2
     max_active_tasks: 1
     max_parallel_idea_passes: 3
@@ -317,53 +136,184 @@ incubator:
     delete_scratch: true
     delete_unmerged_worktrees: true
   readiness:
-    promote_at: 0.78
+    promote_at: 0.8
     tests_identified_gte: 1
     scope_bounded_gte: 1
     plan_reviewed_gte: 1
+    prototype_validated_gte: 1
     rollback_known_gte: 1
     affected_files_known_gte: 1
     critical_objections_resolved_gte: 1
-    model_confidence_cap: 0.06
+    model_confidence_cap: 0.05
   passes:
-    - { id: scout, type: scout, context: blind, writes: scratch_only }
-    - { id: ideas, type: idea, context: blind, count: 3, writes: scratch_only }
-    - { id: critic, type: critic, context: pool, writes: scratch_only }
-    - { id: synth, type: synthesize, context: pool, writes: scratch_only }
-    - { id: prototype, type: prototype, context: inherit, writes: isolated_worktree }
-    - { id: review, type: promotion_review, context: promotion, writes: scratch_only }
+    - id: planning-scout
+      type: scout
+      context: blind
+      writes: scratch_only
+    - id: planning-lanes
+      type: idea
+      context: blind
+      count: 3
+      writes: scratch_only
+    - id: critique
+      type: critic
+      context: pool
+      reads: [candidate_pool]
+      writes: scratch_only
+    - id: synthesize
+      type: synthesize
+      context: pool
+      reads: [candidate_pool, objections]
+      writes: scratch_only
+    - id: prototype
+      type: prototype
+      context: inherit
+      reads: [current_best]
+      writes: isolated_worktree
+    - id: promotion-review
+      type: promotion_review
+      context: promotion
+      reads: [current_best, objections]
+      writes: scratch_only
   promotion:
-    promote_at: 0.78
-    require: [problem_statement, current_best_plan, verification_strategy, risk_review]
-    block_on: { unresolved_critical_objections_gte: 1 }
+    promote_at: 0.8
+    require:
+      - problem_statement
+      - current_best_plan
+      - verification_strategy
+      - risk_review
+      - rollback_plan
+    block_on:
+      unresolved_critical_objections_gte: 1
     on_promote: move_to_ready_queue
     on_exhausted: park_with_summary
 
+experiments:
+  strategy: parallel_distill_refine
+  max_parallel: 5
+  diversity:
+    require_distinct_plan: true
+    min_plan_distance: 0.25
+    axes: [scope, migration-risk, generated-source, public-api, security]
+  lanes:
+    - id: generated-source-plan
+      hypothesis: modify generated-zone sources instead of generated outputs
+      agent: plan
+      isolation: git_worktree
+    - id: security-route-plan
+      hypothesis: route secrets and authority changes to human security review
+      agent: plan
+      isolation: git_worktree
+    - id: migration-plan
+      hypothesis: isolate migration-risk changes behind explicit rollback proof
+      agent: plan
+      isolation: git_worktree
+    - id: public-api-plan
+      hypothesis: preserve public API compatibility while removing audit findings
+      agent: plan
+      isolation: git_worktree
+    - id: proof-plan
+      hypothesis: minimize proof cost by using agent/test-map.json and jankurai deltas
+      agent: plan
+      isolation: git_worktree
+  reduce:
+    strategy: synthesize_best
+    require_final_verification: true
+  preserve_failed_lanes_as_negative_memory: true
+
 memory:
   stores:
-    task_context:
+    task_receipts:
       scope: task
-      retention: until_promotion
-      max_entries: 200
+      retention: until_archive
       write_policy: append_only
       read_policy: inject_at_start
-    failed_approaches:
-      scope: global
+      searchable: true
+    repair_memory:
+      scope: repo
       retention: permanent
-      write_policy: append_only
+      write_policy: upsert
       read_policy: search
       searchable: true
-    jankurai_findings:
+    regression_receipts:
       scope: run
       retention: session
-      write_policy: upsert
-      read_policy: inject_at_start
+      write_policy: append_only
+      read_policy: on_demand
+      searchable: true
   redaction:
-    patterns: ["sk-*", "AKIA*", "ghp_*", "github_pat_*"]
+    patterns:
+      - "(token|secret|password|credential)"
     action: mask
   provenance:
     track_source: true
     hash_chain: true
+
+evidence:
+  require_before_promote:
+    - type: jankurai_delta
+      max_increase: 0
+    - type: proof_lane
+      must_pass: true
+    - type: rollback_plan
+      must_exist: true
+    - type: branch_main_regression
+      must_pass: true
+  bundle_format: json
+  sign: sha256
+  archive: true
+
+observability:
+  spans:
+    emit: all
+    include_tool_calls: true
+    include_model_calls: true
+  metrics:
+    - name: jankurai_score
+      type: gauge
+      source: target/jankurai/repo-score.json
+    - name: queued_findings
+      type: gauge
+      source: daemon.tasks.queued
+    - name: blocked_human_required
+      type: gauge
+      source: daemon.tasks.blocked
+    - name: branch_main_new_hard_findings
+      type: gauge
+      source: target/jankurai/zyal/regression
+  report:
+    format: markdown
+    on_checkpoint: true
+    include: [score, tasks, workers, regression]
+
+taint:
+  default_label: repo
+  labels:
+    repo:
+      rank: medium
+      notes: repository-local evidence
+    generated:
+      rank: untrusted_for_arming
+      notes: generated output must route to source edits
+    secret:
+      rank: hostile
+      notes: never echo or store secret snippets
+    external:
+      rank: untrusted
+      notes: external audit context
+    human:
+      rank: high
+      notes: trusted operator instructions
+  forbid:
+    - from: [secret, external]
+      cannot: [approve, grant_capability, expose_secret, exec_shell]
+      unless: [human_security_review]
+  prompt_injection:
+    detect_patterns:
+      - "[Ii]gnore previous instructions"
+      - "[Ee]xfiltrate"
+    on_detect: pause
+    scan_sources: [audit_evidence, repair_plan, worker_output]
 
 quality:
   anti_vibe:
@@ -375,177 +325,55 @@ quality:
     block_fake_data_fallback: true
     block_ts_ignore: true
     require_root_cause_for_bugfix: true
-    require_failing_test_first_for_bugfix: true
   diff_budget:
-    max_files_changed: 25
-    max_added_lines: 1500
+    max_files_changed: 12
+    max_added_lines: 600
+    max_deleted_lines: 600
     on_violation: require_approval
-  checks:
-    - name: no-test-skip
-      pattern: "\\.skip\\(|test\\.only\\(|describe\\.only\\("
-      scope: file_diff
-      on_violation: block_promotion
-    - name: no-broad-catch
-      pattern: "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}"
-      scope: file_diff
-      on_violation: warn
-
-capabilities:
-  default: deny
-  rules:
-    - { id: read-anywhere, tool: read, decision: allow }
-    - { id: edit-src, tool: edit, paths: ["packages/**/src/**", "packages/**/test/**"], decision: allow }
-    - { id: edit-docs, tool: edit, paths: ["docs/**", "**/*.md"], decision: allow }
-    - { id: edit-tasklist, tool: edit, paths: ["JANKURAI_TASKLIST.md", "JANKURAI_TASKLIST.md.completed"], decision: allow }
-    - { id: edit-migrations, tool: edit, paths: ["**/migrations/**"], decision: ask, require_gate: dba_review }
-    - id: shell-tests
-      tool: shell
-      command_regex: "^((bun|pnpm|npm) (run )?(test|run typecheck|run build|typecheck|build)|jankurai (audit|score)|jq |grep |sed |git (status|diff|log|fetch|rebase|push origin HEAD))( |$)"
-      decision: allow
-      expires: 4h
-    - { id: git-commit, tool: git_commit, decision: allow }
-    - { id: git-push, tool: git_push, decision: allow, reason: "explicit user objective" }
-  command_floor:
-    always_block:
-      - "git push --force"
-      - "git push -f"
-      - "git reset --hard origin"
-      - "rm -rf /"
-      - "rm -rf .git"
-      - "sudo "
-      - "chmod 777"
-      - "curl .* \\| sh"
-      - "DROP DATABASE"
-      - "DROP TABLE"
-
-models:
-  profiles:
-    plan: { provider: jnoccio, model: jnoccio-fusion, reasoning: true }
-    build: { provider: jnoccio, model: jnoccio-fusion }
-    critic: { provider: jnoccio, model: jnoccio-fusion, reasoning: true }
-    summarizer: { provider: jnoccio, model: jnoccio-fusion, budget_usd: 0.50 }
-  routes:
-    plan: plan
-    implement: build
-    review: critic
-    compress: summarizer
-  critic:
-    must_differ_from_builder: false
-    must_use_different_provider: false
-  fallback:
-    on_rate_limit: summarizer
-    on_context_overflow: summarizer
-    cooldown: 60s
-  confidence_cap: 0.6
-
-budgets:
-  run:
-    wall_clock: 720h
-    cost_usd: 500.00
-    on_exhaust: renew_with_approval
-  task:
-    iterations: 25
-    cost_usd: 6.00
-    on_exhaust: park
-  iteration:
-    tool_calls: 40
-    diff_lines: 2000
-    on_exhaust: pause
-
-approvals:
-  gates:
-    dba_review:
-      required_role: dba
-      timeout: 24h
-      on_timeout: pause
-      decisions: [approve, reject, edit]
-
-evidence:
-  require_before_promote:
-    - { type: test_results, must_pass: true }
-    - { type: lint_results, must_pass: true }
-    - { type: typecheck_results, must_pass: true }
-    - { type: jankurai_delta, max_increase: 0 }
-    - { type: rollback_plan, must_exist: true }
-  bundle_format: json
-  sign: sha256
-  archive: true
 
 rollback:
-  required_when:
-    risk_score_gte: 0.5
   plan_required: true
-  verify_command: "git apply --reverse --check < .jekko/daemon/rollback.patch"
+  verify_command: "git diff --check && just fast"
   on_failure_after_merge: revert_commit
 
 done:
   require:
-    - stop_conditions_met
     - jankurai_zero_findings
-    - worktree_clean
-    - head_pushed_to_origin
-    - evidence_complete
+    - git_clean
+    - no_new_hard_findings_vs_origin_main
   forbid:
-    - model_only_claim
-    - tests_not_run
-    - tasklist_has_unresolved_open_items
+    - unverified_patch
+    - generated_output_hand_edit
+    - leaked_secret_evidence
+
+evaluation:
+  metrics:
+    - name: jankurai_score
+      command: "jq -r '.score' target/jankurai/repo-score.json"
+      threshold: 100
+    - name: hard_findings
+      command: "jq -r '.hard_findings // 0' target/jankurai/repo-score.json"
+      threshold: 0
+  compare: origin/main
+
+stop:
+  all:
+    - shell:
+        command: "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --repair-queue-jsonl target/jankurai/repair-queue.jsonl --no-score-history >/dev/null 2>&1 && jq -e '(.findings // []) | length == 0' target/jankurai/repo-score.json"
+        timeout: 10m
+    - git_clean:
+        allow_untracked: false
 
 checkpoint:
   when: after_verified_change
   noop_if_clean: true
   verify:
-    - command: "cd packages/jekko && bun test --timeout 60000"
-      timeout: 120s
-      assert: { exit_code: 0 }
-    - command: "cd packages/jekko && bun run typecheck 2>&1 | tail -1"
-      timeout: 60s
-      assert: { exit_code: 0 }
+    - command: "just fast"
+      timeout: 20m
   git:
     add: ["."]
-    commit_message: "jankurai: ${task.id} — ${task.summary}"
+    commit_message: "jankurai: verified repair checkpoint"
     push: allow
-
-constraints:
-  - name: jankurai-no-regression
-    check:
-      shell: "jankurai audit --json /tmp/jankurai-constraint.json >/dev/null 2>&1 && jq '.findings | length' /tmp/jankurai-constraint.json || echo 9999"
-      timeout: 60s
-    baseline: capture_on_start
-    invariant: lte_baseline
-    on_violation: pause
-  - name: test-count-stable
-    check:
-      shell: "cd packages/jekko && bun test --dry-run 2>&1 | grep -c test"
-    baseline: capture_on_start
-    invariant: gte_baseline
-    on_violation: pause
-
-observability:
-  spans:
-    emit: all
-    include_tool_calls: true
-    include_model_calls: true
-  metrics:
-    - { name: tasks_completed, type: counter, source: daemon }
-    - { name: tasks_incubated, type: counter, source: daemon }
-    - { name: jankurai_findings, type: gauge, source: shell }
-    - { name: commits_pushed, type: counter, source: daemon }
-    - { name: workers_active, type: gauge, source: fleet }
-    - { name: total_tokens, type: counter, source: fleet }
-    - { name: taint_blocks, type: counter, source: taint }
-    - { name: prompt_injection_detections, type: counter, source: taint }
-  cost:
-    budget: 500.00
-    alert_at_percent: 80
-    on_budget_exceeded: pause
-  report:
-    format: markdown
-    on_complete: true
-    on_checkpoint: true
-
-ui:
-  theme: jekko-gold
-  banner: forever
 
 permissions:
   shell: allow
@@ -554,5 +382,10 @@ permissions:
   git_push: allow
   workers: allow
   mcp: allow
-<<<END_ZYAL id=jankurai-master-loop>>>
-ZYAL_ARM RUN_FOREVER id=jankurai-master-loop
+
+unsupported_feature_policy:
+  required: [jankurai]
+  fail_closed: true
+  on_missing: reject
+<<<END_ZYAL id=jankurai-porting-advanced>>>
+ZYAL_ARM RUN_FOREVER id=jankurai-porting-advanced

@@ -1,6 +1,6 @@
 # ZYAL v1
 
-- Contract version: `2.4.0`
+- Contract version: `2.6.0`
 - Release tag: `v1.0.0`
 - Runtime sentinel version: `v1`
 - Research block version: `v1`
@@ -16,7 +16,7 @@ Rules:
 5. The block must end with `<<<END_ZYAL id=<id>>>` and `ZYAL_ARM RUN_FOREVER id=<id>`.
 6. Top-level keys are strict. Unknown keys are rejected.
 7. Code fences and duplicate ZYAL blocks are rejected.
-8. Nested keys are strict inside every block, including `job`, `loop`, `stop`, `context`, `checkpoint`, `tasks`, `agents`, `mcp`, `permissions`, `ui`, `incubator`, v2, v2.1, and `fleet`.
+8. Nested keys are strict inside every block, including `job`, `loop`, `stop`, `context`, `checkpoint`, `tasks`, `agents`, `mcp`, `permissions`, `ui`, `incubator`, v2, v2.1, `fleet`, `research`, and `jankurai`.
 
 The shipped parser also accepts `memory` store scopes `task`, `run`, `global`, `agent`, and `repo`, plus skill trust values `builtin`, `verified`, `unverified`, `community`, and `local`.
 
@@ -61,3 +61,29 @@ Model confidence is only a low-weight input. Promotion depends on host evidence 
 MCP profile rules are exact allow lists. A pass may name `mcp_profile`; daemon execution must verify required profiles before exposing tools. Unlisted MCP tools remain hidden.
 
 Prototype passes run in an isolated git worktree with a child session and a recorded artifact path for the generated diff. The main worktree remains untouched until host promotion.
+
+## Jankurai
+
+ZYAL v1 supports an optional top-level `jankurai` block. When
+`jankurai.enabled: true`, the block is host-enforced by Jekko rather than
+preview-only.
+
+The daemon can run `jankurai audit`, run `jankurai repair-plan`, ingest
+repair packets into durable daemon tasks, lease conflict-free path-locked
+tasks, route medium/high-risk packets into the incubator, block human-required
+or never-auto findings, verify candidates with configured commands and
+`agent/test-map.json`, roll back unverified primary-checkout patches, and
+compare branch results against `origin/main` without checking out main in the
+primary worktree.
+
+Supported literals:
+
+- `audit.mode`: `advisory`, `guarded`, `standard`, `ratchet`, `release`
+- `task_source`: `repair_plan`, `findings`, `agent_fix_queue`, `repair_queue_jsonl`
+- `selection.order`: `quick_wins_first`, `severity_first`, `random`
+- risk values: `low`, `medium`, `high`, `critical`
+- `verification.audit_delta`: `no_new_findings`, `no_score_drop`, `target_fingerprint_removed`, `none`
+
+Default behavior is conservative: repair-plan ingestion, low-risk quick wins
+first, randomized ties, skip human-review findings, and roll back unverified
+work.

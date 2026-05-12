@@ -977,6 +977,289 @@ unsupported_feature_policy:
   on_missing: reject`,
   ),
 
+  "jankurai-continuous-repair": example(
+    "jankurai-continuous-repair",
+    "Jankurai continuous repair",
+    "Host-enforced jankurai audit, repair-plan ingestion, verification, commit, and push.",
+    `job:
+  name: "Jankurai continuous repair"
+  objective: "Run low-risk jankurai quick wins with ten workers until audit findings are gone and git is clean."
+
+loop:
+  policy: forever
+  sleep: 5s
+  continue_on: [assistant_stop, max_steps, compaction, checkpoint_failed]
+
+fleet:
+  max_workers: 10
+  isolation: git_worktree
+
+agents:
+  workers:
+    - id: jankurai-low-risk
+      count: 10
+      agent: build
+      isolation: git_worktree
+
+jankurai:
+  enabled: true
+  root: "."
+  audit:
+    mode: advisory
+    json: target/jankurai/repo-score.json
+    md: target/jankurai/repo-score.md
+    repair_queue_jsonl: target/jankurai/repair-queue.jsonl
+    no_score_history: true
+  repair_plan:
+    enabled: true
+    json: target/jankurai/repair-plan.json
+    md: target/jankurai/repair-plan.md
+  task_source: repair_plan
+  selection:
+    order: quick_wins_first
+    randomize_ties: true
+    max_risk: low
+    skip_human_review_required: true
+    defer_rules: [HLT-010-SECRET-SPRAWL]
+  verification:
+    require_clean_start: true
+    require_clean_after_checkpoint: true
+    proof_from_test_map: true
+    commands: ["just fast"]
+    audit_delta: no_new_findings
+    rollback_unverified: true
+
+stop:
+  all:
+    - shell:
+        command: "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --no-score-history >/dev/null 2>&1 && jq -e '(.findings // []) | length == 0' target/jankurai/repo-score.json"
+        timeout: 10m
+    - git_clean:
+        allow_untracked: false
+
+checkpoint:
+  when: after_verified_change
+  noop_if_clean: true
+  verify:
+    - command: "just fast"
+      timeout: 20m
+  git:
+    add: ["."]
+    commit_message: "jankurai: verified low-risk repair"
+    push: allow
+
+permissions:
+  shell: allow
+  edit: allow
+  git_commit: allow
+  git_push: allow
+  workers: allow
+
+unsupported_feature_policy:
+  required: [jankurai]
+  fail_closed: true
+  on_missing: reject`,
+  ),
+
+  "jankurai-porting-advanced": example(
+    "jankurai-porting-advanced",
+    "Jankurai advanced porting",
+    "Jankurai repair with incubator routing, regression checks, memory, evidence, taint, and metrics.",
+    `job:
+  name: "Jankurai advanced porting loop"
+  objective: "Continuously port and repair jankurai findings with branch/main regression checks and incubator routing."
+
+loop:
+  policy: forever
+  sleep: 5s
+  continue_on: [assistant_stop, max_steps, compaction, checkpoint_failed]
+
+fleet:
+  max_workers: 10
+  isolation: hybrid
+  jnoccio:
+    enabled: true
+    register_workers: true
+    max_instances: 10
+
+agents:
+  workers:
+    - id: jankurai-repair
+      count: 10
+      agent: build
+      isolation: git_worktree
+
+jankurai:
+  enabled: true
+  audit:
+    mode: advisory
+    json: target/jankurai/repo-score.json
+    md: target/jankurai/repo-score.md
+    repair_queue_jsonl: target/jankurai/repair-queue.jsonl
+    sarif: target/jankurai/jankurai.sarif
+    no_score_history: true
+  repair_plan:
+    enabled: true
+    json: target/jankurai/repair-plan.json
+    md: target/jankurai/repair-plan.md
+  task_source: repair_plan
+  selection:
+    order: quick_wins_first
+    max_risk: low
+    skip_human_review_required: true
+    incubate_risk_at: medium
+    defer_rules: [HLT-010-SECRET-SPRAWL, HLT-021-DESTRUCTIVE-MIGRATION]
+    incubate_rules: [HLT-006-DIRECT-DB-WRONG-LAYER, HLT-023-INPUT-BOUNDARY-GAP]
+  regression:
+    main_ref: origin/main
+    compare_every_iterations: 5
+    mode: advisory
+    max_new_hard_findings: 0
+    max_score_drop: 0
+  verification:
+    require_clean_start: true
+    require_clean_after_checkpoint: true
+    proof_from_test_map: true
+    commands: ["just fast"]
+    audit_delta: no_new_findings
+    rollback_unverified: true
+
+incubator:
+  enabled: true
+  strategy: generate_pool_strengthen
+  route_when:
+    any:
+      - risk_score_gte: 0.5
+      - touches_paths: ["db/migrations/**", "packages/jekko/src/session/**"]
+  budget:
+    max_passes_per_task: 8
+    max_rounds_per_task: 2
+    max_active_tasks: 1
+    max_parallel_idea_passes: 3
+  passes:
+    - id: scout
+      type: scout
+      context: blind
+      writes: scratch_only
+    - id: ideas
+      type: idea
+      context: blind
+      count: 3
+      writes: scratch_only
+    - id: critique
+      type: critic
+      context: pool
+      writes: scratch_only
+    - id: synthesize
+      type: synthesize
+      context: pool
+      writes: scratch_only
+    - id: prototype
+      type: prototype
+      context: inherit
+      writes: isolated_worktree
+    - id: promotion-review
+      type: promotion_review
+      context: promotion
+      writes: scratch_only
+  promotion:
+    promote_at: 0.8
+    require: [problem_statement, current_best_plan, verification_strategy, rollback_plan]
+    block_on:
+      unresolved_critical_objections_gte: 1
+    on_promote: move_to_ready_queue
+    on_exhausted: park_with_summary
+
+experiments:
+  strategy: parallel_distill_refine
+  max_parallel: 5
+  lanes:
+    - id: generated-source-plan
+      hypothesis: source edits for generated zones
+    - id: security-route-plan
+      hypothesis: human security routing for secrets
+    - id: migration-plan
+      hypothesis: rollback proof for migrations
+    - id: public-api-plan
+      hypothesis: compatibility-preserving API refactor
+    - id: proof-plan
+      hypothesis: cheapest reliable proof route
+  reduce:
+    strategy: synthesize_best
+    require_final_verification: true
+
+memory:
+  stores:
+    task_receipts:
+      scope: task
+      retention: until_archive
+      write_policy: append_only
+      read_policy: inject_at_start
+      searchable: true
+
+evidence:
+  require_before_promote:
+    - type: jankurai_delta
+      max_increase: 0
+    - type: proof_lane
+      must_pass: true
+    - type: branch_main_regression
+      must_pass: true
+
+taint:
+  default_label: repo
+  labels:
+    repo:
+      rank: medium
+    secret:
+      rank: hostile
+    generated:
+      rank: untrusted_for_arming
+  forbid:
+    - from: [secret]
+      cannot: [approve, expose_secret, exec_shell]
+  prompt_injection:
+    detect_patterns: ["[Ii]gnore previous instructions"]
+    on_detect: pause
+
+evaluation:
+  metrics:
+    - name: hard_findings
+      command: "jq -r '.hard_findings // 0' target/jankurai/repo-score.json"
+      threshold: 0
+  compare: origin/main
+
+stop:
+  all:
+    - shell:
+        command: "jankurai audit . --mode advisory --json target/jankurai/repo-score.json --md target/jankurai/repo-score.md --no-score-history >/dev/null 2>&1 && jq -e '(.findings // []) | length == 0' target/jankurai/repo-score.json"
+        timeout: 10m
+    - git_clean:
+        allow_untracked: false
+
+checkpoint:
+  when: after_verified_change
+  noop_if_clean: true
+  verify:
+    - command: "just fast"
+  git:
+    add: ["."]
+    commit_message: "jankurai: verified repair checkpoint"
+    push: allow
+
+permissions:
+  shell: allow
+  edit: allow
+  git_commit: allow
+  git_push: allow
+  workers: allow
+
+unsupported_feature_policy:
+  required: [jankurai]
+  fail_closed: true
+  on_missing: reject`,
+  ),
+
   "advanced-research-loop": example(
     "advanced-research-loop",
     "Advanced research loop",

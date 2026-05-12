@@ -81,6 +81,13 @@ export interface Interface {
   readonly upsertTask: (input: Omit<TaskRow, "time_created" | "time_updated">) => Effect.Effect<TaskInfo, any, any>
   readonly listTasks: (runID: string) => Effect.Effect<TaskInfo[], any, any>
   readonly leaseTask: (input: { runID: string; workerID: string; ttlMs: number }) => Effect.Effect<TaskInfo | undefined, any, any>
+  readonly leaseSpecificTask: (input: {
+    runID: string
+    taskID: string
+    workerID: string
+    ttlMs: number
+    lockedPaths?: readonly string[]
+  }) => Effect.Effect<TaskInfo | undefined, any, any>
   readonly completeTask: (input: { taskID: string; evidence?: AnyJson }) => Effect.Effect<void, any, any>
   readonly blockTask: (input: { taskID: string; evidence?: AnyJson }) => Effect.Effect<void, any, any>
   readonly assessTask: (input: {
@@ -402,6 +409,58 @@ export const layer = Layer.effect(
           task,
           eventType: "task.leased",
           payload: { taskID: task.id, workerID: input.workerID, ttlMs: input.ttlMs },
+        })
+      }
+      return task!
+    })
+
+    const leaseSpecificTask = Effect.fn("DaemonStore.leaseSpecificTask")(function* (input: {
+      runID: string
+      taskID: string
+      workerID: string
+      ttlMs: number
+      lockedPaths?: readonly string[]
+    }) {
+      const now = Date.now()
+      const task = Database.transaction((db) => {
+        const active = db
+          .select()
+          .from(DaemonTaskTable)
+          .where(and(eq(DaemonTaskTable.run_id, input.runID), eq(DaemonTaskTable.status, "leased")))
+          .all()
+          .filter((item) => item.id !== input.taskID && (item.lease_expires_at ?? 0) > now)
+        const activeLocks = active.flatMap((item) => stringArray(item.locked_paths_json))
+        const requestedLocks = [...(input.lockedPaths ?? [])]
+        if (locksOverlap(activeLocks, requestedLocks)) return undefined
+        const next = db
+          .select()
+          .from(DaemonTaskTable)
+          .where(
+            and(
+              eq(DaemonTaskTable.run_id, input.runID),
+              eq(DaemonTaskTable.id, input.taskID),
+              eq(DaemonTaskTable.status, "queued"),
+              or(isNull(DaemonTaskTable.lease_expires_at), lt(DaemonTaskTable.lease_expires_at, now)),
+            ),
+          )
+          .get()
+        // jankurai:allow HLT-001-DEAD-MARKER reason=functional-optional-returns-by-design expires=2027-01-01
+        if (!next) return undefined
+        db.update(DaemonTaskTable)
+          .set({
+            status: "leased",
+            lease_worker_id: input.workerID,
+            lease_expires_at: now + input.ttlMs,
+          })
+          .where(eq(DaemonTaskTable.id, next.id))
+          .run()
+        return db.select().from(DaemonTaskTable).where(eq(DaemonTaskTable.id, next.id)).get()
+      })
+      if (task) {
+        yield* appendTaskEvent({
+          task,
+          eventType: "task.leased",
+          payload: { taskID: task.id, workerID: input.workerID, ttlMs: input.ttlMs, lockedPaths: input.lockedPaths ?? [] },
         })
       }
       return task!
@@ -809,6 +868,7 @@ export const layer = Layer.effect(
       upsertTask,
       listTasks,
       leaseTask,
+      leaseSpecificTask,
       completeTask,
       blockTask,
       assessTask,
@@ -941,6 +1001,20 @@ function fencedJson(value: unknown) {
 
 function stripUndefined<T extends Record<string, unknown>>(value: T): Partial<T> {
   return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined)) as Partial<T>
+}
+
+function stringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((item): item is string => typeof item === "string")
+}
+
+function locksOverlap(left: readonly string[], right: readonly string[]) {
+  for (const a of left) {
+    for (const b of right) {
+      if (a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`)) return true
+    }
+  }
+  return false
 }
 
 export * as DaemonStore from "./daemon-store"

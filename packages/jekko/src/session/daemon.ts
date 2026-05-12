@@ -2,7 +2,7 @@
 // jankurai:allow HLT-000-SCORE-DIMENSION reason=daemon-supervisor-shares-evaluation-paths-by-design expires=2027-01-01
 import { Effect, Layer, Context, Scope, Cause, Fiber, Option } from "effect"
 import { parseZyal } from "@/agent-script/parser"
-import { buildZyalPreview, type ZyalParsed, type ZyalPreview, type ZyalScript, type ZyalSignal } from "@/agent-script/schema"
+import { buildZyalPreview, type ZyalHookStep, type ZyalParsed, type ZyalPreview, type ZyalScript, type ZyalSignal } from "@/agent-script/schema"
 import { Bus } from "@/bus"
 import { InstanceState } from "@/effect/instance-state"
 import { Worktree } from "@/worktree"
@@ -15,6 +15,7 @@ import { eq, sum, count } from "drizzle-orm"
 import { DaemonChecks } from "./daemon-checks"
 import { DaemonCheckpoint } from "./daemon-checkpoint"
 import { DaemonContext } from "./daemon-context"
+import { DaemonJankurai } from "./daemon-jankurai"
 import { tick as incubatorTick } from "./daemon-incubator"
 import { Event as DaemonEvent, type DaemonPhase, type DaemonRunStatus } from "./daemon-event"
 import { SessionID } from "./schema"
@@ -173,6 +174,7 @@ export const layer = Layer.effect(
         spec: parsed.spec,
         specHash: parsed.specHash,
       })
+      const startSession = yield* sessions.get(input.sessionID)
 
       yield* applyDaemonPermissions({
         sessions,
@@ -190,6 +192,23 @@ export const layer = Layer.effect(
         eventType: "run.previewed",
         payload: { preview: parsed.preview },
       })
+
+      const jankuraiPreflight = yield* DaemonJankurai.preflight({
+        cwd: startSession.directory,
+        spec: parsed.spec,
+        checks,
+        store,
+        runID: run.id,
+        iteration: 0,
+      })
+      if (!jankuraiPreflight.ok) {
+        yield* transitionRun(run.id, {
+          status: "paused",
+          phase: "paused",
+          last_error: jankuraiPreflight.reason ?? "jankurai preflight failed",
+        })
+        return yield* store.getRun(run.id).pipe(Effect.map((value) => value ?? run))
+      }
 
       yield* prompt.prompt({
         ...input.prompt,
@@ -618,6 +637,8 @@ function runDaemon(input: RunDaemonInput) {
 
     // ─── v1.1: Execute on_start hooks ────────────────────────────────────
     const startHooks = getHookSteps(spec.hooks, "on_start")
+    const startRun = startHooks.length ? yield* input.store.getRun(input.runID) : undefined
+    const startSession = startRun ? yield* input.sessions.get(SessionID.make(startRun.active_session_id)) : undefined
     for (const hook of startHooks) {
       yield* input.store.appendEvent({
         runID: input.runID,
@@ -625,6 +646,9 @@ function runDaemon(input: RunDaemonInput) {
         eventType: "hook.on_start",
         payload: { command: hook.run },
       })
+      if (startSession) {
+        yield* executeHookStep({ checks: input.checks, cwd: startSession.directory, phase: "on_start", hook })
+      }
     }
 
     while (true) {
@@ -641,6 +665,8 @@ function runDaemon(input: RunDaemonInput) {
       // errors, compaction failures, context overflow, etc. increment
       // the circuit breaker and continue instead of killing the fiber.
       const iterationOutcome = yield* Effect.gen(function* () {
+        const session = yield* input.sessions.get(SessionID.make(run.active_session_id))
+
         // ─── v1.1: Execute before_iteration hooks ─────────────────────────
         const beforeHooks = getHookSteps(spec.hooks, "before_iteration")
         for (const hook of beforeHooks) {
@@ -650,9 +676,8 @@ function runDaemon(input: RunDaemonInput) {
             eventType: "hook.before_iteration",
             payload: { command: hook.run },
           })
+          yield* executeHookStep({ checks: input.checks, cwd: session.directory, phase: "before_iteration", hook })
         }
-
-        const session = yield* input.sessions.get(SessionID.make(run.active_session_id))
 
         yield* applyDaemonPermissions({
           sessions: input.sessions,
@@ -662,6 +687,50 @@ function runDaemon(input: RunDaemonInput) {
           spec,
           iteration: run.iteration,
         })
+
+        const jankuraiConfig = DaemonJankurai.resolveJankuraiConfig(spec)
+        let jankuraiBeforeReport: unknown | undefined
+        let jankuraiRegression: unknown | undefined
+        if (jankuraiConfig?.enabled) {
+          const audit = yield* DaemonJankurai.runAudit({
+            cwd: session.directory,
+            config: jankuraiConfig,
+            checks: input.checks,
+            store: input.store,
+            runID: input.runID,
+            iteration: run.iteration,
+          })
+          jankuraiBeforeReport = audit.report
+          const repair = yield* DaemonJankurai.runRepairPlan({
+            cwd: session.directory,
+            config: jankuraiConfig,
+            checks: input.checks,
+            store: input.store,
+            runID: input.runID,
+            iteration: run.iteration,
+          })
+          const repairQueue = yield* DaemonJankurai.readRepairQueueJsonl(session.directory, jankuraiConfig)
+          yield* DaemonJankurai.ingestTasks({
+            runID: input.runID,
+            config: jankuraiConfig,
+            store: input.store,
+            report: audit.report,
+            repairPlan: repair.plan,
+            repairQueue,
+          })
+          yield* DaemonJankurai.runWorkerPool({
+            cwd: session.directory,
+            run,
+            maxWorkers: Math.min(10, spec.fleet?.max_workers ?? 10),
+            config: jankuraiConfig,
+            beforeReport: audit.report,
+            sessions: input.sessions,
+            prompt: input.prompt,
+            store: input.store,
+            checks: input.checks,
+            worktree: input.worktree,
+          })
+        }
 
         yield* input.transitionRun(input.runID, { status: "running", phase: "running_iteration" })
 
@@ -760,13 +829,52 @@ function runDaemon(input: RunDaemonInput) {
             eventType: "hook.before_checkpoint",
             payload: { command: hook.run },
           })
+          yield* executeHookStep({ checks: input.checks, cwd: session.directory, phase: "before_checkpoint", hook })
         }
 
-        const checkpointResult = yield* input.checkpoint.runCheckpoint({
+        let jankuraiCheckpointBlocked:
+          | { ok: false; reason: string }
+          | undefined
+        if (jankuraiConfig?.enabled) {
+          const taskDir = `.jekko/daemon/${input.runID}/tasks/iteration-${iteration}`
+          const patchPath = `${taskDir}/candidate.patch`
+          yield* input.checks.runShellCheck({
+            cwd: session.directory,
+            command: `mkdir -p ${taskDir} && git diff --binary HEAD > ${patchPath}`,
+            timeout: "1 minute",
+          })
+          const verification = yield* DaemonJankurai.verifyCandidate({
+            cwd: session.directory,
+            config: jankuraiConfig,
+            checks: input.checks,
+            beforeReport: jankuraiBeforeReport,
+          })
+          if (!verification.ok) {
+            const rollback = jankuraiConfig.verification.rollback_unverified
+              ? yield* DaemonJankurai.rollbackCandidate({
+                  cwd: session.directory,
+                  patchPath,
+                  checks: input.checks,
+                })
+              : undefined
+            yield* input.store.appendEvent({
+              runID: input.runID,
+              iteration,
+              eventType: rollback ? "jankurai.rollback.applied" : "jankurai.checkpoint.blocked",
+              payload: { reason: verification.reason ?? "jankurai verification failed", rollback },
+            })
+            jankuraiCheckpointBlocked = {
+              ok: false,
+              reason: verification.reason ?? "jankurai verification failed",
+            }
+          }
+        }
+
+        const checkpointResult = jankuraiCheckpointBlocked ?? (yield* input.checkpoint.runCheckpoint({
           cwd: session.directory,
           spec: input.parsed.spec,
           checkpoint: input.parsed.spec.checkpoint,
-        })
+        }))
 
         // ─── v1.1: Execute after_checkpoint hooks ─────────────────────────
         if (checkpointResult.ok) {
@@ -777,6 +885,18 @@ function runDaemon(input: RunDaemonInput) {
               iteration,
               eventType: "hook.after_checkpoint",
               payload: { command: hook.run },
+            })
+            yield* executeHookStep({ checks: input.checks, cwd: session.directory, phase: "after_checkpoint", hook })
+          }
+          if (jankuraiConfig?.enabled) {
+            jankuraiRegression = yield* DaemonJankurai.runMainRegressionAudit({
+              cwd: session.directory,
+              runID: input.runID,
+              iteration,
+              config: jankuraiConfig,
+              checks: input.checks,
+              store: input.store,
+              branchReport: jankuraiBeforeReport,
             })
           }
         }
@@ -851,6 +971,7 @@ function runDaemon(input: RunDaemonInput) {
               eventType: "hook.on_stop",
               payload: { command: hook.run },
             })
+            yield* executeHookStep({ checks: input.checks, cwd: session.directory, phase: "on_stop", hook })
           }
           yield* input.transitionRun(input.runID, {
             status: "satisfied",
@@ -890,6 +1011,7 @@ function runDaemon(input: RunDaemonInput) {
                 eventType: "hook.on_promote",
                 payload: { command: hook.run },
               })
+              yield* executeHookStep({ checks: input.checks, cwd: session.directory, phase: "on_promote", hook })
             }
             yield* input.transitionRun(input.runID, { phase: "promotion_gate" })
           }
@@ -904,6 +1026,7 @@ function runDaemon(input: RunDaemonInput) {
             eventType: "hook.after_iteration",
             payload: { command: hook.run },
           })
+          yield* executeHookStep({ checks: input.checks, cwd: session.directory, phase: "after_iteration", hook })
         }
 
         const hardClearEvery = input.parsed.spec.context?.hard_clear_every
@@ -927,11 +1050,21 @@ function runDaemon(input: RunDaemonInput) {
         }
 
         const allIterations = yield* input.store.listIterations(input.runID)
+        const jankuraiPromptContext = jankuraiConfig?.enabled
+          ? {
+              config: jankuraiConfig,
+              report: jankuraiBeforeReport,
+              tasks: yield* input.store.listTasks(input.runID),
+              workers: yield* input.store.listWorkers(input.runID),
+              regression: jankuraiRegression,
+            }
+          : undefined
         const continuation = DaemonContext.buildDaemonIterationPrompt({
           parsed: input.parsed,
           run,
           lastIteration: allIterations.at(-1),
           recentIterations: allIterations.slice(-3),
+          jankurai: jankuraiPromptContext,
         })
         yield* input.prompt.prompt({
           sessionID: targetSessionID,
@@ -1005,6 +1138,33 @@ function runDaemon(input: RunDaemonInput) {
         continue
       }
     }
+  })
+}
+
+function executeHookStep(input: {
+  checks: DaemonChecks.Interface
+  cwd: string
+  phase: string
+  hook: ZyalHookStep
+}) {
+  return Effect.gen(function* () {
+    const result = yield* input.checks.runShellCheck({
+      cwd: input.cwd,
+      command: input.hook.run,
+      timeout: input.hook.timeout,
+      assert: input.hook.assert
+        ? {
+            exit_code: input.hook.assert.exit_code,
+            stdout_contains: input.hook.assert.stdout_contains ? [...input.hook.assert.stdout_contains] : undefined,
+            stdout_regex: input.hook.assert.stdout_regex ? [...input.hook.assert.stdout_regex] : undefined,
+            json: input.hook.assert.json ? { ...input.hook.assert.json } : undefined,
+          }
+        : undefined,
+    })
+    if (result.matched) return result
+    const action = resolveHookFailureAction(input.hook)
+    if (action === "warn" || action === "continue") return result
+    throw new Error(`hook.${input.phase} failed: ${result.error ?? (result.stderr || result.stdout || input.hook.run)}`)
   })
 }
 

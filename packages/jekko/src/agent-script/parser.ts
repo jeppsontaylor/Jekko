@@ -63,6 +63,7 @@ const SUPPORTED_FEATURE_KEYS = new Set([
   "repo_intelligence",
   "fleet",
   "research",
+  "jankurai",
   "interop",
   "runtime",
   "capability_negotiation",
@@ -490,6 +491,7 @@ function assertZyalNestedKeys(input: Record<string, unknown>) {
   // v2.2 fleet
   assertFleetNestedKeys(input)
   assertResearchNestedKeys(input)
+  assertJankuraiNestedKeys(input)
   // v2.3 taint
   assertTaintNestedKeys(input)
 
@@ -1674,6 +1676,51 @@ function validateZyalSemantics(spec: ZyalScript) {
     }
   }
 
+  if (spec.jankurai) {
+    if (spec.jankurai.root !== undefined && !spec.jankurai.root.trim()) {
+      throw new ZyalParseError("jankurai.root must not be empty")
+    }
+    for (const [path, value] of [
+      ["jankurai.audit.json", spec.jankurai.audit?.json],
+      ["jankurai.audit.md", spec.jankurai.audit?.md],
+      ["jankurai.audit.repair_queue_jsonl", spec.jankurai.audit?.repair_queue_jsonl],
+      ["jankurai.audit.sarif", spec.jankurai.audit?.sarif],
+      ["jankurai.repair_plan.json", spec.jankurai.repair_plan?.json],
+      ["jankurai.repair_plan.md", spec.jankurai.repair_plan?.md],
+      ["jankurai.regression.main_ref", spec.jankurai.regression?.main_ref],
+    ] as const) {
+      if (value !== undefined && !value.trim()) throw new ZyalParseError(`${path} must not be empty`)
+    }
+    for (const [path, items] of [
+      ["jankurai.selection.defer_rules", spec.jankurai.selection?.defer_rules],
+      ["jankurai.selection.incubate_rules", spec.jankurai.selection?.incubate_rules],
+      ["jankurai.verification.commands", spec.jankurai.verification?.commands],
+    ] as const) {
+      for (const [index, item] of (items ?? []).entries()) {
+        if (!item.trim()) throw new ZyalParseError(`${path}[${index}] must not be empty`)
+      }
+    }
+    if (spec.jankurai.regression?.compare_every_iterations !== undefined) {
+      requirePositiveInteger(
+        spec.jankurai.regression.compare_every_iterations,
+        "jankurai.regression.compare_every_iterations",
+      )
+    }
+    if (
+      spec.jankurai.regression?.max_new_hard_findings !== undefined &&
+      (!Number.isFinite(spec.jankurai.regression.max_new_hard_findings) ||
+        spec.jankurai.regression.max_new_hard_findings < 0)
+    ) {
+      throw new ZyalParseError("jankurai.regression.max_new_hard_findings must be a finite non-negative number")
+    }
+    if (
+      spec.jankurai.regression?.max_score_drop !== undefined &&
+      (!Number.isFinite(spec.jankurai.regression.max_score_drop) || spec.jankurai.regression.max_score_drop < 0)
+    ) {
+      throw new ZyalParseError("jankurai.regression.max_score_drop must be a finite non-negative number")
+    }
+  }
+
   // ─── v2.2: fleet — single-session worker cap of 20 ─────────────────
   if (spec.fleet) {
     const max = spec.fleet.max_workers
@@ -1731,6 +1778,79 @@ function validateZyalSemantics(spec: ZyalScript) {
       throw new ZyalParseError(
         `experiments.max_parallel (${spec.experiments.max_parallel}) exceeds default fleet cap (20)`,
       )
+    }
+  }
+}
+
+// ─── v2.6: jankurai nested-key validator ─────────────────────────────────
+function assertJankuraiNestedKeys(input: Record<string, unknown>) {
+  if (input.jankurai === undefined) return
+  const jankurai = expectRecord(input.jankurai, "jankurai")
+  assertKeys("jankurai", jankurai, [
+    "enabled",
+    "root",
+    "audit",
+    "repair_plan",
+    "task_source",
+    "selection",
+    "regression",
+    "verification",
+  ])
+  if (jankurai.audit !== undefined) {
+    assertKeys("jankurai.audit", expectRecord(jankurai.audit, "jankurai.audit"), [
+      "mode",
+      "json",
+      "md",
+      "repair_queue_jsonl",
+      "sarif",
+      "no_score_history",
+    ])
+  }
+  if (jankurai.repair_plan !== undefined) {
+    assertKeys("jankurai.repair_plan", expectRecord(jankurai.repair_plan, "jankurai.repair_plan"), [
+      "enabled",
+      "json",
+      "md",
+    ])
+  }
+  if (jankurai.selection !== undefined) {
+    const selection = expectRecord(jankurai.selection, "jankurai.selection")
+    assertKeys("jankurai.selection", selection, [
+      "order",
+      "randomize_ties",
+      "max_risk",
+      "skip_human_review_required",
+      "incubate_risk_at",
+      "defer_rules",
+      "incubate_rules",
+    ])
+    for (const key of ["defer_rules", "incubate_rules"] as const) {
+      if (selection[key] !== undefined && !Array.isArray(selection[key])) {
+        throw new ZyalParseError(`jankurai.selection.${key} must be a list`)
+      }
+    }
+  }
+  if (jankurai.regression !== undefined) {
+    assertKeys("jankurai.regression", expectRecord(jankurai.regression, "jankurai.regression"), [
+      "main_ref",
+      "compare_every_iterations",
+      "mode",
+      "max_new_hard_findings",
+      "max_score_drop",
+    ])
+  }
+  if (jankurai.verification !== undefined) {
+    const verification = expectRecord(jankurai.verification, "jankurai.verification")
+    assertKeys("jankurai.verification", verification, [
+      "require_clean_start",
+      "require_clean_after_checkpoint",
+      "proof_from_test_map",
+      "commands",
+      "audit_delta",
+      "rollback_unverified",
+    ])
+    if (verification.commands !== undefined && !Array.isArray(verification.commands)) {
+      throw new ZyalParseError("jankurai.verification.commands must be a list")
     }
   }
 }

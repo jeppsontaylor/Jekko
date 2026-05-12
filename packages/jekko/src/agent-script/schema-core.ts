@@ -7,6 +7,7 @@ import * as Runtime from "./schema-runtime"
 import * as Power from "./schema-power"
 import * as Research from "./schema-research"
 import * as PreviewBlocks from "./schema-preview-blocks"
+import * as Jankurai from "./schema-jankurai"
 import { ZYAL_RUNTIME_SENTINEL_VERSION } from "./version"
 
 const DaemonAction = Schema.Literal("daemon")
@@ -62,6 +63,7 @@ export const ZyalSpec = Schema.Struct({
   repo_intelligence: Schema.optional(Power.ZyalRepoIntelligence),
   fleet: Schema.optional(Power.ZyalFleet),
   research: Schema.optional(Research.ZyalResearch),
+  jankurai: Schema.optional(Jankurai.ZyalJankurai),
   taint: Schema.optional(PreviewBlocks.ZyalTaint),
   interaction: Schema.optional(PreviewBlocks.ZyalInteraction),
   interop: Schema.optional(PreviewBlocks.ZyalInterop),
