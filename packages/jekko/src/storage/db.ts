@@ -62,7 +62,7 @@ function applyMigrations(db: SQLiteBunDatabase, entries: Journal) {
 }
 
 function projectHasCommandsColumn(db: SQLiteBunDatabase) {
-  const rows = (db.$client as SqliteClient).prepare("PRAGMA table_info(`project`)").all()
+  const rows = (db as unknown as { $client: SqliteClient }).$client.prepare("PRAGMA table_info(`project`)").all()
   return rows.some((row) => row.name === "commands")
 }
 

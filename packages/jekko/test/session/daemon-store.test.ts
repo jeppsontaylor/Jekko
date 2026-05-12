@@ -35,9 +35,9 @@ function seedProjectAndSession(input: {
   directory: string
 }) {
   return Effect.sync(() =>
-    Database.use((db) => {
-      const now = Date.now()
-      db.insert(ProjectTable)
+      Database.use((db) => {
+        const now = Date.now()
+        db.insert(ProjectTable)
         .values({
           id: input.projectID,
           worktree: "/",
@@ -46,9 +46,9 @@ function seedProjectAndSession(input: {
           sandboxes: [],
           time_created: now,
           time_updated: now,
-        })
+        } as any)
         .run()
-      db.insert(SessionTable)
+        db.insert(SessionTable)
         .values({
           id: input.sessionID,
           project_id: input.projectID,
@@ -58,10 +58,10 @@ function seedProjectAndSession(input: {
           version: "1.0.0",
           time_created: now,
           time_updated: now,
-        })
+        } as any)
         .run()
-    }),
-  )
+      }),
+    )
 }
 
 describe("session.daemon-store", () => {
