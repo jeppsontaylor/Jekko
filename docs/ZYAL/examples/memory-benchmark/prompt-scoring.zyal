@@ -1,18 +1,18 @@
-# ZYAL v2.5 - Codex Memory V3 Prompt Scoring
+# ZYAL v2.5 - Memory benchmark Prompt Scoring
 #
-# AutoResearch / judge population run for the MemoryGauntlet V3 prompt-set.
-# It snapshots the V3 memory specs, fans out 20 workers, keeps the population
+# AutoResearch / judge population run for the memory benchmark prompt-set.
+# It snapshots the tracked benchmark corpus, fans out 20 workers, keeps the population
 # ledger append-only, and reduces votes into deterministic score artifacts.
 
-<<<ZYAL v1:daemon id=codex-memory-v3-prompt-scoring>>>
+<<<ZYAL v1:daemon id=memory-benchmark-prompt-scoring>>>
 version: v1
 intent: daemon
 confirm: RUN_FOREVER
 
 job:
-  name: "Codex Memory V3 prompt scoring"
+  name: "Memory benchmark prompt scoring"
   objective: |
-    Score the CODEX memory V3 prompt population against a 100-point rubric
+    Score the memory benchmark prompt population against a 100-point rubric
     covering correctness, provenance, bitemporal recall, contradiction
     handling, math and science, English discourse and coreference, privacy
     redaction, procedural skill, feedback adaptation, and determinism.
@@ -21,7 +21,7 @@ job:
   risk:
     - Population scoring is read-heavy but must stay deterministic
     - Prompt reduction must preserve evidence caps and disagreement traces
-    - Snapshot generation must not mutate the source V3 specs
+    - Corpus checks must not mutate the tracked benchmark corpus
 
 loop:
   policy: once
@@ -33,59 +33,56 @@ context:
   hard_clear_every: 1
   preserve:
     - objective
-    - spec_hash
+    - corpus_hash
     - population_cursor
     - ledger_path
 
 stop:
   all:
     - shell:
-        command: "test -f .jekko/daemon/codex-memory-v3-bench/reports/prompt-score.json"
+        command: "test -f .jekko/daemon/memory-benchmark/reports/prompt-score.json"
         timeout: 10s
         assert: { exit_code: 0 }
     - shell:
-        command: "test -f .jekko/daemon/codex-memory-v3-bench/reports/prompt-score.md"
+        command: "test -f .jekko/daemon/memory-benchmark/reports/prompt-score.md"
         timeout: 10s
         assert: { exit_code: 0 }
     - shell:
-        command: "test -f .jekko/daemon/codex-memory-v3-bench/reports/spec-ranking.json"
+        command: "test -f .jekko/daemon/memory-benchmark/reports/reference-ranking.json"
         timeout: 10s
         assert: { exit_code: 0 }
     - shell:
-        command: "test -f .jekko/daemon/codex-memory-v3-bench/memory/population-ledger.jsonl"
+        command: "test -f .jekko/daemon/memory-benchmark/memory/population-ledger.jsonl"
         timeout: 10s
         assert: { exit_code: 0 }
 
 hooks:
   on_start:
-    - run: "mkdir -p .jekko/daemon/codex-memory-v3-bench/rust/src/candidates .jekko/daemon/codex-memory-v3-bench/rust/src/bin .jekko/daemon/codex-memory-v3-bench/reports .jekko/daemon/codex-memory-v3-bench/memory .jekko/daemon/codex-memory-v3-bench/spec-snapshots"
+    - run: "mkdir -p .jekko/daemon/memory-benchmark/reports .jekko/daemon/memory-benchmark/memory"
       timeout: 30s
       on_fail: warn
-    - run: "cp tips/smart_memory/*_V3.md .jekko/daemon/codex-memory-v3-bench/spec-snapshots/"
-      timeout: 30s
-      on_fail: warn
-    - run: "test -f .jekko/daemon/codex-memory-v3-bench/rust/Cargo.toml"
+    - run: "test -f crates/memory-benchmark/Cargo.toml"
       timeout: 10s
       on_fail: warn
   before_iteration:
-    - run: "cargo fmt --manifest-path .jekko/daemon/codex-memory-v3-bench/rust/Cargo.toml -- --check"
+    - run: "cargo fmt --manifest-path crates/memory-benchmark/Cargo.toml -- --check"
       timeout: 120s
       on_fail: pause
-    - run: "cargo test --manifest-path .jekko/daemon/codex-memory-v3-bench/rust/Cargo.toml"
+    - run: "cargo test --manifest-path crates/memory-benchmark/Cargo.toml"
       timeout: 240s
       on_fail: pause
   after_iteration:
-    - run: "cargo run --manifest-path .jekko/daemon/codex-memory-v3-bench/rust/Cargo.toml --bin prompt_reduce -- --votes .jekko/daemon/codex-memory-v3-bench/reports/population-votes.jsonl --out .jekko/daemon/codex-memory-v3-bench/reports/prompt-score.json --markdown .jekko/daemon/codex-memory-v3-bench/reports/prompt-score.md --ranking .jekko/daemon/codex-memory-v3-bench/reports/spec-ranking.json --disagreement .jekko/daemon/codex-memory-v3-bench/reports/population-disagreement.json"
+    - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin prompt_reduce -- --votes .jekko/daemon/memory-benchmark/reports/population-votes.jsonl --out .jekko/daemon/memory-benchmark/reports/prompt-score.json --markdown .jekko/daemon/memory-benchmark/reports/prompt-score.md --ranking .jekko/daemon/memory-benchmark/reports/reference-ranking.json --disagreement .jekko/daemon/memory-benchmark/reports/population-disagreement.json"
       timeout: 240s
       on_fail: pause
   on_stop:
-    - run: "printf '%s\n' 'Codex Memory V3 prompt scoring stopped'"
+    - run: "printf '%s\n' 'Memory benchmark prompt scoring stopped'"
       on_fail: warn
 
 fan_out:
   strategy: scatter_gather
   split:
-    shell: "cargo run --manifest-path .jekko/daemon/codex-memory-v3-bench/rust/Cargo.toml --bin dump_tasks -- prompt --population 20 --out .jekko/daemon/codex-memory-v3-bench/reports/population-tasks.jsonl"
+    shell: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin dump_tasks -- prompt --population 20 --out .jekko/daemon/memory-benchmark/reports/population-tasks.jsonl"
   worker:
     agent: judge
     isolation: same_session
@@ -93,7 +90,7 @@ fan_out:
     max_parallel: 20
   reduce:
     strategy: custom_shell
-    command: "cargo run --manifest-path .jekko/daemon/codex-memory-v3-bench/rust/Cargo.toml --bin prompt_reduce -- --votes .jekko/daemon/codex-memory-v3-bench/reports/population-votes.jsonl --out .jekko/daemon/codex-memory-v3-bench/reports/prompt-score.json --markdown .jekko/daemon/codex-memory-v3-bench/reports/prompt-score.md --ranking .jekko/daemon/codex-memory-v3-bench/reports/spec-ranking.json --disagreement .jekko/daemon/codex-memory-v3-bench/reports/population-disagreement.json"
+    command: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin prompt_reduce -- --votes .jekko/daemon/memory-benchmark/reports/population-votes.jsonl --out .jekko/daemon/memory-benchmark/reports/prompt-score.json --markdown .jekko/daemon/memory-benchmark/reports/prompt-score.md --ranking .jekko/daemon/memory-benchmark/reports/reference-ranking.json --disagreement .jekko/daemon/memory-benchmark/reports/population-disagreement.json"
   on_partial_failure: continue
 
 fleet:
@@ -230,7 +227,7 @@ memory:
       searchable: true
   redaction:
     patterns:
-      - "MGV3_CANARY_[A-Z0-9]+"
+      - "MEMORY_BENCH_CANARY_[A-Z0-9]+"
       - "vault-canary-[A-Za-z0-9_-]+"
       - "sk-[A-Za-z0-9]+"
       - "AKIA[A-Z0-9]+"
@@ -248,7 +245,7 @@ evidence:
       must_pass: true
     - type: prompt_score
       must_exist: true
-    - type: spec_ranking
+    - type: reference_ranking
       must_exist: true
     - type: disagreement_report
       must_exist: true
@@ -260,11 +257,9 @@ evidence:
 
 sandbox:
   paths:
-    - path: ".jekko/daemon/codex-memory-v3-bench"
+    - path: ".jekko/daemon/memory-benchmark"
       access: write
-    - path: "tips/smart_memory"
-      access: read
-    - path: "docs/ZYAL/examples/codex-memory-v3"
+    - path: "docs/ZYAL/examples/memory-benchmark"
       access: read
     - path: "."
       access: read
@@ -280,12 +275,12 @@ security:
   trust_zones:
     bench:
       paths:
-        - ".jekko/daemon/codex-memory-v3-bench"
+        - ".jekko/daemon/memory-benchmark"
       require_approval: false
       max_risk_score: 0.8
     specs:
       paths:
-        - "tips/smart_memory"
+        - "crates/memory-benchmark"
       require_approval: false
       max_risk_score: 0.5
   injection:
@@ -308,13 +303,13 @@ observability:
   metrics:
     - name: prompt_population_tasks
       type: counter
-      source: .jekko/daemon/codex-memory-v3-bench/reports/population-tasks.jsonl
+      source: .jekko/daemon/memory-benchmark/reports/population-tasks.jsonl
     - name: prompt_population_votes
       type: counter
-      source: .jekko/daemon/codex-memory-v3-bench/reports/population-votes.jsonl
+      source: .jekko/daemon/memory-benchmark/reports/population-votes.jsonl
     - name: prompt_population_disagreements
       type: gauge
-      source: .jekko/daemon/codex-memory-v3-bench/reports/population-disagreement.json
+      source: .jekko/daemon/memory-benchmark/reports/population-disagreement.json
   cost:
     budget: 12.00
     currency: USD
@@ -327,7 +322,7 @@ observability:
     include:
       - prompt-score.json
       - prompt-score.md
-      - spec-ranking.json
+      - reference-ranking.json
       - population-disagreement.json
       - population-ledger.jsonl
 
@@ -371,7 +366,7 @@ permissions:
 done:
   require:
     - population_score_written
-    - spec_ranking_written
+    - reference_ranking_written
     - disagreement_report_written
     - population_ledger_persisted
     - deterministic_reduction_verified
@@ -382,6 +377,6 @@ done:
 
 ui:
   theme: jekko-gold
-  banner: codex-memory-v3
-<<<END_ZYAL id=codex-memory-v3-prompt-scoring>>>
-ZYAL_ARM RUN_FOREVER id=codex-memory-v3-prompt-scoring
+  banner: memory-benchmark
+<<<END_ZYAL id=memory-benchmark-prompt-scoring>>>
+ZYAL_ARM RUN_FOREVER id=memory-benchmark-prompt-scoring
