@@ -48,11 +48,36 @@ type Client = SQLiteBunDatabase
 
 type Journal = { sql: string; timestamp: number; name: string }[]
 
+type SqliteClient = {
+  prepare(sql: string): {
+    all(): Array<Record<string, unknown>>
+  }
+}
+
 // Drizzle's migrate overloads trigger expensive variance checks here; narrow to the journal overload we actually use.
 const migrateFromJournal = migrate as unknown as (db: SQLiteBunDatabase, entries: Journal) => void
 
 function applyMigrations(db: SQLiteBunDatabase, entries: Journal) {
   migrateFromJournal(db, entries)
+}
+
+function projectHasCommandsColumn(db: SQLiteBunDatabase) {
+  const rows = (db.$client as SqliteClient).prepare("PRAGMA table_info(`project`)").all()
+  return rows.some((row) => row.name === "commands")
+}
+
+function normalizeMigrations(db: SQLiteBunDatabase, entries: Journal): Journal {
+  if (Flag.JEKKO_SKIP_MIGRATIONS) {
+    return entries.map((item) => ({ ...item, sql: "select 1;" }))
+  }
+
+  if (!projectHasCommandsColumn(db)) {
+    return entries
+  }
+
+  return entries.map((item) =>
+    item.name === "20260211171708_add_project_commands" ? { ...item, sql: "select 1;" } : item,
+  )
 }
 
 function time(tag: string) {
@@ -110,12 +135,7 @@ export const Client = lazy(() => {
       count: entries.length,
       mode: typeof JEKKO_MIGRATIONS !== "undefined" ? "bundled" : "dev",
     })
-    if (Flag.JEKKO_SKIP_MIGRATIONS) {
-      for (const item of entries) {
-        item.sql = "select 1;"
-      }
-    }
-    applyMigrations(db, entries)
+    applyMigrations(db, normalizeMigrations(db, entries))
   }
 
   return db

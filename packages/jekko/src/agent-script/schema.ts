@@ -274,12 +274,20 @@ export const ZyalMcp = Schema.Struct({
 export type ZyalMcp = Schema.Schema.Type<typeof ZyalMcp>
 
 export const ZyalPermissionMode = Schema.Struct({
+  read: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  list: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  glob: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  grep: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  external_directory: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   shell: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   edit: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   git_commit: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   git_push: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   workers: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
   mcp: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  research: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  websearch: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
+  webfetch: Schema.optional(Schema.Union([Schema.Literal("ask"), Schema.Literal("allow"), Schema.Literal("deny")])),
 })
 
 export type ZyalPermissionMode = Schema.Schema.Type<typeof ZyalPermissionMode>
@@ -570,6 +578,7 @@ export const ZyalMemoryStore = Schema.Struct({
     Schema.Literal("run"),
     Schema.Literal("global"),
     Schema.Literal("agent"),
+    Schema.Literal("repo"),
   ]),
   retention: Schema.Union([
     Schema.Literal("until_promotion"),
@@ -837,6 +846,43 @@ export const ZyalObservability = Schema.Struct({
 })
 export type ZyalObservability = Schema.Schema.Type<typeof ZyalObservability>
 
+// ─── Research: Host-side research workflow controls ───────────────────────
+
+export const ZyalResearch = Schema.Struct({
+  version: Schema.optional(Schema.String),
+  mode: Schema.optional(Schema.String),
+  autonomy: Schema.optional(Schema.String),
+  max_parallel: Schema.optional(Schema.Number),
+  timeout_seconds: Schema.optional(Schema.Number),
+  provider_policy: Schema.optional(Schema.Struct({
+    prefer: Schema.optional(Schema.Array(Schema.String)),
+    allow: Schema.optional(Schema.Array(Schema.String)),
+    missing_provider: Schema.optional(Schema.String),
+  })),
+  extraction: Schema.optional(Schema.Struct({
+    enabled: Schema.optional(Schema.Boolean),
+    max_pages: Schema.optional(Schema.Number),
+    allowed_extractors: Schema.optional(Schema.Array(Schema.String)),
+  })),
+  evidence: Schema.optional(Schema.Struct({
+    require_citations: Schema.optional(Schema.Boolean),
+    claim_level: Schema.optional(Schema.Boolean),
+    store: Schema.optional(Schema.String),
+  })),
+  safety: Schema.optional(Schema.Struct({
+    redact_secrets: Schema.optional(Schema.Boolean),
+    block_internal_urls: Schema.optional(Schema.Boolean),
+    prompt_injection: Schema.optional(Schema.String),
+    taint_label: Schema.optional(Schema.String),
+  })),
+  budgets: Schema.optional(Schema.Struct({
+    max_queries: Schema.optional(Schema.Number),
+    max_pages: Schema.optional(Schema.Number),
+    max_cost_usd: Schema.optional(Schema.Number),
+  })),
+})
+export type ZyalResearch = Schema.Schema.Type<typeof ZyalResearch>
+
 // ─── v2.1: Arming (origin-aware, hash-bound) ──────────────────────────────
 
 export const ZyalArmingOrigin = Schema.Union([
@@ -970,6 +1016,7 @@ export const ZyalExperiments = Schema.Struct({
   scoring: Schema.optional(Schema.Struct({
     weights: Schema.optional(Schema.Record(Schema.String, Schema.Number)),
     command: Schema.optional(Schema.String),
+    primary: Schema.optional(Schema.String),
     judge: Schema.optional(Schema.Struct({
       agent: Schema.String,
       blind: Schema.optional(Schema.Boolean),
@@ -1488,6 +1535,7 @@ export const ZyalSpec = Schema.Struct({
   experiments: Schema.optional(ZyalExperiments),
   models: Schema.optional(ZyalModels),
   budgets: Schema.optional(ZyalBudgets),
+  research: Schema.optional(ZyalResearch),
   triggers: Schema.optional(ZyalTriggers),
   rollback: Schema.optional(ZyalRollback),
   done: Schema.optional(ZyalDone),
@@ -1684,6 +1732,7 @@ export function assertZyalTopLevelKeys(input: Record<string, unknown>) {
     "experiments",
     "models",
     "budgets",
+    "research",
     "triggers",
     "rollback",
     "done",

@@ -7,14 +7,20 @@ import { Daemon } from "../../src/session/daemon"
 import { DaemonCheckpoint } from "../../src/session/daemon-checkpoint"
 import { DaemonChecks } from "../../src/session/daemon-checks"
 import { DaemonStore } from "../../src/session/daemon-store"
+import { Agent } from "../../src/agent/agent"
+import { Bus } from "../../src/bus"
+import { Config } from "../../src/config/config"
 import { MCP } from "../../src/mcp"
 import { parseZyal } from "../../src/agent-script/parser"
 import { ProjectTable } from "../../src/project/project.sql"
 import { ProjectID } from "../../src/project/schema"
+import { AppFileSystem } from "@jekko-ai/core/filesystem"
+import { Provider } from "../../src/provider/provider"
 import { SessionTable } from "../../src/session/session.sql"
 import { Session } from "../../src/session/session"
 import { SessionID } from "../../src/session/schema"
 import { SessionPrompt } from "../../src/session/prompt"
+import { SessionStatus } from "../../src/session/status"
 import { Worktree } from "../../src/worktree"
 import { Database } from "../../src/storage/db"
 import { testEffect } from "../lib/effect"
@@ -105,6 +111,33 @@ function promptService() {
   } as any
 }
 
+function sessionStubService() {
+  return Session.Service.of({
+    list: () => Effect.succeed([]),
+    create: () => Effect.die("unexpected Session.create"),
+    fork: () => Effect.die("unexpected Session.fork"),
+    touch: () => Effect.void,
+    get: () => Effect.die("unexpected Session.get"),
+    setTitle: () => Effect.void,
+    setArchived: () => Effect.void,
+    setPermission: () => Effect.void,
+    setRevert: () => Effect.void,
+    clearRevert: () => Effect.void,
+    setSummary: () => Effect.void,
+    diff: () => Effect.succeed([]),
+    messages: () => Effect.succeed([]),
+    children: () => Effect.succeed([]),
+    remove: () => Effect.void,
+    updateMessage: (msg: any) => Effect.succeed(msg),
+    removeMessage: () => Effect.die("unexpected Session.removeMessage"),
+    removePart: () => Effect.die("unexpected Session.removePart"),
+    getPart: () => Effect.succeed(undefined),
+    updatePart: (part: any) => Effect.succeed(part),
+    updatePartDelta: () => Effect.void,
+    findMessage: () => Effect.succeed({ _tag: "None" } as any),
+  } as any)
+}
+
 function checksService() {
   return {
     runShellCheck: () => Effect.never,
@@ -151,7 +184,24 @@ function worktreeService() {
   } as any
 }
 
-const it = testEffect(Layer.mergeAll(Daemon.defaultLayer, DaemonStore.defaultLayer, CrossSpawnSpawner.defaultLayer))
+const daemonDeps = Layer.mergeAll(
+  Layer.succeed(Session.Service, sessionStubService()),
+  Layer.succeed(SessionPrompt.Service, promptService()),
+  Layer.succeed(DaemonChecks.Service, checksService()),
+  Layer.succeed(DaemonCheckpoint.Service, checkpointService()),
+  Layer.succeed(MCP.Service, mcpService()),
+  Layer.succeed(Worktree.Service, worktreeService()),
+  Layer.succeed(SessionStatus.Service, { get: () => Effect.succeed({ type: "idle" as const }), list: () => Effect.succeed(new Map()), set: () => Effect.void } as any),
+  Layer.succeed(Bus.Service, { publish: () => Effect.void, subscribe: () => Effect.never, subscribeAll: () => Effect.never, subscribeCallback: () => Effect.succeed(() => {}), subscribeAllCallback: () => Effect.succeed(() => {}) } as any),
+  Layer.succeed(Config.Service, { get: () => Effect.succeed({}) } as any),
+  Layer.succeed(Provider.Service, {} as any),
+  Layer.succeed(AppFileSystem.Service, {} as any),
+  Layer.succeed(Agent.Service, {} as any),
+  DaemonStore.defaultLayer,
+  CrossSpawnSpawner.defaultLayer,
+)
+
+const it = testEffect(Daemon.defaultLayer.pipe(Layer.provideMerge(daemonDeps)))
 
 async function memoryBenchmarkFiles() {
   const dir = path.resolve(import.meta.dir, "../../../../docs/ZYAL/examples/memory-benchmark")

@@ -50,6 +50,7 @@ const SUPPORTED_FEATURE_KEYS = new Set([
   "experiments",
   "models",
   "budgets",
+  "research",
   "triggers",
   "rollback",
   "done",
@@ -251,7 +252,22 @@ function assertZyalNestedKeys(input: Record<string, unknown>) {
 
   if (input.permissions !== undefined) {
     const permissions = expectRecord(input.permissions, "permissions")
-    assertKeys("permissions", permissions, ["shell", "edit", "git_commit", "git_push", "workers", "mcp"])
+    assertKeys("permissions", permissions, [
+      "read",
+      "list",
+      "glob",
+      "grep",
+      "external_directory",
+      "shell",
+      "edit",
+      "git_commit",
+      "git_push",
+      "workers",
+      "mcp",
+      "research",
+      "websearch",
+      "webfetch",
+    ])
   }
 
   if (input.ui !== undefined) {
@@ -846,7 +862,7 @@ function assertPowerBlockNestedKeys(input: Record<string, unknown>) {
     }
     if (experiments.scoring !== undefined) {
       const scoring = expectRecord(experiments.scoring, "experiments.scoring")
-      assertKeys("experiments.scoring", scoring, ["weights", "command", "judge"])
+      assertKeys("experiments.scoring", scoring, ["weights", "command", "judge", "primary"])
       if (scoring.judge !== undefined) {
         assertKeys("experiments.scoring.judge", expectRecord(scoring.judge, "experiments.scoring.judge"), [
           "agent",
@@ -1141,6 +1157,58 @@ function assertPowerBlockNestedKeys(input: Record<string, unknown>) {
   if (input.unsupported_feature_policy !== undefined) {
     const policy = expectRecord(input.unsupported_feature_policy, "unsupported_feature_policy")
     assertKeys("unsupported_feature_policy", policy, ["required", "optional", "fail_closed", "on_missing"])
+  }
+
+  if (input.research !== undefined) {
+    const research = expectRecord(input.research, "research")
+    assertKeys("research", research, [
+      "version",
+      "mode",
+      "autonomy",
+      "max_parallel",
+      "timeout_seconds",
+      "provider_policy",
+      "extraction",
+      "evidence",
+      "safety",
+      "budgets",
+    ])
+    if (research.provider_policy !== undefined) {
+      assertKeys("research.provider_policy", expectRecord(research.provider_policy, "research.provider_policy"), [
+        "prefer",
+        "allow",
+        "missing_provider",
+      ])
+    }
+    if (research.extraction !== undefined) {
+      assertKeys("research.extraction", expectRecord(research.extraction, "research.extraction"), [
+        "enabled",
+        "max_pages",
+        "allowed_extractors",
+      ])
+    }
+    if (research.evidence !== undefined) {
+      assertKeys("research.evidence", expectRecord(research.evidence, "research.evidence"), [
+        "require_citations",
+        "claim_level",
+        "store",
+      ])
+    }
+    if (research.safety !== undefined) {
+      assertKeys("research.safety", expectRecord(research.safety, "research.safety"), [
+        "redact_secrets",
+        "block_internal_urls",
+        "prompt_injection",
+        "taint_label",
+      ])
+    }
+    if (research.budgets !== undefined) {
+      assertKeys("research.budgets", expectRecord(research.budgets, "research.budgets"), [
+        "max_queries",
+        "max_pages",
+        "max_cost_usd",
+      ])
+    }
   }
 }
 

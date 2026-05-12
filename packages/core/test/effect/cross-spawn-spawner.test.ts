@@ -1,5 +1,6 @@
 import { describe, expect } from "bun:test"
 import fs from "node:fs/promises"
+import { realpathSync } from "node:fs"
 import os from "node:os"
 import path from "node:path"
 import { Effect, Exit, Stream } from "effect"
@@ -113,7 +114,8 @@ describe("cross-spawn spawner", () => {
             ChildProcess.make(process.execPath, ["-e", "process.stdout.write(process.cwd())"], { cwd: tmp.path }),
           ),
         )
-        expect(out).toBe(tmp.path)
+        // macOS symlinks /var → /private/var; child reports the realpath. Compare via fs.realpathSync.
+        expect(realpathSync(out)).toBe(realpathSync(tmp.path))
       }),
     )
 
