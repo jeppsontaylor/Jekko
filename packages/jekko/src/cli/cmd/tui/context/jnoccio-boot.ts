@@ -112,6 +112,12 @@ export async function bootJnoccioFusion(): Promise<void> {
   booted = true
 
   try {
+    if (process.env.JEKKO_DISABLE_JNOCCIO_BOOT === "1") {
+      setBootStatus("unavailable")
+      setModelCount(null)
+      return
+    }
+
     setBootStatus("checking")
 
     // Step 1: Always check if the server is already running.

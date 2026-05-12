@@ -1,6 +1,6 @@
 I treated **“LangChane” as LangChain/LangGraph** and **“Hermis” as Hermes Agent**, and I read ZYAL as a proposed **host-enforced operating contract** rather than just a prompt/config format. My strongest conclusion: **ZYAL should become the governance/control-plane protocol for long-running agent work**, not a replacement for MCP, A2A, LangGraph, OpenClaw, Hermes, AgentSkills, AG-UI, or A2H.
 
-ZYAL already has a powerful thesis: the host owns the loop, preview/arming are separate, SQLite is truth, promotion is evidence-gated, budgets/circuit breakers are enforced by runtime, and anti-vibe/rollback/capability rules are structural rather than model-dependent. That is the right direction. The current draft’s biggest risk is that it tries to define *everything* itself: daemon runtime, memory, agents, UI, approvals, skills, security, sandboxing, evidence, workflows, triggers, and experiments. That makes it impressive, but also at risk of becoming a monolith instead of the thin, interoperable “contract layer” the ecosystem actually needs. 
+ZYAL already has a powerful thesis: the host owns the loop, preview/arming are separate, SQLite is truth, promotion is evidence-gated, budgets/circuit breakers are enforced by runtime, and anti-vibe/rollback/capability rules are structural rather than model-dependent. That is the right direction. The current draft’s biggest risk is that it tries to define *everything* itself: daemon runtime, memory, agents, UI, approvals, skills, security, sandboxing, evidence, workflows, triggers, and experiments. That makes it impressive, but also at risk of becoming a monolith instead of the thin, interoperable “contract layer” the ecosystem actually needs.
 
 ## Reference map: what ZYAL should compose, not reinvent
 
@@ -220,7 +220,7 @@ conformance:
     - memory_without_provenance_rejected
 ```
 
-This is how ZYAL becomes a protocol rather than a beautiful internal implementation. The current uploaded draft already lists structural safety invariants, but those invariants should become executable conformance cases with golden traces. 
+This is how ZYAL becomes a protocol rather than a beautiful internal implementation. The current uploaded draft already lists structural safety invariants, but those invariants should become executable conformance cases with golden traces.
 
 ## 6. Upgrade capabilities into data-flow leases with taint tracking
 
@@ -435,4 +435,3 @@ That framing makes ZYAL much more significant. It becomes the **agentic CI/CD co
 [11]: https://docs.langchain.com/oss/python/langgraph/use-time-travel "Use time-travel - Docs by LangChain"
 [12]: https://github.com/twilio-labs/Agent2Human "GitHub - twilio-labs/Agent2Human · GitHub"
 [13]: https://hermes-agent.nousresearch.com/docs/ "Hermes Agent Documentation | Hermes Agent"
-

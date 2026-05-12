@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
 import { createSimpleContext } from "./helper"
 import type { PromptInfo } from "../component/prompt/history"
@@ -33,12 +34,31 @@ export const { use: useRoute, provider: RouteProvider } = createSimpleContext({
             }),
     )
 
+    const [previousRoute, setPreviousRoute] = createSignal<Route | null>(null)
+
     return {
       get data() {
         return store
       },
+      get previous() {
+        return previousRoute()
+      },
       navigate(route: Route) {
+        // Save the current route as previous before switching
+        const current = { ...store } as Route
+        setPreviousRoute(current)
         setStore(reconcile(route))
+      },
+      /** Navigate back to the previous route. Falls back to Home. */
+      navigateBack() {
+        const prev = previousRoute()
+        if (prev && prev.type !== "home") {
+          setPreviousRoute(null)
+          setStore(reconcile(prev))
+        } else {
+          setPreviousRoute(null)
+          setStore(reconcile({ type: "home" }))
+        }
       },
     }
   },

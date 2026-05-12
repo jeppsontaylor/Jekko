@@ -77,7 +77,7 @@ const TIPS = [
   "Use {highlight}PageUp{/highlight}/{highlight}PageDown{/highlight} to navigate through conversation history",
   "Press {highlight}Ctrl+G{/highlight} or {highlight}Home{/highlight} to jump to the beginning of the conversation",
   "Press {highlight}Ctrl+Alt+G{/highlight} or {highlight}End{/highlight} to jump to the most recent message",
-  "Press {highlight}Shift+Enter{/highlight} or {highlight}Ctrl+J{/highlight} to add newlines in your prompt",
+  "Press {highlight}Shift+Enter{/highlight}, {highlight}Ctrl+Enter{/highlight}, or {highlight}Alt+Enter{/highlight} to add newlines in your prompt",
   "Press {highlight}Ctrl+C{/highlight} when typing to clear the input field",
   "Press {highlight}Escape{/highlight} to stop the AI mid-response",
   "Switch to {highlight}Plan{/highlight} agent to get suggestions without making actual changes",

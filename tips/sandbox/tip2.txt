@@ -367,4 +367,3 @@ For **“I want the best security boundary”**: use a VM/microVM sandbox, not j
 [18]: https://man.archlinux.org/man/systemd.resource-control.5.en "systemd.resource-control(5) — Arch manual pages"
 [19]: https://github.com/eugene1g/agent-safehouse "GitHub - eugene1g/agent-safehouse: Sandbox your local AI agents so they can read/write only what they need · GitHub"
 [20]: https://e2b.dev/docs/use-cases/coding-agents "Documentation - E2B"
-

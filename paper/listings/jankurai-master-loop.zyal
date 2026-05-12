@@ -1,4 +1,4 @@
-# Provenance: compact appendix excerpt from docs/ZYAL/examples/10-jankurai-master-loop.zyal.yml.
+# Provenance: compact appendix excerpt from docs/ZYAL/examples/10-jankurai-master-loop.zyal.
 <<<ZYAL v1:daemon id=jankurai-master-loop>>>
 version: v1
 intent: daemon

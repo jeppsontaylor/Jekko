@@ -658,4 +658,3 @@ The big design principle: **search tools find candidates; extraction tools fetch
 [26]: https://github.com/exa-labs/exa-mcp-server "GitHub - exa-labs/exa-mcp-server: Exa MCP for web search and web crawling! · GitHub"
 [27]: https://github.com/firecrawl/firecrawl-mcp-server "GitHub - firecrawl/firecrawl-mcp-server:  Official Firecrawl MCP Server - Adds powerful web scraping and search to Cursor, Claude and any other LLM clients. · GitHub"
 [28]: https://github.com/github/github-mcp-server "GitHub - github/github-mcp-server: GitHub's official MCP Server · GitHub"
-

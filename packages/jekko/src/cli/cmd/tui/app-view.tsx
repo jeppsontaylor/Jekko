@@ -33,11 +33,16 @@ import { ArgsProvider, useArgs, type Args } from "./context/args"
 import { useTuiConfig } from "./context/tui-config"
 import { createTuiApi } from "@/cli/cmd/tui/plugin/api"
 import { TuiPluginRuntime } from "@/cli/cmd/tui/plugin/runtime"
-import type { RouteMap } from "@/cli/cmd/tui/plugin/api"
+import type { RouteMap } from "@/cli/cmd/tui/plugin/api-helpers"
 import { setupAppBindings } from "./app-bindings"
 import { bootJnoccioFusion } from "./context/jnoccio-boot"
+import { NavigationHeader } from "@tui/component/navigation-header"
+import * as Log from "@jekko-ai/core/util/log"
+import { errorMessage } from "@/util/error"
 
-export function App(props: { onSnapshot?: () => Promise<string[]> }) {
+const bootLog = Log.create({ service: "tui.boot" })
+
+export function App(props: { onSnapshot?: () => Promise<string[]>; onVisible?: () => void }) {
   const tuiConfig = useTuiConfig()
   const route = useRoute()
   const dimensions = useTerminalDimensions()
@@ -60,6 +65,18 @@ export function App(props: { onSnapshot?: () => Promise<string[]> }) {
     routeRev()
     return routes.get(name)?.at(-1)?.render
   }
+  let loggedDimensions = false
+  createEffect(() => {
+    if (loggedDimensions) return
+    const size = dimensions()
+    if (!size.width || !size.height) return
+    loggedDimensions = true
+    bootLog.info("app dimensions ready", {
+      width: size.width,
+      height: size.height,
+      log: Log.file(),
+    })
+  })
 
   const api = createTuiApi({
     command,
@@ -75,16 +92,33 @@ export function App(props: { onSnapshot?: () => Promise<string[]> }) {
     sync,
     theme: themeState,
     toast,
+    renderer,
   })
   const [ready, setReady] = createSignal(process.env.JEKKO_FAST_BOOT === "1")
+  const pluginStartedAt = Date.now()
+  bootLog.info("plugin init start", {
+    fast_boot: process.env.JEKKO_FAST_BOOT === "1",
+    pure: process.env.JEKKO_PURE === "1",
+    log: Log.file(),
+  })
   TuiPluginRuntime.init({
     api,
     config: tuiConfig,
   })
     .catch((error) => {
-      console.error("Failed to load TUI plugins", error)
+      bootLog.error("plugin init failed", {
+        error: errorMessage(error),
+        log: Log.file(),
+      })
+      if (process.argv.includes("--print-logs")) {
+        console.error("Failed to load TUI plugins", error)
+      }
     })
     .finally(() => {
+      bootLog.info("plugin init complete", {
+        duration: Date.now() - pluginStartedAt,
+        log: Log.file(),
+      })
       setReady(true)
     })
 
@@ -109,7 +143,9 @@ export function App(props: { onSnapshot?: () => Promise<string[]> }) {
     sync,
     exit,
     mode,
-    setMode,
+    setMode: (next) => {
+      if (next === "dark" || next === "light") setMode(next)
+    },
     locked,
     lock,
     unlock,
@@ -122,6 +158,12 @@ export function App(props: { onSnapshot?: () => Promise<string[]> }) {
 
   const args = useArgs()
   onMount(() => {
+    bootLog.info("app mount", {
+      route: route.data.type,
+      sync_status: sync.status,
+      log: Log.file(),
+    })
+    props.onVisible?.()
     batch(() => {
       if (args.agent) local.agent.set(args.agent)
       if (args.model) {
@@ -140,6 +182,15 @@ export function App(props: { onSnapshot?: () => Promise<string[]> }) {
           sessionID: args.sessionID,
         })
       }
+    })
+  })
+
+  createEffect(() => {
+    bootLog.info("sync status visible", {
+      status: sync.status,
+      route: route.data.type,
+      ready: ready(),
+      log: Log.file(),
     })
   })
 
@@ -197,21 +248,45 @@ export function App(props: { onSnapshot?: () => Promise<string[]> }) {
   })
 
   return (
-    <box width={dimensions().width} height={dimensions().height} backgroundColor={theme.background}>
+    <box
+      width={dimensions().width}
+      height={dimensions().height}
+      backgroundColor={theme.background}
+      flexDirection="column"
+    >
       <Show when={Flag.JEKKO_SHOW_TTFD}>
         <TimeToFirstDraw />
       </Show>
-      <Show when={ready()}>
-        <Switch>
-          <Match when={route.data.type === "home"}>
-            <Home />
-          </Match>
-          <Match when={route.data.type === "session"}>
-            <Session />
-          </Match>
-        </Switch>
+      <Show when={!ready()}>
+        <box
+          position="absolute"
+          zIndex={4000}
+          left={0}
+          right={0}
+          top={0}
+          bottom={0}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <box backgroundColor={theme.backgroundPanel} paddingLeft={2} paddingRight={2} paddingTop={1} paddingBottom={1}>
+            <text fg={theme.textMuted}>Loading TUI plugins...</text>
+          </box>
+        </box>
       </Show>
-      {plugin()}
+      <Show when={ready()}>
+        <NavigationHeader />
+        <box flexGrow={1} minHeight={0} flexDirection="column">
+          <Switch>
+            <Match when={route.data.type === "home"}>
+              <Home />
+            </Match>
+            <Match when={route.data.type === "session"}>
+              <Session />
+            </Match>
+          </Switch>
+          {plugin()}
+        </box>
+      </Show>
       <StartupLoading ready={ready} />
     </box>
   )

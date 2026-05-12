@@ -462,4 +462,3 @@ That stack gives you the best blend of privacy, agent usability, source diversit
 [19]: https://docs.github.com/en/rest "GitHub REST API documentation - GitHub Docs"
 [20]: https://support.reddithelp.com/hc/en-us/articles/16160319875092-Reddit-Data-API-Wiki "Reddit Data API Wiki – Reddit Help"
 [21]: https://arxiv.org/abs/2510.11394 "[2510.11394] VeriCite: Towards Reliable Citations in Retrieval-Augmented Generation via Rigorous Verification"
-

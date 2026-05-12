@@ -113,12 +113,12 @@ Jekko plugins can hook into events and extend behavior, which means daemon mode 
 
 The codebase confirms these primitives:
 
-* `SessionStatus.Info` currently has only `idle`, `busy`, and `retry`; daemon needs either a new status variant or dedicated daemon events. 
-* `SessionRunState` sets the session back to `idle` when the current runner completes; daemon mode cannot let inner idle mean “whole daemon is done.” 
-* `jekko run` currently breaks its event loop when it sees `session.status` become `idle`, which is correct today but wrong for daemon mode unless daemon completion has its own event. 
-* `Agent.Info` already has `steps?: Finite`; this is a maximum-step brake, not a forever guarantee. 
-* Built-in agents include `build`, `plan`, `general`, `explore`, `compaction`, `title`, and `summary`; the `general` subagent is already described as suitable for parallel units of work. 
-* The TUI theme system already resolves theme colors and exposes RGBA utilities, so gold daemon UX can be implemented cleanly. 
+* `SessionStatus.Info` currently has only `idle`, `busy`, and `retry`; daemon needs either a new status variant or dedicated daemon events.
+* `SessionRunState` sets the session back to `idle` when the current runner completes; daemon mode cannot let inner idle mean “whole daemon is done.”
+* `jekko run` currently breaks its event loop when it sees `session.status` become `idle`, which is correct today but wrong for daemon mode unless daemon completion has its own event.
+* `Agent.Info` already has `steps?: Finite`; this is a maximum-step brake, not a forever guarantee.
+* Built-in agents include `build`, `plan`, `general`, `explore`, `compaction`, `title`, and `summary`; the `general` subagent is already described as suitable for parallel units of work.
+* The TUI theme system already resolves theme colors and exposes RGBA utilities, so gold daemon UX can be implemented cleanly.
 
 ## 2.2 Existing Jekko ecosystem signals
 
@@ -240,7 +240,7 @@ no-empty-commit behavior
 manual kill path
 ```
 
-Jekko already has a permission system and even a default `doom_loop` permission in the agent defaults, which is highly relevant here. 
+Jekko already has a permission system and even a default `doom_loop` permission in the agent defaults, which is highly relevant here.
 
 ## 3.6 Missing: multi-agent worktree isolation
 
@@ -699,7 +699,7 @@ Add options:
 --forever-confirm RUN_FOREVER
 ```
 
-Current `run.ts` breaks when session status becomes `idle`. 
+Current `run.ts` breaks when session status becomes `idle`.
 
 In daemon mode, it should instead wait for:
 
@@ -750,7 +750,7 @@ packages/jekko/src/cli/cmd/tui/component/daemon-banner.tsx
 packages/jekko/src/cli/cmd/tui/component/daemon-panel.tsx
 ```
 
-The TUI route already listens to `session.status` for retry behavior and has session commands like compact, undo, fork, export, etc., so this is the right integration layer. 
+The TUI route already listens to `session.status` for retry behavior and has session commands like compact, undo, fork, export, etc., so this is the right integration layer.
 
 Add:
 
@@ -1679,4 +1679,3 @@ The most important sentence for the implementation spec:
 [21]: https://github.com/anomalyco/jekko/issues/16882?utm_source=chatgpt.com "compaction.auto: false is ignored when provider throws a ..."
 [22]: https://github.com/anomalyco/jekko/issues/20465?utm_source=chatgpt.com "Blank assistant text with AI SDK v6: finish-reason ..."
 [23]: https://pypi.org/project/jekko-agent-hub/?utm_source=chatgpt.com "jekko-agent-hub · PyPI"
-

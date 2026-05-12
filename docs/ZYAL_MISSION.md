@@ -521,14 +521,14 @@ The full set of flagship runbooks lives in [`docs/ZYAL/examples/`](ZYAL/examples
 
 | File | Demonstrates |
 |------|-------------|
-| `01-fix-until-green.zyal.yml` | Minimum viable daemon — anti-vibe, rollback, done definition |
-| `02-hypothesis-tournament.zyal.yml` | Competing hypotheses, blind cross-provider judging, negative memory |
-| `03-billion-loc-monorepo.zyal.yml` | Repo intelligence + scope control + blast radius |
-| `04-fleet-portfolio.zyal.yml` | Trigger-driven multi-issue dispatcher with budgets and anti-recursion |
-| `05-secure-mcp-lockdown.zyal.yml` | Capability leases + command floor + secrets brokering + sandbox |
-| `06-evidence-graph-merge.zyal.yml` | Proof lanes + merge witness + rollback verify |
-| `07-self-improving-skills.zyal.yml` | Skill quarantine → human review → promotion lifecycle |
-| `08-full-power-runbook.zyal.yml` | Every v2.1 power block in one runbook |
+| `01-fix-until-green.zyal` | Minimum viable daemon — anti-vibe, rollback, done definition |
+| `02-hypothesis-tournament.zyal` | Competing hypotheses, blind cross-provider judging, negative memory |
+| `03-billion-loc-monorepo.zyal` | Repo intelligence + scope control + blast radius |
+| `04-fleet-portfolio.zyal` | Trigger-driven multi-issue dispatcher with budgets and anti-recursion |
+| `05-secure-mcp-lockdown.zyal` | Capability leases + command floor + secrets brokering + sandbox |
+| `06-evidence-graph-merge.zyal` | Proof lanes + merge witness + rollback verify |
+| `07-self-improving-skills.zyal` | Skill quarantine → human review → promotion lifecycle |
+| `08-full-power-runbook.zyal` | Every v2.1 power block in one runbook |
 
 ---
 

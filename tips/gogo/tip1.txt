@@ -2040,4 +2040,3 @@ The central correction to the original plan is this: **do not make Jekko’s cor
 [15]: https://github.com/anomalyco/jekko/issues/17065 "Session compaction produces orphaned tool_use blocks in long tool-heavy sessions (400 from Anthropic) · Issue #17065 · anomalyco/jekko · GitHub"
 [16]: https://github.com/anomalyco/jekko/issues/17471 "[FEATURE]: Auto-continue when model hits output token limit (finish_reason: \"length\") · Issue #17471 · anomalyco/jekko · GitHub"
 [17]: https://github.com/anomalyco/jekko/issues/19339 "bug: infinite loop when provider returns finishReason \"unknown\" · Issue #19339 · anomalyco/jekko · GitHub"
-

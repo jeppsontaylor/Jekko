@@ -13,7 +13,7 @@ Hardlane loop:
   then either promotes, pauses, splits, or escalates.
 ```
 
-The previous ZYAL plan already establishes the right safety base: strict `ZYAL v1` sentinels, no XML tags, no instant execution on paste, SQLite as source of truth, readable ledger mirrors, hard context clearing by child session/epoch rather than deleting history, serial daemon first, and no prompt-only continuation. This proposal extends that plan rather than replacing it. 
+The previous ZYAL plan already establishes the right safety base: strict `ZYAL v1` sentinels, no XML tags, no instant execution on paste, SQLite as source of truth, readable ledger mirrors, hard context clearing by child session/epoch rather than deleting history, serial daemon first, and no prompt-only continuation. This proposal extends that plan rather than replacing it.
 
 ---
 
@@ -423,7 +423,7 @@ daemon_task_decision
   created_at
 ```
 
-The existing plan already includes daemon runs, iterations, events, tasks, workers, and artifacts. Hardlane adds task-level memory/pass/decision structure so that the scratchpad is durable and queryable rather than just “some markdown file agents edit.” 
+The existing plan already includes daemon runs, iterations, events, tasks, workers, and artifacts. Hardlane adds task-level memory/pass/decision structure so that the scratchpad is durable and queryable rather than just “some markdown file agents edit.”
 
 ## Mirror files
 
@@ -1200,7 +1200,7 @@ For inline prompt form, keep the exact sentinels:
 ZYAL_ARM RUN_FOREVER id=...
 ```
 
-The previous plan’s gate is good because it requires a first-column opening sentinel, matching closing ID, required `intent`, required `confirm`, and trailing arm line. Keep that. 
+The previous plan’s gate is good because it requires a first-column opening sentinel, matching closing ID, required `intent`, required `confirm`, and trailing arm line. Keep that.
 
 ## Semantic highlighting groups
 
@@ -1307,7 +1307,7 @@ daemon_task_artifact
 daemon_task_decision
 ```
 
-Keep SQLite source of truth and mirrors generated from DB, consistent with the existing plan. 
+Keep SQLite source of truth and mirrors generated from DB, consistent with the existing plan.
 
 ## Phase C: Runtime controller
 
@@ -1745,4 +1745,3 @@ That gives you the “God mode” power you want without letting the system diss
 [13]: https://modelcontextprotocol.io/specification/2025-11-25/server/index?utm_source=chatgpt.com "Overview - Model Context Protocol"
 [14]: https://zed.dev/acp?utm_source=chatgpt.com "Zed — Agent Client Protocol"
 [15]: https://docs.ag-ui.com/concepts/events?utm_source=chatgpt.com "Events - Agent User Interaction Protocol"
-

@@ -2150,4 +2150,3 @@ That is how you get a loop that really keeps going, survives context clearing, c
 [26]: https://github.com/Tarquinen/jekko-dynamic-context-pruning "GitHub - Opencode-DCP/jekko-dynamic-context-pruning: Dynamic context pruning plugin for Jekko - intelligently manages conversation context to optimize token usage · GitHub"
 [27]: https://jekko.ai/docs/cli/ "CLI | Jekko"
 [28]: https://github.com/anomalyco/jekko/issues/17169 "Subagent enters infinite retry loop on edit/write tool failure, causing excessive API costs · Issue #17169 · anomalyco/jekko · GitHub"
-

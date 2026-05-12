@@ -1,4 +1,4 @@
-I read the ZYAL draft closely. My take: **ZYAL is already unusually strong as a host-enforced runtime contract**: host owns the loop, SQLite is truth, promotion is evidence-gated, capabilities are deny-by-default, arming is separated from preview, and it already names memory, sandboxing, skills, rollback, observability, experiments, budgets, repo intelligence, and anti-vibe gates. That is the right center of gravity. 
+I read the ZYAL draft closely. My take: **ZYAL is already unusually strong as a host-enforced runtime contract**: host owns the loop, SQLite is truth, promotion is evidence-gated, capabilities are deny-by-default, arming is separated from preview, and it already names memory, sandboxing, skills, rollback, observability, experiments, budgets, repo intelligence, and anti-vibe gates. That is the right center of gravity.
 
 I interpreted **“LangChane” as LangChain/LangGraph** and **“Hermis” as Hermes Agent**. I also looked across MCP, A2A, ACP, AG-UI, Agent Client Protocol, AGENTS.md, Agent Skills, OpenAI Agents SDK, OpenClaw, Temporal-style durable execution, OpenTelemetry, OPA/Cedar, SLSA/in-toto, and current LLM/agent security guidance.
 

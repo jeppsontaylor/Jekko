@@ -2009,9 +2009,9 @@ That is how ZYAL becomes bigger than Jekko. It becomes the portable control surf
 [11]: https://github.com/openclaw/openclaw "GitHub - openclaw/openclaw: Your own personal AI assistant. Any OS. Any Platform. The lobster way.  · GitHub"
 [12]: https://blogs.cisco.com/ai/personal-ai-agents-like-openclaw-are-a-security-nightmare "Personal AI Agents like OpenClaw Are a Security Nightmare - Cisco Blogs"
 [13]: https://www.jamf.com/blog/openclaw-ai-agent-insider-threat-analysis/ "
-        
+
             OpenClaw AI Agent Vulnerabilities: Detection and Removal for Mac
-        
+
     "
 [14]: https://www.oasis.security/blog/openclaw-vulnerability "ClawJacked: OpenClaw Vulnerability Enables Full Agent Takeover"
 [15]: https://code.claude.com/docs/en/overview "Claude Code overview - Claude Code Docs"
@@ -2026,12 +2026,12 @@ That is how ZYAL becomes bigger than Jekko. It becomes the portable control surf
 [24]: https://pydantic.dev/docs/ai/overview/ "Pydantic AI | Pydantic Docs"
 [25]: https://modelcontextprotocol.io/specification/2025-03-26 "Specification - Model Context Protocol"
 [26]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ "
-            
+
             Announcing the Agent2Agent Protocol (A2A)
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [27]: https://agentclientprotocol.com/get-started/introduction "Introduction - Agent Client Protocol"
 [28]: https://github.com/agentsmd/agents.md "GitHub - agentsmd/agents.md: AGENTS.md — a simple, open format for guiding coding agents · GitHub"

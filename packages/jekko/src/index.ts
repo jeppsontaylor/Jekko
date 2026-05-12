@@ -241,6 +241,7 @@ try {
   }
   process.exitCode = 1
 } finally {
+  await Log.flush().catch(() => {})
   // Some subprocesses ignore SIGTERM and similar signals.
   // Most notably, some docker-container-based MCP servers don't handle such signals unless
   // run using `docker run --init`.

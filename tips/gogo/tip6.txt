@@ -2060,4 +2060,3 @@ The syntax should be an armed, hashed, schema-validated daemon spec, not XML. Th
 [15]: https://code.claude.com/docs/en/hooks "Hooks reference - Claude Code Docs"
 [16]: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents?utm_source=chatgpt.com "Effective context engineering for AI agents"
 [17]: https://arxiv.org/abs/2512.06556?utm_source=chatgpt.com "Securing the Model Context Protocol: Defending LLMs Against Tool Poisoning and Adversarial Attacks"
-

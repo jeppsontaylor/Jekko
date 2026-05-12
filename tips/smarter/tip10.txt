@@ -21,7 +21,7 @@ normal task queue
                               └─ implementation only after evidence threshold
 ```
 
-The previous ZYAL plan already made the right foundational choices: strict activation syntax, host-enforced daemon runtime, SQLite as source of truth, mirrored `.jekko/daemon/<runID>/ledger.jsonl`/`STATE.md`, hard context clearing by epoch/child session rather than deleting history, and a staged rollout from serial loop to checkpoint/context to swarms/MCP. I would extend that plan, not fork it. 
+The previous ZYAL plan already made the right foundational choices: strict activation syntax, host-enforced daemon runtime, SQLite as source of truth, mirrored `.jekko/daemon/<runID>/ledger.jsonl`/`STATE.md`, hard context clearing by epoch/child session rather than deleting history, and a staged rollout from serial loop to checkpoint/context to swarms/MCP. I would extend that plan, not fork it.
 
 ---
 
@@ -1523,4 +1523,3 @@ That turns ZYAL from “an infinite coding loop” into a real autonomous engine
 [9]: https://github.com/anomalyco/jekko/issues/12711 "[DESIGN]: Agent Teams — flat teams with named messaging, multi-model support, and TUI integration · Issue #12711 · anomalyco/jekko · GitHub"
 [10]: https://jekko.ai/docs/permissions/?utm_source=chatgpt.com "Permissions | Jekko"
 [11]: https://github.com/anomalyco/jekko/issues/14195?utm_source=chatgpt.com "Multiple Task tool calls in a single LLM response execute sequentially instead of in parallel · Issue #14195 · anomalyco/jekko · GitHub"
-

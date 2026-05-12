@@ -1,4 +1,4 @@
-I based this on your current Solid/OpenTUI logo component, especially the existing `JEKKO_PALETTE`, `gradient2D`, `brilliantGeckoColor`, and per-glyph `GradientRow` path. 
+I based this on your current Solid/OpenTUI logo component, especially the existing `JEKKO_PALETTE`, `gradient2D`, `brilliantGeckoColor`, and per-glyph `GradientRow` path.
 
 Replace the full file with this:
 
@@ -495,4 +495,3 @@ export function GoLogo(props: { idle?: boolean } = {}) {
 ```
 
 This version keeps your same component API, but makes the active logo much louder by using pure neon corners, hue-based interpolation, forced saturation/value, contrast boosting, and bold active rows.
-

@@ -1796,12 +1796,12 @@ That will give you the thing you actually want: not “the model promised to con
 [12]: https://docs.cline.bot/customization/workflows "Workflows - Cline"
 [13]: https://modelcontextprotocol.io/specification/2025-03-26?utm_source=chatgpt.com "Specification"
 [14]: https://developers.googleblog.com/developers-guide-to-ai-agent-protocols/ "
-            
+
             Developer’s Guide to AI Agent Protocols
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [15]: https://agentcommunicationprotocol.dev/introduction/welcome "Welcome - Agent Communication Protocol"
 [16]: https://www.linuxfoundation.org/press/linux-foundation-launches-the-agent2agent-protocol-project-to-enable-secure-intelligent-communication-between-ai-agents?utm_source=chatgpt.com "Linux Foundation Launches the Agent2Agent Protocol ..."
@@ -1813,4 +1813,3 @@ That will give you the thing you actually want: not “the model promised to con
 [22]: https://arxiv.org/html/2605.01920v1 "A Language for Describing Agentic LLM Contexts"
 [23]: https://github.com/anomalyco/jekko/issues/15533?utm_source=chatgpt.com "Auto-compaction infinite loop when assistant ended its turn ..."
 [24]: https://github.com/anomalyco/jekko?utm_source=chatgpt.com "anomalyco/jekko: The open source coding agent."
-

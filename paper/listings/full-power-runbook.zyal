@@ -1,4 +1,4 @@
-# Provenance: compact appendix excerpt from docs/ZYAL/examples/08-full-power-runbook.zyal.yml.
+# Provenance: compact appendix excerpt from docs/ZYAL/examples/08-full-power-runbook.zyal.
 <<<ZYAL v1:daemon id=full-power-runbook>>>
 version: v1
 intent: daemon

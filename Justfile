@@ -187,6 +187,8 @@ fusion-fast: fusion-check-fast fusion-build-fast fusion-test-fast
 fusion-build-fast:
 	cargo build --manifest-path jnoccio-fusion/Cargo.toml --locked
 
+	just memory-benchmark-determinism
+
 # Deterministic workspace build lane with caching.
 # jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=turbo-build narrow-targets=true
 build: workspace-build-fast
@@ -259,7 +261,7 @@ tui-binary-smoke: jekko-build-host-fast
 tui-ci: tui-binary-smoke
 	bun --cwd packages/jekko test test/cli/tui/ test/cli/cmd/tui/
 	JEKKO_BIN="$(bun --cwd packages/jekko ./script/host-binary-path.ts)" cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml --no-run
-	JEKKO_BIN="$(bun --cwd packages/jekko ./script/host-binary-path.ts)" cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml --no-fail-fast
+	JEKKO_BIN="$(bun --cwd packages/jekko ./script/host-binary-path.ts)" cargo test --manifest-path crates/tuiwright-jekko-unlock/Cargo.toml default_tui_paints_first_frame -- --nocapture
 
 # Copy approved local Jekko/Jnoccio keys from home-level env files into the
 # canonical outside-repo live TUI test env file, redacting all output.
@@ -315,3 +317,43 @@ zyalc-fast: zyalc-check zyalc-test zyalc-compile-check
 # jankurai:proof HLT-012-OVERBROAD-AGENCY parallel=1 cache=cargo-build narrow-targets=true
 experiment cmd="just --list":
 	tools/sandbox-wrap.sh --lane experiment-worktree -- {{cmd}}
+
+# Narrow lane: compile the memory-benchmark crate.
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=cargo-build narrow-targets=true
+memory-benchmark-check:
+	cargo check --manifest-path crates/memory-benchmark/Cargo.toml --locked --all-targets
+
+# Narrow lane: run the memory-benchmark crate's deterministic unit tests.
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=cargo-test narrow-targets=true
+memory-benchmark-test:
+	cargo test --manifest-path crates/memory-benchmark/Cargo.toml --locked --no-fail-fast
+
+# Narrow lane: assert two consecutive bench runs produce byte-identical output
+# for every reference candidate.
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=cargo-test narrow-targets=true
+memory-benchmark-determinism:
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin verify_determinism
+
+# Generated public-dev benchmark lane.
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=cargo-test narrow-targets=true
+memory-benchmark-generated:
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin generate_suite -- --split public-dev --seed public-dev-0001 --fixtures 500 --out target/memory-benchmark/generated-public-dev.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin bench -- --candidate baseline --suite generated --seed public-dev-0001 --fixtures 500 --out target/memory-benchmark/baseline-generated.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin verify_determinism -- --suite generated --seed public-dev-0001 --fixtures 500
+
+# Chase preflight lane for the sandboxed AutoResearch memory benchmark.
+# jankurai:proof HLT-018-PERF-CONCURRENCY-DRIFT parallel=1 cache=cargo-test narrow-targets=true
+memory-benchmark-chase-preflight:
+	mkdir -p .jekko/daemon/memory-benchmark-chase/preflight-candidates
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin generate_suite -- --split public-dev --seed public-dev-0001 --fixtures 500 --out target/memory-benchmark/generated-public-dev.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin bench -- --candidate ledger_first --suite generated --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark-chase/preflight-candidates/ledger_first.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin bench -- --candidate hybrid_index --suite generated --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark-chase/preflight-candidates/hybrid_index.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin bench -- --candidate temporal_graph --suite generated --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark-chase/preflight-candidates/temporal_graph.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin bench -- --candidate compression_first --suite generated --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark-chase/preflight-candidates/compression_first.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin bench -- --candidate skeptic_dataset --suite generated --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark-chase/preflight-candidates/skeptic_dataset.json
+	cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin population_report -- --current-candidates .jekko/daemon/memory-benchmark-chase/preflight-candidates --best-state .jekko/daemon/memory-benchmark-chase/best-state.json --scoreboard .jekko/daemon/memory-benchmark-chase/scoreboard.tsv --promotion-decision .jekko/daemon/memory-benchmark-chase/promotion-decision.json --best-patch .jekko/daemon/memory-benchmark-chase/best.patch --out .jekko/daemon/memory-benchmark-chase/reports/final-score.json --markdown .jekko/daemon/memory-benchmark-chase/reports/final-score.md
+
+# Composed memory-benchmark fast lane.
+memory-benchmark-fast: memory-benchmark-check memory-benchmark-test memory-benchmark-determinism
+
+memory-benchmark-full: memory-benchmark-fast memory-benchmark-generated

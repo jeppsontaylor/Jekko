@@ -1,4 +1,4 @@
-I based this on your current palette/gradient setup and the per-character `GradientRow` rendering approach.  
+I based this on your current palette/gradient setup and the per-character `GradientRow` rendering approach.
 
 The main change: **RGB interpolation is replaced with hue-aware HSV neon blending**, then boosted with saturation, brightness, contrast shaping, and a diagonal “electric” punch so the logo fades hard **left → right** and **top → bottom** without muddy midtones.
 
@@ -502,4 +502,3 @@ export function GoLogo(props: { idle?: boolean } = {}) {
   )
 }
 ```
-

@@ -46,7 +46,7 @@ Claude’s context compaction guidance matches what Jekko needs: monitor token u
 
 **Guidance** supports constrained generation and interleaving generation with loops, conditionals, and tool use. Its lesson for Jekko is that ambiguity must be removed from the runtime boundary: the syntax has to be parsed by the host, not “understood” by the model. ([GitHub][13])
 
-**SGLang** is designed for LM programs with multiple calls, control flow, structured I/O, parallelism, and runtime optimizations. Its parallelism/control-flow ideas are relevant, but Jekko’s daemon mode lives at the coding-agent/session layer rather than the inference runtime layer. 
+**SGLang** is designed for LM programs with multiple calls, control flow, structured I/O, parallelism, and runtime optimizations. Its parallelism/control-flow ideas are relevant, but Jekko’s daemon mode lives at the coding-agent/session layer rather than the inference runtime layer.
 
 **BAML** shows another declarative/typed approach for agents: prompt functions, testing, CI, and generated native functions. The useful lesson is that serious agent workflows need type checking, testing, and repeatability. ([BAML][14])
 
@@ -2167,12 +2167,12 @@ The next best step is to turn this into an Jekko RFC with the RunSpec schema, st
 
 [1]: https://modelcontextprotocol.io/specification/2025-11-25 "Specification - Model Context Protocol"
 [2]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ "
-            
+
             Announcing the Agent2Agent Protocol (A2A)
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [3]: https://docs.ag-ui.com/introduction "AG-UI Overview - Agent User Interaction Protocol"
 [4]: https://agentclientprotocol.com/get-started/introduction "Introduction - Agent Client Protocol"
@@ -2202,4 +2202,3 @@ The next best step is to turn this into an Jekko RFC with the RunSpec schema, st
 [28]: https://github.com/anomalyco/jekko/releases "Releases · anomalyco/jekko · GitHub"
 [29]: https://jekko.ai/docs/agents/ "Agents | Jekko"
 [30]: https://jekko.ai/docs/config/ "Config | Jekko"
-

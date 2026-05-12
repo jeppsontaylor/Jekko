@@ -20,7 +20,7 @@ OpenHands has several pieces ZYAL should learn from immediately:
 
 **Event-driven agent steps.** OpenHands frames the agent as a stateless, event-driven loop with LLM calls, tool orchestration, context management, security validation, and a single-step execution model. That is excellent for durability and interruption because a host can checkpoint after every step rather than trusting a monolithic “run.” ([OpenHands Docs][2])
 
-**Runtime isolation and multi-modal tools.** The OpenHands paper describes a runtime with Docker sandboxing plus bash, IPython, and browser interaction through Playwright, and support for arbitrary Docker images, skills, and delegation. ZYAL should not just say `shell: ask`; it needs runtime profiles that define the sandbox, image, egress, file mounts, browser access, and tool risk. 
+**Runtime isolation and multi-modal tools.** The OpenHands paper describes a runtime with Docker sandboxing plus bash, IPython, and browser interaction through Playwright, and support for arbitrary Docker images, skills, and delegation. ZYAL should not just say `shell: ask`; it needs runtime profiles that define the sandbox, image, egress, file mounts, browser access, and tool risk.
 
 **Persistence model.** OpenHands persists conversation state as event logs, base state, config, tool outputs, stats, workspace context, activated skills, secrets, and agent state. ZYAL already says “SQLite is truth,” which is excellent, but it needs a typed event schema so different hosts can replay, inspect, and compare runs. ([OpenHands Docs][3])
 

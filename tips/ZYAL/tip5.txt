@@ -1,6 +1,6 @@
 I’m reading **OpenClaw** as the OpenClaw personal-agent/runtime project, **LangChane** as LangChain/LangGraph/Deep Agents, and **Hermis** as Hermes. My main conclusion: **ZYAL is not redundant with those systems.** It sits at a higher layer: a **host-enforced operating contract** for long-running autonomous work. But to become truly significant, ZYAL should stop trying to be “the whole stack” and instead become the **memory, evidence, safety, and governance kernel** that cleanly plugs into existing protocols: MCP, A2A, AG-UI, ACP, AgentSkills, OTel, OPA, SARIF, SLSA, in-toto, SPDX/CycloneDX, LangGraph/Temporal-style durable execution, and OpenClaw/Hermes-style memory and skill systems.
 
-ZYAL already has a very strong foundation: host-owned loops, preview-before-arming, SQLite-backed durable state, evidence-gated promotion, budgets, sandboxing, capabilities, anti-vibe quality gates, rollback, repo intelligence, approvals, observability, memory, skills, workflows, experiments, and multi-agent orchestration. That is the right direction. The most important missing piece is not another YAML block; it is a **formal interoperable substrate** for memory, replay, provenance, and policy so that ZYAL can govern multi-day loops without becoming a closed custom universe. 
+ZYAL already has a very strong foundation: host-owned loops, preview-before-arming, SQLite-backed durable state, evidence-gated promotion, budgets, sandboxing, capabilities, anti-vibe quality gates, rollback, repo intelligence, approvals, observability, memory, skills, workflows, experiments, and multi-agent orchestration. That is the right direction. The most important missing piece is not another YAML block; it is a **formal interoperable substrate** for memory, replay, provenance, and policy so that ZYAL can govern multi-day loops without becoming a closed custom universe.
 
 ## Where ZYAL fits relative to the existing “wheels”
 
@@ -433,4 +433,3 @@ That would make ZYAL dramatically more powerful than a runbook format. It would 
 [26]: https://openai.github.io/openai-agents-python/tracing/ "Tracing - OpenAI Agents SDK"
 [27]: https://opentelemetry.io/docs/concepts/semantic-conventions/ "Semantic Conventions | OpenTelemetry"
 [28]: https://devblogs.microsoft.com/agent-framework/microsoft-agent-framework-version-1-0/ "Microsoft Agent Framework Version 1.0 | Microsoft Agent Framework"
-

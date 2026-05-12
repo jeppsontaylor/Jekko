@@ -74,7 +74,7 @@ const KeybindsSchema = Schema.Struct({
   input_paste: keybind(chord("ctrl", "v"), "Paste from clipboard"),
   input_submit: keybind("return", "Submit input"),
   input_newline: keybind(
-    sequence(chord("shift", "return"), chord("ctrl", "return"), chord("alt", "return"), chord("ctrl", "j")),
+    sequence(chord("shift", "return"), chord("ctrl", "return"), chord("alt", "return")),
     "Insert newline in input",
   ),
   input_move_left: keybind(sequence("left", chord("ctrl", "b")), "Move cursor left in input"),

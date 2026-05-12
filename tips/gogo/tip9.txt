@@ -1164,12 +1164,12 @@ The XML-ish prompt tags should be rejected. The syntax should be a gated, nonce-
 
 [1]: https://jekko.ai/docs/agents/ "Agents | Jekko"
 [2]: https://developers.googleblog.com/developers-guide-to-ai-agent-protocols/ "
-            
+
             Developer’s Guide to AI Agent Protocols
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [3]: https://jekko.ai/docs/acp/?utm_source=chatgpt.com "ACP Support"
 [4]: https://docs.langchain.com/oss/python/langgraph/overview "LangGraph overview - Docs by LangChain"
@@ -1198,4 +1198,3 @@ The XML-ish prompt tags should be rejected. The syntax should be a gated, nonce-
 [27]: https://jekko.ai/docs/themes/ "Themes | Jekko"
 [28]: https://arxiv.org/abs/2602.20196 "[2602.20196] OpenPort Protocol: A Security Governance Specification for AI Agent Tool Access"
 [29]: https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns "AI Agent Orchestration Patterns - Azure Architecture Center | Microsoft Learn"
-

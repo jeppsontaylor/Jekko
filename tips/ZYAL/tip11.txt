@@ -2,7 +2,7 @@ I’m interpreting **OpenClaw**, **LangChane**, and **Hermis** as **OpenClaw**, 
 
 ## Overall judgment
 
-ZYAL’s strongest idea is excellent: **the model thinks, but the host governs**. The draft already has the right center of gravity: host-owned loops, preview-before-arming, bounded daemon work, SQLite-backed state, evidence-gated promotion, anti-vibe gates, capability leases, rollback, budgets, repo intelligence, and human approvals. That is meaningfully different from a prompt convention or a normal agent framework. 
+ZYAL’s strongest idea is excellent: **the model thinks, but the host governs**. The draft already has the right center of gravity: host-owned loops, preview-before-arming, bounded daemon work, SQLite-backed state, evidence-gated promotion, anti-vibe gates, capability leases, rollback, budgets, repo intelligence, and human approvals. That is meaningfully different from a prompt convention or a normal agent framework.
 
 The biggest risk is that ZYAL becomes **another private orchestration DSL**. The biggest opportunity is to make ZYAL the **governance/control-plane protocol** that composes with existing agent standards: MCP for tools/context, A2A for agent-to-agent work, AG-UI for frontend event streams, Agent Client Protocol for IDE/coding-agent integration, A2H for auditable human approvals, and existing provenance/security standards for evidence. MCP is already the standard shape for connecting LLM apps to tools/data/context, A2A is designed for independent agents to discover capabilities and collaborate without sharing private internals, and AG-UI standardizes real-time agent/frontend state and event flow. ([Model Context Protocol][1])
 
@@ -22,7 +22,7 @@ Fourth, **capabilities need a policy engine**. Regex command floors are useful, 
 
 Fifth, **human approvals need verifiable consent, not just a pause**. The draft has approval gates, but A2H is directly relevant: it defines a channel-agnostic, auditable surface for agents to inform, collect, authorize, escalate, and report results to humans. ZYAL approvals should emit A2H-compatible authorization requests and store signed approval receipts. ([Twilio][8])
 
-Also, one concrete consistency issue: the draft says state persists in **9 SQLite tables**, but the visible list names only **8**: `daemon_run`, `daemon_iteration`, `daemon_event`, `daemon_task`, `daemon_task_pass`, `daemon_task_memory`, `daemon_worker`, and `daemon_artifact`. That should be fixed because trust in an operating contract starts with exactness. 
+Also, one concrete consistency issue: the draft says state persists in **9 SQLite tables**, but the visible list names only **8**: `daemon_run`, `daemon_iteration`, `daemon_event`, `daemon_task`, `daemon_task_pass`, `daemon_task_memory`, `daemon_worker`, and `daemon_artifact`. That should be fixed because trust in an operating contract starts with exactness.
 
 ## Top 10 best ideas to dramatically upgrade ZYAL
 
@@ -285,7 +285,7 @@ This is how ZYAL stops being “a cool Jekko feature” and becomes a credible p
 
 1. **Change `evidence.sign: sha256` to real signing.** Use `hash: sha256` plus `signature: ed25519 | kms | sigstore`, and bind signatures to run ID, repo, branch, commit, diff hash, and approval receipt.
 
-2. **Fix the SQLite table mismatch.** The draft says 9 tables but lists 8. Either add the missing table or correct the claim. 
+2. **Fix the SQLite table mismatch.** The draft says 9 tables but lists 8. Either add the missing table or correct the claim.
 
 3. **Make model-derived risk scores non-authoritative.** A model can suggest risk, but the host should compute risk from static facts: touched paths, dependency graph, secret access, generated files, test coverage deltas, security sinks, external writes, and blast radius.
 

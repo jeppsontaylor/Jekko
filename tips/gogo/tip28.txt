@@ -1332,15 +1332,14 @@ That gives you the “PROMISED infinite loop” behavior while making it safe, i
 [25]: https://codelabs.developers.google.com/intro-a2a-purchasing-concierge "Getting Started with Agent2Agent (A2A) Protocol: A Purchasing Concierge and Remote Seller Agent Interactions on Cloud Run and Agent Engine  |  Google Codelabs"
 [26]: https://docs.ag-ui.com/concepts/tools "Tools - Agent User Interaction Protocol"
 [27]: https://developers.googleblog.com/developers-guide-to-ai-agent-protocols/ "
-            
+
             Developer’s Guide to AI Agent Protocols
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [28]: https://www.reddit.com/r/jekkoCLI/comments/1t5q8mo/dont_leave_jekko_unattended_a_subagent_loop/?utm_source=chatgpt.com "Don't leave Opencode unattended! A sub-agent loop just ..."
 [29]: https://github.com/anomalyco/jekko/issues/17982 "Bug: Jekko prompt loop continues after `finish=stop`, triggering prefill error on claude-opus-4-6 · Issue #17982 · anomalyco/jekko · GitHub"
 [30]: https://raw.githubusercontent.com/anomalyco/jekko/refs/heads/dev/packages/jekko/src/cli/cmd/run.ts "raw.githubusercontent.com"
 [31]: https://arxiv.org/abs/2506.01056 "[2506.01056] MCP-Zero: Active Tool Discovery for Autonomous LLM Agents"
-

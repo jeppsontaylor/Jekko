@@ -56,6 +56,9 @@ export function createTuiApi(input: Input): TuiPluginApi {
       navigate(name, params) {
         routeNavigate(input.route, name, params)
       },
+      navigateBack() {
+        input.route.navigateBack()
+      },
       get current() {
         return routeCurrent(input.route)
       },

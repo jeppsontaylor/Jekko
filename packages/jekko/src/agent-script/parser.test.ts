@@ -67,6 +67,77 @@ ZYAL_ARM RUN_FOREVER id=test`
     expect(parsed.preview.armed).toBe(true)
   })
 
+  test("accepts the memory benchmark autoresearch chase example", async () => {
+    const example = getZyalExample("memory-benchmark-autoresearch-chase")
+    expect(example).toBeDefined()
+    const parsed = await Effect.runPromise(parseZyal(example!.text))
+    expect(parsed.spec.experiments?.lanes.length).toBe(20)
+    expect(parsed.spec.experiments?.lanes[0]?.id).toBe("arena_lane_00")
+    expect(parsed.spec.experiments?.lanes[19]?.id).toBe("arena_lane_19")
+    expect(parsed.spec.experiments?.max_parallel).toBe(20)
+    expect(parsed.spec.experiments?.scoring?.primary).toBe("executable_rust_oracles")
+    expect(parsed.preview.fleet_max_workers).toBe(20)
+    expect(parsed.preview.experiments_summary).toContain("best_verified_patch")
+    expect(parsed.preview.experiments_summary).toContain("primary:executable_rust_oracles")
+  })
+
+  test("accepts the memory benchmark autoresearch basic example", async () => {
+    const example = getZyalExample("memory-benchmark-autoresearch-basic")
+    expect(example).toBeDefined()
+    const parsed = await Effect.runPromise(parseZyal(example!.text))
+    expect(parsed.spec.experiments?.lanes.length).toBe(4)
+    expect(parsed.spec.experiments?.scoring?.primary).toBe("executable_rust_oracles")
+    expect(parsed.preview.fleet_max_workers).toBe(4)
+    expect(parsed.preview.experiments_summary).toContain("best_verified_patch")
+    expect(parsed.preview.experiments_summary).toContain("primary:executable_rust_oracles")
+  })
+
+  test("parses the bundled memory benchmark docs examples recursively", async () => {
+    const examplesDir = path.resolve(import.meta.dir, "../../../../docs/ZYAL/examples/memory-benchmark")
+    const files = collectZyalFiles(examplesDir).sort()
+    expect(files).toEqual([
+      "autoresearch-basic.zyal",
+      "autoresearch-chase.zyal",
+      "executable-benchmark.zyal",
+      "generated-challenge.zyal",
+      "prompt-scoring.zyal",
+    ])
+    for (const file of files) {
+      const parsed = await Effect.runPromise(parseZyal(fs.readFileSync(path.join(examplesDir, file), "utf8")))
+      expect(parsed.spec.intent).toBe("daemon")
+      expect(parsed.preview.id).toBe(parsed.spec.id)
+    }
+  })
+
+  test("accepts experiments scoring primary and rejects unknown scoring keys", async () => {
+    const text = makeZyal(`
+experiments:
+  lanes:
+    - id: lane-a
+      hypothesis: basic scoring lane
+  scoring:
+    command: "run-scoring"
+    primary: executable_rust_oracles
+`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.experiments?.scoring?.primary).toBe("executable_rust_oracles")
+    expect(parsed.preview.experiments_summary).toContain("primary:executable_rust_oracles")
+
+    const bad = makeZyal(`
+experiments:
+  lanes:
+    - id: lane-a
+      hypothesis: basic scoring lane
+  scoring:
+    command: "run-scoring"
+    primary: executable_rust_oracles
+    surprise: true
+`)
+    await expect(Effect.runPromise(parseZyal(bad))).rejects.toThrow(
+      "Unknown ZYAL key: experiments.scoring.surprise",
+    )
+  })
+
   test("detects draft ZYAL blocks without arm", () => {
     const example = getZyalExample("fix-until-tests-pass")!
     const draft = example.text.replace(/ZYAL_ARM RUN_FOREVER id=.*\n?$/, "")
@@ -270,7 +341,7 @@ ZYAL_ARM RUN_FOREVER id=one`
 
   test("parses full docs ZYAL examples", async () => {
     const examplesDir = path.resolve(import.meta.dir, "../../../../docs/ZYAL/examples")
-    const files = fs.readdirSync(examplesDir).filter((file) => file.endsWith(".zyal")).sort()
+    const files = collectZyalFiles(examplesDir).sort()
     expect(files).toEqual([
       "01-fix-until-green.zyal",
       "02-hypothesis-tournament.zyal",
@@ -285,6 +356,11 @@ ZYAL_ARM RUN_FOREVER id=one`
       "11-jankurai-fleet-loop.zyal",
       "12-jankurai-min-loop.zyal",
       "13-advanced-research-loop.zyal",
+      "memory-benchmark/autoresearch-basic.zyal",
+      "memory-benchmark/autoresearch-chase.zyal",
+      "memory-benchmark/executable-benchmark.zyal",
+      "memory-benchmark/generated-challenge.zyal",
+      "memory-benchmark/prompt-scoring.zyal",
     ])
     for (const file of files) {
       const text = fs.readFileSync(path.join(examplesDir, file), "utf8")
@@ -628,6 +704,15 @@ ${extra.replace(/^\n/, "")}`
 ${body}
 <<<END_ZYAL id=test>>>
 ZYAL_ARM RUN_FOREVER id=test`
+}
+
+function collectZyalFiles(dir: string, root = dir): string[] {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) return collectZyalFiles(fullPath, root)
+    if (!entry.isFile() || !entry.name.endsWith(".zyal")) return []
+    return [path.relative(root, fullPath).split(path.sep).join("/")]
+  })
 }
 
 // ─── v2 parser tests ────────────────────────────────────────────────────────
@@ -1498,6 +1583,187 @@ taint:
   labels:
     web_content: { rank: bogus }`)
     await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
+  })
+})
+
+// ─── 20-thread coordinated literature radar tests ────────────────────────────
+
+describe("ZYAL parser 20thread literature radar", () => {
+  test("parses the 20thread ZYAL file from OpenQG", async () => {
+    const filePath = path.resolve(import.meta.dir, "../../../../Code/OpenQG/agent/zyal/openqg-literature-radar-20thread.zyal")
+    if (!fs.existsSync(filePath)) return // skip if OpenQG repo not present
+    const text = fs.readFileSync(filePath, "utf8")
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.spec.id).toBe("openqg-literature-radar-20thread")
+    expect(parsed.preview.armed).toBe(true)
+  })
+
+  test("fleet and research parallelism are independently controllable", async () => {
+    // 4 fleet workers × 5 research threads = 20 total search threads
+    const text = makeZyal(`
+fleet:
+  max_workers: 4
+  isolation: same_session
+
+research:
+  version: v1
+  mode: mixed
+  max_parallel: 5
+  timeout_seconds: 45
+
+experiments:
+  strategy: parallel_distill_refine
+  max_parallel: 4
+  lanes:
+    - id: shard-a
+      hypothesis: first domain shard
+      isolation: same_session
+    - id: shard-b
+      hypothesis: second domain shard
+      isolation: same_session
+    - id: shard-c
+      hypothesis: third domain shard
+      isolation: same_session
+    - id: shard-d
+      hypothesis: fourth domain shard
+      isolation: same_session
+  reduce:
+    strategy: synthesize_best`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+
+    // Fleet independently controls agent count
+    expect(parsed.preview.fleet_enabled).toBe(true)
+    expect(parsed.preview.fleet_max_workers).toBe(4)
+
+    // Research independently controls searches per agent
+    expect(parsed.preview.research_enabled).toBe(true)
+    expect(parsed.preview.research_max_parallel).toBe(5)
+
+    // Total search threads = fleet × research = 20
+    expect(parsed.preview.fleet_max_workers * parsed.preview.research_max_parallel).toBe(20)
+
+    // Experiments lanes match fleet workers
+    expect(parsed.preview.experiments_enabled).toBe(true)
+    expect(parsed.preview.experiments_summary).toContain("lanes:4")
+    expect(parsed.preview.experiments_summary).toContain("synthesize_best")
+  })
+
+  test("rejects experiments.max_parallel exceeding fleet.max_workers", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 4
+
+experiments:
+  strategy: parallel_distill_refine
+  max_parallel: 5
+  lanes:
+    - id: a
+      hypothesis: test
+    - id: b
+      hypothesis: test
+    - id: c
+      hypothesis: test
+    - id: d
+      hypothesis: test
+    - id: e
+      hypothesis: test
+  reduce:
+    strategy: synthesize_best`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow(
+      "experiments.max_parallel (5) exceeds fleet.max_workers (4)",
+    )
+  })
+
+  test("research.max_parallel caps at 20", async () => {
+    const text = makeZyal(`
+research:
+  version: v1
+  max_parallel: 21`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow(
+      "research.max_parallel must not exceed 20",
+    )
+  })
+
+  test("fleet.max_workers caps at 20", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 21`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow()
+  })
+
+  test("accepts maximum 20 research threads with single worker", async () => {
+    // Alternative config: 1 worker × 20 research threads
+    const text = makeZyal(`
+fleet:
+  max_workers: 1
+
+research:
+  version: v1
+  max_parallel: 20`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.preview.fleet_max_workers).toBe(1)
+    expect(parsed.preview.research_max_parallel).toBe(20)
+  })
+
+  test("accepts maximum fleet with minimal research threads", async () => {
+    // Alternative config: 20 workers × 1 research thread
+    const text = makeZyal(`
+fleet:
+  max_workers: 20
+
+research:
+  version: v1
+  max_parallel: 1`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.preview.fleet_max_workers).toBe(20)
+    expect(parsed.preview.research_max_parallel).toBe(1)
+  })
+
+  test("domain-sharded coordination prevents lane id duplication", async () => {
+    const text = makeZyal(`
+fleet:
+  max_workers: 4
+
+experiments:
+  strategy: parallel_distill_refine
+  max_parallel: 4
+  lanes:
+    - id: qg-core
+      hypothesis: first shard
+    - id: qg-core
+      hypothesis: duplicate shard
+    - id: cosmology
+      hypothesis: third shard
+    - id: math
+      hypothesis: fourth shard
+  reduce:
+    strategy: synthesize_best`)
+    await expect(Effect.runPromise(parseZyal(text))).rejects.toThrow("duplicated")
+  })
+
+  test("coordination memory stores are parseable", async () => {
+    const text = makeZyal(`
+memory:
+  stores:
+    literature_receipts:
+      scope: run
+      retention: session
+      write_policy: append_only
+      read_policy: on_demand
+      searchable: true
+    search_coordination:
+      scope: run
+      retention: session
+      write_policy: upsert
+      read_policy: search
+      searchable: true
+  provenance:
+    track_source: true
+    hash_chain: true`)
+    const parsed = await Effect.runPromise(parseZyal(text))
+    expect(parsed.preview.memory_store_count).toBe(2)
+    expect(parsed.preview.memory_summary).toContain("literature_receipts:run")
+    expect(parsed.preview.memory_summary).toContain("search_coordination:run")
   })
 })
 

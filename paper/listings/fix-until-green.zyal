@@ -1,4 +1,4 @@
-# Provenance: compact appendix excerpt from docs/ZYAL/examples/01-fix-until-green.zyal.yml.
+# Provenance: compact appendix excerpt from docs/ZYAL/examples/01-fix-until-green.zyal.
 <<<ZYAL v1:daemon id=fix-until-green>>>
 version: v1
 intent: daemon

@@ -2,7 +2,7 @@ I would add one major concept to the ZYAL plan:
 
 # Add a bounded **Hard-Task Deliberation Lane**
 
-The existing ZYAL plan is already strong for the outer daemon loop: strict activation, SQLite as source of truth, generated readable mirrors, hard context clear by epoch/child session, host-enforced stop checks, and gold TUI forever signaling. I would keep those decisions. The uploaded plan’s core principle is exactly right: ZYAL should not be prompt-only continuation; it should be a host-enforced daemon runtime where normal session semantics remain unchanged and daemon state is tracked separately. 
+The existing ZYAL plan is already strong for the outer daemon loop: strict activation, SQLite as source of truth, generated readable mirrors, hard context clear by epoch/child session, host-enforced stop checks, and gold TUI forever signaling. I would keep those decisions. The uploaded plan’s core principle is exactly right: ZYAL should not be prompt-only continuation; it should be a host-enforced daemon runtime where normal session semantics remain unchanged and daemon state is tracked separately.
 
 But the new thing you are describing is not just “loop forever.” It is:
 
@@ -193,7 +193,7 @@ Each hard task gets a **Task Room**:
   archive/
 ```
 
-SQLite remains source of truth. These files are readable mirrors/artifacts, just like your current ZYAL plan already says for daemon ledgers and `STATE.md`. 
+SQLite remains source of truth. These files are readable mirrors/artifacts, just like your current ZYAL plan already says for daemon ledgers and `STATE.md`.
 
 ## What goes into the Task Room
 
@@ -1351,4 +1351,3 @@ That gives you the power you are looking for without turning the repo into an un
 [13]: https://github.com/anomalyco/jekko/issues/19215 "[FEATURE]: DB-backed agent team coordination (parallel sub-agents, messaging, memory) · Issue #19215 · anomalyco/jekko · GitHub"
 [14]: https://github.com/d3vr/ocloop "GitHub - d3vr/OCLoop: Loop-Driven Development with Jekko · GitHub"
 [15]: https://jekko.ai/docs/agents/ "Agents | Jekko"
-

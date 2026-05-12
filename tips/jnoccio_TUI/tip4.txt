@@ -2832,4 +2832,3 @@ I could not run a live `cargo check` here because this environment could not res
 
 [1]: https://docs.rs/ratatui/latest/ratatui/widgets/index.html?utm_source=chatgpt.com "ratatui::widgets - Rust"
 [2]: https://crates.io/crates/ratatui/?utm_source=chatgpt.com "ratatui - crates.io: Rust Package Registry"
-

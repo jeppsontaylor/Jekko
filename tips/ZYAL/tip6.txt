@@ -2,7 +2,7 @@ I treated **“LangChane” as LangChain/LangGraph** and **“Hermis” as Herme
 
 ## Bottom line
 
-ZYAL is already unusually strong. Its big idea—**the host owns the loop, evidence, budgets, memory lifecycle, approvals, and permissions; the model only proposes actions**—is exactly the right direction for multi-hour autonomous engineering. The uploaded spec already covers host-enforced daemon loops, SQLite durability, isolated worktrees, evidence bundles, approvals, sandboxing, capabilities, budgets, experiments, rollback, repo intelligence, anti-vibe gates, and memory governance. 
+ZYAL is already unusually strong. Its big idea—**the host owns the loop, evidence, budgets, memory lifecycle, approvals, and permissions; the model only proposes actions**—is exactly the right direction for multi-hour autonomous engineering. The uploaded spec already covers host-enforced daemon loops, SQLite durability, isolated worktrees, evidence bundles, approvals, sandboxing, capabilities, budgets, experiments, rollback, repo intelligence, anti-vibe gates, and memory governance.
 
 The main risk is **not lack of ambition**. The main risk is that ZYAL becomes a giant bespoke YAML universe that competes with every existing agent standard. The stronger positioning is:
 
@@ -14,13 +14,13 @@ That means: use **MCP** for tool/data access, **A2A/ACP** for agent-to-agent and
 
 ## What ZYAL already gets right
 
-ZYAL’s strongest feature is **structural enforcement**. The spec repeatedly says the host—not the model—evaluates stop conditions, gates promotion, enforces budgets, controls permissions, owns daemon state, and rejects model-only evidence. That is the right abstraction for long autonomous sessions because it converts “please behave” into “you cannot proceed unless the runtime proves it is safe.” 
+ZYAL’s strongest feature is **structural enforcement**. The spec repeatedly says the host—not the model—evaluates stop conditions, gates promotion, enforces budgets, controls permissions, owns daemon state, and rejects model-only evidence. That is the right abstraction for long autonomous sessions because it converts “please behave” into “you cannot proceed unless the runtime proves it is safe.”
 
 The second major strength is **evidence-gated promotion**. Requiring typed proof bundles, rollback plans, risk deltas, test results, affected-file manifests, and objection resolution is much stronger than the normal agent pattern of “I ran tests, trust me.” That aligns well with modern agent tracing and evaluation practices, where traces, tool calls, guardrails, handoffs, and graders become auditable artifacts rather than hidden reasoning. ([GitHub][2])
 
 The third strength is **negative memory and hypothesis tournaments**. Preserving failed lanes as negative memory is one of the most important ideas in the whole spec. Long-running agents become powerful only when they stop repeating dead ends. This matches the direction of long-term memory systems that distinguish episodic, semantic, procedural, and cross-session memory rather than treating “memory” as one undifferentiated note file. ([LangChain Docs][3])
 
-The fourth strength is **explicit cost sovereignty**. Nested budgets at run, task, iteration, and experiment-lane levels are crucial. A “forever” loop without leases, budget renewals, and evidence of progress is not autonomy; it is an unbounded liability. ZYAL already recognizes this. 
+The fourth strength is **explicit cost sovereignty**. Nested budgets at run, task, iteration, and experiment-lane levels are crucial. A “forever” loop without leases, budget renewals, and evidence of progress is not autonomy; it is an unbounded liability. ZYAL already recognizes this.
 
 ---
 

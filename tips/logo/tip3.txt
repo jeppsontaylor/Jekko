@@ -1,4 +1,4 @@
-I tightened the palette and changed the gradient logic so the **visible glyphs** get the full-spectrum fade instead of wasting most of the color range on invisible padding. This should look much brighter, sharper, and more neon than the original implementation. 
+I tightened the palette and changed the gradient logic so the **visible glyphs** get the full-spectrum fade instead of wasting most of the color range on invisible padding. This should look much brighter, sharper, and more neon than the original implementation.
 
 ```tsx
 import { RGBA, TextAttributes } from "@opentui/core"
@@ -523,4 +523,3 @@ export function GoLogo(props: { idle?: boolean; ink?: RGBA } = {}) {
   )
 }
 ```
-

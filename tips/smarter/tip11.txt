@@ -1,6 +1,6 @@
 # Best addition to the ZYAL plan: add a **Hard-Task Incubator Lane**
 
-The existing ZYAL daemon plan is already directionally correct: strict `ZYAL v1` syntax, host-enforced forever mode, no XML `<FOREVER>`, no assistant-generated activation, SQLite as source of truth, generated ledger mirrors, hard context clearing through daemon epochs, daemon status separate from normal session status, and gold TUI arming/preview semantics. I would keep those decisions. The missing piece is a second runtime lane for tasks that are **too risky to implement immediately** but should not be abandoned once all the easy work is gone. The plan you pasted already establishes the right base architecture for that: daemon runtime, task ledger, worker leases, context rotation, checkpointing, and MCP/tool policy. 
+The existing ZYAL daemon plan is already directionally correct: strict `ZYAL v1` syntax, host-enforced forever mode, no XML `<FOREVER>`, no assistant-generated activation, SQLite as source of truth, generated ledger mirrors, hard context clearing through daemon epochs, daemon status separate from normal session status, and gold TUI arming/preview semantics. I would keep those decisions. The missing piece is a second runtime lane for tasks that are **too risky to implement immediately** but should not be abandoned once all the easy work is gone. The plan you pasted already establishes the right base architecture for that: daemon runtime, task ledger, worker leases, context rotation, checkpointing, and MCP/tool policy.
 
 The new layer should be:
 
@@ -1784,4 +1784,3 @@ That is the powerful, simple, and reliable version of cross-loop collaboration.
 [12]: https://arxiv.org/html/2603.01327v1 "SWE-Adept: An LLM-Based Agentic Framework for Deep Codebase Analysis and Structured Issue Resolution"
 [13]: https://www.praetorian.com/blog/deterministic-ai-orchestration-a-platform-architecture-for-autonomous-development/ "Deterministic AI Orchestration: A Platform Architecture for Autonomous Development | Praetorian"
 [14]: https://github.com/anomalyco/jekko/issues/13217?utm_source=chatgpt.com "Stops after compaction #13217 - anomalyco/jekko"
-

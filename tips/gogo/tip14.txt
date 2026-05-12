@@ -1600,4 +1600,3 @@ The core idea is simple: **normal Jekko remains an agent loop; daemon Jekko beco
 [21]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/session/prompt.ts "jekko/packages/jekko/src/session/prompt.ts at dev · anomalyco/jekko · GitHub"
 [22]: https://github.com/anomalyco/jekko/issues/18100 "Subagents can infinitely recurse via Task tool — no max depth limit · Issue #18100 · anomalyco/jekko · GitHub"
 [23]: https://www.anthropic.com/engineering/code-execution-with-mcp "Code execution with MCP: building more efficient AI agents \ Anthropic"
-

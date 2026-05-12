@@ -2711,4 +2711,3 @@ That is how it becomes the default language for ambitious autonomous coding proj
 [26]: https://jekko.ai/docs/permissions/?utm_source=chatgpt.com "Permissions"
 [27]: https://code.claude.com/docs/en/features-overview?utm_source=chatgpt.com "Extend Claude Code - Claude Code Docs"
 [28]: https://github.com/OpenHands/software-agent-sdk/?utm_source=chatgpt.com "OpenHands/software-agent-sdk"
-

@@ -1,4 +1,4 @@
-# Provenance: compact appendix excerpt from docs/ZYAL/examples/03-billion-loc-monorepo.zyal.yml.
+# Provenance: compact appendix excerpt from docs/ZYAL/examples/03-billion-loc-monorepo.zyal.
 <<<ZYAL v1:daemon id=billion-loc-monorepo>>>
 version: v1
 intent: daemon

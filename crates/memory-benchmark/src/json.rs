@@ -7,8 +7,8 @@
 //! Decoder is intentionally minimal (only what `prompt_reduce` and
 //! `population_report` need) — bench.rs only writes, never reads.
 
-use std::collections::BTreeMap;
 pub use crate::json_parser::parse;
+use std::collections::BTreeMap;
 
 /// A minimal JSON value type. BTreeMap keeps object keys sorted by Ord.
 #[derive(Debug, Clone, PartialEq)]

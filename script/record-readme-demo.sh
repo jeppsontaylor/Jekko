@@ -58,7 +58,7 @@ crop_frame "$boot_src" "$boot_crop" 900
 crop_frame "$middle_src" "$middle_crop" 1020
 crop_frame "$final_src" "$final_crop" 1020
 
-sed -n '2,11p' "$root/docs/ZYAL/examples/13-advanced-research-loop.zyal.yml" > "$snippet_file"
+sed -n '2,11p' "$root/docs/ZYAL/examples/13-advanced-research-loop.zyal" > "$snippet_file"
 magick \
   -background '#0b1220' \
   -fill '#f8fafc' \

@@ -1,6 +1,6 @@
 ## Plan update: add **ZYAL Task Forge** for difficult work that needs cross-loop maturation
 
-The ZYAL V1 plan is already strong on the most important baseline: strict `ZYAL v1` gates, no XML `<FOREVER>`, no assistant-generated activation, TUI preview before arming, SQLite as source of truth, generated readable mirrors, context hard-clear as a new daemon epoch/child session, and normal Jekko prompt/session semantics left unchanged. That is the right foundation. 
+The ZYAL V1 plan is already strong on the most important baseline: strict `ZYAL v1` gates, no XML `<FOREVER>`, no assistant-generated activation, TUI preview before arming, SQLite as source of truth, generated readable mirrors, context hard-clear as a new daemon epoch/child session, and normal Jekko prompt/session semantics left unchanged. That is the right foundation.
 
 The missing layer is what I would call **ZYAL Task Forge**:
 
@@ -841,7 +841,7 @@ Memory:
 
 # 8. Syntax highlighting and preview UX
 
-The existing ZYAL plan already says valid drafts get a gold preview and Enter opens an arming preview. 
+The existing ZYAL plan already says valid drafts get a gold preview and Enter opens an arming preview.
 
 Task Forge needs additional visual language so users can distinguish:
 
@@ -1335,4 +1335,3 @@ That gives you the power you want without turning every ambiguous task into an i
 [10]: https://modelcontextprotocol.io/specification/2025-03-26/basic?utm_source=chatgpt.com "Overview - Model Context Protocol"
 [11]: https://jekko.ai/docs/agents/?utm_source=chatgpt.com "Agents | Jekko"
 [12]: https://learn.microsoft.com/en-us/agent-framework/agents/skills?utm_source=chatgpt.com "Agent Skills | Microsoft Learn"
-

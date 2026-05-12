@@ -2,7 +2,7 @@ I would add one major concept to the ZYAL plan:
 
 # ZYAL Task Incubator: bounded cross-loop collaboration for hard tasks
 
-The current ZYAL daemon plan solves the most important problem: **the runtime owns forever**, and the model only completes one bounded iteration. The next layer should solve the problem you just identified: once all easy/high-confidence work is gone, the daemon needs a structured way to **incubate hard tasks across multiple fresh passes** without letting the agent thrash forever or dirty the repo with half-baked changes. I am treating the uploaded ZYAL Daemon Runtime V1 plan as the baseline for this update. 
+The current ZYAL daemon plan solves the most important problem: **the runtime owns forever**, and the model only completes one bounded iteration. The next layer should solve the problem you just identified: once all easy/high-confidence work is gone, the daemon needs a structured way to **incubate hard tasks across multiple fresh passes** without letting the agent thrash forever or dirty the repo with half-baked changes. I am treating the uploaded ZYAL Daemon Runtime V1 plan as the baseline for this update.
 
 The right abstraction is not “agent has low confidence, so think more.” The right abstraction is:
 
@@ -1460,4 +1460,3 @@ This gives you the cross-loop collaboration you want without turning every probl
 [6]: https://modelcontextprotocol.io/specification/2025-06-18 "Specification - Model Context Protocol"
 [7]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/?utm_source=chatgpt.com "Announcing the Agent2Agent Protocol (A2A)"
 [8]: https://www.langchain.com/blog/context-management-for-deepagents "Context Management for Deep Agents"
-

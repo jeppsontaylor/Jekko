@@ -117,10 +117,30 @@ impl From<&crate::fixture::Fixture> for BenchCase {
             tx_time: f.tx_time.map(str::to_string),
             oracle: CaseOracle {
                 kind: OracleKind::ExactText,
-                must_include: f.expected.must_include.iter().map(|s| s.to_string()).collect(),
-                must_exclude: f.expected.must_exclude.iter().map(|s| s.to_string()).collect(),
-                must_contain: f.expected.must_contain.iter().map(|s| s.to_string()).collect(),
-                must_not_contain: f.expected.must_not_contain.iter().map(|s| s.to_string()).collect(),
+                must_include: f
+                    .expected
+                    .must_include
+                    .iter()
+                    .map(|s| s.to_string())
+                    .collect(),
+                must_exclude: f
+                    .expected
+                    .must_exclude
+                    .iter()
+                    .map(|s| s.to_string())
+                    .collect(),
+                must_contain: f
+                    .expected
+                    .must_contain
+                    .iter()
+                    .map(|s| s.to_string())
+                    .collect(),
+                must_not_contain: f
+                    .expected
+                    .must_not_contain
+                    .iter()
+                    .map(|s| s.to_string())
+                    .collect(),
                 required_warnings: f
                     .expected
                     .required_warnings

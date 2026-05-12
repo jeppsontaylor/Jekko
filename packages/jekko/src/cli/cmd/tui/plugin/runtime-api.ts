@@ -125,6 +125,9 @@ function pluginApi(runtime: RuntimeState, plugin: PluginEntry, scope: PluginScop
     navigate(name, params) {
       api.route.navigate(name, params)
     },
+    navigateBack() {
+      api.route.navigateBack()
+    },
     get current() {
       return api.route.current
     },

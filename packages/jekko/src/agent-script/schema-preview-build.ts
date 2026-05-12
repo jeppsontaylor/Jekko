@@ -91,6 +91,15 @@ export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): Zy
         .filter(Boolean)
         .join(" ") || "configured"
     : undefined
+  const experimentsScoringSummary = input.spec.experiments?.scoring
+    ? [
+        input.spec.experiments.scoring.primary ? `primary:${input.spec.experiments.scoring.primary}` : null,
+        input.spec.experiments.scoring.command ? "command" : null,
+        input.spec.experiments.scoring.judge?.agent ? `judge:${input.spec.experiments.scoring.judge.agent}` : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || "configured"
+    : undefined
   const jankurai = input.spec.jankurai
   const jankuraiAuditMode = jankurai?.audit?.mode ?? "advisory"
   const jankuraiTaskSource = jankurai?.task_source ?? "repair_plan"
@@ -259,7 +268,7 @@ export function buildZyalPreview(input: { spec: ZyalScript; arm?: ZyalArm }): Zy
       : undefined,
     experiments_enabled: input.spec.experiments !== undefined,
     experiments_summary: input.spec.experiments
-      ? `${input.spec.experiments.strategy ?? "disjoint_tournament"} lanes:${input.spec.experiments.lanes.length}${input.spec.experiments.reduce ? ` → ${input.spec.experiments.reduce.strategy}` : ""}`
+      ? `${input.spec.experiments.strategy ?? "disjoint_tournament"} lanes:${input.spec.experiments.lanes.length}${input.spec.experiments.reduce ? ` → ${input.spec.experiments.reduce.strategy}` : ""}${experimentsScoringSummary ? ` scoring:${experimentsScoringSummary}` : ""}`
       : undefined,
     models_enabled: input.spec.models !== undefined,
     models_summary: input.spec.models

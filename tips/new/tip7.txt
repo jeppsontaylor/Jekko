@@ -381,4 +381,3 @@ curl https://router.huggingface.co/v1/chat/completions \
 [26]: https://cohere.com/pricing "Pricing | Secure and Scalable Enterprise AI | Cohere"
 [27]: https://huggingface.co/docs/inference-providers/pricing "Pricing and Billing · Hugging Face"
 [28]: https://huggingface.co/docs/inference-providers/en/index "Inference Providers · Hugging Face"
-

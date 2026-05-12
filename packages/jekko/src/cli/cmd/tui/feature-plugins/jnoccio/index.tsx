@@ -51,7 +51,7 @@ const tui: TuiPlugin = async (api) => {
       render: () => (
         <JnoccioDashboard
           api={api}
-          onExit={() => api.route.navigate("home")}
+          onExit={() => api.route.navigateBack()}
         />
       ),
     },
@@ -75,7 +75,7 @@ const tui: TuiPlugin = async (api) => {
         onSelect: () => {
           const current = api.route.current
           if (current.name === "jnoccio") {
-            api.route.navigate("home")
+            api.route.navigateBack()
           } else {
             api.route.navigate("jnoccio")
           }

@@ -2,5 +2,9 @@
 // DO NOT EDIT BY HAND.
 
 pub fn theorem_id(seed: &str, index: usize) -> String {
-    format!("thm-{:016x}-{}", crate::hash::fnv1a_u64(seed.as_bytes()), index)
+    format!(
+        "thm-{:016x}-{}",
+        crate::hash::fnv1a_u64(seed.as_bytes()),
+        index
+    )
 }

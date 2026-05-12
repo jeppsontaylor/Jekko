@@ -340,4 +340,3 @@ scratch files inside a managed sandbox, not as the sandboxing strategy itself.
 [15]: https://opencode.ai/docs/ecosystem/ "Ecosystem | OpenCode"
 [16]: https://github.com/athal7/opencode-devcontainers "GitHub - athal7/opencode-devcontainers: Run multiple devcontainer instances with auto-assigned ports for OpenCode · GitHub"
 [17]: https://github.com/daytonaio/daytona/tree/main/libs/opencode-plugin "daytona/libs/opencode-plugin at main · daytonaio/daytona · GitHub"
-

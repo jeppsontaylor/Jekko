@@ -260,6 +260,10 @@
       "command": "just score",
       "purpose": "verify manifests remain parseable and authoritative"
     },
+    "agent_chat.md": {
+      "command": "just fast",
+      "purpose": "verify shared agent coordination remains visible"
+    },
     "agent/coverage-sources.toml": {
       "command": "jankurai coverage audit . --config agent/coverage-sources.toml --json target/jankurai/coverage/coverage-audit.json --md target/jankurai/coverage/coverage-audit.md && just score",
       "purpose": "verify coverage evidence source routing and score import"
@@ -268,7 +272,7 @@
       "command": "just sandbox-validate",
       "purpose": "verify sandbox-lane TOML schema parses and every lane validates"
     },
-    "agent/sandbox-lanes.zyal": {
+    "agent/zyal/sandbox-lanes.zyal": {
       "command": "just zyalc-compile-check",
       "purpose": "verify zyal source compiles cleanly and matches checked-in TOML"
     },
@@ -315,6 +319,14 @@
     "crates/jankurai/tests/fixtures/coverage/": {
       "command": "jankurai coverage audit . --config agent/coverage-sources.toml --json target/jankurai/coverage/coverage-audit.json --md target/jankurai/coverage/coverage-audit.md",
       "purpose": "verify coverage parser fixture contracts"
+    },
+    "crates/memory-benchmark/": {
+      "command": "just memory-benchmark-fast",
+      "purpose": "verify the memory benchmark harness compiles, all unit tests pass, and all reference adapters produce byte-identical output across two runs"
+    },
+    "docs/ZYAL/examples/memory-benchmark/": {
+      "command": "just memory-benchmark-fast && bun --cwd packages/jekko test src/agent-script/parser.test.ts",
+      "purpose": "verify both memory-benchmark ZYAL runbooks parse and the harness they reference stays deterministic"
     },
     "crates/sandboxctl/": {
       "command": "just sandboxctl-fast",

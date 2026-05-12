@@ -2798,4 +2798,3 @@ The current spec has the right soul. The vNext upgrade is to make ZYAL less like
 [24]: https://arxiv.org/abs/2603.22489?utm_source=chatgpt.com "Model Context Protocol Threat Modeling and Analyzing Vulnerabilities to Prompt Injection with Tool Poisoning"
 [25]: https://jekko.ai/docs/permissions/ "Permissions | Jekko"
 [26]: https://docs.langchain.com/langsmith/double-texting "Double texting - Docs by LangChain"
-

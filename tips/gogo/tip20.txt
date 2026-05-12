@@ -1183,4 +1183,3 @@ That is the only way to make “FOREVER” mean forever without trusting the mod
 [11]: https://jekko.ai/docs/plugins/ "Plugins | Jekko"
 [12]: https://github.com/anomalyco/jekko/issues/16626 "[FEATURE]: add session.stopping plugin hook to allow re-entering the agent loop · Issue #16626 · anomalyco/jekko · GitHub"
 [13]: https://github.com/anomalyco/jekko/issues/17721 "docs: warn about infinite subagent recursion when permission.task is configured globally · Issue #17721 · anomalyco/jekko · GitHub"
-

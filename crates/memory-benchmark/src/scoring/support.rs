@@ -31,7 +31,7 @@ pub fn score_support(
             hits as f32 / required.len() as f32
         },
         irrelevant_penalty: irrelevant as f32 / used.len().max(1) as f32,
-        citation_bloat: (out.used_ids.len() > max_used_ids || out.context_token_count > max_context_tokens)
-            as u32,
+        citation_bloat: (out.used_ids.len() > max_used_ids
+            || out.context_token_count > max_context_tokens) as u32,
     }
 }

@@ -2717,4 +2717,3 @@ With those, ZYAL becomes something the existing systems mostly do not provide: a
 [26]: https://arxiv.org/abs/2401.08500 "https://arxiv.org/abs/2401.08500"
 [27]: https://owasp.org/www-community/attacks/MCP_Tool_Poisoning "https://owasp.org/www-community/attacks/MCP_Tool_Poisoning"
 [28]: https://arxiv.org/abs/2402.01030 "https://arxiv.org/abs/2402.01030"
-

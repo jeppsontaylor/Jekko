@@ -1,4 +1,4 @@
-I read ZYAL as a **host-enforced, declarative control plane for long-running agents**: the host owns lifecycle, budgets, stop/done conditions, approvals, evidence, write scopes, SQLite state, incubator passes, capabilities, experiments, rollback, and repo intelligence. That is the right center of gravity; ZYAL’s strongest idea is that the model can propose and act, but the host enforces control, state, safety, and promotion gates. 
+I read ZYAL as a **host-enforced, declarative control plane for long-running agents**: the host owns lifecycle, budgets, stop/done conditions, approvals, evidence, write scopes, SQLite state, incubator passes, capabilities, experiments, rollback, and repo intelligence. That is the right center of gravity; ZYAL’s strongest idea is that the model can propose and act, but the host enforces control, state, safety, and promotion gates.
 
 I interpreted “LangChane” as **LangChain/LangGraph** and “Hermis” as **Hermes Agent**. I did not find a separate widely established “Hermis” protocol; the relevant current references are Hermes Agent docs and its agent-memory/skills/runtime patterns. For “OpenClaw,” the official docs show an ACP-based bridge for running external coding harnesses like Codex, Claude Code, Cursor, Gemini CLI, and Jekko, with background-task tracking and session binding; importantly, those docs also warn that ACP sessions currently run on the host rather than inside OpenClaw’s sandbox. ([OpenClaw][1])
 
@@ -345,4 +345,3 @@ Those three turn ZYAL from a strong local daemon runbook into a serious, portabl
 [12]: https://docs.temporal.io/workflow-execution "Temporal Workflow Execution overview | Temporal Platform Documentation"
 [13]: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-agent-spans/ "Semantic Conventions for GenAI agent and framework spans | OpenTelemetry"
 [14]: https://spec.openapis.org/oas/v3.2.0.html "OpenAPI Specification v3.2.0"
-

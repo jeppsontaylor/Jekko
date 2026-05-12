@@ -1,4 +1,4 @@
-Here’s a full replacement for the logo file you shared. I kept your exported `Logo` and `GoLogo` APIs intact, but rebuilt the gradient engine so it stays neon-bright, high-saturation, and high-contrast across both left-to-right and top-to-bottom fades. I also changed the ramp to use visible glyphs, so the centered wordmark gets the full color spread instead of losing intensity to leading spaces. 
+Here’s a full replacement for the logo file you shared. I kept your exported `Logo` and `GoLogo` APIs intact, but rebuilt the gradient engine so it stays neon-bright, high-saturation, and high-contrast across both left-to-right and top-to-bottom fades. I also changed the ramp to use visible glyphs, so the centered wordmark gets the full color spread instead of losing intensity to leading spaces.
 
 ```tsx
 import { RGBA, TextAttributes } from "@opentui/core"
@@ -540,4 +540,3 @@ export function GoLogo(props: { idle?: boolean } = {}) {
   )
 }
 ```
-

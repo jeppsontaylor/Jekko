@@ -28,6 +28,8 @@ declare global {
 
 type RpcClient = ReturnType<typeof Rpc.client<typeof rpc>>
 
+const bootLog = Log.create({ service: "tui.boot" })
+
 function createWorkerFetch(client: RpcClient): typeof fetch {
   const fn = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const request = new Request(input, init)
@@ -117,9 +119,21 @@ export const TuiThreadCommand = cmd({
     // chdir so the thread and worker share the same directory key.
     const next = resolveThreadDirectory(args.project)
     const file = await target()
+    bootLog.info("thread start", {
+      cwd: process.cwd(),
+      target: String(file),
+      project: args.project,
+      log: Log.file(),
+      has_api_key: Boolean(process.env.JEKKO_API_KEY),
+      tuiwright: process.env.TUIWRIGHT === "1",
+    })
     try {
       process.chdir(next)
     } catch {
+      bootLog.error("thread chdir failed", {
+        directory: next,
+        log: Log.file(),
+      })
       UI.error("Failed to change directory to " + next)
       return
     }
@@ -132,8 +146,14 @@ export const TuiThreadCommand = cmd({
     const worker = new Worker(file, {
       env,
     })
+    bootLog.info("thread worker created", {
+      cwd,
+      target: String(file),
+      run_id: env[JEKKO_RUN_ID],
+      log: Log.file(),
+    })
     worker.onerror = (e) => {
-      Log.Default.error("thread error", {
+      bootLog.error("thread error", {
         message: e.message,
         filename: e.filename,
         lineno: e.lineno,
@@ -144,7 +164,7 @@ export const TuiThreadCommand = cmd({
 
     const client = Rpc.client<typeof rpc>(worker)
     const error = (e: unknown) => {
-      Log.Default.error("process error", { error: errorMessage(e) })
+      bootLog.error("process error", { error: errorMessage(e), log: Log.file() })
     }
     const reload = () => {
       client.call("reload", undefined).catch((err) => {
@@ -193,6 +213,12 @@ export const TuiThreadCommand = cmd({
           fetch: createWorkerFetch(client),
           events: createEventSource(client),
         }
+    bootLog.info("thread transport ready", {
+      cwd,
+      mode: external ? "external" : "worker-rpc",
+      url: transport.url,
+      log: Log.file(),
+    })
 
     await runValidatedTuiCommandWithConfig(
       args,
@@ -209,6 +235,11 @@ export const TuiThreadCommand = cmd({
         }, 1000).unref?.()
 
         try {
+          bootLog.info("thread tui start", {
+            cwd,
+            transport: external ? "external" : "worker-rpc",
+            log: Log.file(),
+          })
           await tui({
             url: transport.url,
             async onSnapshot() {
@@ -228,6 +259,10 @@ export const TuiThreadCommand = cmd({
               prompt,
               fork: args.fork,
             },
+          })
+          bootLog.info("thread tui stopped", {
+            cwd,
+            log: Log.file(),
           })
         } finally {
           await stop()

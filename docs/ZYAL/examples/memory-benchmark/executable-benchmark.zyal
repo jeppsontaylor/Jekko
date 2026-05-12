@@ -12,11 +12,10 @@ confirm: RUN_FOREVER
 job:
   name: "Memory benchmark executable benchmark"
   objective: |
-    Exercise the Rust memory benchmark against 100 fixed interactions covering
-    ingest, recall, contradiction, procedural skill, adaptation, and rebuild
-    pressure. Compare baseline and candidate systems, then emit a final score,
-    a comparison matrix, triangulation notes, curriculum proposals, and a
-    deterministic hash that can be replayed later.
+    Exercise the Rust memory benchmark against the T0 fixed suite and the T1
+    generated public-dev suite. Compare baseline and candidate systems, then
+    emit hard gates, confidence intervals, support minimality, privacy audit,
+    economics, comparison matrix, triangulation notes, and curriculum proposals.
   risk:
     - The benchmark must stay under the 300s wall-clock budget
     - Candidate scoring must remain deterministic across rebuilds
@@ -77,8 +76,17 @@ hooks:
     - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin verify_determinism"
       timeout: 180s
       on_fail: pause
+    - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin verify_determinism -- --suite generated --seed public-dev-0001 --fixtures 500"
+      timeout: 180s
+      on_fail: pause
   after_iteration:
     - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin bench -- --candidate baseline --out .jekko/daemon/memory-benchmark/reports/baseline-score.json"
+      timeout: 180s
+      on_fail: pause
+    - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin generate_suite -- --split public-dev --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark/reports/generated-public-dev.json"
+      timeout: 180s
+      on_fail: pause
+    - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin bench -- --candidate baseline --suite generated --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark/reports/baseline-generated.json"
       timeout: 180s
       on_fail: pause
     - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin bench -- --candidate exec --out .jekko/daemon/memory-benchmark/reports/exec-score.json"
@@ -180,21 +188,20 @@ experiments:
   max_parallel: 20
   scoring:
     weights:
-      correctness: 20
-      provenance: 12
-      bitemporal_recall: 10
-      contradiction: 10
-      math_science: 12
-      english_discourse_coreference: 8
-      privacy_redaction: 8
-      procedural_skill: 8
-      feedback_adaptation: 6
-      determinism_rebuild: 6
+      concept_learning: 12
+      transfer_reasoning: 12
+      formal_math: 10
+      scientific_reasoning: 10
+      bitemporal_correctness: 10
+      provenance_support: 10
+      dependency_maintenance: 8
+      contradiction_skepticism: 8
+      privacy_forgetting: 8
+      compression_fidelity: 5
+      procedural_tool_memory: 4
+      determinism_efficiency: 3
     command: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin bench -- --candidate baseline --out .jekko/daemon/memory-benchmark/reports/baseline-score.json"
-    judge:
-      agent: critic
-      blind: true
-      must_use_different_provider: true
+    primary: "executable_rust_oracles"
   reduce:
     strategy: best_verified_patch
     require_final_verification: true

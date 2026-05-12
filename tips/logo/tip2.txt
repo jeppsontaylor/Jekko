@@ -1,4 +1,4 @@
-I kept your component/API shape, but replaced the soft RGB interpolation with a much more aggressive neon pipeline: saturated corner palettes, 2D left-to-right/top-to-bottom fading, prism highlights, contrast boosting, channel snapping, and no active-state `DIM` dulling. 
+I kept your component/API shape, but replaced the soft RGB interpolation with a much more aggressive neon pipeline: saturated corner palettes, 2D left-to-right/top-to-bottom fading, prism highlights, contrast boosting, channel snapping, and no active-state `DIM` dulling.
 
 ```tsx
 import { RGBA, TextAttributes } from "@opentui/core"
@@ -478,4 +478,3 @@ export function GoLogo(props: { idle?: boolean } = {}) {
   )
 }
 ```
-

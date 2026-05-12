@@ -2256,12 +2256,12 @@ And the TUI should make this obvious:
 [1]: https://agents.md/ "AGENTS.md"
 [2]: https://modelcontextprotocol.io/docs/getting-started/intro "What is the Model Context Protocol (MCP)? - Model Context Protocol"
 [3]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ "
-            
+
             Announcing the Agent2Agent Protocol (A2A)
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [4]: https://docs.ag-ui.com/introduction "AG-UI Overview - Agent User Interaction Protocol"
 [5]: https://openai.github.io/openai-agents-python/running_agents/ "Running agents - OpenAI Agents SDK"
@@ -2279,4 +2279,3 @@ And the TUI should make this obvious:
 [17]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/status.ts "raw.githubusercontent.com"
 [18]: https://jekko.ai/docs/mcp-servers/ "MCP servers | Jekko"
 [19]: https://jekko.ai/docs/plugins/ "Plugins | Jekko"
-

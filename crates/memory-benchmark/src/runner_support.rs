@@ -1,8 +1,103 @@
+use std::env;
+use std::process;
+
 use crate::fixture::{Fixture, Setup, SetupEvent};
 use crate::{
     AxisScores, ClaimModality, Event, EventKind, Feedback, MemorySystem, Outcome, PrivacyClass,
-    Query, RecallResult, Source, TemporalLens,
+    Query, RecallResult, Source, Split, SuiteConfig, TemporalLens,
 };
+
+/// Replayable proof command pinned alongside `gate_findings` so audit
+/// receipts can be reproduced from a single line. Surfaced as a JSON field
+/// downstream so reviewers do not have to accept summarized claims.
+pub const GATE_REPLAY_CMD: &str = "rtk just memory-benchmark-fast";
+
+pub fn parse_args() -> (String, Option<String>, SuiteConfig) {
+    let mut candidate = String::new();
+    let mut out: Option<String> = None;
+    let mut config = SuiteConfig::default();
+    let args: Vec<String> = env::args().collect();
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--candidate" => {
+                candidate = match args.get(i + 1) {
+                    Some(value) => value.clone(),
+                    None => String::new(),
+                };
+                i += 2;
+            }
+            "--out" => {
+                out = args.get(i + 1).cloned();
+                i += 2;
+            }
+            "--suite" => {
+                if let Some(value) = args.get(i + 1) {
+                    config.split = match value.as_str() {
+                        "public" => Split::PublicSmoke,
+                        "generated" => Split::PublicGenerated,
+                        "stress" => Split::Stress,
+                        _ => config.split,
+                    };
+                }
+                i += 2;
+            }
+            "--split" => {
+                if let Some(value) = args.get(i + 1) {
+                    config.split = match value.as_str() {
+                        "public-dev" => Split::PublicGenerated,
+                        "private" => Split::PrivateGenerated,
+                        "stress" => Split::Stress,
+                        "public" => Split::PublicSmoke,
+                        _ => config.split,
+                    };
+                }
+                i += 2;
+            }
+            "--seed" => {
+                if let Some(value) = args.get(i + 1) {
+                    config.seed_label = value.clone();
+                }
+                i += 2;
+            }
+            "--fixtures" => {
+                if let Some(value) = args.get(i + 1).and_then(|v| v.parse::<usize>().ok()) {
+                    config.fixture_count = value;
+                }
+                i += 2;
+            }
+            "--difficulty" => {
+                if let Some(value) = args.get(i + 1).and_then(|v| v.parse::<u8>().ok()) {
+                    config.difficulty = value.clamp(1, 5);
+                }
+                i += 2;
+            }
+            "--context-budget" => {
+                if let Some(value) = args.get(i + 1).and_then(|v| v.parse::<u32>().ok()) {
+                    config.context_budget = value;
+                }
+                i += 2;
+            }
+            "--json" => {
+                i += 1;
+            }
+            "--help" | "-h" => {
+                eprintln!(
+                    "bench --candidate <name> [--suite public|generated|stress] [--seed label] [--fixtures n] [--out path] [--json]\n  candidate in {{baseline, reference_context_pack, reference_evidence_ledger, reference_claim_skeptic,\n    ledger_first, hybrid_index, temporal_graph, compression_first, skeptic_dataset,\n    arena_lane_00, arena_lane_01, arena_lane_02, arena_lane_03, arena_lane_04,\n    arena_lane_05, arena_lane_06, arena_lane_07, arena_lane_08, arena_lane_09,\n    arena_lane_10, arena_lane_11, arena_lane_12, arena_lane_13, arena_lane_14,\n    arena_lane_15, arena_lane_16, arena_lane_17, arena_lane_18, arena_lane_19}}"
+                );
+                process::exit(0);
+            }
+            _ => {
+                i += 1;
+            }
+        }
+    }
+    if candidate.is_empty() {
+        eprintln!("bench: --candidate <name> is required");
+        process::exit(2);
+    }
+    (candidate, out, config)
+}
 
 fn privacy_of(s: &str) -> PrivacyClass {
     match s {
@@ -215,7 +310,11 @@ pub(crate) fn weighted_fraction(a: &AxisScores) -> f32 {
             wsum += weight;
         }
     }
-    if wsum > 0.0 { sum / wsum } else { 0.5 }
+    if wsum > 0.0 {
+        sum / wsum
+    } else {
+        0.5
+    }
 }
 
 pub(crate) fn average(t: &AxisScores, c: &AxisScores) -> AxisScores {

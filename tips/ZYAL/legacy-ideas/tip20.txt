@@ -2578,12 +2578,12 @@ If built this way, ZYAL can become the default control language for ambitious co
 [21]: https://modelcontextprotocol.io/specification/2025-06-18 "Specification - Model Context Protocol"
 [22]: https://jekko.ai/docs/mcp-servers/ "MCP servers | Jekko"
 [23]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ "
-            
+
             Announcing the Agent2Agent Protocol (A2A)
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [24]: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-agent-spans/ "Semantic Conventions for GenAI agent and framework spans | OpenTelemetry"
 [25]: https://docs.langchain.com/langsmith/evaluation "LangSmith Evaluation - Docs by LangChain"
@@ -2593,4 +2593,3 @@ If built this way, ZYAL can become the default control language for ambitious co
 [29]: https://openai.com/codex/ "Codex | AI Coding Partner from OpenAI | OpenAI"
 [30]: https://jekko.ai/ "Jekko | The open source AI coding agent"
 [31]: https://www.microsoft.com/en-us/research/publication/autogen-enabling-next-gen-llm-applications-via-multi-agent-conversation-framework/ "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation - Microsoft Research"
-

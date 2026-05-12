@@ -1,17 +1,17 @@
 {
-  "report_fingerprint": "sha256:feb7c3ca1a719abde0c66e4000e18f17407f6ff798bcd147475a851e124b8008",
-  "input_fingerprint": "sha256:5b33f2c0285b6c1e0ab3aabf9e518ed06ee8dbd073eb4613de9d1243b6301be6",
-  "policy_fingerprint": "sha256:c7368e0846ead8ec4849b1e3f3b2be9e49b93c1073fd453d805608a088240ed1",
+  "report_fingerprint": "sha256:ae9dba5bb471da0a4bd589501f5663c1fc9f836aa92999f4277601b9b6b6ff40",
+  "input_fingerprint": "sha256:13ee8a8121620db46f0fae2e36d975d9454764f4104fc54253f4011419abcbf1",
+  "policy_fingerprint": "sha256:3fa6b6636059aecf89a42ddb419a3cc8478e5cb1ea92eed9bcc7f6ce74bb9eba",
   "manifest_fingerprints": {
-    "owner_map": "sha256:ba4d1e4404857ffccaaa742bc73f9b20be02800d74be896bb0872375a18fb5d5",
-    "test_map": "sha256:33b3613d45e9c05825a4b3068a507bb31fe27ea2a86faa59edf0abfec5195da4",
+    "owner_map": "sha256:7cc475e0a58772c5a6b90cb599e709e6d5e2f6e78898c7016e0361089f9d0abd",
+    "test_map": "sha256:8ab6b22c43f54abf73dfe42ea129538f252a7ea2b6922075de746e7e6b3b1cb2",
     "generated_zones": "sha256:2176d1d2170554d31ac5f8bea90f7d6a6cc61dfb34475f6b333b3d2de94cef82",
     "boundaries": "sha256:1728cb8b16f9482558294802ef86c1ab69558ed3bc1dbce573ba001e82018785",
     "proof_lanes": "sha256:41e615addbd9f0060396af48c3d3dd169f3fd81351fdae0be6ef0722f9e6df44",
     "standard_version": "sha256:59494689d3b980c10d2a268a8826bb960a7fb0a7eb8077651f0c36d215da98af"
   },
   "dirty_worktree": true,
-  "generated_at": "1778533631",
+  "generated_at": "1778592348",
   "schema_url": "schemas/repo-score.schema.json",
   "standard": "jankurai",
   "standard_version": "0.8.0",
@@ -21,29 +21,32 @@
   "target_stack_id": "rust-ts-vite-react-postgres-bounded-python",
   "target_stack": "Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service",
   "claimed_conformance_level": "HL3",
-  "observed_conformance_level": "HL3",
-  "conformance_decision": "pass",
-  "conformance_blockers": [],
+  "observed_conformance_level": "HL2",
+  "conformance_decision": "block",
+  "conformance_blockers": [
+    "HLT-000-SCORE-DIMENSION:vibe on crates/memory-benchmark/src/candidates/arena/lane_01.rs",
+    "HLT-001-DEAD-MARKER on crates/memory-benchmark/src/chase_report.rs"
+  ],
   "repo": ".",
-  "run_id": "1778533631",
-  "started_at": "1778533631",
-  "elapsed_ms": 2085,
+  "run_id": "1778592348",
+  "started_at": "1778592348",
+  "elapsed_ms": 2568,
   "scope": {
     "mode": "full",
     "paths": []
   },
-  "score": 91,
-  "raw_score": 91,
+  "score": 70,
+  "raw_score": 80,
   "decision": {
     "status": "advisory",
     "minimum_score": 85,
     "passed": true,
-    "hard_findings": 0,
-    "soft_findings": 0,
+    "hard_findings": 2,
+    "soft_findings": 2,
     "ratchet": {
-      "baseline_score": 91,
+      "baseline_score": 70,
       "allowed_drop": 0,
-      "passed": true,
+      "passed": false,
       "score_delta": 0,
       "baseline_report_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "baseline_input_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
@@ -54,7 +57,7 @@
     }
   },
   "git": {
-    "head": "a929b0b93",
+    "head": "b50b4f570",
     "base": null,
     "changed_files": 0,
     "mode": "full",
@@ -78,7 +81,10 @@
     "paper_edition": "2026.05-ed8",
     "target_stack": "rust-ts-vite-react-postgres-bounded-python"
   },
-  "caps_applied": [],
+  "caps_applied": [
+    "fallback-soup-in-product-code",
+    "severe-duplication-in-product-code"
+  ],
   "hard_rules": [
     {
       "id": "no-root-agent-instructions",
@@ -291,7 +297,9 @@
         "reference-profile cell `ops` has local AGENTS.md guidance",
         "root `README.md` routes to workspace layout",
         "owner map covers audited paths",
-        "test map covers audited paths"
+        "test map covers audited paths",
+        "authored code file exceeds 500 LOC",
+        "authored code file exceeds 1000 LOC"
       ],
       "notes": []
     },
@@ -341,8 +349,8 @@
         "security lane present",
         "canonical security lane wrapper present",
         "agent-readiness audit gate found in CI",
-        "rust bad-behavior advisory signals: 69",
-        "typescript bad-behavior advisory signals: 34",
+        "rust bad-behavior advisory signals: 252",
+        "typescript bad-behavior advisory signals: 35",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
         "gittools bad-behavior advisory signals: 1",
@@ -354,14 +362,17 @@
     {
       "name": "Code shape and semantic surface",
       "weight": 12,
-      "score": 100,
-      "weighted_points": 12.0,
+      "score": 9,
+      "weighted_points": 1.08,
       "evidence": [
-        "largest authored code file: packages/jekko/src/cli/cmd/tui/context/theme-core.ts (336 LOC)",
+        "largest authored code file: crates/memory-benchmark/src/chase_report.rs (1256 LOC)",
+        "code file exceeds 500 LOC",
+        "code file exceeds 1000 LOC",
         "most code files stay under 300 LOC",
-        "authored code stays below hard LOC limits with no shape markers",
-        "rust bad-behavior advisory signals: 69",
-        "typescript bad-behavior advisory signals: 34",
+        "duplicate code block marker found",
+        "fallback soup marker found",
+        "rust bad-behavior advisory signals: 252",
+        "typescript bad-behavior advisory signals: 35",
         "ci bad-behavior advisory signals: 2",
         "git bad-behavior advisory signals: 2",
         "gittools bad-behavior advisory signals: 1",
@@ -491,7 +502,7 @@
         "crates/tuiwright-jekko-unlock/tests/jnoccio_tui_dashboard.rs",
         "crates/tuiwright-jekko-unlock/tests/live_prod_tui.rs",
         "crates/tuiwright-jekko-unlock/tests/readme_demo.rs",
-        "crates/tuiwright-jekko-unlock/tests/zyal_paste_perf.rs"
+        "crates/tuiwright-jekko-unlock/tests/tui_boot.rs"
       ],
       "storybook": [
         "agent/baselines/main.repo-score.json"
@@ -1031,7 +1042,7 @@
     "artifact": {
       "path": "target/jankurai/security/evidence.json",
       "envelope_exit_code": 0,
-      "elapsed_ms": 27000,
+      "elapsed_ms": 36000,
       "wrapper_strict": false,
       "profile": "local",
       "commands_ran": 2,
@@ -1040,8 +1051,8 @@
       "required_commands_skipped": 0,
       "required_commands_failed": 0,
       "blocking_commands": [],
-      "generated_at": "1778533602",
-      "git_head": "a929b0b93421a6b932a352e10ef9b41a70d2f4b7"
+      "generated_at": "1778590728",
+      "git_head": "b50b4f570c28220bf8cbe9874e1121011a324ee8"
     }
   },
   "boundaries": {
@@ -1335,6 +1346,137 @@
       "noncanonical_count": 0
     }
   },
-  "findings": [],
-  "agent_fix_queue": []
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "shape",
+      "path": ".",
+      "problem": "`Code shape and semantic surface` scored 9 below the standard floor of 85",
+      "agent_fix": "split large or ambiguous authored code into smaller semantic modules with focused tests",
+      "evidence": [
+        "largest authored code file: crates/memory-benchmark/src/chase_report.rs (1256 LOC)",
+        "code file exceeds 500 LOC",
+        "code file exceeds 1000 LOC",
+        "most code files stay under 300 LOC"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:shape",
+      "hardness": "soft",
+      "confidence": 0.76,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:623dd887f8de9a9fb67bf2976c4299b06fdf495bf51fa908cd9bac315eef4254",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools"
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "crates/memory-benchmark/src/candidates/arena/lane_01.rs",
+      "problem": "duplicated product code block detected",
+      "agent_fix": "extract the duplicated behavior behind one named boundary and add focused tests before changing behavior",
+      "evidence": [
+        "duplicate block also appears at crates/memory-benchmark/src/candidates/arena/lane_00.rs:1"
+      ],
+      "check_id": "HLT-000-SCORE-DIMENSION:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:aad13bfb81325c9f3d80ac5fcd556a599d19098bea47dfa6cc404d22e099786c",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "owner": "tools",
+      "line": 1
+    },
+    {
+      "severity": "medium",
+      "category": "proof",
+      "path": "crates/memory-benchmark/src/chase_report.rs",
+      "problem": "human review or proof claim lacks reproducible evidence",
+      "agent_fix": "attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries",
+      "evidence": [
+        "pub fabricated_citations: u32,"
+      ],
+      "check_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP:proof",
+      "hardness": "soft",
+      "confidence": 0.88,
+      "evidence_kind": "receipt",
+      "rerun_command": "just score",
+      "fingerprint": "sha256:423b3c5e9f34e3a76640a8101ac1746c1acfc060b044164a7fff0da274caab6b",
+      "rule_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP",
+      "tlr": "Repair",
+      "lane": "audit",
+      "docs_url": "docs/testing.md",
+      "owner": "tools",
+      "line": 37,
+      "matched_term": "review evidence",
+      "reason": "proof and review claims need receipts"
+    },
+    {
+      "severity": "high",
+      "category": "vibe",
+      "path": "crates/memory-benchmark/src/chase_report.rs",
+      "problem": "fallback soup detected in product code",
+      "agent_fix": "collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance",
+      "evidence": [
+        "crates/memory-benchmark/src/chase_report.rs:290 .unwrap_or_else(|| {"
+      ],
+      "check_id": "HLT-001-DEAD-MARKER:vibe",
+      "hardness": "hard",
+      "confidence": 0.88,
+      "evidence_kind": "repository-scan",
+      "rerun_command": "just fast",
+      "fingerprint": "sha256:99f1ff30751dfb4c4b51e00d585573635d825c123a0daa1af2258aa33a49c696",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "docs_url": "docs/audit-rubric.md#future-hostile-language-rule",
+      "owner": "tools",
+      "line": 290
+    }
+  ],
+  "agent_fix_queue": [
+    {
+      "path": "crates/memory-benchmark/src/chase_report.rs",
+      "priority": "medium",
+      "rule_id": "HLT-027-HUMAN-REVIEW-EVIDENCE-GAP",
+      "tlr": "Repair",
+      "lane": "audit",
+      "owner": "tools",
+      "task": "attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries",
+      "why": "human review or proof claim lacks reproducible evidence"
+    },
+    {
+      "path": "crates/memory-benchmark/src/candidates/arena/lane_01.rs",
+      "priority": "high",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "owner": "tools",
+      "task": "extract the duplicated behavior behind one named boundary and add focused tests before changing behavior",
+      "why": "duplicated product code block detected"
+    },
+    {
+      "path": "crates/memory-benchmark/src/chase_report.rs",
+      "priority": "high",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "owner": "tools",
+      "task": "collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance",
+      "why": "fallback soup detected in product code"
+    },
+    {
+      "path": ".",
+      "priority": "medium",
+      "rule_id": "HLT-001-DEAD-MARKER",
+      "tlr": "Entropy",
+      "lane": "fast",
+      "owner": "tools",
+      "task": "split large or ambiguous authored code into smaller semantic modules with focused tests",
+      "why": "`Code shape and semantic surface` scored 9 below the standard floor of 85"
+    }
+  ]
 }

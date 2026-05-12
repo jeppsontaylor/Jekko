@@ -2362,4 +2362,3 @@ That is the architecture that makes “forever” real.
 [17]: https://jekko.ai/docs/mcp-servers/ "MCP servers | Jekko"
 [18]: https://a2aproject.github.io/A2A/latest/specification/?utm_source=chatgpt.com "Specification - Agent2Agent (A2A) Protocol"
 [19]: https://github.com/anomalyco/jekko/issues/10527 "[FEATURE]: Allow to manage mcp when running Opencode with run command · Issue #10527 · anomalyco/jekko · GitHub"
-

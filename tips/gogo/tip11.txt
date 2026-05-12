@@ -1659,4 +1659,3 @@ That is the difference between “please continue forever” and an actual forev
 [26]: https://github.com/anomalyco/jekko/issues/19215 "[FEATURE]: DB-backed agent team coordination (parallel sub-agents, messaging, memory) · Issue #19215 · anomalyco/jekko · GitHub"
 [27]: https://github.com/anomalyco/jekko/issues/3444?utm_source=chatgpt.com "GLM-4.6 model gets stuck in infinite loop, repeating same ..."
 [28]: https://github.com/anomalyco/jekko/issues/3731?utm_source=chatgpt.com "Implement System Theme Support in OpenTUI #3731"
-

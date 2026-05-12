@@ -28,6 +28,10 @@ path = "src/bin/verify_determinism.rs"
 name = "population_report"
 path = "src/bin/population_report.rs"
 
+[[bin]]
+name = "generate_suite"
+path = "src/bin/generate_suite.rs"
+
 # Zero external dependencies. Standard library only.
 # Determinism: FNV-1a (hash.rs), hand-rolled JSON (json.rs), sorted keys throughout.
 [dependencies]

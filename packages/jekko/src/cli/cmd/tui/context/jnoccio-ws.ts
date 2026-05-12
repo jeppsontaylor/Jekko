@@ -2,7 +2,7 @@
 import { incrementJnoccioCounters, setZyalFlashSource, updateZyalMetrics } from "./zyal-flash-state"
 import { createStore, produce, reconcile } from "solid-js/store"
 import type { DashboardSnapshot, DashboardModel, MetricEvent } from "./jnoccio-types"
-import { emptySnapshot, normalizeSnapshot, totalsFromModels } from "./jnoccio-types"
+import { emptySnapshot, normalizeSnapshot, totalsFromModels } from "./jnoccio-snapshot"
 
 /**
  * Jnoccio Fusion live-metrics WebSocket subscriber.

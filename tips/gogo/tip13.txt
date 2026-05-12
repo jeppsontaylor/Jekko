@@ -3057,4 +3057,3 @@ That gives you the “GOD mode” feel without turning the model into an unrelia
 [35]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/session/prompt.ts?utm_source=chatgpt.com "jekko/packages/jekko/src/session/prompt.ts at dev"
 [36]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/command/template/review.txt?utm_source=chatgpt.com "packages - jekko - src - command - template"
 [37]: https://jekko.ai/docs/permissions/ "Permissions | Jekko"
-

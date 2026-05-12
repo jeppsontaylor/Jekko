@@ -4,7 +4,7 @@ I would add one major capability to the ZYAL plan:
 
 This is a **bounded cross-loop collaboration system** for tasks that are too risky, too ambiguous, or too complex to safely grab and implement in one normal daemon iteration.
 
-The existing ZYAL plan is already strong on the core forever runtime: strict gated syntax, no XML `<FOREVER>`, SQLite as source of truth, ledger mirrors, hard context clearing through daemon epochs, daemon-specific API/TUI/CLI paths, worker leases, and no model-owned `daemon_stop`. I would preserve that and add the hard-task lane as a second-layer routing feature, not as a replacement for the serial daemon loop.   
+The existing ZYAL plan is already strong on the core forever runtime: strict gated syntax, no XML `<FOREVER>`, SQLite as source of truth, ledger mirrors, hard context clearing through daemon epochs, daemon-specific API/TUI/CLI paths, worker leases, and no model-owned `daemon_stop`. I would preserve that and add the hard-task lane as a second-layer routing feature, not as a replacement for the serial daemon loop.
 
 The key principle:
 
@@ -189,7 +189,7 @@ For each hard task, ZYAL should create a task namespace:
     cleanup-summary.md
 ```
 
-SQLite remains the source of truth. The file tree is a readable mirror and scratch area. The existing ZYAL plan already says SQLite should be the source of truth and ledger mirrors should be generated for inspection; this hard-task extension should follow that same rule. 
+SQLite remains the source of truth. The file tree is a readable mirror and scratch area. The existing ZYAL plan already says SQLite should be the source of truth and ledger mirrors should be generated for inspection; this hard-task extension should follow that same rule.
 
 Do **not** store private hidden chain-of-thought. Store visible, structured work artifacts:
 
@@ -912,7 +912,7 @@ next task
 
 # 10. New daemon-only tools
 
-The current ZYAL plan already proposes daemon-only tools like `daemon_status`, `daemon_lease_task`, `daemon_report_progress`, `daemon_complete_task`, `daemon_block_task`, `daemon_checkpoint_request`, and `daemon_context_snapshot`, while correctly avoiding a model-owned `daemon_stop`. 
+The current ZYAL plan already proposes daemon-only tools like `daemon_status`, `daemon_lease_task`, `daemon_report_progress`, `daemon_complete_task`, `daemon_block_task`, `daemon_checkpoint_request`, and `daemon_context_snapshot`, while correctly avoiding a model-owned `daemon_stop`.
 
 For hard-task incubation, add:
 
@@ -1599,4 +1599,3 @@ That gives you the “compound knowledge across loops” behavior without creati
 [10]: https://www.reddit.com/r/jekkoCLI/comments/1t0sigu/jekko_loop_claude_codestyle_autonomous_loop/ "Jekko Loop: Claude Code-style autonomous /loop command for Jekko : r/jekkoCLI"
 [11]: https://arxiv.org/abs/2303.11366?utm_source=chatgpt.com "Reflexion: Language Agents with Verbal Reinforcement Learning"
 [12]: https://www.reddit.com/r/jekkoCLI/comments/1t5q8mo/dont_leave_jekko_unattended_a_subagent_loop/ "Don’t leave Opencode unattended! A sub-agent loop just burned through my entire limits. : r/jekkoCLI"
-

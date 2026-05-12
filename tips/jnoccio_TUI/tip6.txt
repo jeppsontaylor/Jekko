@@ -3096,4 +3096,3 @@ fn display_or_id<'a>(display: &'a str, id: &'a str) -> &'a str {
 ```
 
 [1]: https://docs.rs/ratatui/latest/ratatui/ "ratatui - Rust"
-

@@ -2997,4 +2997,3 @@ fn truncate_for_log(input: &str, max: usize) -> String {
 ```
 
 [1]: https://docs.rs/ratatui/latest/ratatui/widgets/struct.Table.html "Table in ratatui::widgets - Rust"
-

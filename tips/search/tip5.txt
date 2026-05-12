@@ -840,4 +840,3 @@ The most important design choice: **keep search, extraction, and memory separate
 [46]: https://owasp.org/www-project-top-10-for-large-language-model-applications/ "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
 [47]: https://ai.meta.com/blog/practical-ai-agent-security/ "https://ai.meta.com/blog/practical-ai-agent-security/"
 [48]: https://www.rfc-editor.org/rfc/rfc9309.html "https://www.rfc-editor.org/rfc/rfc9309.html"
-

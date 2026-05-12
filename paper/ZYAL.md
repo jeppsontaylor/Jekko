@@ -390,7 +390,7 @@ The implementation is evaluated as an artifact-backed systems paper rather than 
 
 | Claim | Artifact / Command | Expected Result |
 |---|---|---|
-| All docs examples parse as ZYAL | `rtk bun test src/agent-script/parser.test.ts` from `packages/jekko` | Passes and includes all 9 `*.zyal.yml` examples plus `wow.yml` |
+| All docs examples parse as ZYAL | `rtk bun test src/agent-script/parser.test.ts` from `packages/jekko` | Passes and includes all canonical `*.zyal` examples |
 | Forbidden legacy language markers are absent | exact-token `rtk rg` scan from repository root | No source/docs hits except intentional workflow history |
 | TUI ZYAL metrics and Jnoccio WebSocket behavior are covered | `rtk bun test test/cli/tui/zyal-flash.test.ts test/cli/tui/jnoccio-ws.test.ts` | Passes |
 | Daemon APIs and session behavior still compile/test | daemon/session/API test group | Passes |
@@ -474,15 +474,15 @@ See [`docs/ZYAL/examples/`](../docs/ZYAL/examples/) for 9 runbooks. Examples 1-8
 
 | # | File | Blocks Demonstrated |
 |---|---|---|
-| 1 | `01-fix-until-green.zyal.yml` | `job`, `loop`, `stop`, `checkpoint`, `quality`, `rollback`, `done` |
-| 2 | `02-hypothesis-tournament.zyal.yml` | `experiments`, `models`, `scoring`, `reduce`, `negative_memory` |
-| 3 | `03-billion-loc-monorepo.zyal.yml` | `repo_intelligence`, `scope_control`, `blast_radius`, `capabilities` |
-| 4 | `04-fleet-portfolio.zyal.yml` | `triggers`, `budgets`, `anti_recursion`, `idempotency` |
-| 5 | `05-secure-mcp-lockdown.zyal.yml` | `capabilities`, `command_floor`, `security`, `sandbox` |
-| 6 | `06-evidence-graph-merge.zyal.yml` | `evidence`, `workflow`, `approvals`, `rollback` |
-| 7 | `07-self-improving-skills.zyal.yml` | `skills`, `quarantine`, `promotion`, `memory` |
-| 8 | `08-full-power-runbook.zyal.yml` | All 40+ blocks end-to-end |
-| 9 | `09-control-plane-preview.zyal.yml` | `interop`, `runtime`, `capability_negotiation`, `memory_kernel`, `evidence_graph`, `trust`, `taint`, `unsupported_feature_policy` |
+| 1 | `01-fix-until-green.zyal` | `job`, `loop`, `stop`, `checkpoint`, `quality`, `rollback`, `done` |
+| 2 | `02-hypothesis-tournament.zyal` | `experiments`, `models`, `scoring`, `reduce`, `negative_memory` |
+| 3 | `03-billion-loc-monorepo.zyal` | `repo_intelligence`, `scope_control`, `blast_radius`, `capabilities` |
+| 4 | `04-fleet-portfolio.zyal` | `triggers`, `budgets`, `anti_recursion`, `idempotency` |
+| 5 | `05-secure-mcp-lockdown.zyal` | `capabilities`, `command_floor`, `security`, `sandbox` |
+| 6 | `06-evidence-graph-merge.zyal` | `evidence`, `workflow`, `approvals`, `rollback` |
+| 7 | `07-self-improving-skills.zyal` | `skills`, `quarantine`, `promotion`, `memory` |
+| 8 | `08-full-power-runbook.zyal` | All 40+ blocks end-to-end |
+| 9 | `09-control-plane-preview.zyal` | `interop`, `runtime`, `capability_negotiation`, `memory_kernel`, `evidence_graph`, `trust`, `taint`, `unsupported_feature_policy` |
 
 ## Appendix C: Runtime Module Inventory
 

@@ -1,6 +1,6 @@
 # Plan update: add an **ZYAL Crucible Lane** for hard tasks
 
-The current ZYAL plan is already pointed in the right direction: host-enforced daemon runtime, strict gated syntax, SQLite as source of truth, hard context clearing through new epochs, no prompt-only continuation, and no assistant-generated ZYAL execution. That gives us the foundation for “FOREVER means forever unless host stop checks pass.” 
+The current ZYAL plan is already pointed in the right direction: host-enforced daemon runtime, strict gated syntax, SQLite as source of truth, hard context clearing through new epochs, no prompt-only continuation, and no assistant-generated ZYAL execution. That gives us the foundation for “FOREVER means forever unless host stop checks pass.”
 
 The missing layer is exactly what you are describing now:
 
@@ -1507,4 +1507,3 @@ That is the most powerful version I would add to the current ZYAL plan: **foreve
 [12]: https://modelcontextprotocol.io/specification/2025-11-25?utm_source=chatgpt.com "Specification"
 [13]: https://www.coalitionforsecureai.org/securing-the-ai-agent-revolution-a-practical-guide-to-mcp-security/?utm_source=chatgpt.com "A Practical Guide to Model Context Protocol Security"
 [14]: https://github.com/anomalyco/jekko/issues/18794?utm_source=chatgpt.com "compact causes the agent to continue unexpectedly #18794"
-

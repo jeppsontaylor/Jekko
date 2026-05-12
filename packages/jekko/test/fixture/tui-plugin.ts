@@ -212,6 +212,7 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
         }
       },
       navigate: () => {},
+      navigateBack: () => {},
       get current() {
         return { name: "home" }
       },

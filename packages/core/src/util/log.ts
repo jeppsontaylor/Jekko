@@ -54,24 +54,57 @@ let logpath = ""
 export function file() {
   return logpath
 }
-let write = (msg: any) => {
+type WriteResult = number | boolean | Promise<unknown>
+
+const pendingWrites = new Set<Promise<unknown>>()
+let stream: ReturnType<typeof createWriteStream> | undefined
+let write = (msg: string): WriteResult => {
   process.stderr.write(msg)
   return msg.length
+}
+
+function observeWrite(result: WriteResult) {
+  if (!result || typeof (result as any).then !== "function") return
+  const pending = Promise.resolve(result).catch((error) => {
+    process.stderr.write(`log write failed: ${error instanceof Error ? error.message : String(error)}\n`)
+  })
+  pendingWrites.add(pending)
+  pending.finally(() => pendingWrites.delete(pending)).catch(() => {})
+}
+
+export async function flush() {
+  while (pendingWrites.size > 0) {
+    await Promise.allSettled([...pendingWrites])
+  }
+  if (!stream) return
+  await new Promise<void>((resolve, reject) => {
+    stream!.write("", (error) => {
+      if (error) reject(error)
+      else resolve()
+    })
+  })
 }
 
 export async function init(options: Options) {
   if (options.level) level = options.level
   void cleanup(Global.Path.log)
-  if (options.print) return
+  if (options.print) {
+    stream = undefined
+    write = (msg: string) => {
+      process.stderr.write(msg)
+      return msg.length
+    }
+    return
+  }
   logpath = path.join(
     Global.Path.log,
     options.dev ? "dev.log" : new Date().toISOString().split(".")[0].replace(/:/g, "") + ".log",
   )
   await fs.truncate(logpath).catch(() => {})
-  const stream = createWriteStream(logpath, { flags: "a" })
-  write = async (msg: any) => {
+  stream = createWriteStream(logpath, { flags: "a" })
+  write = async (msg: string) => {
     return new Promise((resolve, reject) => {
-      stream.write(msg, (err) => {
+      stream!.write(msg, (err) => {
         if (err) reject(err)
         else resolve(msg.length)
       })
@@ -135,22 +168,22 @@ export function create(tags?: Record<string, any>) {
   const result: Logger = {
     debug(message?: any, extra?: Record<string, any>) {
       if (shouldLog("DEBUG")) {
-        write("DEBUG " + build(message, extra))
+        observeWrite(write("DEBUG " + build(message, extra)))
       }
     },
     info(message?: any, extra?: Record<string, any>) {
       if (shouldLog("INFO")) {
-        write("INFO  " + build(message, extra))
+        observeWrite(write("INFO  " + build(message, extra)))
       }
     },
     error(message?: any, extra?: Record<string, any>) {
       if (shouldLog("ERROR")) {
-        write("ERROR " + build(message, extra))
+        observeWrite(write("ERROR " + build(message, extra)))
       }
     },
     warn(message?: any, extra?: Record<string, any>) {
       if (shouldLog("WARN")) {
-        write("WARN  " + build(message, extra))
+        observeWrite(write("WARN  " + build(message, extra)))
       }
     },
     tag(key: string, value: string) {

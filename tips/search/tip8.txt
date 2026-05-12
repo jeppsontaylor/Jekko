@@ -532,4 +532,3 @@ For a Rust-friendly, safe, high-quality agent search system, I would ship:
 [15]: https://docs.valyu.ai/overview?utm_source=chatgpt.com "Valyu Documentation - AI Search API for Agents & RAG"
 [16]: https://github.com/firecrawl/firecrawl-mcp-server?utm_source=chatgpt.com "Official Firecrawl MCP Server - Adds powerful web ..."
 [17]: https://developers.openalex.org/guides/searching?utm_source=chatgpt.com "Search - OpenAlex Developers"
-

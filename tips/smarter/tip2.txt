@@ -2,7 +2,7 @@ I agree with your instinct: **ZYAL should not just be “forever loop until clea
 
 The best addition is an **ZYAL Hardening Lane**: a host-enforced workflow for hard tasks that lets multiple fresh agents plan, critique, prototype, preserve task-local memory, and only promote to implementation when evidence-based confidence crosses a threshold.
 
-This should be added to the existing ZYAL daemon plan as a first-class feature, not as a prompt convention. The uploaded plan already makes the right core decision: Jekko runtime owns looping, SQLite is source of truth, normal session semantics remain unchanged, ZYAL uses strict gated syntax, and generated mirrors under `.jekko/daemon/<runID>/` are inspection artifacts, not truth. 
+This should be added to the existing ZYAL daemon plan as a first-class feature, not as a prompt convention. The uploaded plan already makes the right core decision: Jekko runtime owns looping, SQLite is source of truth, normal session semantics remain unchanged, ZYAL uses strict gated syntax, and generated mirrors under `.jekko/daemon/<runID>/` are inspection artifacts, not truth.
 
 ---
 
@@ -1698,4 +1698,3 @@ And the key safety sentence:
 [11]: https://docs.roocode.com/features/boomerang-tasks?utm_source=chatgpt.com "Boomerang Tasks: Orchestrate Complex Workflows"
 [12]: https://aider.chat/docs/repomap.html?utm_source=chatgpt.com "Repository map"
 [13]: https://www.nature.com/articles/s44355-026-00053-3?utm_source=chatgpt.com "Across generations, sizes, and types, large language ..."
-

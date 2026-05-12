@@ -7,7 +7,7 @@ The parent daemon can still be **FOREVER**, but an individual hard task should n
 3. it is escalated to a human/reviewer, or
 4. it exhausts a bounded pass/budget limit and returns to the task queue as blocked/incubated.
 
-This is the main update I would make to the current ZYAL plan. The uploaded plan already correctly says ZYAL should be host-enforced, SQLite-backed, preview/armed, and not prompt-only; this addition should live inside that same durable runtime, not as a loose Markdown tracker or another prompt convention. 
+This is the main update I would make to the current ZYAL plan. The uploaded plan already correctly says ZYAL should be host-enforced, SQLite-backed, preview/armed, and not prompt-only; this addition should live inside that same durable runtime, not as a loose Markdown tracker or another prompt convention.
 
 ---
 
@@ -1882,4 +1882,3 @@ The highest-leverage idea is the **task workbench**. Once every hard task has a 
 [13]: https://agents.md/?utm_source=chatgpt.com "AGENTS.md"
 [14]: https://modelcontextprotocol.io/specification/2025-11-25?utm_source=chatgpt.com "Specification"
 [15]: https://microsoft.github.io/poml/latest/?utm_source=chatgpt.com "POML Documentation"
-

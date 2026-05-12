@@ -7,6 +7,16 @@ import type { TuiCommandInput } from "./app-commands-shared"
 export function buildSystemCommands(input: TuiCommandInput) {
   return [
     {
+      title: "Navigate back",
+      value: "nav.back",
+      keybind: "ctrl+h",
+      category: "Navigation",
+      hidden: true,
+      onSelect: () => {
+        input.route.navigateBack()
+      },
+    },
+    {
       title: "View status",
       keybind: "status_view",
       value: "jekko.status",

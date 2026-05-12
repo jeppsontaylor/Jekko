@@ -2455,4 +2455,3 @@ That gives you immediate value while creating the foundation for the “God mode
 [13]: https://github.com/anomalyco/jekko/issues/15533 "Auto-compaction infinite loop when assistant ended its turn (finish !== tool-calls) · Issue #15533 · anomalyco/jekko · GitHub"
 [14]: https://github.com/anomalyco/jekko/issues/18794 "/compact causes the agent to continue unexpectedly · Issue #18794 · anomalyco/jekko · GitHub"
 [15]: https://jekko.ai/docs/skills/?utm_source=chatgpt.com "Agent Skills"
-

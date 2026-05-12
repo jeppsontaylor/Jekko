@@ -362,4 +362,3 @@ That gives agents the feedback they need—exceptions, test output, logs, genera
 [12]: https://www.redhat.com/en/blog/rootless-podman-user-namespace-modes?utm_source=chatgpt.com "Understanding rootless Podman's user namespace modes"
 [13]: https://man.archlinux.org/man/systemd-run.1.en?utm_source=chatgpt.com "systemd-run(1) - Arch manual pages"
 [14]: https://manp.gs/mac/1/sandbox-exec?utm_source=chatgpt.com "SANDBOX-EXEC(1) - manp.gs — man pages"
-

@@ -1813,12 +1813,12 @@ The model sees a clean iteration prompt. Jekko sees a strict daemon spec. The da
 [14]: https://agents.md/ "AGENTS.md"
 [15]: https://modelcontextprotocol.io/specification/2025-11-25 "Specification - Model Context Protocol"
 [16]: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ "
-            
+
             Announcing the Agent2Agent Protocol (A2A)
-            
-            
+
+
             \- Google Developers Blog
-            
+
         "
 [17]: https://docs.langchain.com/oss/python/langgraph/overview "LangGraph overview - Docs by LangChain"
 [18]: https://microsoft.github.io/autogen/stable//index.html "AutoGen — AutoGen"
@@ -1829,4 +1829,3 @@ The model sees a clean iteration prompt. Jekko sees a strict daemon spec. The da
 [23]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/cli/cmd/run.ts "raw.githubusercontent.com"
 [24]: https://jekko.ai/docs/permissions/ "Permissions | Jekko"
 [25]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/status.ts "raw.githubusercontent.com"
-

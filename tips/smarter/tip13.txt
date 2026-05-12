@@ -1,6 +1,6 @@
 ## Recommended plan update: add a **Hard-Task Incubator** to ZYAL
 
-The ZYAL daemon plan you pasted already has the right foundation: strict gated syntax, host-owned forever loop, SQLite as source of truth, generated ledger mirrors, hard context clearing by creating new daemon epochs/child sessions, and a phased rollout from serial forever mode to checkpoint/context, gold UX, and later swarms/MCP. 
+The ZYAL daemon plan you pasted already has the right foundation: strict gated syntax, host-owned forever loop, SQLite as source of truth, generated ledger mirrors, hard context clearing by creating new daemon epochs/child sessions, and a phased rollout from serial forever mode to checkpoint/context, gold UX, and later swarms/MCP.
 
 The missing layer is exactly what you are describing now:
 
@@ -1417,4 +1417,3 @@ That gives ZYAL the thing ordinary agent prompts do not have: a way for knowledg
 [10]: https://github.com/anomalyco/jekko/issues/18001 "https://github.com/anomalyco/jekko/issues/18001"
 [11]: https://github.com/anomalyco/jekko/issues/14195 "Multiple Task tool calls in a single LLM response execute sequentially instead of in parallel · Issue #14195 · anomalyco/jekko · GitHub"
 [12]: https://github.com/joelhooks/jekko-config "https://github.com/joelhooks/jekko-config"
-

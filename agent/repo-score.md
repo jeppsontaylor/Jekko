@@ -7,15 +7,15 @@
 - Target stack ID: `rust-ts-vite-react-postgres-bounded-python`
 - Target stack: `Rust core + TypeScript/React/Vite + PostgreSQL + generated contracts + exception-only Python AI/data service`
 - Repo: `.`
-- Run ID: `1778533631`
-- Started at: `1778533631`
-- Elapsed: `2085` ms
+- Run ID: `1778592348`
+- Started at: `1778592348`
+- Elapsed: `2568` ms
 - Scope: `full`
-- Raw score: `91`
-- Final score: `91`
+- Raw score: `80`
+- Final score: `70`
 - Decision: `advisory`
 - Minimum score: `85`
-- Caps applied: `none`
+- Caps applied: `fallback-soup-in-product-code, severe-duplication-in-product-code`
 
 ## Hard Rule Caps
 
@@ -34,9 +34,9 @@
 | `too-much-python-in-product-surface` | 72 | no |
 | `boundary-reclassification-evidence-gap` | 72 | no |
 | `vibe-placeholders-in-product-code` | 68 | no |
-| `fallback-soup-in-product-code` | 70 | no |
+| `fallback-soup-in-product-code` | 70 | yes |
 | `future-hostile-dead-language-in-product-code` | 64 | no |
-| `severe-duplication-in-product-code` | 70 | no |
+| `severe-duplication-in-product-code` | 70 | yes |
 | `generated-zone-mutation-risk` | 76 | no |
 | `direct-db-access-from-wrong-layer` | 66 | no |
 | `missing-web-e2e-lane` | 82 | no |
@@ -75,7 +75,7 @@
 | Contract and boundary integrity | 13 | 98 | 12.74 | contract surface found; generated contract artifacts found |
 | Proof lanes and test routing | 12 | 100 | 12.00 | one-command setup/validation lane found; deterministic fast lane found |
 | Security and supply-chain posture | 12 | 86 | 10.32 | lockfile present; secret or dependency scan tooling found |
-| Code shape and semantic surface | 12 | 100 | 12.00 | largest authored code file: packages/jekko/src/cli/cmd/tui/context/theme-core.ts (336 LOC); most code files stay under 300 LOC |
+| Code shape and semantic surface | 12 | 9 | 1.08 | largest authored code file: crates/memory-benchmark/src/chase_report.rs (1256 LOC); code file exceeds 500 LOC |
 | Data truth and workflow safety | 8 | 95 | 7.60 | database surface present; structured db boundary manifest present |
 | Observability and repair evidence | 8 | 88 | 7.04 | observability libraries or patterns found; ops/observability directory present |
 | Context economy and agent instructions | 7 | 100 | 7.00 | root `AGENTS.md` present; root `AGENTS.md` stays short |
@@ -142,10 +142,10 @@
 ## Security evidence (ingested)
 
 - Source: `target/jankurai/security/evidence.json`
-- Envelope exit code: `0` · elapsed: `27000` ms · strict: `false`
+- Envelope exit code: `0` · elapsed: `36000` ms · strict: `false`
 - Commands — ran: `2`, skipped: `1`, failed: `0`
-- Generated at: `1778533602`
-- Git HEAD (envelope): `a929b0b93421a6b932a352e10ef9b41a70d2f4b7`
+- Generated at: `1778590728`
+- Git HEAD (envelope): `b50b4f570c28220bf8cbe9874e1121011a324ee8`
 
 ## Boundary manifest (ingested)
 
@@ -160,7 +160,45 @@ No audited runtime boundary reclassifications declared.
 
 ## Findings
 
-No findings.
+1. `medium` `shape` `.`
+   Rule: `HLT-001-DEAD-MARKER`
+   Check: `HLT-001-DEAD-MARKER:shape` `soft` confidence `0.76`
+   Route: TLR `Entropy`, lane `fast`, owner `tools`
+   Docs: `docs/audit-rubric.md#future-hostile-language-rule`
+   Reason: `Code shape and semantic surface` scored 9 below the standard floor of 85
+   Fix: split large or ambiguous authored code into smaller semantic modules with focused tests
+   Rerun: `just fast`
+   Fingerprint: `sha256:623dd887f8de9a9fb67bf2976c4299b06fdf495bf51fa908cd9bac315eef4254`
+   Evidence: largest authored code file: crates/memory-benchmark/src/chase_report.rs (1256 LOC), code file exceeds 500 LOC, code file exceeds 1000 LOC, most code files stay under 300 LOC
+2. `high` `vibe` `crates/memory-benchmark/src/candidates/arena/lane_01.rs:1`
+   Check: `HLT-000-SCORE-DIMENSION:vibe` `hard` confidence `0.88`
+   Route: TLR `Entropy`, lane `fast`, owner `tools`
+   Reason: duplicated product code block detected
+   Fix: extract the duplicated behavior behind one named boundary and add focused tests before changing behavior
+   Rerun: `just fast`
+   Fingerprint: `sha256:aad13bfb81325c9f3d80ac5fcd556a599d19098bea47dfa6cc404d22e099786c`
+   Evidence: duplicate block also appears at crates/memory-benchmark/src/candidates/arena/lane_00.rs:1
+3. `medium` `proof` `crates/memory-benchmark/src/chase_report.rs:37`
+   Rule: `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP`
+   Check: `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP:proof` `soft` confidence `0.88`
+   Route: TLR `Repair`, lane `audit`, owner `tools`
+   Docs: `docs/testing.md`
+   Matched term: `review evidence`
+   Reason: proof and review claims need receipts
+   Fix: attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries
+   Rerun: `just score`
+   Fingerprint: `sha256:423b3c5e9f34e3a76640a8101ac1746c1acfc060b044164a7fff0da274caab6b`
+   Evidence: pub fabricated_citations: u32,
+4. `high` `vibe` `crates/memory-benchmark/src/chase_report.rs:290`
+   Rule: `HLT-001-DEAD-MARKER`
+   Check: `HLT-001-DEAD-MARKER:vibe` `hard` confidence `0.88`
+   Route: TLR `Entropy`, lane `fast`, owner `tools`
+   Docs: `docs/audit-rubric.md#future-hostile-language-rule`
+   Reason: fallback soup detected in product code
+   Fix: collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance
+   Rerun: `just fast`
+   Fingerprint: `sha256:99f1ff30751dfb4c4b51e00d585573635d825c123a0daa1af2258aa33a49c696`
+   Evidence: crates/memory-benchmark/src/chase_report.rs:290 .unwrap_or_else(|| {
 
 ## Policy
 
@@ -170,4 +208,11 @@ No findings.
 
 ## Agent Fix Queue
 
-No queued fixes.
+1. `medium` `HLT-027-HUMAN-REVIEW-EVIDENCE-GAP` `crates/memory-benchmark/src/chase_report.rs` - attach raw CI logs, review receipts, and replayable commands instead of accepting claims or summaries
+   Route: `Repair`/`audit`
+2. `high` `crates/memory-benchmark/src/candidates/arena/lane_01.rs` - extract the duplicated behavior behind one named boundary and add focused tests before changing behavior
+   Route: `Entropy`/`fast`
+3. `high` `HLT-001-DEAD-MARKER` `crates/memory-benchmark/src/chase_report.rs` - collapse fallback chains into explicit typed states with bounded retry policy, telemetry, and documented repair guidance
+   Route: `Entropy`/`fast`
+4. `medium` `HLT-001-DEAD-MARKER` `.` - split large or ambiguous authored code into smaller semantic modules with focused tests
+   Route: `Entropy`/`fast`

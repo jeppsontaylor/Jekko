@@ -85,7 +85,10 @@ fn math_case(rng: &mut SeedRng, config: &GeneratedSuiteConfig, idx: usize) -> Be
         &id,
         EventKind::Theorem,
         subject.clone(),
-        format!("In {}, op({}, {}) evaluates to {} modulo 17.", subject, a, b, answer),
+        format!(
+            "In {}, op({}, {}) evaluates to {} modulo 17.",
+            subject, a, b, answer
+        ),
         format!("2026-02-{:02}T00:00:00Z", idx % 28 + 1),
     );
     BenchCase {
@@ -93,7 +96,10 @@ fn math_case(rng: &mut SeedRng, config: &GeneratedSuiteConfig, idx: usize) -> Be
         block: FixtureBlock::RecallCurrent,
         domain: Domain::Math,
         pathologies: vec![Pathology::UnitMismatch],
-        public_bench: vec![PublicBench::EquationRecallBench, PublicBench::ScienceMemoryBench],
+        public_bench: vec![
+            PublicBench::EquationRecallBench,
+            PublicBench::ScienceMemoryBench,
+        ],
         events: vec![event],
         steps: standard_steps(),
         query: Some(Query {
@@ -127,7 +133,10 @@ fn physics_case(rng: &mut SeedRng, config: &GeneratedSuiteConfig, idx: usize) ->
         &id,
         EventKind::Experiment,
         subject.clone(),
-        format!("{} converts one lumar to {} navs under the 2026 calibration.", subject, scale),
+        format!(
+            "{} converts one lumar to {} navs under the 2026 calibration.",
+            subject, scale
+        ),
         format!("2026-03-{:02}T00:00:00Z", idx % 28 + 1),
     );
     BenchCase {
@@ -135,7 +144,10 @@ fn physics_case(rng: &mut SeedRng, config: &GeneratedSuiteConfig, idx: usize) ->
         block: FixtureBlock::RecallAt,
         domain: Domain::Science,
         pathologies: vec![Pathology::FutureLeak],
-        public_bench: vec![PublicBench::DatasetReproBench, PublicBench::ScienceMemoryBench],
+        public_bench: vec![
+            PublicBench::DatasetReproBench,
+            PublicBench::ScienceMemoryBench,
+        ],
         events: vec![event],
         steps: standard_steps(),
         query: Some(Query {
@@ -229,7 +241,10 @@ fn privacy_case(rng: &mut SeedRng, config: &GeneratedSuiteConfig, idx: usize) ->
         block: FixtureBlock::RecallAsOf,
         domain: Domain::Privacy,
         pathologies: vec![Pathology::PrivacyLeak],
-        public_bench: vec![PublicBench::MemoryPoisoningBench, PublicBench::MemoryAgentBenchForgetting],
+        public_bench: vec![
+            PublicBench::MemoryPoisoningBench,
+            PublicBench::MemoryAgentBenchForgetting,
+        ],
         events: vec![event],
         steps: standard_steps(),
         query: Some(Query {

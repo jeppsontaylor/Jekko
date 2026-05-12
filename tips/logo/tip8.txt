@@ -1,4 +1,4 @@
-Below is a drop-in replacement for the uploaded logo component. I kept your existing component shape, row framing, wordmarks, and Solid/OpenTUI approach, but made the color engine much more aggressive: brighter neon corner palettes, gamma-correct gradient mixing, saturation/contrast boosting, and visible-glyph gradient stretching so the wordmark actually uses the full left-to-right fade instead of only the muted center band. 
+Below is a drop-in replacement for the uploaded logo component. I kept your existing component shape, row framing, wordmarks, and Solid/OpenTUI approach, but made the color engine much more aggressive: brighter neon corner palettes, gamma-correct gradient mixing, saturation/contrast boosting, and visible-glyph gradient stretching so the wordmark actually uses the full left-to-right fade instead of only the muted center band.
 
 ```tsx
 import { RGBA, TextAttributes } from "@opentui/core"
@@ -494,4 +494,3 @@ export function GoLogo(props: { idle?: boolean } = {}) {
   )
 }
 ```
-

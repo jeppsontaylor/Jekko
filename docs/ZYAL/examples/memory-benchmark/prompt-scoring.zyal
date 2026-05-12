@@ -12,13 +12,15 @@ confirm: RUN_FOREVER
 job:
   name: "Memory benchmark prompt scoring"
   objective: |
-    Score the memory benchmark prompt population against a 100-point rubric
+    Produce qualitative, non-primary prompt diagnostics for the memory benchmark
+    prompt population against a 100-point rubric
     covering correctness, provenance, bitemporal recall, contradiction
     handling, math and science, English discourse and coreference, privacy
     redaction, procedural skill, feedback adaptation, and determinism.
     Persist population memory as append-only evidence so future runs can skip
     already-settled critiques.
   risk:
+    - Population scoring is secondary diagnostics only; primary score is executable Rust oracle scoring
     - Population scoring is read-heavy but must stay deterministic
     - Prompt reduction must preserve evidence caps and disagreement traces
     - Corpus checks must not mutate the tracked benchmark corpus
@@ -70,6 +72,9 @@ hooks:
       on_fail: pause
     - run: "cargo test --manifest-path crates/memory-benchmark/Cargo.toml"
       timeout: 240s
+      on_fail: pause
+    - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --locked --bin generate_suite -- --split public-dev --seed public-dev-0001 --fixtures 500 --out .jekko/daemon/memory-benchmark/reports/generated-public-dev.json"
+      timeout: 180s
       on_fail: pause
   after_iteration:
     - run: "cargo run --manifest-path crates/memory-benchmark/Cargo.toml --bin prompt_reduce -- --votes .jekko/daemon/memory-benchmark/reports/population-votes.jsonl --out .jekko/daemon/memory-benchmark/reports/prompt-score.json --markdown .jekko/daemon/memory-benchmark/reports/prompt-score.md --ranking .jekko/daemon/memory-benchmark/reports/reference-ranking.json --disagreement .jekko/daemon/memory-benchmark/reports/population-disagreement.json"

@@ -449,4 +449,3 @@ For a serious agent that installs dependencies, runs unknown test code, or touch
 [11]: https://docs.docker.com/ai/sandboxes/ "Docker Sandboxes | Docker Docs"
 [12]: https://e2b.dev/docs/agents/opencode "Documentation - E2B"
 [13]: https://www.anthropic.com/engineering/claude-code-sandboxing "Making Claude Code more secure and autonomous with sandboxing \ Anthropic"
-

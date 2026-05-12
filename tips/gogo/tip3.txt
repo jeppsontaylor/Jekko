@@ -1723,4 +1723,3 @@ Bottom line: **build a deterministic daemon runtime around Jekko, not a stronger
 [20]: https://jekko.ai/docs/skills/ "https://jekko.ai/docs/skills/"
 [21]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/prompt.ts "https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/prompt.ts"
 [22]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/status.ts "https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/session/status.ts"
-

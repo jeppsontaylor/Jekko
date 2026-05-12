@@ -1401,4 +1401,3 @@ Gold UX makes danger visible.
 [17]: https://jekko.ai/docs/permissions/?utm_source=chatgpt.com "Permissions"
 [18]: https://jekko.ai/docs/plugins/?utm_source=chatgpt.com "Plugins"
 [19]: https://github.com/anomalyco/jekko/issues/17412 "[FEATURE]: Plugin hooks should be able to inject AI-visible messages into conversation context · Issue #17412 · anomalyco/jekko · GitHub"
-

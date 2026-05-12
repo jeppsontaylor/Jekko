@@ -2237,4 +2237,3 @@ That is how you get the behavior you want without relying on hope, XML tags, or 
 [21]: https://arxiv.org/html/2603.22386v1?utm_source=chatgpt.com "A Survey of Workflow Optimization for LLM Agents"
 [22]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/cli/cmd/run.ts?plain=1 "jekko/packages/jekko/src/cli/cmd/run.ts at dev · anomalyco/jekko · GitHub"
 [23]: https://arxiv.org/abs/2602.14281 "[2602.14281] MCPShield: A Security Cognition Layer for Adaptive Trust Calibration in Model Context Protocol Agents"
-

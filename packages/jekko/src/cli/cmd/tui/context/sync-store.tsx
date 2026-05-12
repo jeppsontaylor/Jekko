@@ -32,6 +32,8 @@ import { useKV } from "./kv"
 import { useExit } from "./exit"
 import * as Log from "@jekko-ai/core/util/log"
 
+const bootLog = Log.create({ service: "tui.boot" })
+
 type TaskItem = {
   content: string
   status: string
@@ -185,10 +187,22 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
 
     async function bootstrap(options: { fatal?: boolean } = {}) {
       const fatal = options.fatal ?? true
+      const startedAt = Date.now()
+      bootLog.info("sync bootstrap start", {
+        fatal,
+        status: store.status,
+        workspace: syncedWorkspace,
+        log: Log.file(),
+      })
 
       try {
         await project.sync()
         await project.workspace.sync()
+        bootLog.info("sync project ready", {
+          duration: Date.now() - startedAt,
+          workspace: project.workspace.current(),
+          log: Log.file(),
+        })
 
         const workspace = project.workspace.current()
         if (workspace !== syncedWorkspace) {
@@ -206,6 +220,14 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
             .then((response) => response.data ?? emptyConsoleState)
             .catch(() => emptyConsoleState),
         ])
+        bootLog.info("sync primary data ready", {
+          duration: Date.now() - startedAt,
+          workspace,
+          providers: providers.data.providers.length,
+          agents: agents.data?.length ?? 0,
+          has_config_model: Boolean(config.data.model),
+          log: Log.file(),
+        })
 
         batch(() => {
           setStore("provider", reconcile(providers.data.providers))
@@ -216,7 +238,14 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           setStore("console_state", reconcile(consoleState))
         })
 
-        if (store.status !== "complete") setStore("status", "partial")
+        if (store.status !== "complete") {
+          setStore("status", "partial")
+          bootLog.info("sync status partial", {
+            duration: Date.now() - startedAt,
+            workspace,
+            log: Log.file(),
+          })
+        }
 
         void Promise.all([
           refresh(),
@@ -231,14 +260,32 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           sdk.client.provider.auth({ workspace }).then((x) => setStore("provider_auth", reconcile(x.data ?? {}))),
           sdk.client.vcs.get({ workspace }).then((x) => setStore("vcs", reconcile(x.data))),
           project.workspace.sync(),
-        ]).then(() => {
-          setStore("status", "complete")
-        })
+        ])
+          .then(() => {
+            setStore("status", "complete")
+            bootLog.info("sync status complete", {
+              duration: Date.now() - startedAt,
+              workspace,
+              sessions: store.session.length,
+              commands: store.command.length,
+              log: Log.file(),
+            })
+          })
+          .catch((error) => {
+            bootLog.warn("sync secondary data failed", {
+              duration: Date.now() - startedAt,
+              workspace,
+              error: error instanceof Error ? error.message : String(error),
+              log: Log.file(),
+            })
+          })
       } catch (error) {
-        Log.Default.error("tui bootstrap failed", {
+        bootLog.error("sync bootstrap failed", {
+          duration: Date.now() - startedAt,
           error: error instanceof Error ? error.message : String(error),
           name: error instanceof Error ? error.name : undefined,
           stack: error instanceof Error ? error.stack : undefined,
+          log: Log.file(),
         })
         if (fatal) await exit(error)
         else throw error

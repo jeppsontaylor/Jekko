@@ -5,23 +5,26 @@
 //!
 //! Reference candidates:
 //!   baseline | reference_context_pack | reference_evidence_ledger |
-//!   reference_claim_skeptic
+//!   reference_claim_skeptic | arena_lane_00..arena_lane_19
 //!
 //! Always deterministic. Two invocations with identical input produce
 //! byte-identical output (FNV-1a-hashed in `verify_determinism`).
 
 use std::collections::BTreeMap;
-use std::env;
 use std::fs;
 use std::process;
 
 use crate::adapters::{
     baseline, reference_claim_skeptic, reference_context_pack, reference_evidence_ledger,
 };
+use crate::candidates::{
+    arena, compression_first, hybrid_index, ledger_first, skeptic_dataset, temporal_graph,
+};
 use crate::json::{self, Json};
 use crate::memory_api::axes_to_json;
-use crate::runner_support::{accumulate, average, run_fixture, weighted_fraction};
-use crate::{AxisScores, MemorySystem};
+use crate::runner_generated::run_generated_candidate;
+use crate::runner_support::{accumulate, average, parse_args, run_fixture, weighted_fraction};
+use crate::{AxisScores, MemorySystem, Split, SuiteConfig};
 
 pub const DEFAULT_REFERENCE_CANDIDATES: &[&str] = &[
     "baseline",
@@ -38,63 +41,44 @@ pub struct CandidateReport {
     pub json: String,
 }
 
-fn parse_args() -> (String, Option<String>) {
-    let mut candidate = String::new();
-    let mut out: Option<String> = None;
-    let args: Vec<String> = env::args().collect();
-    let mut i = 1;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--candidate" => {
-                candidate = match args.get(i + 1) {
-                    Some(value) => value.clone(),
-                    None => String::new(),
-                };
-                i += 2;
-            }
-            "--out" => {
-                out = args.get(i + 1).cloned();
-                i += 2;
-            }
-            "--json" => {
-                i += 1;
-            }
-            "--help" | "-h" => {
-                eprintln!(
-                    "bench --candidate <name> [--out <path>] [--json]\n  candidate in {{baseline, reference_context_pack, reference_evidence_ledger, reference_claim_skeptic, \
-                     ledger_first, hybrid_index, temporal_graph, compression_first, skeptic_dataset}}"
-                );
-                process::exit(0);
-            }
-            _ => {
-                i += 1;
-            }
-        }
-    }
-    if candidate.is_empty() {
-        eprintln!("bench: --candidate <name> is required");
-        process::exit(2);
-    }
-    (candidate, out)
-}
-
 fn boxed_adapter(name: &str) -> Result<Box<dyn MemorySystem>, String> {
     match name {
         "baseline" => Ok(Box::new(baseline::Adapter::default())),
         "reference_context_pack" => Ok(Box::new(reference_context_pack::Adapter::default())),
         "reference_evidence_ledger" => Ok(Box::new(reference_evidence_ledger::Adapter::default())),
         "reference_claim_skeptic" => Ok(Box::new(reference_claim_skeptic::Adapter::default())),
-        // Other candidate names still map to the baseline adapter while their
-        // dedicated implementations remain in progress.
-        "exec" | "ledger_first" | "hybrid_index" | "temporal_graph" | "compression_first"
-        | "skeptic_dataset" => Ok(Box::new(baseline::Adapter::default())),
+        "exec" | "ledger_first" => Ok(Box::new(ledger_first::Adapter::default())),
+        "hybrid_index" => Ok(Box::new(hybrid_index::Adapter::default())),
+        "temporal_graph" => Ok(Box::new(temporal_graph::Adapter::default())),
+        "compression_first" => Ok(Box::new(compression_first::Adapter::default())),
+        "skeptic_dataset" => Ok(Box::new(skeptic_dataset::Adapter::default())),
+        "arena_lane_00" => Ok(Box::new(arena::lane_00::Adapter::default())),
+        "arena_lane_01" => Ok(Box::new(arena::lane_01::Adapter::default())),
+        "arena_lane_02" => Ok(Box::new(arena::lane_02::Adapter::default())),
+        "arena_lane_03" => Ok(Box::new(arena::lane_03::Adapter::default())),
+        "arena_lane_04" => Ok(Box::new(arena::lane_04::Adapter::default())),
+        "arena_lane_05" => Ok(Box::new(arena::lane_05::Adapter::default())),
+        "arena_lane_06" => Ok(Box::new(arena::lane_06::Adapter::default())),
+        "arena_lane_07" => Ok(Box::new(arena::lane_07::Adapter::default())),
+        "arena_lane_08" => Ok(Box::new(arena::lane_08::Adapter::default())),
+        "arena_lane_09" => Ok(Box::new(arena::lane_09::Adapter::default())),
+        "arena_lane_10" => Ok(Box::new(arena::lane_10::Adapter::default())),
+        "arena_lane_11" => Ok(Box::new(arena::lane_11::Adapter::default())),
+        "arena_lane_12" => Ok(Box::new(arena::lane_12::Adapter::default())),
+        "arena_lane_13" => Ok(Box::new(arena::lane_13::Adapter::default())),
+        "arena_lane_14" => Ok(Box::new(arena::lane_14::Adapter::default())),
+        "arena_lane_15" => Ok(Box::new(arena::lane_15::Adapter::default())),
+        "arena_lane_16" => Ok(Box::new(arena::lane_16::Adapter::default())),
+        "arena_lane_17" => Ok(Box::new(arena::lane_17::Adapter::default())),
+        "arena_lane_18" => Ok(Box::new(arena::lane_18::Adapter::default())),
+        "arena_lane_19" => Ok(Box::new(arena::lane_19::Adapter::default())),
         other => Err(format!("unknown candidate {:?}", other)),
     }
 }
 
 pub fn run_cli() {
-    let (candidate, out_path) = parse_args();
-    let report = match run_candidate(&candidate) {
+    let (candidate, out_path, config) = parse_args();
+    let report = match run_candidate_with_config(&candidate, &config) {
         Ok(report) => report,
         Err(e) => {
             eprintln!("{}", e);
@@ -120,7 +104,17 @@ pub fn run_cli() {
 }
 
 pub fn run_candidate(candidate: &str) -> Result<CandidateReport, String> {
+    run_candidate_with_config(candidate, &SuiteConfig::default())
+}
+
+pub fn run_candidate_with_config(
+    candidate: &str,
+    config: &SuiteConfig,
+) -> Result<CandidateReport, String> {
     let mut adapter = boxed_adapter(candidate)?;
+    if config.split != Split::PublicSmoke {
+        return run_generated_candidate(candidate, adapter.as_mut(), config);
+    }
     let fixtures = crate::fixture::all();
 
     let mut axis_totals = AxisScores::default();

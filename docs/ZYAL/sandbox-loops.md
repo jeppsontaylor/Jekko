@@ -6,7 +6,7 @@ outside the main git tree, with permission allowlists, captured logs, and a
 patch-export step at the end.
 
 Canonical spec: [`agent/sandbox-lanes.toml`](../../agent/sandbox-lanes.toml)
-(generated from `agent/sandbox-lanes.zyal` via `zyalc`).
+(generated from `agent/zyal/sandbox-lanes.zyal` via `zyalc`).
 
 Runtime: [`crates/sandboxctl/`](../../crates/sandboxctl/).
 
@@ -75,9 +75,9 @@ can audit attempted but blocked commands.
 
 ## Adding a new lane
 
-1. Edit `agent/sandbox-lanes.zyal`. Choose `runtime.backend`, fill `commands`
+1. Edit `agent/zyal/sandbox-lanes.zyal`. Choose `runtime.backend`, fill `commands`
    carefully (start strict, expand later).
-2. Run `cargo run -p zyalc -- compile agent/sandbox-lanes.zyal` to regenerate
+2. Run `cargo run -p zyalc -- compile agent/zyal/sandbox-lanes.zyal` to regenerate
    `agent/sandbox-lanes.toml`. CI fails if you commit a `.zyal` edit without
    the regenerated TOML.
 3. Validate locally: `cargo run -p sandboxctl -- validate`.
@@ -95,7 +95,7 @@ can audit attempted but blocked commands.
 ## Limits in v1
 
 - No `cargo mutants` blocking gate.
-- Only `agent/sandbox-lanes.zyal` and `agent/workflows/*.zyal` are discovered
+- Only `agent/zyal/*.zyal` and `agent/workflows/*.zyal` are discovered
   by `zyalc compile --all`. Additional sources require listing.
 - Default sandbox root is `~/.local/share/agent-sandboxes/{run_id}/`. Override
   via the lane's `sandbox_root` field or the `SANDBOXCTL_ROOT` env var.

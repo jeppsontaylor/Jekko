@@ -690,7 +690,7 @@ memory/disk monitor: always enabled
 permission policy: never silently bypass denied permissions
 ```
 
-There is recent research highlighting why unrestricted filesystem agents are risky: AI coding agents operate directly on users’ filesystems and can corrupt data, delete files, or leak secrets; the paper argues for staging, snapshots, and progressive permissions. That strongly supports requiring checkpoints, rollback refs, path scopes, and auditable side effects in daemon mode. 
+There is recent research highlighting why unrestricted filesystem agents are risky: AI coding agents operate directly on users’ filesystems and can corrupt data, delete files, or leak secrets; the paper argues for staging, snapshots, and progressive permissions. That strongly supports requiring checkpoints, rollback refs, path scopes, and auditable side effects in daemon mode.
 
 ---
 
@@ -1603,4 +1603,3 @@ That gives you the thing you actually want: **a coding agent that can run foreve
 [19]: https://github.com/anomalyco/jekko/issues/19215 "[FEATURE]: DB-backed agent team coordination (parallel sub-agents, messaging, memory) · Issue #19215 · anomalyco/jekko · GitHub"
 [20]: https://jekko.ai/docs/plugins/ "Plugins | Jekko"
 [21]: https://github.com/anomalyco/jekko/blob/dev/packages/jekko/src/cli/cmd/tui/app.tsx?utm_source=chatgpt.com "jekko/packages/jekko/src/cli/cmd/tui/app.tsx at dev"
-

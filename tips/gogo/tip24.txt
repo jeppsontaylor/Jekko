@@ -2190,4 +2190,3 @@ That is how I would make Jekko stop “always stopping”: not by begging the mo
 [31]: https://developers.openai.com/api/docs/guides/agents?utm_source=chatgpt.com "Agents SDK | OpenAI API"
 [32]: https://arxiv.org/html/2605.01920v1?utm_source=chatgpt.com "A Language for Describing Agentic LLM Contexts"
 [33]: https://medium.com/%40riccardo.tartaglia/why-we-need-a-standard-language-for-agentic-workflows-and-why-i-built-one-820a5775a3ab?utm_source=chatgpt.com "Why We Need a Standard Language for Agentic Workflows ..."
-

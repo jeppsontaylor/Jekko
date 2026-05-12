@@ -2834,4 +2834,3 @@ fn latency_icon(ms: f64) -> &'static str {
     }
 }
 ```
-

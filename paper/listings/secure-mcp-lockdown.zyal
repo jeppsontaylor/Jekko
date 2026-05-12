@@ -1,4 +1,4 @@
-# Provenance: compact appendix excerpt from docs/ZYAL/examples/05-secure-mcp-lockdown.zyal.yml.
+# Provenance: compact appendix excerpt from docs/ZYAL/examples/05-secure-mcp-lockdown.zyal.
 <<<ZYAL v1:daemon id=secure-mcp-lockdown>>>
 version: v1
 intent: daemon

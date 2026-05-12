@@ -8,7 +8,7 @@ Date: 2026-05-09
 - Source: `paper/ZYAL.tex`
 - Bibliography: `paper/ZYAL.bib`
 - Figures: `paper/figures/*.tex`
-- Appendix listings: `paper/listings/*.zyal.yml`
+- Appendix listings: `paper/listings/*.zyal`
 - Research artifacts: `paper/research/source-register.md`, `framework-matrix.md`, `social-discussion-digest.md`, `claim-audit.md`, `research-log.md`
 - Build wrapper: `paper/bin/latexminted`
 

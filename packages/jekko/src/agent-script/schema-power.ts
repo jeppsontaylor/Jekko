@@ -126,6 +126,7 @@ export const ZyalExperiments = Schema.Struct({
   scoring: Schema.optional(Schema.Struct({
     weights: Schema.optional(Schema.Record(Schema.String, Schema.Number)),
     command: Schema.optional(Schema.String),
+    primary: Schema.optional(Schema.String),
     judge: Schema.optional(Schema.Struct({
       agent: Schema.String,
       blind: Schema.optional(Schema.Boolean),

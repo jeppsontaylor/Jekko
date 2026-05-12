@@ -3230,4 +3230,3 @@ cargo run --release -- --base http://127.0.0.1:4317
 Core controls are built into the help overlay: press `?`. The most useful ones are `1-6` for tabs, `/` to filter, `s` to cycle leaderboard sort, `[` and `]` to cycle feed phase filters, `p` to pause/unpause UI application of live updates, `r` to force a fresh snapshot, and `Enter`/`d` for the model detail drawer.
 
 [1]: https://ratatui.rs/installation/?utm_source=chatgpt.com "Installation"
-

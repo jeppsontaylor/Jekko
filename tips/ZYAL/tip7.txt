@@ -1,6 +1,6 @@
 ## Bottom line
 
-ZYAL is already unusually strong. It is not merely a prompt format; it is a **host-enforced run contract** with lifecycle control, budgets, evidence gates, approval gates, sandboxing, observability, model routing, anti-vibe quality checks, hypothesis tournaments, rollback, repo intelligence, and governed memory. That is the right architectural center of gravity. The most important upgrade is to make ZYAL the **governance kernel** that composes existing protocols rather than replacing them. The uploaded spec already frames this well: “the model does the thinking; ZYAL does the governing.” 
+ZYAL is already unusually strong. It is not merely a prompt format; it is a **host-enforced run contract** with lifecycle control, budgets, evidence gates, approval gates, sandboxing, observability, model routing, anti-vibe quality checks, hypothesis tournaments, rollback, repo intelligence, and governed memory. That is the right architectural center of gravity. The most important upgrade is to make ZYAL the **governance kernel** that composes existing protocols rather than replacing them. The uploaded spec already frames this well: “the model does the thinking; ZYAL does the governing.”
 
 I’m assuming “OpenClaw, LangChane, and Hermis” refer to **OpenClaw**, **LangChain/LangGraph**, and **Hermes/Hermes Agent-style tool execution**. I also compared ZYAL against MCP, A2A, AG-UI, ACP, OpenAI Agents SDK, AutoGen/AG2, CrewAI, Microsoft Agent Framework, Strands, AgentSkills/SKILL.md, AGENTS.md, Cursor rules, MemGPT/Letta/Zep/Mem0/LlamaIndex memory patterns, and supply-chain attestation standards.
 
@@ -40,7 +40,7 @@ The fourth gap is **context security**. ZYAL’s arming block already rejects as
 
 The fifth gap is **guardrail coverage invariants**. ZYAL should specify that guardrails wrap every action channel, including hosted tools, MCP tools, handoffs, A2A workers, skill scripts, shell, browser, editor operations, and generated code execution. OpenAI’s Agents SDK documentation is a useful warning: tool guardrails apply to function tools but not all other tool/handoff channels, so ZYAL should define universal coverage as a host invariant. ([OpenAI GitHub][11])
 
-One small but telling spec issue: the uploaded ZYAL document says durable state persists in **9 SQLite tables**, but the listed table names appear to enumerate **8**. That kind of mismatch is minor, but before ZYAL becomes a standard, all schema counts, names, block versions, and conformance claims should be mechanically validated. 
+One small but telling spec issue: the uploaded ZYAL document says durable state persists in **9 SQLite tables**, but the listed table names appear to enumerate **8**. That kind of mismatch is minor, but before ZYAL becomes a standard, all schema counts, names, block versions, and conformance claims should be mechanically validated.
 
 ---
 

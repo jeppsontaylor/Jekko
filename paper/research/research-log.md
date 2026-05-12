@@ -9,13 +9,13 @@ Commands run:
 - `rtk sed -n ... agent/JANKURAI_STANDARD.md`
 - `rtk sed -n ... paper/ZYAL.md ZYAL_MISSION.md docs/ZYAL_MISSION.md`
 - `rtk sed -n ... docs/ZYAL/examples/README.md`
-- `rtk wc -l -c packages/jekko/src/agent-script/schema.ts packages/jekko/src/agent-script/parser.ts packages/jekko/src/agent-script/parser.test.ts docs/ZYAL/examples/*.zyal.yml`
+- `rtk wc -l -c packages/jekko/src/agent-script/schema.ts packages/jekko/src/agent-script/parser.ts packages/jekko/src/agent-script/parser.test.ts docs/ZYAL/examples/*.zyal`
 - `rtk rg -n ... packages/jekko/src/session/daemon*.ts packages/jekko/test/session/daemon*.test.ts`
 
 Findings:
 
 - Parser/schema/test sizes: `schema.ts` 2,078 lines / 85,727 bytes; `parser.ts` 1,803 lines / 75,355 bytes; parser test 1,388 lines.
-- Docs example corpus has ten `.zyal.yml` files. The older draft phrase "9 examples" is stale.
+- Docs example corpus uses canonical `.zyal` files. The older draft phrase "9 examples" is stale.
 - Runtime has roughly 5,657 lines across `packages/jekko/src/session/daemon*.ts`.
 - SQLite truth tables are in `daemon.sql.ts`.
 - Taint and arming hash/nonce are preview-only in docs/TUI wording.

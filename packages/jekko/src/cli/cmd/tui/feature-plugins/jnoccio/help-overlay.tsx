@@ -41,6 +41,7 @@ const SECTIONS: { title: string; hints: KeyHint[] }[] = [
     title: "Global",
     hints: [
       { key: "?", desc: "Toggle this help overlay" },
+      { key: "Ctrl+H", desc: "Back (return to previous view)" },
       { key: "Ctrl+J", desc: "Toggle Jnoccio dashboard" },
       { key: "q", desc: "Exit Jnoccio dashboard" },
     ],

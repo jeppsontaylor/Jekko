@@ -9,7 +9,7 @@ import type { DashboardModel } from "../../context/jnoccio-types"
 
 /** Compact number: 1234 → "1.2K", 1234567 → "1.2M" */
 export function fmtN(n: number | null | undefined): string {
-  if (n == null) return "—"
+  if (n == null || !Number.isFinite(n)) return "—"
   if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
   if (n >= 10_000) return `${(n / 1_000).toFixed(1)}K`
@@ -19,20 +19,20 @@ export function fmtN(n: number | null | undefined): string {
 
 /** Millions formatter: 1.23 → "1.2" */
 export function fmtM(n: number | null | undefined): string {
-  if (n == null) return "0.0"
+  if (n == null || !Number.isFinite(n)) return "0.0"
   return n.toFixed(1)
 }
 
 /** Latency: null → "—", 123 → "123ms", 1234 → "1.2s", 15400 → "15.4s" */
 export function fmtMs(ms: number | null | undefined): string {
-  if (ms == null) return "—"
+  if (ms == null || !Number.isFinite(ms)) return "—"
   if (ms < 1000) return `${Math.round(ms)}ms`
   return `${(ms / 1000).toFixed(1)}s`
 }
 
 /** Percentage: 0.85 → "85%", 0.854 → "85.4%" */
 export function fmtPct(ratio: number | null | undefined): string {
-  if (ratio == null) return "—"
+  if (ratio == null || !Number.isFinite(ratio)) return "—"
   const pct = ratio * 100
   if (pct === 0) return "0%"
   if (pct >= 10) return `${Math.round(pct)}%`

@@ -40,13 +40,13 @@ Jekko tools include built-ins and custom tools/MCP servers, with permission cont
 
 Jekko skills are reusable behavior descriptions stored as `SKILL.md` and loaded on demand through the native skill tool. Forever mode should lean on skills for domain process—review workflow, release workflow, Jankurai audit workflow—rather than stuffing every policy into one huge prompt. ([Jekko][11])
 
-The current session status model is small: `idle`, `retry`, and `busy`. A real forever mode either needs a new daemon status variant or a separate daemon event/status overlay so TUI/headless clients know the session is intentionally running forever rather than accidentally hung. 
+The current session status model is small: `idle`, `retry`, and `busy`. A real forever mode either needs a new daemon status variant or a separate daemon event/status overlay so TUI/headless clients know the session is intentionally running forever rather than accidentally hung.
 
-Jekko’s compaction system is real and useful. It summarizes into sections such as Goal, Constraints & Preferences, Progress, Done, In Progress, Blocked, Key Decisions, Next Steps, Critical Context, and Relevant Files, and it can auto-create a synthetic “continue” prompt after compaction. But that same auto-continue idea is dangerous if reused as daemon control, because Jekko issues already report problematic infinite-loop behavior around compaction and finish states. 
+Jekko’s compaction system is real and useful. It summarizes into sections such as Goal, Constraints & Preferences, Progress, Done, In Progress, Blocked, Key Decisions, Next Steps, Critical Context, and Relevant Files, and it can auto-create a synthetic “continue” prompt after compaction. But that same auto-continue idea is dangerous if reused as daemon control, because Jekko issues already report problematic infinite-loop behavior around compaction and finish states.
 
 Jekko’s `jekko run` currently exits when it observes `session.status` becoming `idle` for the session. Forever mode must override that at the headless controller layer: `idle` should mean “one inner agent turn ended,” not “the daemon process should exit.” ([GitHub][12])
 
-Jekko’s prompt layer already wires in tools, MCP tools, and subtask handling. The existing prompt code resolves tools from the internal registry and MCP, and has task/subagent plumbing. That means “spin up multiple MCPs” should not be a separate hack; it should be an orchestration policy layered over Jekko’s existing tool, MCP, and subagent abstractions. 
+Jekko’s prompt layer already wires in tools, MCP tools, and subtask handling. The existing prompt code resolves tools from the internal registry and MCP, and has task/subagent plumbing. That means “spin up multiple MCPs” should not be a separate hack; it should be an orchestration policy layered over Jekko’s existing tool, MCP, and subagent abstractions.
 
 The Jekko issue tracker is also full of warning signs that are directly relevant. There are requests for configurable compaction thresholds, reports of loop termination failures causing infinite loops, auto-compaction infinite loops when an assistant already ended its turn, infinite retry loops, sequential Task tool behavior, background subagent requests, and an “Agent Teams” design discussion. These are exactly the reasons forever mode must be explicit, observable, permissioned, and host-controlled. ([GitHub][13])
 
@@ -1999,4 +1999,3 @@ That is the architecture that makes “FOREVER” real instead of another prompt
 [15]: https://github.com/anomalyco/jekko/issues/15533?utm_source=chatgpt.com "Auto-compaction infinite loop when assistant ended its turn (finish !== tool-calls) · Issue #15533 · anomalyco/jekko · GitHub"
 [16]: https://github.com/anomalyco/jekko/issues/12711?utm_source=chatgpt.com "[DESIGN]: Agent Teams — flat teams with named messaging, multi-model support, and TUI integration · Issue #12711 · anomalyco/jekko · GitHub"
 [17]: https://github.com/anomalyco/jekko/issues/12234?utm_source=chatgpt.com "Infinite retry loop when StreamIdleTimeoutError occurs during tool input generation · Issue #12234 · anomalyco/jekko · GitHub"
-

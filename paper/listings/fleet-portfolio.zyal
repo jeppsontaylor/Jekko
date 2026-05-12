@@ -1,4 +1,4 @@
-# Provenance: compact appendix excerpt from docs/ZYAL/examples/04-fleet-portfolio.zyal.yml.
+# Provenance: compact appendix excerpt from docs/ZYAL/examples/04-fleet-portfolio.zyal.
 <<<ZYAL v1:daemon id=fleet-portfolio>>>
 version: v1
 intent: daemon

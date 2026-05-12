@@ -1,10 +1,10 @@
-// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-file-with-parallel-patterns-by-design expires=2027-01-01
+// jankurai:allow HLT-000-SCORE-DIMENSION reason=large-structured-logo-renderer-with-parallel-pixel-font-patterns expires=2027-01-01
 import { RGBA } from "@opentui/core"
 import { createMemo, For } from "solid-js"
+import { JEKKO_ANSI_ART } from "./logo-ansi"
 
 export type Align = "left" | "center" | "right"
 export type RGB = { r: number; g: number; b: number }
-type HSV = { h: number; s: number; v: number }
 type VisibleIndexResult = { kind: "found"; index: number } | { kind: "missing" }
 type WordmarkLayer = "wordmark" | "wordmarkShadowNear" | "wordmarkShadowMid" | "wordmarkShadowFar"
 type WordmarkSource = {
@@ -31,6 +31,8 @@ export type LogoCell = {
   sourceY?: number
   sourceWidth?: number
   sourceHeight?: number
+  fg?: RGB
+  bg?: RGB
 }
 
 export type LogoRow = {
@@ -62,9 +64,13 @@ export type SvgPreviewOptions = {
   title?: string
 }
 
+// 78 inner columns fills a standard 80-col terminal and gives the scaleX=2
+// pixel font + shadow extrusion room to breathe without clipping.
 export const INNER_WIDTH = 78
 export const OUTER_WIDTH = INNER_WIDTH + 2
-const GRADIENT_STEPS = 1024
+const GRADIENT_STEPS = 512
+const BLACK = { r: 0, g: 0, b: 0 } satisfies RGB
+const WHITE = { r: 255, g: 255, b: 255 } satisfies RGB
 
 // ---------------------------------------------------------------------------
 // Color helpers
@@ -104,86 +110,12 @@ export function colorToCss(color: RGB): string {
   return `rgb(${color.r},${color.g},${color.b})`
 }
 
-function rgbToHSV(color: RGB): HSV {
-  const rn = color.r / 255
-  const gn = color.g / 255
-  const bn = color.b / 255
-
-  const max = Math.max(rn, gn, bn)
-  const min = Math.min(rn, gn, bn)
-  const delta = max - min
-
-  let h = 0
-
-  if (delta !== 0) {
-    if (max === rn) {
-      h = 60 * (((gn - bn) / delta) % 6)
-    } else if (max === gn) {
-      h = 60 * ((bn - rn) / delta + 2)
-    } else {
-      h = 60 * ((rn - gn) / delta + 4)
-    }
-  }
-
-  if (h < 0) h += 360
-
-  return {
-    h,
-    s: max === 0 ? 0 : delta / max,
-    v: max,
-  }
-}
-
-function hsvToRGB(h: number, s: number, v: number): RGB {
-  const hue = ((h % 360) + 360) % 360
-  const sat = clamp01(s)
-  const val = clamp01(v)
-
-  const c = val * sat
-  const x = c * (1 - Math.abs(((hue / 60) % 2) - 1))
-  const m = val - c
-
-  let r = 0
-  let g = 0
-  let b = 0
-
-  if (hue < 60) {
-    r = c
-    g = x
-  } else if (hue < 120) {
-    r = x
-    g = c
-  } else if (hue < 180) {
-    g = c
-    b = x
-  } else if (hue < 240) {
-    g = x
-    b = c
-  } else if (hue < 300) {
-    r = x
-    b = c
-  } else {
-    r = c
-    b = x
-  }
-
-  return rgb((r + m) * 255, (g + m) * 255, (b + m) * 255)
-}
-
-function mixHue(left: number, right: number, t: number): number {
-  const delta = ((right - left + 540) % 360) - 180
-  return (left + delta * t + 360) % 360
-}
-
-function mixHSV(left: RGB, right: RGB, t: number): RGB {
+function mixRGB(left: RGB, right: RGB, t: number): RGB {
   const k = clamp01(t)
-  const l = rgbToHSV(left)
-  const r = rgbToHSV(right)
-
-  return hsvToRGB(
-    mixHue(l.h, r.h, k),
-    l.s + (r.s - l.s) * k,
-    l.v + (r.v - l.v) * k,
+  return rgb(
+    left.r + (right.r - left.r) * k,
+    left.g + (right.g - left.g) * k,
+    left.b + (right.b - left.b) * k,
   )
 }
 
@@ -192,48 +124,84 @@ function smoothstep(t: number): number {
   return x * x * (3 - 2 * x)
 }
 
-function forceNeon(color: RGB, dim = false): RGB {
-  const hsv = rgbToHSV(color)
+function srgbToLinear(value: number): number {
+  const x = clamp01(value / 255)
+  return x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+}
 
-  if (dim) {
-    return hsvToRGB(hsv.h, Math.max(0.86, hsv.s), 0.72)
+function relativeLuminance(color: RGB): number {
+  return (
+    0.2126 * srgbToLinear(color.r) +
+    0.7152 * srgbToLinear(color.g) +
+    0.0722 * srgbToLinear(color.b)
+  )
+}
+
+export function contrastOnBlack(color: RGB): number {
+  return (relativeLuminance(color) + 0.05) / 0.05
+}
+
+function liftContrastOnBlack(color: RGB, minimumContrast: number): RGB {
+  if (contrastOnBlack(color) >= minimumContrast) {
+    return color
   }
 
-  return hsvToRGB(hsv.h, 1, 1)
+  let lo = 0
+  let hi = 1
+  let best = color
+
+  for (let i = 0; i < 18; i++) {
+    const mid = (lo + hi) / 2
+    const candidate = mixRGB(color, WHITE, mid)
+
+    if (contrastOnBlack(candidate) >= minimumContrast) {
+      best = candidate
+      hi = mid
+    } else {
+      lo = mid
+    }
+  }
+
+  return best
 }
 
-function deepenNeon(color: RGB, value: number): RGB {
-  const hsv = rgbToHSV(color)
-  return hsvToRGB(hsv.h, 1, value)
+function dimReadable(color: RGB, amount: number, minimumContrast: number): RGB {
+  return liftContrastOnBlack(mixRGB(color, BLACK, amount), minimumContrast)
 }
 
 // ---------------------------------------------------------------------------
-// Acid Gecko Bloom palette
+// Blacklight Prism palette
 // ---------------------------------------------------------------------------
-// Same color story as your original, but the 1024-step HSV LUT keeps gradients
-// bright and cleaner in both terminal cells and generated previews.
+// The important choice: all foreground colors are lifted, readable neon.
+// No navy, no royal blue, no deep purple. Those colors look cyber but collapse
+// on black; this palette keeps the cyan/blue/purple mood without sacrificing
+// legibility.
 
-const ACID_GECKO_BLOOM_STOPS = [
-  "#00FF66",
-  "#B6FF00",
-  "#00FFE0",
-  "#006DFF",
-  "#8B00FF",
-  "#FF00B8",
-].map(hexToRGB)
+export const HIGH_CONTRAST_BLACK_COLORMAPS = {
+  blacklightPrism: [
+    "#00F5FF",
+    "#52E0FF",
+    "#79C8FF",
+    "#A7B5FF",
+    "#C69CFF",
+    "#EC8CFF",
+    "#FF78D8",
+    "#FFB86C",
+  ],
+} as const
 
-const ACID_GECKO_SHADOW_STOPS = [
-  "#00CFFF",
-  "#007CFF",
-  "#254BFF",
-  "#6A00FF",
-  "#A500FF",
-  "#FF008C",
-].map(hexToRGB)
+const BLACKLIGHT_PRISM_STOPS = HIGH_CONTRAST_BLACK_COLORMAPS.blacklightPrism.map(hexToRGB)
+const WORDMARK_PRISM_STOPS = HIGH_CONTRAST_BLACK_COLORMAPS.blacklightPrism
+  .slice(0, 7)
+  .map(hexToRGB)
 
-function buildGradientLUT(stops: RGB[], steps: number): RGB[] {
+function buildGradientLUT(
+  stops: RGB[],
+  steps: number,
+  minimumContrast: number,
+): RGB[] {
   if (stops.length < 2) {
-    return [forceNeon(stops[0] ?? rgb(0, 255, 102))]
+    return [liftContrastOnBlack(stops[0] ?? rgb(0, 245, 255), minimumContrast)]
   }
 
   const out: RGB[] = []
@@ -246,22 +214,15 @@ function buildGradientLUT(stops: RGB[], steps: number): RGB[] {
     const localT = pos - segment
     const eased = smoothstep(localT)
 
-    const mixed = mixHSV(stops[segment]!, stops[segment + 1]!, eased)
-    out.push(forceNeon(mixed))
+    const mixed = mixRGB(stops[segment]!, stops[segment + 1]!, eased)
+    out.push(liftContrastOnBlack(mixed, minimumContrast))
   }
 
   return out
 }
 
-const ACID_GECKO_BLOOM = buildGradientLUT(
-  ACID_GECKO_BLOOM_STOPS,
-  GRADIENT_STEPS,
-)
-
-const ACID_GECKO_SHADOW = buildGradientLUT(
-  ACID_GECKO_SHADOW_STOPS,
-  GRADIENT_STEPS,
-)
+const GLOBAL_PRISM = buildGradientLUT(BLACKLIGHT_PRISM_STOPS, GRADIENT_STEPS, 8.0)
+const WORDMARK_PRISM = buildGradientLUT(WORDMARK_PRISM_STOPS, GRADIENT_STEPS, 8.8)
 
 function colorFromLUT(lut: RGB[], t: number): RGB {
   const idx = Math.max(
@@ -273,7 +234,7 @@ function colorFromLUT(lut: RGB[], t: number): RGB {
 }
 
 // ---------------------------------------------------------------------------
-// Global diagonal field
+// Global and wordmark gradients
 // ---------------------------------------------------------------------------
 
 function globalDiagonalT(
@@ -285,7 +246,7 @@ function globalDiagonalT(
   const tx = width <= 1 ? 0 : x / (width - 1)
   const ty = height <= 1 ? 0 : y / (height - 1)
 
-  return clamp01((tx + ty) / 2)
+  return clamp01(tx * 0.74 + ty * 0.26)
 }
 
 function globalGradientColor(
@@ -295,13 +256,9 @@ function globalGradientColor(
   height: number,
   dim = false,
 ): RGB {
-  const t = globalDiagonalT(x, y, width, height)
-  return forceNeon(colorFromLUT(ACID_GECKO_BLOOM, t), dim)
+  const base = colorFromLUT(GLOBAL_PRISM, globalDiagonalT(x, y, width, height))
+  return dim ? dimReadable(base, 0.24, 5.8) : base
 }
-
-// ---------------------------------------------------------------------------
-// Wordmark-local gradient
-// ---------------------------------------------------------------------------
 
 function wordmarkT(
   sourceX: number,
@@ -312,7 +269,9 @@ function wordmarkT(
   const tx = width <= 1 ? 0 : clamp01(sourceX / (width - 1))
   const ty = height <= 1 ? 0 : clamp01(sourceY / (height - 1))
 
-  return clamp01((tx + ty) / 2)
+  // Mostly horizontal for readability, with a slight diagonal sweep so the
+  // top-left and bottom-right do not look flat.
+  return clamp01(tx * 0.84 + ty * 0.16)
 }
 
 function wordmarkColor(
@@ -321,8 +280,7 @@ function wordmarkColor(
   width: number,
   height: number,
 ): RGB {
-  const t = wordmarkT(sourceX, sourceY, width, height)
-  return forceNeon(colorFromLUT(ACID_GECKO_BLOOM, t))
+  return colorFromLUT(WORDMARK_PRISM, wordmarkT(sourceX, sourceY, width, height))
 }
 
 function wordmarkShadowColor(
@@ -333,14 +291,14 @@ function wordmarkShadowColor(
   layer: "near" | "mid" | "far",
 ): RGB {
   const baseT = wordmarkT(sourceX, sourceY, width, height)
-  const t = clamp01(
-    baseT + (layer === "far" ? 0.15 : layer === "mid" ? 0.095 : 0.052),
+  const shifted = clamp01(
+    baseT + (layer === "far" ? 0.16 : layer === "mid" ? 0.11 : 0.06),
   )
-  const base = colorFromLUT(ACID_GECKO_SHADOW, t)
+  const base = colorFromLUT(WORDMARK_PRISM, shifted)
 
-  if (layer === "far") return deepenNeon(base, 0.34)
-  if (layer === "mid") return deepenNeon(base, 0.5)
-  return deepenNeon(base, 0.68)
+  if (layer === "far") return dimReadable(base, 0.44, 3.8)
+  if (layer === "mid") return dimReadable(base, 0.35, 4.6)
+  return dimReadable(base, 0.26, 5.8)
 }
 
 function resolveWordmarkSource(
@@ -475,11 +433,7 @@ function frameCells(cells: LogoCell[]): LogoRow {
   }
 
   return {
-    cells: [
-      globalCell("│"),
-      ...inner,
-      globalCell("│"),
-    ],
+    cells: [globalCell("│"), ...inner, globalCell("│")],
   }
 }
 
@@ -490,23 +444,21 @@ function isInk(char: string): boolean {
 // ---------------------------------------------------------------------------
 // Crisp half-block wordmarks
 // ---------------------------------------------------------------------------
-// A 5x7 pixel font is rendered with Unicode half-blocks (▀ ▄ █) so that two
-// pixel rows pack into one terminal cell. This doubles the effective vertical
-// resolution while staying perfectly crisp — every cell is either a solid
-// half/full block or empty. The SVG preview renderer turns each block into the
-// matching half- or full-height rectangle for vector-grade output.
+// A compact 5x7 pixel face rendered with Unicode half-blocks. Each terminal
+// cell represents two pixel rows, so the wordmark gets square-ish pixels and
+// a crisp arcade silhouette without the blobby stretched look.
 
 type PixelFont = Record<string, string[]>
 
 const PIXEL_FONT_5X7: PixelFont = {
   J: [
-    "00111",
-    "00001",
-    "00001",
-    "00001",
-    "00001",
-    "10001",
-    "01110",
+    "11111",
+    "00010",
+    "00010",
+    "00010",
+    "00010",
+    "10010",
+    "01100",
   ],
   E: [
     "11111",
@@ -559,8 +511,8 @@ function renderPixelWord(
   text: string,
   options: { scaleX?: number; gap?: number } = {},
 ): string[] {
-  const scaleX = options.scaleX ?? 2
-  const gap = options.gap ?? 2
+  const scaleX = options.scaleX ?? 1
+  const gap = options.gap ?? 1
   const glyphs = Array.from(text.toUpperCase()).map(
     (letter) => PIXEL_FONT_5X7[letter] ?? PIXEL_FONT_5X7[" "]!,
   )
@@ -644,33 +596,29 @@ function artMetrics(art: string[]): ArtMetrics {
     })
   }
 
-  const minVisibleX = Math.min(...allVisibleXs)
-  const maxVisibleX = Math.max(...allVisibleXs)
-  const topAnchor = firstVisibleIndex(lines[0]!)
-  const bottomAnchor = lastVisibleIndex(lines[lines.length - 1]!)
-  const gradientLeft = topAnchor.kind === "found" ? topAnchor.index : minVisibleX
-  const gradientRight = bottomAnchor.kind === "found" ? bottomAnchor.index : maxVisibleX
+  const minVisibleX = allVisibleXs.length > 0 ? Math.min(...allVisibleXs) : 0
+  const maxVisibleX = allVisibleXs.length > 0 ? Math.max(...allVisibleXs) : artWidth - 1
 
   return {
     lines,
     artWidth,
     artHeight,
-    gradientLeft,
-    gradientRight,
-    gradientWidth: Math.max(1, gradientRight - gradientLeft + 1),
+    gradientLeft: minVisibleX,
+    gradientRight: maxVisibleX,
+    gradientWidth: Math.max(1, maxVisibleX - minVisibleX + 1),
     gradientHeight: Math.max(1, artHeight),
   }
 }
 
-// Shadow layers were removed. The previous design stacked three offset copies
-// of every glyph (dx=2/4/6, dy=1/2/3) which read as visual repetition rather
-// than depth. The wordmark now renders single-layer with the gradient doing
-// the depth work. Empty list keeps the canvas-builder API stable.
 const WORDMARK_SHADOW_LAYERS: Array<{
   dx: number
   dy: number
   layer: "wordmarkShadowNear" | "wordmarkShadowMid" | "wordmarkShadowFar"
-}> = []
+}> = [
+    { dx: 2, dy: 1, layer: "wordmarkShadowNear" },
+    { dx: 4, dy: 2, layer: "wordmarkShadowMid" },
+    { dx: 6, dy: 3, layer: "wordmarkShadowFar" },
+  ]
 
 function maxShadowDx(): number {
   return WORDMARK_SHADOW_LAYERS.length === 0
@@ -732,23 +680,46 @@ function buildShadowedArtRows(
     }
   }
 
-  // Single-layer foreground only — no shadow layers. The diagonal gradient
-  // supplies depth without visual repetition.
+  // Draw extrusion back-to-front, then draw the crisp face last.
+  const reversedLayers = [...WORDMARK_SHADOW_LAYERS].reverse()
+
+  for (const shadow of reversedLayers) {
+    for (let y = 0; y < metrics.lines.length; y++) {
+      const chars = Array.from(metrics.lines[y]!)
+
+      for (let x = 0; x < chars.length; x++) {
+        const char = chars[x]!
+
+        if (!isInk(char)) continue
+
+        putCell(
+          canvas,
+          left + x + shadow.dx,
+          y + shadow.dy,
+          makeArtCell("█", shadow.layer, x, y),
+        )
+      }
+    }
+  }
+
   for (let y = 0; y < metrics.lines.length; y++) {
     const chars = Array.from(metrics.lines[y]!)
 
     for (let x = 0; x < chars.length; x++) {
       const char = chars[x]!
+
       if (!isInk(char)) continue
 
-      putCell(canvas, left + x, y, makeArtCell(char, "wordmark", x, y))
+      putCell(
+        canvas,
+        left + x,
+        y,
+        makeArtCell(char, "wordmark", x, y),
+      )
     }
   }
 
-  const rows = canvas.map((cells) => ({
-    dim: options.dim,
-    cells,
-  }))
+  const rows = canvas.map((cells) => ({ dim: options.dim, cells }))
 
   return options.framed ? rows.map((row) => frameCells(row.cells)) : rows
 }
@@ -770,12 +741,14 @@ export function cellColor(
   const wordmarkSource = resolveWordmarkSource(cell, x, y, totalWidth, totalRows)
   if (wordmarkSource) {
     if (wordmarkSource.layer === "wordmark") {
-      return wordmarkColor(
+      const color = wordmarkColor(
         wordmarkSource.sourceX,
         wordmarkSource.sourceY,
         wordmarkSource.sourceWidth,
         wordmarkSource.sourceHeight,
       )
+
+      return dim ? dimReadable(color, 0.2, 6.2) : color
     }
 
     return wordmarkShadowColor(
@@ -794,100 +767,102 @@ export function cellColor(
   return globalGradientColor(x, y, totalWidth, totalRows, dim)
 }
 
-/**
- * Monochromatic ink override — when an `ink` RGBA is provided, this maps the
- * cell's diagonal gradient position onto a luminance curve derived from the
- * ink color instead of the neon gecko palette. Produces a rich gold-to-white
- * gradient for ZYAL mode, or any other monochromatic tint.
- */
-function inkMonochrome(
-  ink: RGBA,
-  cell: LogoCell,
-  row: LogoRow,
-  x: number,
-  y: number,
-  totalWidth: number,
-  totalRows: number,
-): RGB {
-  // Base position in [0,1] — same diagonal as the regular gradient
-  let t: number
-  const wordmarkSource = resolveWordmarkSource(cell, x, y, totalWidth, totalRows)
-  if (wordmarkSource) {
-    t = wordmarkT(
-      wordmarkSource.sourceX,
-      wordmarkSource.sourceY,
-      wordmarkSource.sourceWidth,
-      wordmarkSource.sourceHeight,
-    )
-    // Shadow layers get progressively darker
-    if (wordmarkSource.layer === "wordmarkShadowFar") t = clamp01(t * 0.45)
-    else if (wordmarkSource.layer === "wordmarkShadowMid") t = clamp01(t * 0.6)
-    else if (wordmarkSource.layer === "wordmarkShadowNear") t = clamp01(t * 0.75)
-  } else {
-    t = globalDiagonalT(x, y, totalWidth, totalRows)
-  }
-
-  const dim = Boolean(cell.dim ?? row.dim)
-
-  // Convert ink RGBA to 0-255 integers
-  const baseR = Math.round(ink.r * 255)
-  const baseG = Math.round(ink.g * 255)
-  const baseB = Math.round(ink.b * 255)
-
-  // Luminance curve: dark amber (t=0) → ink color (t=0.4) → bright gold (t=0.7) → white highlights (t=1.0)
-  const brightness = dim ? 0.55 + t * 0.35 : 0.65 + t * 0.35
-  const whiteBlend = clamp01((t - 0.65) / 0.35) * 0.4 // top 35% blends toward white
-
-  const r = clamp255(baseR * brightness + (255 - baseR * brightness) * whiteBlend)
-  const g = clamp255(baseG * brightness + (255 - baseG * brightness) * whiteBlend)
-  const b = clamp255(baseB * brightness + (255 - baseB * brightness) * whiteBlend)
-
-  return rgb(r, g, b)
-}
-
-export function logoWidth(rows: LogoRow[]): number {
-  return Math.max(OUTER_WIDTH, ...rows.map((row) => row.cells.length))
+export function logoWidth(rows: LogoRow[], minimum = OUTER_WIDTH): number {
+  return Math.max(minimum, ...rows.map((row) => row.cells.length))
 }
 
 // ---------------------------------------------------------------------------
 // Logo builders
 // ---------------------------------------------------------------------------
 
+export function parseAnsiArt(ansi: string): LogoRow[] {
+  const rows: LogoRow[] = []
+  let currentRow: LogoCell[] = []
+  let currentFg: RGB | undefined = undefined
+  let currentBg: RGB | undefined = undefined
+
+  const parts = ansi.split("[")
+
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i]!
+    if (i === 0) {
+      for (const char of part) {
+        if (char === "\n") {
+          rows.push({ cells: currentRow })
+          currentRow = []
+        } else {
+          currentRow.push({ char, layer: "global", fg: currentFg, bg: currentBg })
+        }
+      }
+      continue
+    }
+
+    const mIndex = part.indexOf("m")
+    const jIndex = part.indexOf("J")
+    const hIndex = part.indexOf("H")
+
+    let seqEnd = -1
+    let type = ""
+    if (mIndex >= 0 && (seqEnd === -1 || mIndex < seqEnd)) { seqEnd = mIndex; type = "m" }
+    if (jIndex >= 0 && (seqEnd === -1 || jIndex < seqEnd)) { seqEnd = jIndex; type = "J" }
+    if (hIndex >= 0 && (seqEnd === -1 || hIndex < seqEnd)) { seqEnd = hIndex; type = "H" }
+
+    if (seqEnd === -1) {
+      currentRow.push({ char: "[", layer: "global", fg: currentFg, bg: currentBg })
+      for (const char of part) {
+        if (char === "\n") {
+          rows.push({ cells: currentRow })
+          currentRow = []
+        } else {
+          currentRow.push({ char, layer: "global", fg: currentFg, bg: currentBg })
+        }
+      }
+      continue
+    }
+
+    const seq = part.substring(0, seqEnd)
+    const text = part.substring(seqEnd + 1)
+
+    if (type === "m") {
+      const codes = seq.split(";").map(Number)
+      let cIdx = 0
+      while (cIdx < codes.length) {
+        const code = codes[cIdx]
+        if (code === 0) {
+          currentFg = undefined
+          currentBg = undefined
+          cIdx++
+        } else if (code === 38 && codes[cIdx + 1] === 2) {
+          currentFg = { r: codes[cIdx + 2] ?? 0, g: codes[cIdx + 3] ?? 0, b: codes[cIdx + 4] ?? 0 }
+          cIdx += 5
+        } else if (code === 48 && codes[cIdx + 1] === 2) {
+          currentBg = { r: codes[cIdx + 2] ?? 0, g: codes[cIdx + 3] ?? 0, b: codes[cIdx + 4] ?? 0 }
+          cIdx += 5
+        } else {
+          cIdx++
+        }
+      }
+    }
+
+    for (const char of text) {
+      if (char === "\n") {
+        rows.push({ cells: currentRow })
+        currentRow = []
+      } else {
+        currentRow.push({ char, layer: "global", fg: currentFg, bg: currentBg })
+      }
+    }
+  }
+
+  if (currentRow.length > 0) {
+    rows.push({ cells: currentRow })
+  }
+
+  return rows
+}
+
 export function buildLogoRows(props: LogoProps = {}): LogoRow[] {
-  const support = props.support ?? "ZYAL"
-
-  const status =
-    props.status ??
-    (props.idle
-      ? "camouflage idle • watching the wall"
-      : "safe autonomous coding ready")
-
-  const headerRight = props.idle
-    ? "gecko mode idle  ● ● ● "
-    : "gecko mode active ● ● ● "
-
-  return [
-    textRow(topBorder()),
-    textRow(framedPair(" ›_ JEKKO", headerRight)),
-    textRow(divider()),
-
-    textRow(framed()),
-
-    ...buildShadowedArtRows(JEKKO_WORDMARK_CRISP, INNER_WIDTH, {
-      framed: true,
-      dim: false,
-    }),
-
-    textRow(framed()),
-    textRow(
-      framed(`AI coding gecko • ${support} support • climbs hard problems`),
-    ),
-    textRow(framed(`gecko:// ${status}`), {
-      dim: props.idle,
-    }),
-
-    textRow(bottomBorder()),
-  ]
+  return parseAnsiArt(JEKKO_ANSI_ART)
 }
 
 export function buildGoLogoRows(props: GoLogoProps = {}): LogoRow[] {
@@ -906,37 +881,27 @@ function GradientRow(props: {
   y: number
   totalRows: number
   totalWidth: number
-  ink?: RGBA
 }) {
   return (
     <box flexDirection="row">
       <For each={props.row.cells}>
-        {(cell, x) => {
+        {(cell: LogoCell, x: () => number) => {
           const strong = Boolean(cell.strong ?? props.row.strong)
           const attrs = strong ? 1 : undefined
 
-          const color = props.ink
-            ? inkMonochrome(
-                props.ink,
-                cell,
-                props.row,
-                x(),
-                props.y,
-                props.totalWidth,
-                props.totalRows,
-              )
-            : cellColor(
-                cell,
-                props.row,
-                x(),
-                props.y,
-                props.totalWidth,
-                props.totalRows,
-              )
+          const color = cellColor(
+            cell,
+            props.row,
+            x(),
+            props.y,
+            props.totalWidth,
+            props.totalRows,
+          )
 
           return (
             <text
-              fg={toRGBA(color)}
+              fg={cell.fg ? toRGBA(cell.fg) : toRGBA(color)}
+              bg={cell.bg ? toRGBA(cell.bg) : undefined}
               attributes={attrs}
               selectable={false}
             >
@@ -951,18 +916,17 @@ function GradientRow(props: {
 
 export function Logo(props: LogoProps = {}) {
   const rows = createMemo(() => buildLogoRows(props))
-  const totalWidth = createMemo(() => logoWidth(rows()))
+  const totalWidth = createMemo(() => logoWidth(rows(), OUTER_WIDTH))
 
   return (
     <box flexDirection="column">
       <For each={rows()}>
-        {(row, y) => (
+        {(row: LogoRow, y: () => number) => (
           <GradientRow
             row={row}
             y={y()}
             totalRows={rows().length}
             totalWidth={totalWidth()}
-            ink={props.ink}
           />
         )}
       </For>
@@ -972,12 +936,12 @@ export function Logo(props: LogoProps = {}) {
 
 export function GoLogo(props: GoLogoProps = {}) {
   const rows = createMemo(() => buildGoLogoRows(props))
-  const totalWidth = createMemo(() => logoWidth(rows()))
+  const totalWidth = createMemo(() => logoWidth(rows(), 0))
 
   return (
     <box flexDirection="column">
       <For each={rows()}>
-        {(row, y) => (
+        {(row: LogoRow, y: () => number) => (
           <GradientRow
             row={row}
             y={y()}
@@ -994,8 +958,8 @@ export function GoLogo(props: GoLogoProps = {}) {
 // Code-derived preview helpers
 // ---------------------------------------------------------------------------
 // These render from the same row builder and color engine as <Logo />. Use the
-// ANSI output for terminal screenshots, or the SVG output below for a crisp
-// deterministic image pipeline without any image generator.
+// ANSI output for terminal screenshots, or the SVG output for deterministic
+// visual snapshots without involving a separate image generator.
 
 function colorToAnsiFg(color: RGB): string {
   return `\x1b[38;2;${color.r};${color.g};${color.b}m`
@@ -1015,7 +979,7 @@ export function getGoLogoPlainText(props: GoLogoProps = {}): string {
 
 export function renderLogoToAnsi(props: LogoProps = {}): string {
   const rows = buildLogoRows(props)
-  const totalWidth = logoWidth(rows)
+  const totalWidth = logoWidth(rows, OUTER_WIDTH)
   const totalRows = rows.length
   const reset = "\x1b[0m"
   const strong = "\x1b[1m"
@@ -1035,7 +999,7 @@ export function renderLogoToAnsi(props: LogoProps = {}): string {
 
 export function renderGoLogoToAnsi(props: GoLogoProps = {}): string {
   const rows = buildGoLogoRows(props)
-  const totalWidth = logoWidth(rows)
+  const totalWidth = logoWidth(rows, 0)
   const totalRows = rows.length
   const reset = "\x1b[0m"
   const strong = "\x1b[1m"
@@ -1090,26 +1054,26 @@ function renderSvgCell(
   }
 
   const weight = Boolean(cell.strong ?? row.strong) ? 800 : 500
-  return `<text x="${px}" y="${py + opts.baseline}" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="${opts.fontSize}" font-weight="${weight}" fill="${color}" xml:space="preserve">${escapeXml(cell.char)}</text>`
+  return `<text x="${px}" y="${py + opts.baseline}" font-family="JetBrains Mono, DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="${opts.fontSize}" font-weight="${weight}" fill="${color}" xml:space="preserve">${escapeXml(cell.char)}</text>`
 }
 
 export function renderLogoToSvg(
-  props: LogoProps = { idle: true },
+  props: LogoProps = { idle: false },
   options: SvgPreviewOptions = {},
 ): string {
   const opts: Required<SvgPreviewOptions> = {
-    cellWidth: options.cellWidth ?? 20,
-    cellHeight: options.cellHeight ?? 40,
-    fontSize: options.fontSize ?? 31,
-    baseline: options.baseline ?? 31,
-    paddingX: options.paddingX ?? 24,
-    paddingY: options.paddingY ?? 22,
+    cellWidth: options.cellWidth ?? 7,
+    cellHeight: options.cellHeight ?? 14,
+    fontSize: options.fontSize ?? 11,
+    baseline: options.baseline ?? 11,
+    paddingX: options.paddingX ?? 8,
+    paddingY: options.paddingY ?? 7,
     background: options.background ?? "#050607",
     title: options.title ?? "JEKKO logo preview",
   }
 
   const rows = buildLogoRows(props)
-  const totalWidth = logoWidth(rows)
+  const totalWidth = logoWidth(rows, OUTER_WIDTH)
   const totalRows = rows.length
   const width = opts.paddingX * 2 + totalWidth * opts.cellWidth
   const height = opts.paddingY * 2 + totalRows * opts.cellHeight

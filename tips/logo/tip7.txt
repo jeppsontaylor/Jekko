@@ -1,4 +1,4 @@
-Here is a full replacement based on your existing OpenTUI/Solid logo component and row-gradient structure. The main change is that the gradient now uses **HSV interpolation instead of RGB interpolation**, pins saturation/value to neon levels, removes the dull active-status dimming, and makes nearly every visible row bold for a much brighter terminal render.  
+Here is a full replacement based on your existing OpenTUI/Solid logo component and row-gradient structure. The main change is that the gradient now uses **HSV interpolation instead of RGB interpolation**, pins saturation/value to neon levels, removes the dull active-status dimming, and makes nearly every visible row bold for a much brighter terminal render.
 
 ```tsx
 import { RGBA, TextAttributes } from "@opentui/core"
@@ -460,4 +460,3 @@ export function GoLogo(props: { idle?: boolean } = {}) {
   )
 }
 ```
-

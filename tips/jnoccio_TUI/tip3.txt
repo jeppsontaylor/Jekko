@@ -2735,4 +2735,3 @@ struct UnknownCapacity {
 This is intentionally built as a client-only companion to the existing gateway: it uses the already-present HTTP snapshot and websocket stream, gives you live model flashes, agent-colored dots, pause/resume, reconnect, refresh, filter, model drawer, capacity observatory, error pattern view, and fast keyboard navigation.
 
 [1]: https://crates.io/crates/ratatui/?utm_source=chatgpt.com "ratatui - crates.io: Rust Package Registry"
-

@@ -103,7 +103,10 @@ impl RecallResult {
             "retrieved_token_count".to_string(),
             Json::Int(self.retrieved_token_count as i64),
         );
-        o.insert("state_bytes".to_string(), Json::Int(self.state_bytes as i64));
+        o.insert(
+            "state_bytes".to_string(),
+            Json::Int(self.state_bytes as i64),
+        );
         o.insert(
             "claim_modality".to_string(),
             match self.claim_modality {

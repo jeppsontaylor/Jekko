@@ -458,6 +458,8 @@ export type TuiPluginApi = {
   route: {
     register: (routes: TuiRouteDefinition[]) => () => void
     navigate: (name: string, params?: Record<string, unknown>) => void
+    /** Navigate back to the previous route. Falls back to Home. */
+    navigateBack: () => void
     readonly current: TuiRouteCurrent
   }
   ui: {

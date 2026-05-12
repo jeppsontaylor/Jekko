@@ -1,4 +1,4 @@
-# Provenance: compact appendix excerpt from docs/ZYAL/examples/09-control-plane-preview.zyal.yml.
+# Provenance: compact appendix excerpt from docs/ZYAL/examples/09-control-plane-preview.zyal.
 <<<ZYAL v1:daemon id=control-plane-preview>>>
 version: v1
 intent: daemon

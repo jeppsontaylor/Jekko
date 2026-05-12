@@ -3049,4 +3049,3 @@ That is how ZYAL can avoid being “yet another agent YAML” and become the lan
 [37]: https://www.reddit.com/r/vibecoding/comments/1t5031u/jankurai_v088_vibe_killer/ "https://www.reddit.com/r/vibecoding/comments/1t5031u/jankurai_v088_vibe_killer/"
 [38]: https://en.wikipedia.org/wiki/Vibe_coding "https://en.wikipedia.org/wiki/Vibe_coding"
 [39]: https://developers.openai.com/codex/concepts/sandboxing "https://developers.openai.com/codex/concepts/sandboxing"
-

@@ -1,4 +1,4 @@
-Building on your existing Solid/OpenTUI structure, this version replaces the per-letter flat coloring with a **true 2D gradient**: left→right and top→bottom, plus a subtle diagonal shine and gecko-themed palette. 
+Building on your existing Solid/OpenTUI structure, this version replaces the per-letter flat coloring with a **true 2D gradient**: left→right and top→bottom, plus a subtle diagonal shine and gecko-themed palette.
 
 ```tsx
 import { RGBA, TextAttributes } from "@opentui/core"
@@ -333,4 +333,3 @@ export function GoLogo(props: { idle?: boolean } = {}) {
   )
 }
 ```
-

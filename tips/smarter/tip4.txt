@@ -7,7 +7,7 @@ I would add **one major extension** to the current ZYAL daemon plan:
 
 This should **not** be another unbounded forever loop. The global daemon can run forever, but a hard task’s scratchpad/reflection loop must be **bounded**, evidence-driven, and cleanly archived or promoted.
 
-I’m preserving the previous ZYAL plan’s core choices: strict `ZYAL v1` sentinel syntax, deliberate arming, SQLite as source of truth, generated ledger mirrors, daemon-owned continuation, hard context clear as new epoch/child session, serial-first runtime, and later swarms/MCP. 
+I’m preserving the previous ZYAL plan’s core choices: strict `ZYAL v1` sentinel syntax, deliberate arming, SQLite as source of truth, generated ledger mirrors, daemon-owned continuation, hard context clear as new epoch/child session, serial-first runtime, and later swarms/MCP.
 
 The missing piece is a **difficulty router** that says:
 
@@ -1422,4 +1422,3 @@ If the task remains too hard, it becomes a well-documented blocker instead of an
 [8]: https://github.com/anomalyco/jekko/issues/18636 "[FEATURE]: Config option for continuous execution loop until task completion · Issue #18636 · anomalyco/jekko · GitHub"
 [9]: https://developers.openai.com/api/docs/guides/agents/orchestration "Orchestration and handoffs | OpenAI API"
 [10]: https://developers.openai.com/api/docs/guides/agents/guardrails-approvals "Guardrails and human review | OpenAI API"
-

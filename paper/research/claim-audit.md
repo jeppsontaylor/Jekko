@@ -14,7 +14,7 @@ Status labels:
 | `ZYAL_ARM RUN_FOREVER id=<id>` is required by daemon start. | Shipped for simple arming | `packages/jekko/src/session/daemon.ts` throws when `parsed.arm` is missing; parser validates trailing arm ID. |
 | Hash-bound, nonce-bound, origin-bound arming is parsed and shown in preview but not enforced by the start API. | Preview | `ZyalArmingPolicy` and preview summary in `schema.ts`; TUI run card explicitly says hash/nonce/origin policies are preview-only. |
 | Schema covers core, safety, evidence, security, power, fleet, taint, and control-plane preview blocks. | Shipped parser/preview | `ZyalSpec` in `schema.ts`; `SUPPORTED_FEATURE_KEYS` in `parser.ts`; full docs examples parser test. |
-| Current canonical example corpus has ten `.zyal.yml` examples. | Shipped docs/test | `docs/ZYAL/examples/README.md`; `parser.test.ts` asserts all ten filenames. |
+| Current canonical example corpus uses `.zyal` examples. | Shipped docs/test | `docs/ZYAL/examples/README.md`; `parser.test.ts` asserts the canonical filenames. |
 | Core daemon loop is host-owned: run, checkpoint, stop evaluation, incubator tick, continuation prompt, sleep, and context rotation. | Shipped | `packages/jekko/src/session/daemon.ts` `runDaemon` loop. |
 | Daemon state persists in SQLite tables for runs, iterations, events, tasks, passes, task memories, workers, and artifacts. | Shipped | `packages/jekko/src/session/daemon.sql.ts`; `daemon-store.ts`. |
 | Stop checks support shell and git-clean conditions. | Shipped | `daemon.ts` `evaluateStop`; `daemon-checks.ts`; parser schema for `ZyalStopCondition`. |

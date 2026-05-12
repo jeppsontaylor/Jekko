@@ -1,6 +1,6 @@
 ## Bottom line
 
-ZYAL’s strongest idea is **not** “another agent framework.” Its strongest idea is a **host-enforced operating contract**: the model can think and propose, but the host owns lifecycle, permissions, budgets, context rotation, checkpoints, evidence gates, approvals, and promotion. That is the right direction. The biggest opportunity is to make ZYAL the **governance/control plane that composes existing agent standards** rather than competing with them. The uploaded spec already points there with host-owned loops, SQLite truth, typed evidence bundles, capability leases, memory governance, sandboxes, anti-vibe gates, experiments, budgets, repo intelligence, and rollback. 
+ZYAL’s strongest idea is **not** “another agent framework.” Its strongest idea is a **host-enforced operating contract**: the model can think and propose, but the host owns lifecycle, permissions, budgets, context rotation, checkpoints, evidence gates, approvals, and promotion. That is the right direction. The biggest opportunity is to make ZYAL the **governance/control plane that composes existing agent standards** rather than competing with them. The uploaded spec already points there with host-owned loops, SQLite truth, typed evidence bundles, capability leases, memory governance, sandboxes, anti-vibe gates, experiments, budgets, repo intelligence, and rollback.
 
 I interpreted “LangChane” as **LangChain/LangGraph** and “Hermis” as **Nous Research Hermes Agent**. OpenClaw is now a recognizable self-hosted gateway/personal agent ecosystem with multi-channel messaging, sessions, memory, multi-agent routing, and skills; its own docs also make clear why ZYAL-style governance matters, because default main-session tools can run on the host with broad access unless sandboxing is configured. ([OpenClaw][1]) Hermes is relevant because it emphasizes compounding capability through persistent memory and skill creation, while LangGraph is relevant because it has become a durable execution/runtime layer for long-running, stateful workflows with human-in-the-loop and memory. ([Hermes Agent][2])
 
@@ -23,11 +23,11 @@ MCP defines a standard way to connect LLM applications with external data and to
 
 ## The biggest gaps and risks I see
 
-**1. ZYAL is powerful but very large.** The uploaded spec describes 40+ top-level blocks across v1, v1.1, v2, and v2.1. That is impressive, but it risks becoming hard to adopt, hard to validate, and hard to certify. The fix is conformance profiles: “ZYAL Core,” “ZYAL Coding,” “ZYAL Secure,” “ZYAL Fleet,” and “ZYAL Financial/Regulated,” each with a minimal required subset. 
+**1. ZYAL is powerful but very large.** The uploaded spec describes 40+ top-level blocks across v1, v1.1, v2, and v2.1. That is impressive, but it risks becoming hard to adopt, hard to validate, and hard to certify. The fix is conformance profiles: “ZYAL Core,” “ZYAL Coding,” “ZYAL Secure,” “ZYAL Fleet,” and “ZYAL Financial/Regulated,” each with a minimal required subset.
 
 **2. Memory is under-specified relative to its importance.** ZYAL has governed memory, task capsules, negative memory, and compression, but long-loop power will depend on memory quality, not just memory persistence. LangGraph distinguishes semantic, episodic, and procedural memory; Hermes uses bounded curated memory files injected as frozen snapshots at session start; Deep Agents use checkpointed threads as episodic memory. ZYAL should formalize memory types, provenance, write permissions, decay, conflict resolution, and retrieval evaluation. ([LangChain Docs][7])
 
-**3. “SQLite is truth” is not enough for high-trust replay.** SQLite durability is good, but high-stakes autonomous work needs an append-only, tamper-evident event log with signed tool calls, signed evidence bundles, content-addressed artifacts, and replayable side-effect boundaries. ZYAL already mentions signed evidence bundles; it should extend that to every state transition and memory mutation. 
+**3. “SQLite is truth” is not enough for high-trust replay.** SQLite durability is good, but high-stakes autonomous work needs an append-only, tamper-evident event log with signed tool calls, signed evidence bundles, content-addressed artifacts, and replayable side-effect boundaries. ZYAL already mentions signed evidence bundles; it should extend that to every state transition and memory mutation.
 
 **4. Regex command controls are too weak as the primary enforcement layer.** ZYAL’s `capabilities.command_floor` and guardrails are valuable, but shell behavior is notoriously hard to secure with patterns alone. Claude Code’s permission model separates read-only, shell, and file modification actions, with deny rules taking precedence; ZYAL should go further with command parsing, OS-level sandbox policy, network egress policy, secret tainting, and tool-level manifests. ([Claude][8])
 
@@ -399,4 +399,3 @@ That framing avoids reinventing the wheel and gives ZYAL a sharper identity: **n
 [11]: https://developers.openai.com/codex/skills "Agent Skills – Codex | OpenAI Developers"
 [12]: https://developers.openai.com/api/docs/guides/reasoning "Reasoning models | OpenAI API"
 [13]: https://docs.langchain.com/oss/python/langgraph/overview "LangGraph overview - Docs by LangChain"
-

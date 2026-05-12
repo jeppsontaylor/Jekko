@@ -446,4 +446,3 @@ Use **Brave** as the privacy-preserving default web index, **Tavily** as the tur
 [31]: https://arxiv.org/abs/2304.09848?utm_source=chatgpt.com "Evaluating Verifiability in Generative Search Engines"
 [32]: https://www.jmir.org/2025/1/e79379?utm_source=chatgpt.com "Evaluating Web Retrieval–Assisted Large Language ..."
 [33]: https://redditinc.com/policies/data-api-terms "Data API Terms"
-

@@ -1,4 +1,4 @@
-I studied the ZYAL draft as a proposed **host-enforced agent operating contract**, not just a YAML runbook. That framing is the biggest strength: ZYAL already says the host owns lifecycle, arming, budgets, state, guardrails, evidence, approvals, rollback, and done-ness, with SQLite as source of truth and generated mirror files for inspection. 
+I studied the ZYAL draft as a proposed **host-enforced agent operating contract**, not just a YAML runbook. That framing is the biggest strength: ZYAL already says the host owns lifecycle, arming, budgets, state, guardrails, evidence, approvals, rollback, and done-ness, with SQLite as source of truth and generated mirror files for inspection.
 
 I read “LangChane” as **LangChain/LangGraph**, and “Hermis” as **Hermes Agent**. The key lesson from the ecosystem is: **ZYAL should not become another agent framework. It should become the portable control plane that safely composes existing agent frameworks, tool protocols, UI protocols, memory systems, and durable workflow engines.**
 
@@ -28,7 +28,7 @@ For security, MCP’s own security guidance already calls out confused-deputy ri
 
 The most important spec-level issue is **versioning clarity**. The sentinel says `ZYAL v1`, the body says `version: v1`, but the document includes v2 and v2.1 blocks. That creates parser, compatibility, and safety ambiguity. Use `version: v2.1`, `requires: [...]`, and explicit feature negotiation.
 
-There are also several internal consistency issues: the document says “38 total top-level keys” but lists 40 by my count; “optional keys” includes required keys; `job.risk` is typed as `string[]` but examples use scalar `medium`; and `git_clean: {}` appears even though the earlier syntax says `allow_untracked` is required. These are small but important because ZYAL’s value depends on being machine-verifiable. 
+There are also several internal consistency issues: the document says “38 total top-level keys” but lists 40 by my count; “optional keys” includes required keys; `job.risk` is typed as `string[]` but examples use scalar `medium`; and `git_clean: {}` appears even though the earlier syntax says `allow_untracked` is required. These are small but important because ZYAL’s value depends on being machine-verifiable.
 
 `permissions` and `capabilities` need strict precedence rules. My recommendation: `capabilities` should supersede `permissions`; `permissions` becomes a legacy shorthand compiled into `capabilities`; `command_floor` always wins.
 
@@ -430,4 +430,3 @@ The three upgrades I would implement first are: **Memory OS**, **Interop Profile
 [11]: https://openai.github.io/openai-agents-python/tracing/ "Tracing - OpenAI Agents SDK"
 [12]: https://hermes-agent.nousresearch.com/ "Hermes Agent — The Agent That Grows With You | Nous Research"
 [13]: https://owasp.org/www-project-top-10-for-large-language-model-applications/ "OWASP Top 10 for Large Language Model Applications | OWASP Foundation"
-

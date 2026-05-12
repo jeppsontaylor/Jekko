@@ -197,7 +197,7 @@ channels:
 
 imports:
   list:
-    - source: "docs/ZYAL/examples/08-full-power-runbook.zyal.yml"
+    - source: "docs/ZYAL/examples/08-full-power-runbook.zyal"
       optional: true
     - source: "zyal://stdlib/control-plane-preview@1"
       optional: true

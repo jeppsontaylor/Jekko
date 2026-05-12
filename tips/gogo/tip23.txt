@@ -1775,4 +1775,3 @@ That gets you the thing you actually want: not an agent that is politely asked t
 [18]: https://raw.githubusercontent.com/anomalyco/jekko/dev/packages/jekko/src/cli/cmd/run.ts "raw.githubusercontent.com"
 [19]: https://jekko.ai/docs/commands/ "Commands | Jekko"
 [20]: https://github.com/anomalyco/jekko/issues/12780 "Agent paused after compaction · Issue #12780 · anomalyco/jekko · GitHub"
-

@@ -1,4 +1,4 @@
-I interpreted **LangChane** as **LangChain/LangGraph** and **Hermis** as **Hermes Agent**. My read: **ZYAL is already unusually strong** because it frames long-running agents as a **host-enforced operating contract**, not a prompt trick. It already has host-owned lifecycle control, preview-before-arming, SQLite-as-truth, bounded loops, runtime guardrails, workflow state machines, governed memory, evidence, approvals, capabilities, experiments, budgets, rollback, “done,” and repo intelligence. 
+I interpreted **LangChane** as **LangChain/LangGraph** and **Hermis** as **Hermes Agent**. My read: **ZYAL is already unusually strong** because it frames long-running agents as a **host-enforced operating contract**, not a prompt trick. It already has host-owned lifecycle control, preview-before-arming, SQLite-as-truth, bounded loops, runtime guardrails, workflow state machines, governed memory, evidence, approvals, capabilities, experiments, budgets, rollback, “done,” and repo intelligence.
 
 The main upgrade path is not “add more YAML.” It is: **turn ZYAL into the durable control plane that composes existing agent protocols, governs memory, proves work, and safely lets agents learn over long loops.**
 
@@ -502,4 +502,3 @@ That would make it meaningfully different from LangGraph, OpenClaw, Hermes, Open
 [18]: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills "Skills System | Hermes Agent"
 [19]: https://opentelemetry.io/docs/ "Documentation | OpenTelemetry"
 [20]: https://openai.github.io/openai-agents-python/tracing/ "Tracing - OpenAI Agents SDK"
-
